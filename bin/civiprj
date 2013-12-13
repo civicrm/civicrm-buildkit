@@ -1,0 +1,183 @@
+#!/bin/bash
+set -e
+
+###############################################################################
+## Bootstrap
+
+## Determine the absolute path of the directory with the file
+## usage: absdirname <file-path>
+function absdirname() {
+  pushd $(dirname $0) >> /dev/null
+    pwd
+  popd >> /dev/null
+}
+
+BINDIR=$(absdirname "$0")
+PRJDIR=$(dirname "$BINDIR")
+TMPDIR="$PRJDIR/app/tmp"
+source "$PRJDIR/src/civilib.sh"
+
+## Make sure bundled utilities are available, regardless of local config
+export PATH="$BINDIR:$PATH"
+
+###############################################################################
+## Display usage message
+function civiprj_usage() {
+  cat <<EOT
+Usage: $0 create <name> [options]
+  <name>              The name of the sub-directory to build
+  --type <type>       The name of the download/install scripts. (If omitted, assume <name>) [Optional]
+  --url <url>         The public URL of the site
+  --title <title>     The title of the site
+  --version <ver>     The branch or tag of CiviCRM desired (master, 4.4, 4.3, 4.3.0, etc) [Optional]
+  --force-download    If the source tree already exists, destroy and recreate
+  --force-install     If the DB/config already exists, destroy and recreate
+
+Usage: $0 reset <name> [options]
+  <name>              The name of the sub-directory to build
+  --cms <sql-file>    The path to a SQL backup of the CMS DB [Optional]
+  --no-cms            Skip resetting the CMS DB [Optional]
+  --civi <sql-file>   The path to a SQL backup of the CiviCRM DB [Optional]
+  --no-civi           Skip resetting the CiviCRM DB [Optional]
+
+EOT
+
+  exit 99;
+}
+
+## Run an external script (based on the site-type)
+function civiprj_run() {
+  MAIN_SCRIPT="${SITE_CONFIG_DIR}/$1.sh"
+  [ ! -f "$MAIN_SCRIPT" ] && echo "ERROR: Missing main script ($MAIN_SCRIPT)" && exit 98
+
+  echo "[[Execute $MAIN_SCRIPT]]"
+  set -ex
+  source "$MAIN_SCRIPT"
+  set +ex
+}
+
+###############################################################################
+## Parse options
+source "$PRJDIR/src/civiprj.defaults.sh"
+
+ACTION="$1"
+[ -z "$ACTION" ] && civiprj_usage
+shift
+
+SITE_NAME="$1"
+[ -z "$SITE_NAME" ] && civiprj_usage
+shift
+
+while [ -n "$1" ] ; do
+  OPTION="$1"
+  shift
+
+  case "$OPTION" in
+    -h|--help|-?)
+      civiprj_usage
+      ;;
+
+    --civi)
+      CIVI_SQL="$1"
+      shift
+      ;;
+
+    --cms)
+      CMS_SQL="$1"
+      shift
+      ;;
+
+    --force-download)
+      FORCE_DOWNLOAD=1
+      ;;
+
+    --force-install)
+      FORCE_INSTALL=1
+      ;;
+
+    --no-civi)
+      CIVI_SQL_SKIP=1
+      ;;
+
+    --no-cms)
+      CMS_SQL_SKIP=1
+      ;;
+
+    --title)
+      CMS_TITLE="$1"
+      shift
+      ;;
+
+    --type)
+      SITE_TYPE="$1"
+      shift
+      ;;
+
+    --url)
+      CMS_URL="$1"
+      shift
+      ;;
+
+    --version)
+      CIVI_VERSION="$1"
+      shift
+      ;;
+
+    *)
+      echo "Unrecognized option: $OPTION"
+      civiprj_usage
+      ;;
+  esac
+done
+
+if [ -f "${PRJDIR}/build/${SITE_NAME}.sh" ]; then
+  echo "[[Load saved options from ${PRJDIR}/${SITE_NAME}.sh]]"
+  source "${PRJDIR}/build/${SITE_NAME}.sh"
+fi
+
+source "$PRJDIR/src/civiprj.compute-defaults.sh"
+
+###############################################################################
+## Main
+
+case "$ACTION" in
+  create)
+    echo "[[Create $SITE_NAME (type '$SITE_TYPE' in '$WEB_ROOT')]]"
+
+    if [ -n "$FORCE_DOWNLOAD" -a -d "$WEB_ROOT" ]; then
+      rm -rf "$WEB_ROOT"
+    fi
+
+    if [ ! -d "$WEB_ROOT" ]; then
+      mkdir -p "$WEB_ROOT"
+      pushd "$WEB_ROOT" > /dev/null
+        civiprj_run download
+      popd > /dev/null
+    fi
+
+    if [ -n "$FORCE_INSTALL" -a -n "$CMS_DB_DSN" ]; then
+      pushd "$WEB_ROOT" > /dev/null
+        civiprj_run uninstall
+      popd > /dev/null
+    fi
+
+    if [ -n "$FORCE_INSTALL" -o -z "$CMS_DB_DSN" ]; then
+      pushd "$WEB_ROOT" > /dev/null
+        civiprj_run install
+      popd > /dev/null
+    fi
+
+    cvutil_save "${PRJDIR}/build/${SITE_NAME}.sh" $PERSISTENT_VARS
+    ;;
+
+  reset)
+    echo reset
+    ;;
+
+  *)
+    echo "Unrecognized action: $ACTION"
+    civiprj_usage
+    ;;
+esac
+
+exit

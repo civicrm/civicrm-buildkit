@@ -13,5 +13,6 @@ bin/drush.complete.sh
 bin/drush.php
 bin/wp
 bin/wp.bat
+build/
 vendor/
 web/
