@@ -1,0 +1,80 @@
+#!/bin/bash
+
+## Download Drupal, CiviCRM, dependencies, and useful development tools.
+## Setup basic symlinks.
+##
+## Maybe, when drush or composer is more mature, we can eliminate this.
+
+## Determine the absolute path of the directory with the file
+## absdirname <file-path>
+function absdirname() {
+  pushd $(dirname $0) >> /dev/null
+    pwd
+  popd >> /dev/null
+}
+
+BINDIR=$(absdirname "$0")
+PRJDIR=$(dirname "$BINDIR")
+WEBDIR="$PRJDIR/web"
+TMPDIR="$PRJDIR/app/tmp"
+CIVIXVER=13.10.0
+CIVIXURL="http://downloads.sourceforge.net/project/civix/civix-${CIVIXVER}.tar.bz2?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fcivix%2Ffiles%2F&use_mirror=master"
+
+##################################################
+## Helpers
+
+## download_url <url> <out-file>
+function download_url() {
+  #php -r "echo file_get_contents('$1');" > $2
+  if which wget >> /dev/null ; then
+    wget -O "$2" "$1"
+  elif which curl >> /dev/null ; then
+    curl -o "$2" "$1"
+  else
+    echo "error: failed to locate curl or wget"
+  fi
+}
+
+##################################################
+## Validation
+php=$(which php)
+if [ -z "$php" ]; then
+  echo "Failed to locate PHP-CLI. Please install a PHP runtime and register in the PATH."
+  exit 3
+fi
+
+if [ ! -d "$TMPDIR" ]; then
+  mkdir -p "$TMPDIR"
+fi
+
+##################################################
+## Begin execution
+set -e
+pushd $PRJDIR >> /dev/null
+  ## Download composer
+  if [ -f "$PRJDIR/bin/composer" ]; then
+    echo "[[Composer binary ($PRJDIR/bin/composer) already exists. Skipping.]]"
+  else
+    echo "[[Download composer]]"
+    download_url "https://getcomposer.org/installer" "$TMPDIR/composer-installer"
+    php "$TMPDIR/composer-installer" -- --install-dir="$PRJDIR/bin"
+    mv "$PRJDIR/bin/composer.phar" "$PRJDIR/bin/composer"
+  fi
+
+  ## Download civix
+  ## FIXME: Update civix so that it can be installed via composer as a dependnecy
+  if [ -e "$PRJDIR/bin/civix" -a -d "app/tmp/civix" ]; then
+    echo "[[civix binary ($PRJDIR/bin/civix) already exists. Skipping.]]"
+  else
+    echo "[[Download civix]]"
+    download_url "$CIVIXURL" "$TMPDIR/civix.tar.bz2"
+    mkdir -p app/tmp/civix
+    tar xvj  --strip-components 1 -C app/tmp/civix -f "$TMPDIR/civix.tar.bz2"
+    [ -e "$PRJDIR/bin/civix" ] && rm -f "$PRJDIR/bin/civix"
+    ln -s "$PRJDIR/app/tmp/civix/civix" "$PRJDIR/bin/civix"
+  fi
+
+  ## Download dependencies (via composer)
+  "$PRJDIR/bin/composer" install
+
+popd >> /dev/null

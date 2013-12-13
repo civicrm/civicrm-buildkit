@@ -1,0 +1,17 @@
+*~
+.idea
+app/cache/
+app/config/civix.ini
+app/run/
+app/tmp/
+bin/amp
+bin/civix
+bin/composer
+bin/drush
+bin/drush.bat
+bin/drush.complete.sh
+bin/drush.php
+bin/wp
+bin/wp.bat
+vendor/
+web/

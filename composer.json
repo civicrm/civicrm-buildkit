@@ -1,0 +1,18 @@
+{
+  "name": "civicrm/civicrm-project",
+  "description": "A skeletal project which includes CiviCRM, Drupal, WordPress, development tools, etc",
+  "homepage": "http://www.drush.org",
+  "license": "GPLv2",
+  "authors": [
+    { "name": "Tim Otten", "email": "to-git@think.hm" }
+  ],
+  "config": {
+    "bin-dir": "bin"
+  },
+  "require": {
+    "php": ">=5.3.3",
+    "drush/drush": "dev-master",
+    "wp-cli/wp-cli": "0.12.1",
+    "totten/amp": "dev-master"
+  }
+}
