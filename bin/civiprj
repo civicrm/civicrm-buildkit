@@ -141,8 +141,6 @@ while [ -n "$1" ] ; do
       shift
       ;;
 
-
-
     *)
       echo "Unrecognized option: $OPTION"
       civiprj_usage
@@ -207,5 +205,3 @@ case "$ACTION" in
     civiprj_usage
     ;;
 esac
-
-exit

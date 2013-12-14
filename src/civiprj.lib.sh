@@ -77,17 +77,6 @@ function cvutil_makeparent() {
 }
 
 ###############################################################################
-## Reset a MySQL database ($DB_NAME) and grant access to $DB_USER/$DB_PASS
-function mysql_dropcreate() {
-  cvutil_assertvars mysql_dropcreate MYSQLCLI DB_NAME DB_USER DB_PASS
-
-  echo "DROP DATABASE IF EXISTS $DB_NAME" | $MYSQLCLI
-  echo "CREATE DATABASE $DB_NAME" | $MYSQLCLI
-  echo "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASS}'" | $MYSQLCLI
-  echo "GRANT SUPER ON *.* TO '${DB_USER}'@'localhost'" | $MYSQLCLI
-}
-
-###############################################################################
 ## Generate config files and setup database
 function civicrm_install() {
   cvutil_assertvars civicrm_install CIVI_CORE CIVI_FILES CIVI_TEMPLATEC
