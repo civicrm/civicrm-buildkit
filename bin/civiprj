@@ -182,6 +182,16 @@ case "$ACTION" in
       pushd "$WEB_ROOT" > /dev/null
         civiprj_run install
       popd > /dev/null
+
+      if [ -n "$CIVI_SQL" ]; then
+        cvutil_makeparent "$CIVI_SQL"
+        mysqldump -u"$CIVI_DB_USER" -p"$CIVI_DB_PASS" "$CIVI_DB_NAME" | gzip > $CIVI_SQL
+      fi
+
+      if [ -n "$CMS_SQL" ]; then
+        cvutil_makeparent "$CMS_SQL"
+        mysqldump -u"$CMS_DB_USER" -p"$CMS_DB_PASS" "$CMS_DB_NAME" | gzip > $CMS_SQL
+      fi
     fi
 
     cvutil_save "${PRJDIR}/build/${SITE_NAME}.sh" $PERSISTENT_VARS

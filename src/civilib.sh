@@ -67,6 +67,16 @@ function cvutil_makepasswd() {
 }
 
 ###############################################################################
+## Ensure that the parent directory exists
+## usage: cvutil_makeparent <file>
+function cvutil_makeparent() {
+  parent=$(dirname "$1")
+  if [ ! -d "$parent" ]; then
+    mkdir -p "$parent"
+  fi
+}
+
+###############################################################################
 ## Reset a MySQL database ($DB_NAME) and grant access to $DB_USER/$DB_PASS
 function mysql_dropcreate() {
   cvutil_assertvars mysql_dropcreate MYSQLCLI DB_NAME DB_USER DB_PASS
