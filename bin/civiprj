@@ -68,6 +68,11 @@ SITE_NAME="$1"
 [ -z "$SITE_NAME" ] && civiprj_usage
 shift
 
+if [ -f "${PRJDIR}/build/${SITE_NAME}.sh" ]; then
+  echo "[[Load saved options from ${PRJDIR}/${SITE_NAME}.sh]]"
+  source "${PRJDIR}/build/${SITE_NAME}.sh"
+fi
+
 while [ -n "$1" ] ; do
   OPTION="$1"
   shift
@@ -129,11 +134,6 @@ while [ -n "$1" ] ; do
       ;;
   esac
 done
-
-if [ -f "${PRJDIR}/build/${SITE_NAME}.sh" ]; then
-  echo "[[Load saved options from ${PRJDIR}/${SITE_NAME}.sh]]"
-  source "${PRJDIR}/build/${SITE_NAME}.sh"
-fi
 
 source "$PRJDIR/src/civiprj.compute-defaults.sh"
 
