@@ -29,7 +29,9 @@ Usage: $0 create <name> [options]
   --type <type>       The name of the download/install scripts. (If omitted, assume <name>) [Optional]
   --url <url>         The public URL of the site
   --title <title>     The title of the site
-  --version <ver>     The branch or tag of CiviCRM desired (master, 4.4, 4.3, 4.3.0, etc) [Optional]
+  --civi-ver <ver>    The branch or tag of CiviCRM desired (master, 4.4, 4.3, 4.3.0, etc) [Optional]
+  --cms-ver <ver>     The release of the CMS desired [Optional]
+  --force             If the source tree or DB already exists, destroy and recreate
   --force-download    If the source tree already exists, destroy and recreate
   --force-install     If the DB/config already exists, destroy and recreate
 
@@ -87,9 +89,24 @@ while [ -n "$1" ] ; do
       shift
       ;;
 
+    --civi-ver)
+      CIVI_VERSION="$1"
+      shift
+      ;;
+
     --cms)
       CMS_SQL="$1"
       shift
+      ;;
+
+    --cms-ver)
+      CMS_VERSION="$1"
+      shift
+      ;;
+
+    --force)
+      FORCE_DOWNLOAD=1
+      FORCE_INSTALL=1
       ;;
 
     --force-download)
@@ -123,10 +140,7 @@ while [ -n "$1" ] ; do
       shift
       ;;
 
-    --version)
-      CIVI_VERSION="$1"
-      shift
-      ;;
+
 
     *)
       echo "Unrecognized option: $OPTION"

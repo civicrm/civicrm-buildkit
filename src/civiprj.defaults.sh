@@ -48,8 +48,15 @@ DEMO_USER="demo"
 ## Printable name of the site (default: $SITE_NAME)
 CMS_TITLE=
 
+## The Drupal/WordPress/Joomla version (default: discretionary)
+CMS_VERSION=
+
 ## The CiviCRM API (default: randomly generated)
 CIVI_SITE_KEY=
+
+## The base URL shared by CiviCRM's git repositories
+CIVI_REPO_BASE="https://github.com/civicrm"
+#CIVI_REPO_BASE="file:///tmp/git"
 
 ## The CiviCRM branch/version
 CIVI_VERSION=master
@@ -119,7 +126,7 @@ CMS_SQL_SKIP=
 PERSISTENT_VARS="
   ADMIN_EMAIL ADMIN_PASS ADMIN_USER
   DEMO_EMAIL DEMO_PASS DEMO_USER
-  CMS_TITLE CMS_URL CMS_ROOT
+  CMS_TITLE CMS_URL CMS_ROOT CMS_VERSION
   CMS_DB_DSN CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_PORT CMS_DB_NAME
   CIVI_CORE CIVI_SITE_KEY CIVI_VERSION
   CIVI_DB_DSN CIVI_DB_USER CIVI_DB_PASS CIVI_DB_HOST CIVI_DB_PORT CIVI_DB_NAME

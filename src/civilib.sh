@@ -342,3 +342,40 @@ function drupal_singlesite_uninstall() {
     fi
   popd >> /dev/null
 }
+
+###############################################################################
+## add hook shims to a repo
+## usage: git_set_hooks <canonical-repo-name> <repo-path> <relative-hook-path>
+function git_set_hooks() {
+  GIT_CANONICAL_REPO_NAME="$1"
+  TGT="$2"
+  HOOK_DIR="$3"
+  cvutil_assertvars  git_set_hooks GIT_CANONICAL_REPO_NAME TGT HOOK_DIR
+
+  echo "[[Install recommended hooks ($TGT)]]"
+  for HOOK in commit-msg post-checkout post-merge pre-commit prepare-commit-msg post-commit pre-rebase post-rewrite ;do
+        cat << TMPL > "$TGT/.git/hooks/$HOOK"
+#!/bin/bash
+if [ -f "\$GIT_DIR/${HOOK_DIR}/${HOOK}" ]; then
+  ## Note: GIT_CANONICAL_REPO_NAME was not provided by early hook-stubs
+  export GIT_CANONICAL_REPO_NAME="$GIT_CANONICAL_REPO_NAME"
+  source "\$GIT_DIR/${HOOK_DIR}/${HOOK}"
+fi
+TMPL
+    chmod +x "$TGT/.git/hooks/$HOOK"
+  done
+}
+
+###############################################################################
+## Create or update the URL of a git remote
+## usage: git_set_remote <local-repo-path> <remote-name> <remote-url>
+function git_set_remote() {
+  REPODIR="$1"
+  REMOTE_NAME="$2"
+  REMOTE_URL="$3"
+  echo "[[Set remote ($REMOTE_NAME => $REMOTE_URL within $REPODIR)]]"
+
+  pushd "$REPODIR" >> /dev/null
+    git remote set-url "$REMOTE_NAME"  "$REMOTE_URL" >/dev/null 2>&1 || git remote add "$REMOTE_NAME"  "$REMOTE_URL"
+  popd >> /dev/null
+}
