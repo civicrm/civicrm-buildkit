@@ -75,10 +75,10 @@ CMS_DB_PORT=
 CMS_DB_USER=
 
 ## Path to the civicrm-core tree
-CIVI_ROOT=
+CIVI_CORE=
 
 ## DB credentials for Civi
-## (suggested: autogenerate via 'amp create -f --root="$CIVI_ROOT" --prefix=CIVI_ --no-url')
+## (suggested: autogenerate via 'amp create -f --root="$WEB_ROOT" --name=civi --prefix=CIVI_ --no-url')
 CIVI_DB_DSN=
 CIVI_DB_HOST=
 CIVI_DB_NAME=
@@ -121,7 +121,7 @@ PERSISTENT_VARS="
   DEMO_EMAIL DEMO_PASS DEMO_USER
   CMS_TITLE CMS_URL CMS_ROOT
   CMS_DB_DSN CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_PORT CMS_DB_NAME
-  CIVI_ROOT CIVI_SITE_KEY CIVI_VERSION
+  CIVI_CORE CIVI_SITE_KEY CIVI_VERSION
   CIVI_DB_DSN CIVI_DB_USER CIVI_DB_PASS CIVI_DB_HOSTCIVI_DB_PORT CIVI_DB_NAME
   CIVI_SETTINGS CIVI_FILES CIVI_TEMPLATEC CIVI_UF
   SITE_TYPE

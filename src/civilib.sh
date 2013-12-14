@@ -80,10 +80,10 @@ function mysql_dropcreate() {
 ###############################################################################
 ## Generate config files and setup database
 function civicrm_install() {
-  cvutil_assertvars civicrm_install CIVI_ROOT CIVI_FILES CIVI_TEMPLATEC
+  cvutil_assertvars civicrm_install CIVI_CORE CIVI_FILES CIVI_TEMPLATEC
 
-  if [ ! -d "$CIVI_ROOT/bin" -o ! -d "$CIVI_ROOT/CRM" ]; then
-    echo "Failed to locate valid civi root: $CIVI_ROOT"
+  if [ ! -d "$CIVI_CORE/bin" -o ! -d "$CIVI_CORE/CRM" ]; then
+    echo "Failed to locate valid civi root: $CIVI_CORE"
     exit 1
   fi
 
@@ -99,7 +99,7 @@ function civicrm_install() {
   civicrm_make_setup_conf
   civicrm_make_test_settings_php
 
-  pushd "$CIVI_ROOT" >> /dev/null
+  pushd "$CIVI_CORE" >> /dev/null
     ./bin/setup.sh
   popd >> /dev/null
 }
@@ -107,21 +107,23 @@ function civicrm_install() {
 ###############################################################################
 ## Generate a "civicrm.settings.php" file
 function civicrm_make_settings_php() {
-  cvutil_assertvars civicrm_make_settings_php CIVI_SETTINGS CIVI_ROOT CIVI_UF CIVI_TEMPLATEC SITE_URL DB_HOST DB_NAME DB_PASS DB_USER DB_HOST DB_NAME DB_PASS DB_USER SITE_KEY
+  cvutil_assertvars civicrm_make_settings_php CIVI_SETTINGS CIVI_CORE CIVI_UF CIVI_TEMPLATEC CMS_URL CIVI_SITE_KEY
+  cvutil_assertvars civicrm_make_settings_php CMS_DB_HOST CMS_DB_NAME CMS_DB_PASS CMS_DB_USER
+  cvutil_assertvars civicrm_make_settings_php CIVI_DB_HOST CIVI_DB_NAME CIVI_DB_PASS CIVI_DB_USER
 
-  cat "$CIVI_ROOT/templates/CRM/common/civicrm.settings.php.template" \
-    | sed "s;%%baseURL%%;${SITE_URL};" \
+  cat "$CIVI_CORE/templates/CRM/common/civicrm.settings.php.template" \
+    | sed "s;%%baseURL%%;${CMS_URL};" \
     | sed "s;%%cms%%;${CIVI_UF};" \
-    | sed "s;%%CMSdbHost%%;${DB_HOST};" \
-    | sed "s;%%CMSdbName%%;${DB_NAME};" \
-    | sed "s;%%CMSdbPass%%;${DB_PASS};" \
-    | sed "s;%%CMSdbUser%%;${DB_USER};" \
-    | sed "s;%%crmRoot%%;${CIVI_ROOT}/;" \
-    | sed "s;%%dbHost%%;${DB_HOST};" \
-    | sed "s;%%dbName%%;${DB_NAME};" \
-    | sed "s;%%dbPass%%;${DB_PASS};" \
-    | sed "s;%%dbUser%%;${DB_USER};" \
-    | sed "s;%%siteKey%%;${SITE_KEY};" \
+    | sed "s;%%CMSdbHost%%;${CMS_DB_HOST};" \
+    | sed "s;%%CMSdbName%%;${CMS_DB_NAME};" \
+    | sed "s;%%CMSdbPass%%;${CMS_DB_PASS};" \
+    | sed "s;%%CMSdbUser%%;${CMS_DB_USER};" \
+    | sed "s;%%crmRoot%%;${CIVI_CORE}/;" \
+    | sed "s;%%dbHost%%;${CIVI_DB_HOST};" \
+    | sed "s;%%dbName%%;${CIVI_DB_NAME};" \
+    | sed "s;%%dbPass%%;${CIVI_DB_PASS};" \
+    | sed "s;%%dbUser%%;${CIVI_DB_USER};" \
+    | sed "s;%%siteKey%%;${CIVI_SITE_KEY};" \
     | sed "s;%%templateCompileDir%%;${CIVI_TEMPLATEC};" \
     > "$CIVI_SETTINGS"
   echo  >> "$CIVI_SETTINGS"
@@ -131,15 +133,15 @@ function civicrm_make_settings_php() {
 ###############################################################################
 ## Generate a "setup.conf" file
 function civicrm_make_setup_conf() {
-  cvutil_assertvars civicrm_make_setup_conf CIVI_ROOT CIVI_UF DB_NAME DB_USER DB_PASS
+  cvutil_assertvars civicrm_make_setup_conf CIVI_CORE CIVI_UF CIVI_DB_NAME CIVI_DB_USER CIVI_DB_PASS
 
-  cat > "$CIVI_ROOT/bin/setup.conf" << EOF
-    SVNROOT="$CIVI_ROOT"
-    CIVISOURCEDIR="$CIVI_ROOT"
+  cat > "$CIVI_CORE/bin/setup.conf" << EOF
+    SVNROOT="$CIVI_CORE"
+    CIVISOURCEDIR="$CIVI_CORE"
     SCHEMA=schema/Schema.xml
-    DBNAME="$DB_NAME"
-    DBUSER="$DB_USER"
-    DBPASS="$DB_PASS"
+    DBNAME="$CIVI_DB_NAME"
+    DBUSER="$CIVI_DB_USER"
+    DBPASS="$CIVI_DB_PASS"
     DBARGS=""
     PHP5PATH=
     DBLOAD="$DBLOAD"
@@ -151,30 +153,30 @@ EOF
 ###############################################################################
 ## Generate civicrm.settings.php and CiviSeleniumSettings.php for testing
 function civicrm_make_test_settings_php() {
-  cvutil_assertvars civicrm_make_test_settings_php CIVI_ROOT DB_NAME DB_USER DB_PASS DB_HOST WEB_ROOT SITE_URL ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS SITE_KEY
+  cvutil_assertvars civicrm_make_test_settings_php CIVI_CORE CIVI_DB_NAME CIVI_DB_USER CIVI_DB_PASS CIVI_DB_HOST WEB_ROOT CMS_URL ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS CIVI_SITE_KEY
 
   ## TODO: REVIEW
-  cat > "$CIVI_ROOT/tests/phpunit/CiviTest/civicrm.settings.local.php" << EOF
+  cat > "$CIVI_CORE/tests/phpunit/CiviTest/civicrm.settings.local.php" << EOF
 <?php
-  define('CIVICRM_DSN', "mysql://${DB_USER}:${DB_PASS}@${DB_HOST}/${DB_NAME}");
+  define('CIVICRM_DSN', "mysql://${CIVI_DB_USER}:${CIVI_DB_PASS}@${CIVI_DB_HOST}/${CIVI_DB_NAME}");
   define('CIVICRM_TEMPLATE_COMPILEDIR', '${CIVI_TEMPLATEC}');
   define('DONT_DOCUMENT_TEST_CONFIG', TRUE);
 EOF
 
   ## TODO: REVIEW
-  cat > "$CIVI_ROOT/tests/phpunit/CiviTest/CiviSeleniumSettings.php" << EOF
+  cat > "$CIVI_CORE/tests/phpunit/CiviTest/CiviSeleniumSettings.php" << EOF
 <?php
 class CiviSeleniumSettings {
 	var \$publicSandbox  = false;
 	var \$browser = '*firefox';
-	var \$sandboxURL = '${SITE_URL}';
+	var \$sandboxURL = '${CMS_URL}';
 	var \$sandboxPATH = '';
 	var \$username = '${DEMO_USER}';
 	var \$password = '${DEMO_PASS}';
 	var \$adminUsername = '${ADMIN_USER}';
 	var \$adminPassword = '${ADMIN_PASS}';
 	var \$adminApiKey = 'apikey${ADMIN_PASS}';
-	var \$siteKey = '${SITE_KEY}';
+	var \$siteKey = '${CIVI_SITE_KEY}';
         var \$UFemail = 'noreply@civicrm.org';
 	function __construct() {
 		\$this->fullSandboxPath = \$this->sandboxURL . \$this->sandboxPATH;
@@ -186,15 +188,15 @@ EOF
 ###############################################################################
 ## Generate config files and setup database
 function wp_install() {
-  cvutil_assertvars wp_install WEB_ROOT DB_NAME DB_USER DB_PASS DB_HOST SITE_URL ADMIN_USER ADMIN_PASS ADMIN_EMAIL SITE_TITLE FACL_USERS
+  cvutil_assertvars wp_install WEB_ROOT CMS_DB_NAME CMS_DB_USER DB_PASS CMS_DB_HOST CMS_URL ADMIN_USER ADMIN_PASS ADMIN_EMAIL CMS_TITLE FACL_USERS
 
   pushd "$WEB_ROOT" >> /dev/null
     [ -f "wp-config.php" ] && rm -f "wp-config.php"
     wp core config \
-      --dbname="$DB_NAME" \
-      --dbuser="$DB_USER" \
-      --dbpass="$DB_PASS" \
-      --dbhost="$DB_HOST" \
+      --dbname="$CMS_DB_NAME" \
+      --dbuser="$CMS_DB_USER" \
+      --dbpass="$CMS_DB_PASS" \
+      --dbhost="$CMS_DB_HOST" \
       --skip-salts \
       --extra-php <<PHP
         define('AUTH_KEY',         '$(cvutil_makepasswd 32)');
@@ -208,11 +210,11 @@ function wp_install() {
 PHP
 
     wp core install \
-      --url="$SITE_URL" \
+      --url="$CMS_URL" \
       --admin_user="$ADMIN_USER" \
       --admin_password="$ADMIN_PASS" \
       --admin_email="$ADMIN_EMAIL" \
-      --title="$SITE_TITLE"
+      --title="$CMS_TITLE"
 
     ## Create WP data dirs
     for SUBDIR in modules files ; do
@@ -232,33 +234,99 @@ PHP
 
 ###############################################################################
 ## Generate config files and setup database
-function drupal_install() {
-  cvutil_assertvars drupal_install WEB_ROOT SITE_TITLE SITE_DIR DB_USER DB_PASS DB_HOST DB_NAME ADMIN_USER ADMIN_PASS
+function drupal_multisite_install() {
+  cvutil_assertvars drupal_install WEB_ROOT CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS FACL_USERS
+  DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL")
 
   pushd "$WEB_ROOT" >> /dev/null
-    [ -f "sites/$SITE_DIR/settings.php" ] && rm -f "sites/$SITE_DIR/settings.php"
+    [ -f "sites/$DRUPAL_SITE_DIR/settings.php" ] && rm -f "sites/$DRUPAL_SITE_DIR/settings.php"
 
     drush site-install -y \
-      --db-url="mysql://${DB_USER}:${DB_PASS}@${DB_HOST}/${DB_NAME}" \
+      --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOST}/${CMS_DB_NAME}" \
       --account-name="$ADMIN_USER" \
       --account-pass="$ADMIN_PASS" \
       --account-mail="$ADMIN_EMAIL" \
-      --site-name="$SITE_TITLE" \
-      --sites-subdir="$SITE_DIR"
-    chmod u+w "sites/$SITE_DIR"
+      --site-name="$CMS_TITLE" \
+      --sites-subdir="$DRUPAL_SITE_DIR"
+    chmod u+w "sites/$DRUPAL_SITE_DIR"
 
     ## Allow shell and WWW users to both manipulate "files" directory
     if which setfacl; then
       for FACL_USER in $FACL_USERS ; do
-        find "$DRUPAL_ROOT/sites/${SITE_DIR}/files" -type d | xargs setfacl -m u:${FACL_USER}:rwx -m d:u:${FACL_USER}:rwx
+        find "$DRUPAL_ROOT/sites/${DRUPAL_SITE_DIR}/files" -type d | xargs setfacl -m u:${FACL_USER}:rwx -m d:u:${FACL_USER}:rwx
       done
     fi
 
     ## Create Drupal-CiviCRM dirs and config
     for SUBDIR in modules files ; do
-      if [ ! -d "sites/${SITE_DIR}/${SUBDIR}" ]; then
-        mkdir "sites/${SITE_DIR}/${SUBDIR}"
+      if [ ! -d "sites/${DRUPAL_SITE_DIR}/${SUBDIR}" ]; then
+        mkdir "sites/${DRUPAL_SITE_DIR}/${SUBDIR}"
       fi
     done
+  popd >> /dev/null
+}
+
+###############################################################################
+## Drupal Multi-Site -- Destroy config files and database tables
+function drupal_multisite_uninstall() {
+  DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL")
+  if [ -n "$DRUPAL_SITE_DIR" -a -d "$WEB_ROOT/sites/$DRUPAL_SITE_DIR" ]; then
+    rm -rf "$WEB_ROOT/sites/$DRUPAL_SITE_DIR"
+  fi
+}
+
+###############################################################################
+## Drupal Multi-Site -- Compute the name of the multi-site subdir
+## Usage: _drupal_multisite_dir <url>
+function _drupal_multisite_dir() {
+  php -r '$p = parse_url($argv[1]); echo $p["port"] .".". $p["host"];' "$1"
+}
+
+###############################################################################
+## Drupal Single-Site -- Generate config files and setup database
+function drupal_singlesite_install() {
+  cvutil_assertvars drupal_install WEB_ROOT CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS FACL_USERS
+
+  pushd "$WEB_ROOT" >> /dev/null
+    [ -f "sites/default/settings.php" ] && rm -f "sites/default/settings.php"
+
+    drush site-install -y \
+      --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOST}/${CMS_DB_NAME}" \
+      --account-name="$ADMIN_USER" \
+      --account-pass="$ADMIN_PASS" \
+      --account-mail="$ADMIN_EMAIL" \
+      --site-name="$CMS_TITLE"
+    chmod u+w "sites/default"
+
+    ## Allow shell and WWW users to both manipulate "files" directory
+    if which setfacl; then
+      for FACL_USER in $FACL_USERS ; do
+        find "$DRUPAL_ROOT/sites/default/files" -type d | xargs setfacl -m u:${FACL_USER}:rwx -m d:u:${FACL_USER}:rwx
+      done
+    fi
+
+    ## Create Drupal-CiviCRM dirs and config
+    for SUBDIR in modules files ; do
+      if [ ! -d "sites/default/${SUBDIR}" ]; then
+        mkdir "sites/default/${SUBDIR}"
+      fi
+    done
+  popd >> /dev/null
+}
+
+
+###############################################################################
+## Drupal Single-Site -- Destroy config files and database tables
+function drupal_singlesite_uninstall() {
+  pushd "$WEB_ROOT" >> /dev/null
+    chmod u+w "sites/default"
+    if [ -f "sites/default/settings.php" ]; then
+      chmod u+w "sites/default/settings.php"
+      rm -f "sites/default/settings.php"
+    fi
+    if [ -f "sites/default/files" ]; then
+      chmod u+w "sites/default/files"
+      rm -ff "sites/default/files"
+    fi
   popd >> /dev/null
 }
