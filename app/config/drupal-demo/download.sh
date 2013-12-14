@@ -1,4 +1,3 @@
 #!/bin/bash
 
-echo DOWNLOAD: NOT SUPPORTED
-exit 1
+drush -y make --working-copy "$SITE_CONFIG_DIR/drush.make" "$WEB_ROOT"

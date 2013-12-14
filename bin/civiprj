@@ -149,10 +149,13 @@ case "$ACTION" in
     fi
 
     if [ ! -d "$WEB_ROOT" ]; then
-      mkdir -p "$WEB_ROOT"
-      pushd "$WEB_ROOT" > /dev/null
+      pushd "$PRJDIR" > /dev/null
         civiprj_run download
       popd > /dev/null
+      if [ ! -d "$WEB_ROOT" ]; then
+        echo "Download failed to create directory"
+        exit 97
+      fi
     fi
 
     if [ -n "$FORCE_INSTALL" -a -n "$CMS_DB_DSN" ]; then
