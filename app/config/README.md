@@ -15,28 +15,30 @@ to-taste.
 ## Environment Variables ##
 
 When writing these scripts, note the documentation in
-"src/civiprj.defaults.sh".  This file lists the environment variables which
-are (a) provided as inputs to the scripts and (b) expected as outputs from
-the script.
+[src/civiprj.defaults.sh](../../src/civiprj.defaults.sh).  This file lists
+the environment variables which are (a) provided as inputs to the scripts
+and (b) expected as outputs from the script.
 
 ## Available Commands ##
 
 All the commands in civicrm-project's "bin" directory are included in the
 PATH. This specifically includes:
 
- * composer
- * civix
- * drush
- * wp
+ * [amp](https://github.com/totten/amp)
+ * [composer](http://getcomposer.org/)
+ * [civix](https://github.com/totten/civix)
+ * [drush](http://drush.ws/)
+ * [wp](http://wp-cli.org/)
 
 Additionally, note that standard POSIX commands (cp, mv, etc) will be
 available, but they may use different implementations (GNU or BSD).
 
 ## Helper Functions ##
 
-Several helper functions automatically loaded from "src/civiprj.lib.sh",
+Several helper functions are automatically loaded from "src/civiprj.lib.sh",
 including:
 
-  drupal_install      Create Drupal config files, tables, and data dirs (using drush)
-  wp_install          Create WordPress config files, tables, and data dirs (using wp-cli)
-  civicrm_install     Create CiviCRM config files, tables, and data dirs
+  drupal_singlesite_install      Create Drupal config files, tables, and data dirs (using drush and "sites/default")
+  drupal_multisite_install       Create Drupal config files, tables, and data dirs (using drush and "sites/XXX")
+  wp_install                     Create WordPress config files, tables, and data dirs (using wp-cli)
+  civicrm_install                Create CiviCRM config files, tables, and data dirs
