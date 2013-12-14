@@ -5,6 +5,7 @@
 ###############################################################################
 ## Create virtual-host and databases
 
+## "amp create" outputs variables, CMS_URL, CMS_DB_* and CIVI_DB_*
 if [ -n "$CMS_URL" ]; then
   eval $(amp create -f --root="$WEB_ROOT" --name=cms --prefix=CMS_ --url="$CMS_URL")
 else
@@ -13,15 +14,15 @@ fi
 eval $(amp create -f --root="$WEB_ROOT" --name=civi --prefix=CIVI_ --no-url)
 
 ###############################################################################
-## Setup WordPress
+## Setup WordPress (config files, database tables)
 
 wp_install
 
 ###############################################################################
-## Setup CiviCRM
+## Setup CiviCRM (config files, database tables)
 
-CIVI_CORE="$WEB_ROOT/wp-content/plugins/civicrm/civicrm"
-CIVI_SETTINGS="$WEB_ROOT/wp-content/plugins/civicrm/civicrm.settings.php"
+CIVI_CORE="${WEB_ROOT}/wp-content/plugins/civicrm/civicrm"
+CIVI_SETTINGS="${WEB_ROOT}/wp-content/plugins/civicrm/civicrm.settings.php"
 CIVI_FILES="${WEB_ROOT}/wp-content/plugins/files/civicrm"
 CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
 CIVI_UF="WordPress"

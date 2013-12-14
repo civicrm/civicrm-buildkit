@@ -5,6 +5,7 @@
 ###############################################################################
 ## Create virtual-host and databases
 
+## "amp create" outputs variables, CMS_URL, CMS_DB_* and CIVI_DB_*
 if [ -n "$CMS_URL" ]; then
   eval $(amp create -f --root="$WEB_ROOT" --name=cms --prefix=CMS_ --url="$CMS_URL")
 else
@@ -13,12 +14,12 @@ fi
 eval $(amp create -f --root="$WEB_ROOT" --name=civi --prefix=CIVI_ --no-url)
 
 ###############################################################################
-## Setup Drupal
+## Setup Drupal (config files, database tables)
 
 drupal_singlesite_install
 
 ###############################################################################
-## Setup CiviCRM
+## Setup CiviCRM (config files, database tables)
 
 CIVI_CORE="${WEB_ROOT}/sites/all/modules/civicrm"
 CIVI_SETTINGS="${WEB_ROOT}/sites/default/civicrm.settings.php"
