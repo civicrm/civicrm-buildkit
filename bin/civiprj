@@ -23,8 +23,9 @@ export PATH="$BINDIR:$PATH"
 ###############################################################################
 ## Display usage message
 function civiprj_usage() {
+  APP=$(basename "$0")
   cat <<EOT
-Usage: $0 create <name> [options]
+Usage: $APP create <name> [options]
   <name>              The name of the sub-directory to build
   --type <type>       The name of the download/install scripts. (If omitted, assume <name>) [Optional]
   --url <url>         The public URL of the site
@@ -35,7 +36,7 @@ Usage: $0 create <name> [options]
   --force-download    If the source tree already exists, destroy and recreate
   --force-install     If the DB/config already exists, destroy and recreate
 
-Usage: $0 reset <name> [options]
+Usage: $APP reset <name> [options]
   <name>              The name of the sub-directory to build
   --cms <sql-file>    The path to a SQL backup of the CMS DB [Optional]
   --no-cms            Skip resetting the CMS DB [Optional]
