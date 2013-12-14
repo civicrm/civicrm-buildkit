@@ -9,6 +9,9 @@
 ## The location of the civicrm-project binaries
 # BINDIR=
 
+## A place to store temp files
+# TMPDIR=
+
 ###############################################################################
 ## Common variables
 

@@ -6,7 +6,7 @@
 api = 2
 
 ; Drupal core
-core = 7.x
+core = %%CMS_VERSION%%
 
 ; ****************************************
 ; Drupal core
@@ -25,15 +25,15 @@ projects[] = drupal
 libraries[civicrmdrupal][destination] = modules
 libraries[civicrmdrupal][directory_name] = civicrm/drupal
 libraries[civicrmdrupal][download][type] = git
-libraries[civicrmdrupal][download][url] = git://github.com/civicrm/civicrm-drupal.git
-libraries[civicrmdrupal][download][branch] = 7.x-master
+libraries[civicrmdrupal][download][url] = %%CIVI_REPO_BASE%%/civicrm-drupal.git
+libraries[civicrmdrupal][download][branch] = 7.x-%%CIVI_VERSION%%
 libraries[civicrmdrupal][overwrite] = TRUE
 
 libraries[civicrmpackages][destination] = modules
 libraries[civicrmpackages][directory_name] = civicrm/packages
 libraries[civicrmpackages][download][type] = git
-libraries[civicrmpackages][download][url] = git://github.com/civicrm/civicrm-packages.git
-libraries[civicrmpackages][download][branch] = master
+libraries[civicrmpackages][download][url] = %%CIVI_REPO_BASE%%/civicrm-packages.git
+libraries[civicrmpackages][download][branch] = %%CIVI_VERSION%%
 libraries[civicrmpackages][overwrite] = TRUE
 
 ; Download available l10n releases (may be outdated)
@@ -53,8 +53,8 @@ libraries[civicrmpackages][overwrite] = TRUE
 libraries[civicrm][destination] = modules
 libraries[civicrm][directory_name] = civicrm
 libraries[civicrm][download][type] = git
-libraries[civicrm][download][url] = git://github.com/civicrm/civicrm-core.git
-libraries[civicrm][download][branch] = master
+libraries[civicrm][download][url] = %%CIVI_REPO_BASE%%/civicrm-core.git
+libraries[civicrm][download][branch] = %%CIVI_VERSION%%
 libraries[civicrm][overwrite] = TRUE
 
 ; ****************************************
