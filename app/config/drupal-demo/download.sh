@@ -1,5 +1,9 @@
 #!/bin/bash
 
+## download.sh -- Download Drupal and CiviCRM
+
+###############################################################################
+
 [ -z "$CMS_VERSION" ] && CMS_VERSION=7.x
 MAKEFILE="${TMPDIR}/${SITE_TYPE}.make"
 cat "$SITE_CONFIG_DIR/drush.make.tmpl" \

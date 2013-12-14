@@ -1,5 +1,9 @@
 #!/bin/bash
 
+## download.sh -- Download WordPress and CiviCRM
+
+###############################################################################
+
 [ -z "$CMS_VERSION" ] && CMS_VERSION=3.7
 
 echo "[[Download WordPress]]"
