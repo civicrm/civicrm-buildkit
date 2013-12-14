@@ -15,7 +15,7 @@ function absdirname() {
 BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
 TMPDIR="$PRJDIR/app/tmp"
-source "$PRJDIR/src/civilib.sh"
+source "$PRJDIR/src/civiprj.lib.sh"
 
 ## Make sure bundled utilities are available, regardless of local config
 export PATH="$BINDIR:$PATH"

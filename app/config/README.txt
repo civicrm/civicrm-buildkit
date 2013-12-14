@@ -34,7 +34,7 @@ available, but they may use different implementations (GNU or BSD).
 
 ## Helper Functions ##
 
-Several helper functions automatically loaded from "src/civilib.sh",
+Several helper functions automatically loaded from "src/civiprj.lib.sh",
 including:
 
   drupal_install      Create Drupal config files, tables, and data dirs (using drush)
