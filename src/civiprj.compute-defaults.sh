@@ -5,7 +5,7 @@
 [ -z "$ADMIN_PASS" ]         && ADMIN_PASS=$(cvutil_makepasswd 12)
 [ -z "$DEMO_PASS" ]          && DEMO_PASS=$(cvutil_makepasswd 12)
 [ -z "$SITE_TYPE" ]          && SITE_TYPE="$SITE_NAME"
-[ -z "$SITE_TITLE" ]         && SITE_TITLE="$SITE_NAME"
+[ -z "$CMS_TITLE" ]          && CMS_TITLE="$SITE_NAME"
 #[ -z "$CMS_HOSTNAME" ]       && CMS_HOSTNAME=$(php -r '$p = parse_url($argv[1]); echo $p["host"];' "$CMS_URL")
 #[ -z "$CMS_PORT" ]           && CMS_PORT=$(php -r '$p = parse_url($argv[1]); echo $p["port"];' "$CMS_URL")
 [ -z "$CIVI_SQL" ]           && CIVI_SQL="$PRJDIR/app/backup/$SITE_NAME/civi.sql.gz"

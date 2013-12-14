@@ -188,7 +188,7 @@ EOF
 ###############################################################################
 ## Generate config files and setup database
 function wp_install() {
-  cvutil_assertvars wp_install WEB_ROOT CMS_DB_NAME CMS_DB_USER DB_PASS CMS_DB_HOST CMS_URL ADMIN_USER ADMIN_PASS ADMIN_EMAIL CMS_TITLE FACL_USERS
+  cvutil_assertvars wp_install WEB_ROOT CMS_DB_NAME CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_URL ADMIN_USER ADMIN_PASS ADMIN_EMAIL CMS_TITLE FACL_USERS
 
   pushd "$WEB_ROOT" >> /dev/null
     [ -f "wp-config.php" ] && rm -f "wp-config.php"
@@ -233,9 +233,19 @@ PHP
 }
 
 ###############################################################################
+## Destroy config files and database tables
+function wp_uninstall() {
+  cvutil_assertvars wp_uninstall WEB_ROOT
+  pushd "$WEB_ROOT" >> /dev/null
+    [ -f "wp-config.php" ] && rm -f "wp-config.php"
+    [ -f "wp-content/plugins/files" ] && rm -rf "wp-content/plugins/files"
+  popd >> /dev/null
+}
+
+###############################################################################
 ## Generate config files and setup database
 function drupal_multisite_install() {
-  cvutil_assertvars drupal_install WEB_ROOT CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS FACL_USERS
+  cvutil_assertvars drupal_multisite_install WEB_ROOT CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS FACL_USERS CMS_URL
   DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL")
 
   pushd "$WEB_ROOT" >> /dev/null
@@ -269,6 +279,7 @@ function drupal_multisite_install() {
 ###############################################################################
 ## Drupal Multi-Site -- Destroy config files and database tables
 function drupal_multisite_uninstall() {
+  cvutil_assertvars drupal_multisite_uninstall WEB_ROOT CMS_URL
   DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL")
   if [ -n "$DRUPAL_SITE_DIR" -a -d "$WEB_ROOT/sites/$DRUPAL_SITE_DIR" ]; then
     rm -rf "$WEB_ROOT/sites/$DRUPAL_SITE_DIR"
@@ -285,7 +296,7 @@ function _drupal_multisite_dir() {
 ###############################################################################
 ## Drupal Single-Site -- Generate config files and setup database
 function drupal_singlesite_install() {
-  cvutil_assertvars drupal_install WEB_ROOT CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS FACL_USERS
+  cvutil_assertvars drupal_singlesite_install WEB_ROOT CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS FACL_USERS
 
   pushd "$WEB_ROOT" >> /dev/null
     [ -f "sites/default/settings.php" ] && rm -f "sites/default/settings.php"
@@ -318,6 +329,7 @@ function drupal_singlesite_install() {
 ###############################################################################
 ## Drupal Single-Site -- Destroy config files and database tables
 function drupal_singlesite_uninstall() {
+  cvutil_assertvars drupal_singlesite_uninstall WEB_ROOT
   pushd "$WEB_ROOT" >> /dev/null
     chmod u+w "sites/default"
     if [ -f "sites/default/settings.php" ]; then
