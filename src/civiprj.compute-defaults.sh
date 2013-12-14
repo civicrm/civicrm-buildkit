@@ -12,4 +12,3 @@
 [ -z "$CMS_SQL" ]            && CMS_SQL="$PRJDIR/app/backup/$SITE_NAME/cms.sql.gz"
 [ -z "$SITE_CONFIG_DIR" ]    && SITE_CONFIG_DIR="$PRJDIR/app/config/$SITE_TYPE"
 [ -z "$FACL_USERS" ]         && FACL_USERS="www-data $(whoami)"
-echo "foo [$FACL_USERS]"
