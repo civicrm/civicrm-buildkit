@@ -16,5 +16,6 @@ bin/wp
 bin/wp.bat
 build/
 config/
+tmpfs/
 vendor/
 web/
