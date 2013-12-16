@@ -15,5 +15,6 @@ bin/drush.php
 bin/wp
 bin/wp.bat
 build/
+config/
 vendor/
 web/

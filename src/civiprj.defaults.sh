@@ -70,31 +70,29 @@ CIVI_VERSION=master
 ## Public URL of the site
 ## May be set by user (with --url). If omitted, then */install.sh must set it.
 ## (suggested: autogenerate via amp)
-CMS_URL=
+CMS_URL=http://civicrm_demo.local
 
 ## Path to the base of the CMS
 CMS_ROOT=
 
 ## DB credentials for CMS
 ## (suggested: autogenerate via 'amp create -f --root="$WEB_ROOT" --prefix=CMS_ --url="$CMS_URL"')
-CMS_DB_DSN=
-CMS_DB_HOST=
-CMS_DB_NAME=
-CMS_DB_PASS=
+CMS_DB_HOST=localhost
+CMS_DB_NAME=civicrm_demo
+CMS_DB_PASS=civicrm_demo
 CMS_DB_PORT=
-CMS_DB_USER=
+CMS_DB_USER=civicrm_demo
 
 ## Path to the civicrm-core tree
 CIVI_CORE=
 
 ## DB credentials for Civi
 ## (suggested: autogenerate via 'amp create -f --root="$WEB_ROOT" --name=civi --prefix=CIVI_ --no-url')
-CIVI_DB_DSN=
-CIVI_DB_HOST=
-CIVI_DB_NAME=
-CIVI_DB_PASS=
+CIVI_DB_HOST=localhost
+CIVI_DB_NAME=civicrm_demo
+CIVI_DB_PASS=civicrm_demo
 CIVI_DB_PORT=
-CIVI_DB_USER=
+CIVI_DB_USER=civicrm_demo
 
 ## Path to the civicrm.settings.php
 CIVI_SETTINGS=

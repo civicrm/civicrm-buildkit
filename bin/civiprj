@@ -69,6 +69,11 @@ function civiprj_run() {
 ## Parse options
 source "$PRJDIR/src/civiprj.defaults.sh"
 
+LOCAL_CONFIG_FILE_PATH="$PRJDIR/config/civiprj.config.sh"
+if [ -e $LOCAL_CONFIG_FILE_PATH ]; then
+  source $LOCAL_CONFIG_FILE_PATH
+fi
+
 ACTION="$1"
 [ -z "$ACTION" ] && civiprj_usage
 shift
