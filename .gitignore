@@ -3,6 +3,7 @@
 app/cache/
 app/config/civix.ini
 app/run/
+app/snapshot/
 app/tmp/
 bin/amp
 bin/civix
@@ -14,5 +15,7 @@ bin/drush.php
 bin/wp
 bin/wp.bat
 build/
+config/
+tmpfs/
 vendor/
 web/

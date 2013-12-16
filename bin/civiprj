@@ -15,6 +15,12 @@ function absdirname() {
 BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
 TMPDIR="$PRJDIR/app/tmp"
+BLDDIR="$PRJDIR/build"
+
+if [ ! -e "$TMPDIR" ]; then
+  mkdir -p "$TMPDIR"
+fi
+
 source "$PRJDIR/src/civiprj.lib.sh"
 
 ## Make sure bundled utilities are available, regardless of local config
@@ -35,6 +41,7 @@ Usage: $APP create <name> [options]
   --force             If the source tree or DB already exists, destroy and recreate
   --force-download    If the source tree already exists, destroy and recreate
   --force-install     If the DB/config already exists, destroy and recreate
+  --mysql-ram-server  Setup and run a separate MySQL instance on a RAM disk
 
 Usage: $APP reset <name> [options]
   <name>              The name of the sub-directory to build
@@ -43,6 +50,8 @@ Usage: $APP reset <name> [options]
   --civi <sql-file>   The path to a SQL backup of the CiviCRM DB [Optional]
   --no-civi           Skip resetting the CiviCRM DB [Optional]
 
+Usage: $APP run-tests [name] [options]
+  [name]              The name of the project to use.
 EOT
 
   exit 99;
@@ -63,17 +72,21 @@ function civiprj_run() {
 ## Parse options
 source "$PRJDIR/src/civiprj.defaults.sh"
 
+LOCAL_CONFIG_FILE_PATH="$PRJDIR/config/civiprj.config.sh"
+if [ -e $LOCAL_CONFIG_FILE_PATH ]; then
+  source $LOCAL_CONFIG_FILE_PATH
+fi
+
 ACTION="$1"
 [ -z "$ACTION" ] && civiprj_usage
 shift
 
 SITE_NAME="$1"
-[ -z "$SITE_NAME" ] && civiprj_usage
 shift
 
-if [ -f "${PRJDIR}/build/${SITE_NAME}.sh" ]; then
-  echo "[[Load saved options from ${PRJDIR}/${SITE_NAME}.sh]]"
-  source "${PRJDIR}/build/${SITE_NAME}.sh"
+if [ -f "${BLDDIR}/${SITE_NAME}.sh" ]; then
+  echo "[[Load saved options from ${BLDDIR}/${SITE_NAME}.sh]]"
+  source "${BLDDIR}/${SITE_NAME}.sh"
 fi
 
 while [ -n "$1" ] ; do
@@ -118,6 +131,10 @@ while [ -n "$1" ] ; do
       FORCE_INSTALL=1
       ;;
 
+    --mysql-ram-server)
+      MYSQL_RAM_SERVER=1
+      ;;
+
     --no-civi)
       CIVI_SQL_SKIP=1
       ;;
@@ -155,49 +172,15 @@ source "$PRJDIR/src/civiprj.compute-defaults.sh"
 
 case "$ACTION" in
   create)
-    echo "[[Create $SITE_NAME (type '$SITE_TYPE' in '$WEB_ROOT')]]"
-
-    if [ -n "$FORCE_DOWNLOAD" -a -d "$WEB_ROOT" ]; then
-      rm -rf "$WEB_ROOT"
-    fi
-
-    if [ ! -d "$WEB_ROOT" ]; then
-      pushd "$PRJDIR" > /dev/null
-        civiprj_run download
-      popd > /dev/null
-      if [ ! -d "$WEB_ROOT" ]; then
-        echo "Download failed to create directory"
-        exit 97
-      fi
-    fi
-
-    if [ -n "$FORCE_INSTALL" -a -n "$CMS_DB_DSN" ]; then
-      pushd "$WEB_ROOT" > /dev/null
-        civiprj_run uninstall
-      popd > /dev/null
-    fi
-
-    if [ -n "$FORCE_INSTALL" -o -z "$CMS_DB_DSN" ]; then
-      pushd "$WEB_ROOT" > /dev/null
-        civiprj_run install
-      popd > /dev/null
-
-      if [ -n "$CIVI_SQL" ]; then
-        cvutil_makeparent "$CIVI_SQL"
-        mysqldump -u"$CIVI_DB_USER" -p"$CIVI_DB_PASS" "$CIVI_DB_NAME" | gzip > $CIVI_SQL
-      fi
-
-      if [ -n "$CMS_SQL" ]; then
-        cvutil_makeparent "$CMS_SQL"
-        mysqldump -u"$CMS_DB_USER" -p"$CMS_DB_PASS" "$CMS_DB_NAME" | gzip > $CMS_SQL
-      fi
-    fi
-
-    cvutil_save "${PRJDIR}/build/${SITE_NAME}.sh" $PERSISTENT_VARS
+    civiprj_create
     ;;
 
   reset)
     echo reset
+    ;;
+
+  run-tests)
+    civiprj_run_tests
     ;;
 
   *)

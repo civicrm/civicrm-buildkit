@@ -8,6 +8,12 @@
 ## - Functions declare dependencies on (global) environment variables (util_assertvars).
 ##   If a variable missing, the application dies.
 
+os_name=`uname -s | awk '{print tolower($0)}'`
+os_specific_lib_path=src/civiprj.lib.$os_name.sh
+if [ -e $os_specific_lib_path ]; then
+  source $os_specific_lib_path
+fi
+
 ###############################################################################
 ## Assert that shell variables are defined. If not defined, exit with an error.
 ## usage: assertvars <context> <var1> <var2> <var3> ...
@@ -107,18 +113,20 @@ function civicrm_install() {
 ## Generate a "civicrm.settings.php" file
 function civicrm_make_settings_php() {
   cvutil_assertvars civicrm_make_settings_php CIVI_SETTINGS CIVI_CORE CIVI_UF CIVI_TEMPLATEC CMS_URL CIVI_SITE_KEY
-  cvutil_assertvars civicrm_make_settings_php CMS_DB_HOST CMS_DB_NAME CMS_DB_PASS CMS_DB_USER
-  cvutil_assertvars civicrm_make_settings_php CIVI_DB_HOST CIVI_DB_NAME CIVI_DB_PASS CIVI_DB_USER
+  cvutil_assertvars civicrm_make_settings_php CMS_DB_HOST CMS_DB_PORT CMS_DB_NAME CMS_DB_PASS CMS_DB_USER
+  cvutil_assertvars civicrm_make_settings_php CIVI_DB_HOST CMS_DB_PORT CIVI_DB_NAME CIVI_DB_PASS CIVI_DB_USER
 
   cat "$CIVI_CORE/templates/CRM/common/civicrm.settings.php.template" \
     | sed "s;%%baseURL%%;${CMS_URL};" \
     | sed "s;%%cms%%;${CIVI_UF};" \
     | sed "s;%%CMSdbHost%%;${CMS_DB_HOST};" \
+    | sed "s;%%CMSdbPort%%;${CMS_DB_PORT};" \
     | sed "s;%%CMSdbName%%;${CMS_DB_NAME};" \
     | sed "s;%%CMSdbPass%%;${CMS_DB_PASS};" \
     | sed "s;%%CMSdbUser%%;${CMS_DB_USER};" \
     | sed "s;%%crmRoot%%;${CIVI_CORE}/;" \
     | sed "s;%%dbHost%%;${CIVI_DB_HOST};" \
+    | sed "s;%%dbPort%%;${CIVI_DB_PORT};" \
     | sed "s;%%dbName%%;${CIVI_DB_NAME};" \
     | sed "s;%%dbPass%%;${CIVI_DB_PASS};" \
     | sed "s;%%dbUser%%;${CIVI_DB_USER};" \
@@ -132,7 +140,7 @@ function civicrm_make_settings_php() {
 ###############################################################################
 ## Generate a "setup.conf" file
 function civicrm_make_setup_conf() {
-  cvutil_assertvars civicrm_make_setup_conf CIVI_CORE CIVI_UF CIVI_DB_NAME CIVI_DB_USER CIVI_DB_PASS
+  cvutil_assertvars civicrm_make_setup_conf CIVI_CORE CIVI_UF CIVI_DB_NAME CIVI_DB_USER CIVI_DB_PASS CIVI_DB_HOST CIVI_DB_PORT
 
   cat > "$CIVI_CORE/bin/setup.conf" << EOF
     SVNROOT="$CIVI_CORE"
@@ -141,6 +149,8 @@ function civicrm_make_setup_conf() {
     DBNAME="$CIVI_DB_NAME"
     DBUSER="$CIVI_DB_USER"
     DBPASS="$CIVI_DB_PASS"
+    DBHOST="$CIVI_DB_HOST"
+    DBPORT="$CIVI_DB_PORT"
     DBARGS=""
     PHP5PATH=
     DBLOAD="$DBLOAD"
@@ -152,12 +162,12 @@ EOF
 ###############################################################################
 ## Generate civicrm.settings.php and CiviSeleniumSettings.php for testing
 function civicrm_make_test_settings_php() {
-  cvutil_assertvars civicrm_make_test_settings_php CIVI_CORE CIVI_DB_NAME CIVI_DB_USER CIVI_DB_PASS CIVI_DB_HOST WEB_ROOT CMS_URL ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS CIVI_SITE_KEY
+  cvutil_assertvars civicrm_make_test_settings_php CIVI_CORE CIVI_DB_NAME CIVI_DB_USER CIVI_DB_PASS CIVI_DB_HOST CIVI_DB_PORT WEB_ROOT CMS_URL ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS CIVI_SITE_KEY
 
   ## TODO: REVIEW
   cat > "$CIVI_CORE/tests/phpunit/CiviTest/civicrm.settings.local.php" << EOF
 <?php
-  define('CIVICRM_DSN', "mysql://${CIVI_DB_USER}:${CIVI_DB_PASS}@${CIVI_DB_HOST}/${CIVI_DB_NAME}");
+  define('CIVICRM_DSN', "mysql://${CIVI_DB_USER}:${CIVI_DB_PASS}@${CIVI_DB_HOST}:${CIVI_DB_PORT}/${CIVI_DB_NAME}");
   define('CIVICRM_TEMPLATE_COMPILEDIR', '${CIVI_TEMPLATEC}');
   define('DONT_DOCUMENT_TEST_CONFIG', TRUE);
 EOF
@@ -262,7 +272,7 @@ function drupal_multisite_install() {
     ## Allow shell and WWW users to both manipulate "files" directory
     if which setfacl; then
       for FACL_USER in $FACL_USERS ; do
-        find "$DRUPAL_ROOT/sites/${DRUPAL_SITE_DIR}/files" -type d | xargs setfacl -m u:${FACL_USER}:rwx -m d:u:${FACL_USER}:rwx
+        find "$WEB_ROOT/sites/${DRUPAL_SITE_DIR}/files" -type d | xargs setfacl -m u:${FACL_USER}:rwx -m d:u:${FACL_USER}:rwx
       done
     fi
 
@@ -301,7 +311,7 @@ function drupal_singlesite_install() {
     [ -f "sites/default/settings.php" ] && rm -f "sites/default/settings.php"
 
     drush site-install -y \
-      --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOST}/${CMS_DB_NAME}" \
+      --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOST}:${CMS_DB_PORT}/${CMS_DB_NAME}" \
       --account-name="$ADMIN_USER" \
       --account-pass="$ADMIN_PASS" \
       --account-mail="$ADMIN_EMAIL" \
@@ -311,7 +321,7 @@ function drupal_singlesite_install() {
     ## Allow shell and WWW users to both manipulate "files" directory
     if which setfacl; then
       for FACL_USER in $FACL_USERS ; do
-        find "$DRUPAL_ROOT/sites/default/files" -type d | xargs setfacl -m u:${FACL_USER}:rwx -m d:u:${FACL_USER}:rwx
+        find "$WEB_ROOT/sites/default/files" -type d | xargs setfacl -m u:${FACL_USER}:rwx -m d:u:${FACL_USER}:rwx
       done
     fi
 
@@ -377,4 +387,117 @@ function git_set_remote() {
   pushd "$REPODIR" >> /dev/null
     git remote set-url "$REMOTE_NAME"  "$REMOTE_URL" >/dev/null 2>&1 || git remote add "$REMOTE_NAME"  "$REMOTE_URL"
   popd >> /dev/null
+}
+
+function civiprj_create() {
+  echo "[[Create $SITE_NAME (type '$SITE_TYPE' in '$WEB_ROOT')]]"
+
+  if [ -n "$FORCE_DOWNLOAD" -a -d "$WEB_ROOT" ]; then
+    rm -rf "$WEB_ROOT"
+  fi
+
+  if [ -n "$MYSQL_RAM_SERVER" ]; then
+    mysql_setup_ram_server
+  fi
+
+  if [ ! -d "$WEB_ROOT" ]; then
+    pushd "$PRJDIR" > /dev/null
+    civiprj_run download
+    popd > /dev/null
+    if [ ! -d "$WEB_ROOT" ]; then
+      echo "Download failed to create directory"
+      exit 97
+    fi
+  fi
+
+  if [ -n "$FORCE_INSTALL" -a -n "$CMS_DB_DSN" ]; then
+    pushd "$WEB_ROOT" > /dev/null
+    civiprj_run uninstall
+    popd > /dev/null
+  fi
+
+  if [ -n "$FORCE_INSTALL" -o -z "$CMS_DB_DSN" ]; then
+    pushd "$WEB_ROOT" > /dev/null
+    civiprj_run install
+    popd > /dev/null
+
+    if [ -n "$CIVI_SQL" ]; then
+      cvutil_makeparent "$CIVI_SQL"
+      mysqldump -h "$CIVI_DB_HOST" -P "$CIVI_DB_PORT" -u"$CIVI_DB_USER" -p"$CIVI_DB_PASS" "$CIVI_DB_NAME" | gzip > $CIVI_SQL
+    fi
+
+    if [ -n "$CMS_SQL" ]; then
+      cvutil_makeparent "$CMS_SQL"
+      mysqldump -h "$CMS_DB_HOST" -P "$CMS_DB_PORT" -u"$CMS_DB_USER" -p"$CMS_DB_PASS" "$CMS_DB_NAME" | gzip > $CMS_SQL
+    fi
+  fi
+  cvutil_save "${BLDDIR}/${SITE_NAME}.sh" $PERSISTENT_VARS
+}
+
+function civiprj_run_tests() {
+  if [ -n "$MYSQL_RAM_SERVER" ]; then
+    mysql_setup_ram_server
+  fi
+  civiprj_create
+  pushd $CIVI_CORE > /dev/null
+  ./tools/scripts/phpunit AllTests
+  popd > /dev/null
+}
+
+function mysql_setup_ram_server() {
+  setup_ram_disk
+
+  if [ $CIVI_DB_PORT -eq 3306 ]; then
+    CIVI_DB_PORT=3307
+    if [ $CMS_DB_PORT -eq 3306 ]; then
+      CMS_DB_PORT=$CIVI_DB_PORT
+    fi
+  fi
+
+  if [ "$CIVI_DB_HOST" = "localhost" ]; then
+    CIVI_DB_HOST="127.0.0.1"
+  fi
+
+  if [ "$CMS_DB_HOST" = "localhost" ]; then
+    CMS_DB_HOST="127.0.0.1"
+  fi
+
+  if [ "$CIVI_DB_HOST" != "127.0.0.1" -o "$CMS_DB_HOST" != "127.0.0.1" ]; then
+    echo "You can't use the mysql ram server with anything but localhost (127.0.0.1), so you must set both CIVI_DB_HOST and CMS_DB_HOST to 127.0.0.1"
+    exit 255
+  fi
+
+  mysql_data_dir=$TMPFS_DIR/mysql
+  if [ ! -d $mysql_data_dir ]; then
+    mkdir -p $mysql_data_dir
+  fi
+
+  mysql_system_dir=$mysql_data_dir/mysql
+  if [ ! -d $mysql_system_dir ]; then
+    mkdir -p $mysql_system_dir
+  fi
+
+  socket_file_path=$TMPFS_DIR/mysqld.sock
+  pid_file_path=$TMPFS_DIR/mysqld.pid
+  install_command_file=$TMPDIR/install_mysql.sql
+
+  if [ ! -e $socket_file_path ]; then
+    echo "use mysql;" > $install_command_file
+    cat /usr/share/mysql/mysql_system_tables.sql /usr/share/mysql/mysql_system_tables_data.sql >> $install_command_file
+    mysqld_base_command="mysqld --no-defaults --tmpdir=/tmp --datadir=$mysql_data_dir --port=$CIVI_DB_PORT --socket=$socket_file_path --pid-file=$pid_file_path"
+    $mysqld_base_command --log-warnings=0 --bootstrap --loose-skip-innodb --max_allowed_packet=8M --default-storage-engine=myisam --net_buffer_length=16K < $install_command_file
+    $mysqld_base_command > $TMPDIR/$SITE_NAME-mysql.log 2>&1 &
+    i=0
+    while [ ! -e $socket_file_path -a $i -lt 10 ]; do
+      i=$((i+1));
+      sleep 1
+    done
+    mysqladmin --socket=$socket_file_path --user=root --password='' password 'foobar'
+    cat > $install_command_file <<EOF
+CREATE USER '$CIVI_DB_USER'@'127.0.0.1' IDENTIFIED BY '$CIVI_DB_PASS';
+GRANT ALL PRIVILEGES ON *.* TO '$CIVI_DB_USER'@'127.0.0.1' WITH GRANT OPTION;
+EOF
+    echo $install_command_file
+    mysql --socket=$socket_file_path --user=root --password='foobar' < $install_command_file
+  fi
 }
