@@ -12,6 +12,9 @@
 ## A place to store temp files
 # TMPDIR=
 
+## A place to mount a RAM disk
+TMPFS_DIR=tmpfs
+
 ###############################################################################
 ## Common variables
 
@@ -80,7 +83,7 @@ CMS_ROOT=
 CMS_DB_HOST=localhost
 CMS_DB_NAME=civicrm_demo
 CMS_DB_PASS=civicrm_demo
-CMS_DB_PORT=
+CMS_DB_PORT=3306
 CMS_DB_USER=civicrm_demo
 
 ## Path to the civicrm-core tree
@@ -91,7 +94,7 @@ CIVI_CORE=
 CIVI_DB_HOST=localhost
 CIVI_DB_NAME=civicrm_demo
 CIVI_DB_PASS=civicrm_demo
-CIVI_DB_PORT=
+CIVI_DB_PORT=3306
 CIVI_DB_USER=civicrm_demo
 
 ## Path to the civicrm.settings.php
