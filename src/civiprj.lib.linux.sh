@@ -21,10 +21,10 @@ function setup_ram_disk() {
   else
     add_apparmor_lines=1
   fi
-  if [ -n $add_apparmor_lines  ]; then
+  if [ $add_apparmor_lines -eq 1 ]; then
     sudo cat >> $apparmor_file_path <<EOF
-    $TMPFS_DIR/ r,
-    $TMPFS_DIR/** rwk,
+$TMPFS_DIR/ r,
+$TMPFS_DIR/** rwk,
 EOF
     sudo /etc/init.d/apparmor restart
   fi
