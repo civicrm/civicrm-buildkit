@@ -262,7 +262,7 @@ function drupal_multisite_install() {
     ## Allow shell and WWW users to both manipulate "files" directory
     if which setfacl; then
       for FACL_USER in $FACL_USERS ; do
-        find "$DRUPAL_ROOT/sites/${DRUPAL_SITE_DIR}/files" -type d | xargs setfacl -m u:${FACL_USER}:rwx -m d:u:${FACL_USER}:rwx
+        find "$WEB_ROOT/sites/${DRUPAL_SITE_DIR}/files" -type d | xargs setfacl -m u:${FACL_USER}:rwx -m d:u:${FACL_USER}:rwx
       done
     fi
 
@@ -311,7 +311,7 @@ function drupal_singlesite_install() {
     ## Allow shell and WWW users to both manipulate "files" directory
     if which setfacl; then
       for FACL_USER in $FACL_USERS ; do
-        find "$DRUPAL_ROOT/sites/default/files" -type d | xargs setfacl -m u:${FACL_USER}:rwx -m d:u:${FACL_USER}:rwx
+        find "$WEB_ROOT/sites/default/files" -type d | xargs setfacl -m u:${FACL_USER}:rwx -m d:u:${FACL_USER}:rwx
       done
     fi
 
