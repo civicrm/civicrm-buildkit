@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "1adbab497dfe7b8c723a436df7b55b3b",
+    "hash": "eaf4b35c4a3c2150b288f8568d0ab995",
     "packages": [
         {
             "name": "drush/drush",
@@ -508,12 +508,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/totten/amp.git",
-                "reference": "0418fdbbe007f0a5c4f5b7c7c0e4a36c33880027"
+                "reference": "6b0fb4df0b2451767d08c78d5091ff107087b792"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/totten/amp/zipball/0418fdbbe007f0a5c4f5b7c7c0e4a36c33880027",
-                "reference": "0418fdbbe007f0a5c4f5b7c7c0e4a36c33880027",
+                "url": "https://api.github.com/repos/totten/amp/zipball/6b0fb4df0b2451767d08c78d5091ff107087b792",
+                "reference": "6b0fb4df0b2451767d08c78d5091ff107087b792",
                 "shasum": ""
             },
             "require": {
@@ -547,7 +547,7 @@
             ],
             "description": "CLI Interface to *AMP-style stacks",
             "homepage": "https://github.com/totten/amp",
-            "time": "2013-12-13 20:06:54"
+            "time": "2013-12-16 09:19:03"
         },
         {
             "name": "wp-cli/php-cli-tools",
