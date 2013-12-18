@@ -35,10 +35,10 @@ available, but they may use different implementations (GNU or BSD).
 
 ## Helper Functions ##
 
-Several helper functions are automatically loaded from "src/civiprj.lib.sh",
+Several helper functions are automatically loaded from [src/civiprj.lib.sh](../../src/civiprj.lib.sh),
 including:
 
-  drupal_singlesite_install      Create Drupal config files, tables, and data dirs (using drush and "sites/default")
-  drupal_multisite_install       Create Drupal config files, tables, and data dirs (using drush and "sites/XXX")
-  wp_install                     Create WordPress config files, tables, and data dirs (using wp-cli)
-  civicrm_install                Create CiviCRM config files, tables, and data dirs
+ * drupal_singlesite_install - Create Drupal config files, tables, and data dirs (using "drush site-install" and "sites/default")
+ * drupal_multisite_install - Create Drupal config files, tables, and data dirs (using "drush site-install" and "sites/XXX")
+ * wp_install - Create WordPress config files, tables, and data dirs (using wp-cli)
+ * civicrm_install - Create CiviCRM config files, tables, and data dirs
