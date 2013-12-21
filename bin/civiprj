@@ -15,6 +15,12 @@ function absdirname() {
 BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
 TMPDIR="$PRJDIR/app/tmp"
+BLDDIR="$PRJDIR/build"
+
+if [ ! -e "$TMPDIR" ]; then
+  mkdir -p "$TMPDIR"
+fi
+
 source "$PRJDIR/src/civiprj.lib.sh"
 
 ## Make sure bundled utilities are available, regardless of local config
@@ -71,9 +77,9 @@ SITE_NAME="$1"
 [ -z "$SITE_NAME" ] && civiprj_usage
 shift
 
-if [ -f "${PRJDIR}/build/${SITE_NAME}.sh" ]; then
-  echo "[[Load saved options from ${PRJDIR}/${SITE_NAME}.sh]]"
-  source "${PRJDIR}/build/${SITE_NAME}.sh"
+if [ -f "${BLDDIR}/${SITE_NAME}.sh" ]; then
+  echo "[[Load saved options from ${BLDDIR}/${SITE_NAME}.sh]]"
+  source "${BLDDIR}/${SITE_NAME}.sh"
 fi
 
 while [ -n "$1" ] ; do
@@ -193,7 +199,7 @@ case "$ACTION" in
       fi
     fi
 
-    cvutil_save "${PRJDIR}/build/${SITE_NAME}.sh" $PERSISTENT_VARS
+    cvutil_save "${BLDDIR}/${SITE_NAME}.sh" $PERSISTENT_VARS
     ;;
 
   reset)
