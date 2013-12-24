@@ -378,3 +378,53 @@ function git_set_remote() {
     git remote set-url "$REMOTE_NAME"  "$REMOTE_URL" >/dev/null 2>&1 || git remote add "$REMOTE_NAME"  "$REMOTE_URL"
   popd >> /dev/null
 }
+
+###############################################################################
+## Initialize (or update) a cached copy of a git repo in $GIT_CACHE_DIR
+## usage: git_cache_setup <url> <cache-dir>
+function git_cache_setup() {
+  local url="$1"
+  local cachedir="$2"
+
+  if [ ! -d "$cachedir" ]; then
+    ## clone
+    cvutil_makeparent "$cachedir"
+    git clone --mirror "$url"  "$cachedir"
+  else
+    ## update
+    pushd "$cachedir" >> /dev/null
+      git remote set-url origin "$url"
+      git fetch origin
+    popd >> /dev/null
+  fi
+}
+
+###############################################################################
+## Fix the remote configurations of any git repos in <build-dir>, changing any
+## references to <cache-base-dir> to proper remotes
+## usage: git_cache_deref_remotes <cache-base-dir> <build-dir>
+function git_cache_deref_remotes() {
+  local _shellopt="$-"
+  set +x
+
+  local cachedir="$1"
+  local builddir="$2"
+  find "$builddir" -type d -name .git | while read gitdir; do
+    pushd "$gitdir" >> /dev/null
+      pushd ".." >> /dev/null
+        local origin_old=$(git config --get remote.origin.url)
+        if [[ $origin_old == ${cachedir}* || $origin_old == file://${cachedir}* || $origin_old == file:///${cachedir}*  ]]; then
+          local origin_path=$(echo "$origin_old" | sed 's;file://;;')
+          pushd "$origin_path" >> /dev/null
+            origin_new=$(git config --get remote.origin.url)
+          popd >> /dev/null
+          echo "Change origin in [$gitdir] from [$origin_old] to [$origin_new]"
+          git remote set-url origin "$origin_new"
+          git fetch origin
+        fi
+      popd >> /dev/null
+    popd >> /dev/null
+  done
+
+  set -${_shellopt}
+}

@@ -31,6 +31,9 @@ SITE_CONFIG_DIR=
 ## (default: PRJDIR/build/SITE_NAME)
 WEB_ROOT=
 
+## Root directory where we store cached copies of git repositories
+GIT_CACHE_DIR="$TMPDIR/git-cache"
+
 ###############################################################################
 ## "create" variables defined by civiprj
 
