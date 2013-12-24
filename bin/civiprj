@@ -169,6 +169,9 @@ case "$ACTION" in
 
     if [ ! -d "$WEB_ROOT" ]; then
       pushd "$PRJDIR" > /dev/null
+        if [ -f "$PRJDIR/app/config/git-caches.sh" ]; then
+          source "$PRJDIR/app/config/git-caches.sh"
+        fi
         civiprj_run download
       popd > /dev/null
       if [ ! -d "$WEB_ROOT" ]; then
