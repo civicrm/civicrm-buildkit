@@ -29,7 +29,7 @@ function download_url() {
   if which wget >> /dev/null ; then
     wget -O "$2" "$1"
   elif which curl >> /dev/null ; then
-    curl -o "$2" "$1"
+    curl -L -o "$2" "$1"
   else
     echo "error: failed to locate curl or wget"
   fi
