@@ -409,6 +409,100 @@
             "time": "2013-09-19 09:45:20"
         },
         {
+            "name": "symfony/finder",
+            "version": "v2.3.6",
+            "target-dir": "Symfony/Component/Finder",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/Finder.git",
+                "reference": "a175521f680b178e63c5d0ab87c6b046c0990c3f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/Finder/zipball/a175521f680b178e63c5d0ab87c6b046c0990c3f",
+                "reference": "a175521f680b178e63c5d0ab87c6b046c0990c3f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\Finder\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Finder Component",
+            "homepage": "http://symfony.com",
+            "time": "2013-09-19 09:45:20"
+        },
+        {
+            "name": "symfony/process",
+            "version": "v2.3.6",
+            "target-dir": "Symfony/Component/Process",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/Process.git",
+                "reference": "81191e354fe9dad0451036ccf0fdf283649d3f1e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/Process/zipball/81191e354fe9dad0451036ccf0fdf283649d3f1e",
+                "reference": "81191e354fe9dad0451036ccf0fdf283649d3f1e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\Process\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Process Component",
+            "homepage": "http://symfony.com",
+            "time": "2013-10-09 21:17:57"
+        },
+        {
             "name": "symfony/templating",
             "version": "v2.3.6",
             "target-dir": "Symfony/Component/Templating",
@@ -508,12 +602,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/totten/amp.git",
-                "reference": "6b0fb4df0b2451767d08c78d5091ff107087b792"
+                "reference": "bef9dc5a02d4c5940c9ad3aca0f415414741e5b2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/totten/amp/zipball/6b0fb4df0b2451767d08c78d5091ff107087b792",
-                "reference": "6b0fb4df0b2451767d08c78d5091ff107087b792",
+                "url": "https://api.github.com/repos/totten/amp/zipball/bef9dc5a02d4c5940c9ad3aca0f415414741e5b2",
+                "reference": "bef9dc5a02d4c5940c9ad3aca0f415414741e5b2",
                 "shasum": ""
             },
             "require": {
@@ -522,6 +616,8 @@
                 "symfony/console": "2.3.6",
                 "symfony/dependency-injection": "2.3.6",
                 "symfony/filesystem": "2.3.6",
+                "symfony/finder": "2.3.6",
+                "symfony/process": "2.3.6",
                 "symfony/templating": "2.3.6",
                 "symfony/yaml": "2.3.6"
             },
@@ -547,7 +643,7 @@
             ],
             "description": "CLI Interface to *AMP-style stacks",
             "homepage": "https://github.com/totten/amp",
-            "time": "2013-12-16 09:19:03"
+            "time": "2013-12-29 22:05:21"
         },
         {
             "name": "wp-cli/php-cli-tools",
