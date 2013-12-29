@@ -31,6 +31,9 @@ SITE_CONFIG_DIR=
 ## (default: PRJDIR/build/SITE_NAME)
 WEB_ROOT=
 
+## Root directory where we store cached copies of git repositories
+GIT_CACHE_DIR="$TMPDIR/git-cache"
+
 ###############################################################################
 ## "create" variables defined by civiprj
 
@@ -56,10 +59,6 @@ CMS_VERSION=
 
 ## The CiviCRM API (default: randomly generated)
 CIVI_SITE_KEY=
-
-## The base URL shared by CiviCRM's git repositories
-CIVI_REPO_BASE="https://github.com/civicrm"
-#CIVI_REPO_BASE="file:///tmp/git"
 
 ## The CiviCRM branch/version
 CIVI_VERSION=master

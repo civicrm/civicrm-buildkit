@@ -1,5 +1,6 @@
 #!/bin/bash
 
+[ -z "$GIT_CACHE_DIR" ]      && GIT_CACHE_DIR="$TMPDIR/git-cache"
 [ -z "$WEB_ROOT" ]           && WEB_ROOT="$PRJDIR/build/$SITE_NAME"
 [ -z "$CIVI_SITE_KEY" ]      && CIVI_SITE_KEY=$(cvutil_makepasswd 16)
 [ -z "$ADMIN_PASS" ]         && ADMIN_PASS=$(cvutil_makepasswd 12)

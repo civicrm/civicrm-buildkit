@@ -169,7 +169,11 @@ case "$ACTION" in
 
     if [ ! -d "$WEB_ROOT" ]; then
       pushd "$PRJDIR" > /dev/null
+        if [ -f "$PRJDIR/app/config/git-caches.sh" ]; then
+          source "$PRJDIR/app/config/git-caches.sh"
+        fi
         civiprj_run download
+        git_cache_deref_remotes "$GIT_CACHE_DIR" "$WEB_ROOT"
       popd > /dev/null
       if [ ! -d "$WEB_ROOT" ]; then
         echo "Download failed to create directory"
