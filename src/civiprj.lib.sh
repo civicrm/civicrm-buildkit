@@ -195,8 +195,7 @@ function wp_install() {
       --dbname="$CMS_DB_NAME" \
       --dbuser="$CMS_DB_USER" \
       --dbpass="$CMS_DB_PASS" \
-      --dbhost="$CMS_DB_HOST" \
-      --dbport="$CMS_DB_PORT" \
+      --dbhost="$CMS_DB_HOST:$CMS_DB_PORT" \
       --skip-salts \
       --extra-php <<PHP
         define('AUTH_KEY',         '$(cvutil_makepasswd 32)');
