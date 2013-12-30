@@ -157,7 +157,7 @@ function civicrm_make_test_settings_php() {
   ## TODO: REVIEW
   cat > "$CIVI_CORE/tests/phpunit/CiviTest/civicrm.settings.local.php" << EOF
 <?php
-  define('CIVICRM_DSN', "mysql://${CIVI_DB_USER}:${CIVI_DB_PASS}@${CIVI_DB_HOST}/${CIVI_DB_NAME}");
+  define('CIVICRM_DSN', "mysql://${CIVI_DB_USER}:${CIVI_DB_PASS}@${CIVI_DB_HOST}:${CIVI_DB_PORT}/${CIVI_DB_NAME}");
   define('CIVICRM_TEMPLATE_COMPILEDIR', '${CIVI_TEMPLATEC}');
   define('DONT_DOCUMENT_TEST_CONFIG', TRUE);
 EOF
@@ -251,7 +251,7 @@ function drupal_multisite_install() {
     [ -f "sites/$DRUPAL_SITE_DIR/settings.php" ] && rm -f "sites/$DRUPAL_SITE_DIR/settings.php"
 
     drush site-install -y \
-      --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOST}/${CMS_DB_NAME}" \
+      --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOST}:${CMS_DB_PORT}/${CMS_DB_NAME}" \
       --account-name="$ADMIN_USER" \
       --account-pass="$ADMIN_PASS" \
       --account-mail="$ADMIN_EMAIL" \
@@ -301,7 +301,7 @@ function drupal_singlesite_install() {
     [ -f "sites/default/settings.php" ] && rm -f "sites/default/settings.php"
 
     drush site-install -y \
-      --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOST}/${CMS_DB_NAME}" \
+      --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOST}:${CMS_DB_PORT}/${CMS_DB_NAME}" \
       --account-name="$ADMIN_USER" \
       --account-pass="$ADMIN_PASS" \
       --account-mail="$ADMIN_EMAIL" \
