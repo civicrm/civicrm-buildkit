@@ -107,18 +107,22 @@ function civicrm_install() {
 ## Generate a "civicrm.settings.php" file
 function civicrm_make_settings_php() {
   cvutil_assertvars civicrm_make_settings_php CIVI_SETTINGS CIVI_CORE CIVI_UF CIVI_TEMPLATEC CMS_URL CIVI_SITE_KEY
-  cvutil_assertvars civicrm_make_settings_php CMS_DB_HOST CMS_DB_PORT CMS_DB_NAME CMS_DB_PASS CMS_DB_USER
-  cvutil_assertvars civicrm_make_settings_php CIVI_DB_HOST CIVI_DB_PORT CIVI_DB_NAME CIVI_DB_PASS CIVI_DB_USER
+  cvutil_assertvars civicrm_make_settings_php CMS_DB_HOST CMS_DB_NAME CMS_DB_PASS CMS_DB_USER
+  cvutil_assertvars civicrm_make_settings_php CIVI_DB_HOST CIVI_DB_NAME CIVI_DB_PASS CIVI_DB_USER
 
+  build_host_and_port_string $CMS_DB_HOST $CMS_DB_PORT
+  CMS_HOST_AND_PORT=$HOST_AND_PORT
+  build_host_and_port_string $CIVI_DB_HOST $CIVI_DB_PORT
+  CIVI_HOST_AND_PORT=$HOST_AND_PORT
   cat "$CIVI_CORE/templates/CRM/common/civicrm.settings.php.template" \
     | sed "s;%%baseURL%%;${CMS_URL};" \
     | sed "s;%%cms%%;${CIVI_UF};" \
-    | sed "s;%%CMSdbHost%%;${CMS_DB_HOST}:${CMS_DB_PORT};" \
+    | sed "s;%%CMSdbHost%%;${CMS_HOST_AND_PORT};" \
     | sed "s;%%CMSdbName%%;${CMS_DB_NAME};" \
     | sed "s;%%CMSdbPass%%;${CMS_DB_PASS};" \
     | sed "s;%%CMSdbUser%%;${CMS_DB_USER};" \
     | sed "s;%%crmRoot%%;${CIVI_CORE}/;" \
-    | sed "s;%%dbHost%%;${CIVI_DB_HOST}:${CIVI_DB_PORT};" \
+    | sed "s;%%dbHost%%;${CIVI_HOST_AND_PORT};" \
     | sed "s;%%dbName%%;${CIVI_DB_NAME};" \
     | sed "s;%%dbPass%%;${CIVI_DB_PASS};" \
     | sed "s;%%dbUser%%;${CIVI_DB_USER};" \
@@ -152,7 +156,7 @@ EOF
 ###############################################################################
 ## Generate civicrm.settings.php and CiviSeleniumSettings.php for testing
 function civicrm_make_test_settings_php() {
-  cvutil_assertvars civicrm_make_test_settings_php CIVI_CORE CIVI_DB_NAME CIVI_DB_USER CIVI_DB_PASS CIVI_DB_HOST CIVI_DB_PORT WEB_ROOT CMS_URL ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS CIVI_SITE_KEY
+  cvutil_assertvars civicrm_make_test_settings_php CIVI_CORE CIVI_DB_NAME CIVI_DB_USER CIVI_DB_PASS CIVI_DB_HOST WEB_ROOT CMS_URL ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS CIVI_SITE_KEY
 
   ## TODO: REVIEW
   cat > "$CIVI_CORE/tests/phpunit/CiviTest/civicrm.settings.local.php" << EOF
@@ -187,15 +191,16 @@ EOF
 ###############################################################################
 ## Generate config files and setup database
 function wp_install() {
-  cvutil_assertvars wp_install WEB_ROOT CMS_DB_NAME CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_PORT CMS_URL ADMIN_USER ADMIN_PASS ADMIN_EMAIL CMS_TITLE FACL_USERS
+  cvutil_assertvars wp_install WEB_ROOT CMS_DB_NAME CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_URL ADMIN_USER ADMIN_PASS ADMIN_EMAIL CMS_TITLE FACL_USERS
 
+  build_host_and_port_string $CMS_DB_HOST $CMS_DB_PORT
   pushd "$WEB_ROOT" >> /dev/null
     [ -f "wp-config.php" ] && rm -f "wp-config.php"
     wp core config \
       --dbname="$CMS_DB_NAME" \
       --dbuser="$CMS_DB_USER" \
       --dbpass="$CMS_DB_PASS" \
-      --dbhost="$CMS_DB_HOST:$CMS_DB_PORT" \
+      --dbhost="$HOST_AND_PORT" \
       --skip-salts \
       --extra-php <<PHP
         define('AUTH_KEY',         '$(cvutil_makepasswd 32)');
@@ -244,14 +249,14 @@ function wp_uninstall() {
 ###############################################################################
 ## Generate config files and setup database
 function drupal_multisite_install() {
-  cvutil_assertvars drupal_multisite_install WEB_ROOT CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_PORT CMS_DB_NAME ADMIN_USER ADMIN_PASS FACL_USERS CMS_URL
+  cvutil_assertvars drupal_multisite_install WEB_ROOT CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS FACL_USERS CMS_URL
   DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL")
-
+  build_host_and_port_string $CMS_DB_HOST $CMS_DB_PORT
   pushd "$WEB_ROOT" >> /dev/null
     [ -f "sites/$DRUPAL_SITE_DIR/settings.php" ] && rm -f "sites/$DRUPAL_SITE_DIR/settings.php"
 
     drush site-install -y \
-      --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOST}:${CMS_DB_PORT}/${CMS_DB_NAME}" \
+      --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${HOST_AND_PORT}/${CMS_DB_NAME}" \
       --account-name="$ADMIN_USER" \
       --account-pass="$ADMIN_PASS" \
       --account-mail="$ADMIN_EMAIL" \
@@ -295,13 +300,14 @@ function _drupal_multisite_dir() {
 ###############################################################################
 ## Drupal Single-Site -- Generate config files and setup database
 function drupal_singlesite_install() {
-  cvutil_assertvars drupal_singlesite_install WEB_ROOT CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_PORT CMS_DB_NAME ADMIN_USER ADMIN_PASS FACL_USERS
+  cvutil_assertvars drupal_singlesite_install WEB_ROOT CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS FACL_USERS
 
+  build_host_and_port_string $CMS_DB_HOST $CMS_DB_PORT
   pushd "$WEB_ROOT" >> /dev/null
     [ -f "sites/default/settings.php" ] && rm -f "sites/default/settings.php"
 
     drush site-install -y \
-      --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOST}:${CMS_DB_PORT}/${CMS_DB_NAME}" \
+      --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${HOST_AND_PORT}/${CMS_DB_NAME}" \
       --account-name="$ADMIN_USER" \
       --account-pass="$ADMIN_PASS" \
       --account-mail="$ADMIN_EMAIL" \
@@ -427,4 +433,13 @@ function git_cache_deref_remotes() {
   done
 
   set -${_shellopt}
+}
+
+function build_host_and_port_string() {
+  local host=$1
+  local port=$2
+  HOST_AND_PORT=$host
+  if [ ! -z "$port" ]; then
+    HOST_AND_PORT="$HOST_AND_PORT:$port"
+  fi
 }
