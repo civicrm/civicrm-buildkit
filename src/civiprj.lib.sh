@@ -447,3 +447,41 @@ function git_cache_deref_remotes() {
 
   set -${_shellopt}
 }
+
+###############################################################################
+## Snapshot management
+function snapshot_create_civi() {
+  echo "[[Save CMS DB ($CMS_DB_NAME) to file ($CMS_SQL)]]"
+  cvutil_assertvars snapshot_create_civi WEB_ROOT CMS_SQL CMS_DB_ARGS
+  cvutil_makeparent "$CMS_SQL"
+  mysqldump $CMS_DB_ARGS | gzip > "$CMS_SQL"
+}
+
+function snapshot_create_cms() {
+  echo "[[Save Civi DB ($CIVI_DB_NAME) to file ($CIVI_SQL)]]"
+  cvutil_assertvars snapshot_create_cms WEB_ROOT CIVI_SQL CIVI_DB_ARGS
+  cvutil_makeparent "$CIVI_SQL"
+  mysqldump $CIVI_DB_ARGS | gzip > "$CIVI_SQL"
+}
+
+function snapshot_restore_cms() {
+  echo "[[Restore CMS DB ($CMS_DB_NAME) from file ($CMS_SQL)]]"
+  cvutil_assertvars snapshot_restore_civi WEB_ROOT CMS_SQL CMS_DB_ARGS
+  if [ ! -f "$CMS_SQL" ]; then
+    echo "Missing SQL file: $CMS_SQL" >> /dev/stderr
+    exit 1
+  fi
+  amp create -f --root="$WEB_ROOT" --name=cms --prefix=CMS_ --skip-url >> /dev/null
+  gunzip --stdout "$CMS_SQL" | mysql $CMS_DB_ARGS
+}
+
+function snapshot_restore_civi() {
+  echo "[[Restore Civi DB ($CIVI_DB_NAME) from file ($CIVI_SQL)]]"
+  cvutil_assertvars snapshot_restore_civi WEB_ROOT CIVI_SQL CIVI_DB_ARGS
+  if [ ! -f "$CIVI_SQL" ]; then
+    echo "Missing SQL file: $CIVI_SQL" >> /dev/stderr
+    exit 1
+  fi
+  amp create -f --root="$WEB_ROOT" --name=civi --prefix=CIVI_ --skip-url >> /dev/null
+  gunzip --stdout "$CIVI_SQL" | mysql $CIVI_DB_ARGS
+}
