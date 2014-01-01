@@ -11,7 +11,7 @@ if [ -n "$CMS_URL" ]; then
 else
   eval $(amp create -f --root="$WEB_ROOT" --name=cms --prefix=CMS_)
 fi
-eval $(amp create -f --root="$WEB_ROOT" --name=civi --prefix=CIVI_ --no-url)
+eval $(amp create -f --root="$WEB_ROOT" --name=civi --prefix=CIVI_ --skip-url)
 
 ###############################################################################
 ## Setup WordPress (config files, database tables)
