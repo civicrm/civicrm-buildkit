@@ -7,15 +7,15 @@
 
 ## "amp create" outputs variables, CMS_URL, CMS_DB_* and CIVI_DB_*
 
-amp_vars_file_path=${TMPDIR}/amp-vars.sh
+amp_vars_file_path="${TMPDIR}/${SITE_NAME}-amp-vars.sh"
 if [ -n "$CMS_URL" ]; then
-  amp create -f --root="$WEB_ROOT" --name=cms --prefix=CMS_ --url="$CMS_URL" --output-file=$amp_vars_file_path
+  amp create -f --root="$WEB_ROOT" --name=cms --prefix=CMS_ --url="$CMS_URL" --output-file="$amp_vars_file_path"
 else
-  amp create -f --root="$WEB_ROOT" --name=cms --prefix=CMS_ --output-file=$amp_vars_file_path
+  amp create -f --root="$WEB_ROOT" --name=cms --prefix=CMS_ --output-file="$amp_vars_file_path"
 fi
-source $amp_vars_file_path
-amp create -f --root="$WEB_ROOT" --name=civi --prefix=CIVI_ --no-url --output-file=$amp_vars_file_path
-source $amp_vars_file_path
+source "$amp_vars_file_path"
+amp create -f --root="$WEB_ROOT" --name=civi --prefix=CIVI_ --no-url --output-file="$amp_vars_file_path"
+source "$amp_vars_file_path"
 
 ###############################################################################
 ## Setup Drupal (config files, database tables)
