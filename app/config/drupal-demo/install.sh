@@ -6,14 +6,16 @@
 ## Create virtual-host and databases
 
 ## "amp create" outputs variables, CMS_URL, CMS_DB_* and CIVI_DB_*
+
+amp_vars_file_path=${TMPDIR}/amp-vars.sh
 if [ -n "$CMS_URL" ]; then
-  var_string=$(amp create -f --root="$WEB_ROOT" --name=cms --prefix=CMS_ --url="$CMS_URL")
+  amp create -f --root="$WEB_ROOT" --name=cms --prefix=CMS_ --url="$CMS_URL" --output-file=$amp_vars_file_path
 else
-  var_string=$(amp create -f --root="$WEB_ROOT" --name=cms --prefix=CMS_)
+  amp create -f --root="$WEB_ROOT" --name=cms --prefix=CMS_ --output-file=$amp_vars_file_path
 fi
-eval $var_string
-var_string=$(amp create -f --root="$WEB_ROOT" --name=civi --prefix=CIVI_ --no-url)
-eval $var_string
+source $amp_vars_file_path
+amp create -f --root="$WEB_ROOT" --name=civi --prefix=CIVI_ --no-url --output-file=$amp_vars_file_path
+source $amp_vars_file_path
 
 ###############################################################################
 ## Setup Drupal (config files, database tables)
