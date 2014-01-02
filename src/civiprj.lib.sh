@@ -471,7 +471,7 @@ function snapshot_restore_cms() {
     echo "Missing SQL file: $CMS_SQL" >> /dev/stderr
     exit 1
   fi
-  amp create -f --root="$WEB_ROOT" --name=cms --prefix=CMS_ --skip-url >> /dev/null
+  amp create -f --root="$WEB_ROOT" --name=cms --prefix=CMS_ --skip-url -o /dev/null
   gunzip --stdout "$CMS_SQL" | mysql $CMS_DB_ARGS
 }
 
@@ -482,6 +482,6 @@ function snapshot_restore_civi() {
     echo "Missing SQL file: $CIVI_SQL" >> /dev/stderr
     exit 1
   fi
-  amp create -f --root="$WEB_ROOT" --name=civi --prefix=CIVI_ --skip-url >> /dev/null
+  amp create -f --root="$WEB_ROOT" --name=civi --prefix=CIVI_ --skip-url -o /dev/null
   gunzip --stdout "$CIVI_SQL" | mysql $CIVI_DB_ARGS
 }
