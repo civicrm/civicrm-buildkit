@@ -88,7 +88,7 @@ CMS_DB_USER=
 CIVI_CORE=
 
 ## DB credentials for Civi
-## (suggested: autogenerate via 'amp create -f --root="$WEB_ROOT" --name=civi --prefix=CIVI_ --no-url')
+## (suggested: autogenerate via 'amp create -f --root="$WEB_ROOT" --name=civi --prefix=CIVI_ --skip-url')
 CIVI_DB_DSN=
 CIVI_DB_ARGS=
 CIVI_DB_HOST=
@@ -110,15 +110,21 @@ CIVI_TEMPLATEC=
 CIVI_UF=
 
 ###############################################################################
-## "reset"-related variables
+## snapshot-related variables
 
-## Path to database dump file (default: PRJDIR/app/backup/SITE_NAME/civi.sql.gz) [non-persistent]
+## Path to the directory which stores snapshots (default: PRJDIR/app/snapshot) [non-persistent]
+SNAPSHOT_DIR=
+
+## Name of the subdirectory containing the snapshot (default: SITE_NAME) [non-persistent]
+SNAPSHOT_NAME=
+
+## Path to database dump file (default: SNAPSHOT_DIR/SNAPSHOT_NAME/civi.sql.gz) [non-persistent]
 CIVI_SQL=
 
 ## True if we should skip loading CIVI_SQL [non-persistent]
 CIVI_SQL_SKIP=
 
-## Path to database dump file (default: PRJDIR/app/backup/SITE_NAME/cms.sql.gz) [non-persistent]
+## Path to database dump file (default: SNAPSHOT_DIR/SNAPSHOT_NAME/cms.sql.gz) [non-persistent]
 CMS_SQL=
 
 ## True if we should skip loading CMS_SQL [non-persistent]

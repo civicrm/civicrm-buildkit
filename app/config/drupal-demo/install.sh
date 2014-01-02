@@ -14,7 +14,7 @@ else
   amp create -f --root="$WEB_ROOT" --name=cms --prefix=CMS_ --output-file="$amp_vars_file_path"
 fi
 source "$amp_vars_file_path"
-amp create -f --root="$WEB_ROOT" --name=civi --prefix=CIVI_ --no-url --output-file="$amp_vars_file_path"
+amp create -f --root="$WEB_ROOT" --name=civi --prefix=CIVI_ --skip-url --output-file="$amp_vars_file_path"
 source "$amp_vars_file_path"
 
 ###############################################################################

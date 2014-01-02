@@ -31,9 +31,9 @@ export PATH="$BINDIR:$PATH"
 function civiprj_usage() {
   APP=$(basename "$0")
   cat <<EOT
-Usage: $APP create <name> [options]
-  <name>              The name of the sub-directory to build
-  --type <type>       The name of the download/install scripts. (If omitted, assume <name>) [Optional]
+Usage: $APP create <build-name> [options]
+  <build-name>        The name of the sub-directory to build
+  --type <type>       The name of the download/install scripts. (If omitted, assume <build-name>) [Optional]
   --url <url>         The public URL of the site
   --title <title>     The title of the site
   --civi-ver <ver>    The branch or tag of CiviCRM desired (master, 4.4, 4.3, 4.3.0, etc) [Optional]
@@ -42,12 +42,17 @@ Usage: $APP create <name> [options]
   --force-download    If the source tree already exists, destroy and recreate
   --force-install     If the DB/config already exists, destroy and recreate
 
-Usage: $APP reset <name> [options]
-  <name>              The name of the sub-directory to build
-  --cms <sql-file>    The path to a SQL backup of the CMS DB [Optional]
-  --no-cms            Skip resetting the CMS DB [Optional]
-  --civi <sql-file>   The path to a SQL backup of the CiviCRM DB [Optional]
-  --no-civi           Skip resetting the CiviCRM DB [Optional]
+Usage: $APP snapshot-create <build-name> [options]
+  <build-name>           The name of the sub-directory to build
+  --snapshot <name>      The name of the snapshot subdirectory. (If omitted, assume <build-name>) [Optional]
+
+Usage: $APP snapshot-restore <build-name> [options]
+  <build-name>           The name of the sub-directory to build
+  --snapshot <name>      The name of the snapshot subdirectory. (If omitted, assume <build-name>) [Optional]
+  --cms-sql <sql-file>   The path to a SQL backup of the CMS DB [Optional]
+  --no-cms               Skip resetting the CMS DB [Optional]
+  --civi-sql <sql-file>  The path to a SQL backup of the CiviCRM DB [Optional]
+  --no-civi              Skip resetting the CiviCRM DB [Optional]
 
 EOT
 
@@ -73,14 +78,22 @@ ACTION="$1"
 [ -z "$ACTION" ] && civiprj_usage
 shift
 
-SITE_NAME="$1"
-[ -z "$SITE_NAME" ] && civiprj_usage
-shift
+case "$ACTION" in
+  snapshot-list)
+    # don't parse SITE_NAME
+    ;;
+  *)
+    SITE_NAME="$1"
+    [ -z "$SITE_NAME" ] && civiprj_usage
+    shift
 
-if [ -f "${BLDDIR}/${SITE_NAME}.sh" ]; then
-  echo "[[Load saved options from ${BLDDIR}/${SITE_NAME}.sh]]"
-  source "${BLDDIR}/${SITE_NAME}.sh"
-fi
+    if [ -f "${BLDDIR}/${SITE_NAME}.sh" ]; then
+      echo "[[Load saved options from ${BLDDIR}/${SITE_NAME}.sh]]"
+      source "${BLDDIR}/${SITE_NAME}.sh"
+    fi
+    ;;
+esac
+
 
 while [ -n "$1" ] ; do
   OPTION="$1"
@@ -91,7 +104,7 @@ while [ -n "$1" ] ; do
       civiprj_usage
       ;;
 
-    --civi)
+    --civi-sql)
       CIVI_SQL="$1"
       shift
       ;;
@@ -101,7 +114,7 @@ while [ -n "$1" ] ; do
       shift
       ;;
 
-    --cms)
+    --cms-sql)
       CMS_SQL="$1"
       shift
       ;;
@@ -130,6 +143,11 @@ while [ -n "$1" ] ; do
 
     --no-cms)
       CMS_SQL_SKIP=1
+      ;;
+
+    --snapshot)
+      SNAPSHOT_NAME="$1"
+      shift
       ;;
 
     --title)
@@ -193,21 +211,43 @@ case "$ACTION" in
       popd > /dev/null
 
       if [ -n "$CIVI_SQL" ]; then
-        cvutil_makeparent "$CIVI_SQL"
-        mysqldump $CIVI_DB_ARGS | gzip > "$CIVI_SQL"
+        snapshot_create_civi
       fi
 
       if [ -n "$CMS_SQL" ]; then
-        cvutil_makeparent "$CMS_SQL"
-        mysqldump $CMS_DB_ARGS | gzip > "$CMS_SQL"
+        snapshot_create_cms
       fi
     fi
 
     cvutil_save "${BLDDIR}/${SITE_NAME}.sh" $PERSISTENT_VARS
     ;;
 
-  reset)
-    echo reset
+  snapshot-list)
+    ls "$SNAPSHOT_DIR"
+    ;;
+
+  snapshot-create)
+    ## TODO: single-db support
+
+    if [ -z "$CMS_SQL_SKIP" ]; then
+      snapshot_create_civi
+    fi
+
+    if [ -z "$CIVI_SQL_SKIP" ]; then
+      snapshot_create_cms
+    fi
+    ;;
+
+  snapshot-restore)
+    ## TODO: single-db support
+
+    if [ -z "$CMS_SQL_SKIP" ]; then
+      snapshot_restore_cms
+    fi
+
+    if [ -z "$CIVI_SQL_SKIP" ]; then
+      snapshot_restore_civi
+    fi
     ;;
 
   *)
