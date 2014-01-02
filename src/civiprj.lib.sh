@@ -145,6 +145,8 @@ function civicrm_make_setup_conf() {
     DBNAME="$CIVI_DB_NAME"
     DBUSER="$CIVI_DB_USER"
     DBPASS="$CIVI_DB_PASS"
+    DBHOST="$CIVI_DB_HOST"
+    DBPORT="$CIVI_DB_PORT"
     DBARGS=""
     PHP5PATH=
     DBLOAD="$DBLOAD"
