@@ -77,6 +77,19 @@ function cvutil_makeparent() {
 }
 
 ###############################################################################
+## Combine host and port to a single string
+## usage: MY_VAR=$(cvutil_build_hostport $MY_HOST $MY_PORT )
+function cvutil_build_hostport() {
+  local host=$1
+  local port=$2
+  if [ -z "$port" ]; then
+    echo "$host"
+  else
+    echo "$host:$port"
+  fi
+}
+
+###############################################################################
 ## Generate config files and setup database
 function civicrm_install() {
   cvutil_assertvars civicrm_install CIVI_CORE CIVI_FILES CIVI_TEMPLATEC
@@ -110,19 +123,17 @@ function civicrm_make_settings_php() {
   cvutil_assertvars civicrm_make_settings_php CMS_DB_HOST CMS_DB_NAME CMS_DB_PASS CMS_DB_USER
   cvutil_assertvars civicrm_make_settings_php CIVI_DB_HOST CIVI_DB_NAME CIVI_DB_PASS CIVI_DB_USER
 
-  build_host_and_port_string $CMS_DB_HOST $CMS_DB_PORT
-  CMS_HOST_AND_PORT=$HOST_AND_PORT
-  build_host_and_port_string $CIVI_DB_HOST $CIVI_DB_PORT
-  CIVI_HOST_AND_PORT=$HOST_AND_PORT
+  CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
+  CIVI_DB_HOSTPORT=$(cvutil_build_hostport "$CIVI_DB_HOST" "$CIVI_DB_PORT")
   cat "$CIVI_CORE/templates/CRM/common/civicrm.settings.php.template" \
     | sed "s;%%baseURL%%;${CMS_URL};" \
     | sed "s;%%cms%%;${CIVI_UF};" \
-    | sed "s;%%CMSdbHost%%;${CMS_HOST_AND_PORT};" \
+    | sed "s;%%CMSdbHost%%;${CMS_DB_HOSTPORT};" \
     | sed "s;%%CMSdbName%%;${CMS_DB_NAME};" \
     | sed "s;%%CMSdbPass%%;${CMS_DB_PASS};" \
     | sed "s;%%CMSdbUser%%;${CMS_DB_USER};" \
     | sed "s;%%crmRoot%%;${CIVI_CORE}/;" \
-    | sed "s;%%dbHost%%;${CIVI_HOST_AND_PORT};" \
+    | sed "s;%%dbHost%%;${CIVI_DB_HOSTPORT};" \
     | sed "s;%%dbName%%;${CIVI_DB_NAME};" \
     | sed "s;%%dbPass%%;${CIVI_DB_PASS};" \
     | sed "s;%%dbUser%%;${CIVI_DB_USER};" \
@@ -195,14 +206,14 @@ EOF
 function wp_install() {
   cvutil_assertvars wp_install WEB_ROOT CMS_DB_NAME CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_URL ADMIN_USER ADMIN_PASS ADMIN_EMAIL CMS_TITLE FACL_USERS
 
-  build_host_and_port_string $CMS_DB_HOST $CMS_DB_PORT
+  CMS_DB_HOSTPORT=$(cvutil_build_hostport $CMS_DB_HOST $CMS_DB_PORT)
   pushd "$WEB_ROOT" >> /dev/null
     [ -f "wp-config.php" ] && rm -f "wp-config.php"
     wp core config \
       --dbname="$CMS_DB_NAME" \
       --dbuser="$CMS_DB_USER" \
       --dbpass="$CMS_DB_PASS" \
-      --dbhost="$HOST_AND_PORT" \
+      --dbhost="$CMS_DB_HOSTPORT" \
       --skip-salts \
       --extra-php <<PHP
         define('AUTH_KEY',         '$(cvutil_makepasswd 32)');
@@ -253,12 +264,12 @@ function wp_uninstall() {
 function drupal_multisite_install() {
   cvutil_assertvars drupal_multisite_install WEB_ROOT CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS FACL_USERS CMS_URL
   DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL")
-  build_host_and_port_string $CMS_DB_HOST $CMS_DB_PORT
+  CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
   pushd "$WEB_ROOT" >> /dev/null
     [ -f "sites/$DRUPAL_SITE_DIR/settings.php" ] && rm -f "sites/$DRUPAL_SITE_DIR/settings.php"
 
     drush site-install -y \
-      --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${HOST_AND_PORT}/${CMS_DB_NAME}" \
+      --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOSTPORT}/${CMS_DB_NAME}" \
       --account-name="$ADMIN_USER" \
       --account-pass="$ADMIN_PASS" \
       --account-mail="$ADMIN_EMAIL" \
@@ -304,12 +315,12 @@ function _drupal_multisite_dir() {
 function drupal_singlesite_install() {
   cvutil_assertvars drupal_singlesite_install WEB_ROOT CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS FACL_USERS
 
-  build_host_and_port_string $CMS_DB_HOST $CMS_DB_PORT
+  CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
   pushd "$WEB_ROOT" >> /dev/null
     [ -f "sites/default/settings.php" ] && rm -f "sites/default/settings.php"
 
     drush site-install -y \
-      --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${HOST_AND_PORT}/${CMS_DB_NAME}" \
+      --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOSTPORT}/${CMS_DB_NAME}" \
       --account-name="$ADMIN_USER" \
       --account-pass="$ADMIN_PASS" \
       --account-mail="$ADMIN_EMAIL" \
@@ -435,13 +446,4 @@ function git_cache_deref_remotes() {
   done
 
   set -${_shellopt}
-}
-
-function build_host_and_port_string() {
-  local host=$1
-  local port=$2
-  HOST_AND_PORT=$host
-  if [ ! -z "$port" ]; then
-    HOST_AND_PORT="$HOST_AND_PORT:$port"
-  fi
 }

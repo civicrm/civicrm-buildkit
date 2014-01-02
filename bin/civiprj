@@ -194,12 +194,12 @@ case "$ACTION" in
 
       if [ -n "$CIVI_SQL" ]; then
         cvutil_makeparent "$CIVI_SQL"
-        mysqldump -h"$CIVI_DB_HOST" -P"$CIVI_DB_PORT" -u"$CIVI_DB_USER" -p"$CIVI_DB_PASS" "$CIVI_DB_NAME" | gzip > $CIVI_SQL
+        mysqldump $CIVI_DB_ARGS | gzip > "$CIVI_SQL"
       fi
 
       if [ -n "$CMS_SQL" ]; then
         cvutil_makeparent "$CMS_SQL"
-        mysqldump -h"$CMS_DB_HOST" -P"$CMS_DB_PORT" -u"$CMS_DB_USER" -p"$CMS_DB_PASS" "$CMS_DB_NAME" | gzip > $CMS_SQL
+        mysqldump $CMS_DB_ARGS | gzip > "$CMS_SQL"
       fi
     fi
 
