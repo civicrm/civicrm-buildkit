@@ -61,20 +61,48 @@ pushd $PRJDIR >> /dev/null
     mv "$PRJDIR/bin/composer.phar" "$PRJDIR/bin/composer"
   fi
 
-  ## Download civix
-  ## FIXME: Update civix so that it can be installed via composer as a dependnecy
-  if [ -e "$PRJDIR/bin/civix" -a -d "app/tmp/civix" ]; then
-    echo "[[civix binary ($PRJDIR/bin/civix) already exists. Skipping.]]"
-  else
-    echo "[[Download civix]]"
-    download_url "$CIVIXURL" "$TMPDIR/civix.tar.bz2"
-    mkdir -p app/tmp/civix
-    tar xvj  --strip-components 1 -C app/tmp/civix -f "$TMPDIR/civix.tar.bz2"
-    [ -e "$PRJDIR/bin/civix" ] && rm -f "$PRJDIR/bin/civix"
-    ln -s "$PRJDIR/app/tmp/civix/civix" "$PRJDIR/bin/civix"
-  fi
-
   ## Download dependencies (via composer)
   "$PRJDIR/bin/composer" install
+
+  ## Download civix
+  ## FIXME: Update civix so that it can be installed via composer as a dependency
+  if [ -e "$PRJDIR/bin/civix" -a -d "extern/civix" ]; then
+    echo "[[civix binary ($PRJDIR/bin/civix) already exists. Skipping.]]"
+  else
+    echo "[[Install civix]]"
+    ## Download
+    download_url "$CIVIXURL" "$TMPDIR/civix.tar.bz2"
+    mkdir -p extern/civix
+    tar xj  --strip-components 1 -C extern/civix -f "$TMPDIR/civix.tar.bz2"
+
+    ## Setup a relative symlink
+    pushd bin >> /dev/null
+      [ -f civix ] && rm -f civix
+      ln -s ../extern/civix/civix civix
+    popd >> /dev/null
+  fi
+
+  ## Download up
+  if [ -e "$PRJDIR/extern/hub/bin/hub" -a -e "$PRJDIR/bin/hub" ]; then
+    echo "[[hub ($PRJDIR/extern/hub) already exists. Skipping.]]"
+  elif [ -z "`which ruby`" -o -z "`which rake`" ]; then
+    echo "[[hub requires Ruby and Rake (which are unavailable). Skipping.]]"
+  else
+    echo "[[Install hub]]"
+    ## Download
+    download_url "https://github.com/github/hub/archive/v1.11.1.tar.gz" "$TMPDIR/hub.tar.gz"
+    [ -f app/tmp/hub ] && rm -rf app/tmp/hub
+    mkdir -p app/tmp/hub extern/hub
+    tar xz  --strip-components 1 -C app/tmp/hub -f "$TMPDIR/hub.tar.gz"
+    ## Build
+    pushd app/tmp/hub >> /dev/null
+      PREFIX="$PRJDIR/extern/hub" rake install
+    popd >> /dev/null
+    ## Setup a relative symlink
+    pushd bin >> /dev/null
+      [ -f hub ] && rm -f hub
+      ln -s ../extern/hub/bin/hub hub
+    popd >> /dev/null
+  fi
 
 popd >> /dev/null

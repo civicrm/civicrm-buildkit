@@ -12,8 +12,11 @@ bin/drush
 bin/drush.bat
 bin/drush.complete.sh
 bin/drush.php
+bin/git-scan
+bin/hub
 bin/wp
 bin/wp.bat
 build/
+extern/
 vendor/
 web/
