@@ -13,6 +13,7 @@
     "php": ">=5.3.3",
     "drush/drush": "dev-master",
     "wp-cli/wp-cli": "0.12.1",
-    "totten/amp": "dev-master"
+    "totten/amp": "dev-master",
+    "totten/git-scan": "dev-master"
   }
 }
