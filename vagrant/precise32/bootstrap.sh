@@ -9,7 +9,17 @@ sed -i 's/deb-src/#deb-src/' /etc/apt/sources.list
 apt-get update
 
 ## Some basic helpers
-apt-get install -y wget curl joe makepasswd
+apt-get install -y \
+  colordiff \
+  curl \
+  git \
+  git-man \
+  joe \
+  makepasswd \
+  patch \
+  unzip \
+  wget \
+  zip
 
 ## MySQL
 MYSQLPASS=$(makepasswd --chars=16)
@@ -31,8 +41,12 @@ apt-get install -y php5-{cli,imap,ldap,curl,mysql,intl,gd} php-apc
 ## Apache
 apt-get install -y apache2 libapache2-mod-php5
 
+## Ruby (required for "hub")
+apt-get install -y ruby1.8 rake
+
 ## civicrm-project -- note: code is already shared (via Vagrantfile)
 PRJDIR=/home/vagrant/civicrm-project
+sudo -u vagrant -H "$PRJDIR/bin/civi-download-tools"
 cat > /etc/profile.d/civicrm_project.sh << EOF
 PATH="$PRJDIR/bin:\$PATH"
 export PATH
