@@ -35,7 +35,7 @@ WEB_ROOT=
 GIT_CACHE_DIR="$TMPDIR/git-cache"
 
 ###############################################################################
-## "create" variables defined by civiprj
+## "create" variables defined by civibuild
 
 ## Whether to destroy pre-existing source tree
 FORCE_DOWNLOAD=

@@ -15,7 +15,7 @@ to-taste.
 ## Environment Variables ##
 
 When writing these scripts, note the documentation in
-[src/civiprj.defaults.sh](../../src/civiprj.defaults.sh).  This file lists
+[src/civibuild.defaults.sh](../../src/civibuild.defaults.sh).  This file lists
 the environment variables which are (a) provided as inputs to the scripts
 and (b) expected as outputs from the script.
 
@@ -35,7 +35,7 @@ available, but they may use different implementations (GNU or BSD).
 
 ## Helper Functions ##
 
-Several helper functions are automatically loaded from [src/civiprj.lib.sh](../../src/civiprj.lib.sh),
+Several helper functions are automatically loaded from [src/civibuild.lib.sh](../../src/civibuild.lib.sh),
 including:
 
  * drupal_singlesite_install - Create Drupal config files, tables, and data dirs (using "drush site-install" and "sites/default")
