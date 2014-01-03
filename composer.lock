@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "eaf4b35c4a3c2150b288f8568d0ab995",
+    "hash": "aa98e4f054b139e34741f29e48d46887",
     "packages": [
         {
             "name": "drush/drush",
@@ -646,6 +646,49 @@
             "time": "2014-01-02 22:58:51"
         },
         {
+            "name": "totten/git-scan",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/totten/git-scan.git",
+                "reference": "b9a8aebd1991af0283a00f380f56753c7aa4237b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/totten/git-scan/zipball/b9a8aebd1991af0283a00f380f56753c7aa4237b",
+                "reference": "b9a8aebd1991af0283a00f380f56753c7aa4237b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3",
+                "symfony/console": "2.3.6",
+                "symfony/filesystem": "2.3.6",
+                "symfony/finder": "2.3.6",
+                "symfony/process": "2.3.6"
+            },
+            "bin": [
+                "bin/git-scan"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "GitScan\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "AGPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Tim Otten",
+                    "email": "totten@civicrm.org"
+                }
+            ],
+            "description": "CLI tool for scanning/updating git repos",
+            "time": "2014-01-03 20:26:14"
+        },
+        {
             "name": "wp-cli/php-cli-tools",
             "version": "v0.9.3",
             "source": {
@@ -752,7 +795,8 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "drush/drush": 20,
-        "totten/amp": 20
+        "totten/amp": 20,
+        "totten/git-scan": 20
     },
     "platform": {
         "php": ">=5.3.3"
