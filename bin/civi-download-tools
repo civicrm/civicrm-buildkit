@@ -19,6 +19,7 @@ WEBDIR="$PRJDIR/web"
 TMPDIR="$PRJDIR/app/tmp"
 CIVIXVER=13.10.0
 CIVIXURL="http://downloads.sourceforge.net/project/civix/civix-${CIVIXVER}.tar.bz2?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fcivix%2Ffiles%2F&use_mirror=master"
+HUBURL="https://github.com/github/hub/archive/v1.11.1.tar.gz"
 
 ##################################################
 ## Helpers
@@ -51,7 +52,7 @@ fi
 ## Begin execution
 set -e
 pushd $PRJDIR >> /dev/null
-  ## Download composer
+  ## Download "composer"
   if [ -f "$PRJDIR/bin/composer" ]; then
     echo "[[Composer binary ($PRJDIR/bin/composer) already exists. Skipping.]]"
   else
@@ -61,20 +62,69 @@ pushd $PRJDIR >> /dev/null
     mv "$PRJDIR/bin/composer.phar" "$PRJDIR/bin/composer"
   fi
 
-  ## Download civix
-  ## FIXME: Update civix so that it can be installed via composer as a dependnecy
-  if [ -e "$PRJDIR/bin/civix" -a -d "app/tmp/civix" ]; then
-    echo "[[civix binary ($PRJDIR/bin/civix) already exists. Skipping.]]"
-  else
-    echo "[[Download civix]]"
-    download_url "$CIVIXURL" "$TMPDIR/civix.tar.bz2"
-    mkdir -p app/tmp/civix
-    tar xvj  --strip-components 1 -C app/tmp/civix -f "$TMPDIR/civix.tar.bz2"
-    [ -e "$PRJDIR/bin/civix" ] && rm -f "$PRJDIR/bin/civix"
-    ln -s "$PRJDIR/app/tmp/civix/civix" "$PRJDIR/bin/civix"
-  fi
-
   ## Download dependencies (via composer)
   "$PRJDIR/bin/composer" install
+
+  ## Download "civix"
+  ## FIXME: Update civix so that it can be installed via composer as a dependency
+  touch "$PRJDIR/extern/civix.txt"
+  if [ -e "$PRJDIR/bin/civix" -a -d "extern/civix" -a "$(cat $PRJDIR/extern/civix.txt)" == "$CIVIXURL" ]; then
+    echo "[[civix binary ($PRJDIR/bin/civix) already exists. Skipping.]]"
+  else
+    echo "[[Install civix]]"
+
+    ## Cleanup
+    [ -f app/tmp/civix ] && rm -rf app/tmp/civix
+    [ -f extern/civix ] && rm -rf extern/civix
+    [ -f "$TMPDIR/civix.tar.bz2" ] && rm -rf "$TMPDIR/civix.tar.bz2"
+    mkdir -p extern/civix
+
+    ## Download
+    download_url "$CIVIXURL" "$TMPDIR/civix.tar.bz2"
+    tar xj  --strip-components 1 -C extern/civix -f "$TMPDIR/civix.tar.bz2"
+
+    ## Setup a relative symlink
+    pushd bin >> /dev/null
+      [ -f civix ] && rm -f civix
+      ln -s ../extern/civix/civix civix
+    popd >> /dev/null
+
+    ## Mark as downloaded
+    echo "$CIVIXURL" > "$PRJDIR/extern/civix.txt"
+  fi
+
+  ## Download "hub"
+  touch "$PRJDIR/extern/hub.txt"
+  if [ -e "$PRJDIR/extern/hub/bin/hub" -a -e "$PRJDIR/bin/hub" -a "$(cat $PRJDIR/extern/hub.txt)" == "$HUBURL" ]; then
+    echo "[[hub ($PRJDIR/extern/hub) already exists. Skipping.]]"
+  elif [ -z "`which ruby`" -o -z "`which rake`" ]; then
+    echo "[[hub requires Ruby and Rake (which are unavailable). Skipping.]]"
+  else
+    echo "[[Install hub]]"
+
+    ## Cleanup
+    [ -f app/tmp/hub ] && rm -rf app/tmp/hub
+    [ -f extern/hub ] && rm -rf extern/hub
+    [ -f "$TMPDIR/hub.tar.gz" ] && rm -rf "$TMPDIR/hub.tar.gz"
+    mkdir -p app/tmp/hub extern/hub
+
+    ## Download
+    download_url "$HUBURL" "$TMPDIR/hub.tar.gz"
+    tar xz  --strip-components 1 -C app/tmp/hub -f "$TMPDIR/hub.tar.gz"
+
+    ## Build
+    pushd app/tmp/hub >> /dev/null
+      PREFIX="$PRJDIR/extern/hub" rake install
+    popd >> /dev/null
+
+    ## Setup a relative symlink
+    pushd bin >> /dev/null
+      [ -f hub ] && rm -f hub
+      ln -s ../extern/hub/bin/hub hub
+    popd >> /dev/null
+
+    ## Mark as downloaded
+    echo "$HUBURL" > "$PRJDIR/extern/hub.txt"
+  fi
 
 popd >> /dev/null
