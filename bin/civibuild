@@ -45,6 +45,12 @@ Description: Download all code, create databases, create config files
   --force             If the source tree or DB already exists, destroy and recreate
   --force-download    If the source tree already exists, destroy and recreate
   --force-install     If the DB/config already exists, destroy and recreate
+  --admin-user        Name of the CMS's administrative user
+  --admin-pass        Password for the CMS's administrative user
+  --admin-email       Email of the CMS's administrative user
+  --demo-user         Name of the CMS's demo user
+  --demo-pass         Password for the CMS's demo user
+  --demo-email        Email of the CMS's demo user
 
 Syntax: $APP snapshot <build-name> [options]
 Description: Create a snapshot of the build's DBs
@@ -118,6 +124,21 @@ while [ -n "$1" ] ; do
       civibuild_usage
       ;;
 
+    --admin-email)
+      ADMIN_EMAIL="$1"
+      shift
+      ;;
+
+    --admin-pass)
+      ADMIN_PASS="$1"
+      shift
+      ;;
+
+    --admin-user)
+      ADMIN_USER="$1"
+      shift
+      ;;
+
     --civi-sql)
       CIVI_SQL="$1"
       shift
@@ -135,6 +156,21 @@ while [ -n "$1" ] ; do
 
     --cms-ver)
       CMS_VERSION="$1"
+      shift
+      ;;
+
+    --demo-email)
+      DEMO_EMAIL="$1"
+      shift
+      ;;
+
+    --demo-pass)
+      DEMO_PASS="$1"
+      shift
+      ;;
+
+    --demo-user)
+      DEMO_USER="$1"
       shift
       ;;
 
