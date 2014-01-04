@@ -1,6 +1,6 @@
-# civicrm-project (experimental)
+# civicrm-buildkit (experimental)
 
-civicrm-project is a collection of tools and scripts preparing a useful
+civicrm-buildkit is a collection of tools and scripts preparing a useful
 CiviCRM development environment.
 
 ## Requirements
@@ -9,13 +9,14 @@ CiviCRM development environment.
  * Git
  * PHP
  * MySQL (client/server)
- * Optional: Apache/Nginx
+ * Recommended: Apache/Nginx
+ * Recommended: Ruby/Rake
 
 ## Installation
 
 ```bash
-git clone https://github.com/civicrm/civicrm-project.git
-cd civicrm-project/bin
+git clone https://github.com/civicrm/civicrm-buildkit.git
+cd civicrm-buildkit/bin
 ./civi-download-tools
 ./amp config
 ./amp test
@@ -32,7 +33,7 @@ The project bundles in several useful command-line tools (such as composer,
 drush, wp-cli, and civix). It will be handy to add these to your PATH:
 
 ```bash
-export PATH=/path/to/civicrm-project/bin:$PATH
+export PATH=/path/to/civicrm-buildkit/bin:$PATH
 ```
 
 (Note: Adjust as needed for your filesystem.) To automatically set this up
