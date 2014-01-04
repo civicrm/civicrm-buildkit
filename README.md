@@ -19,8 +19,8 @@ cd civicrm-project/bin
 ./civi-download-tools
 ./amp config
 ./amp test
-./civiprj build drupal-demo --civi-ver=4.4 --url=http://localhost:8001
-## FIXME: ./civiprj launch drupal-demo
+./civibuild build drupal-demo --civi-ver=4.4 --url=http://localhost:8001
+## FIXME: ./civibuild launch drupal-demo
 ```
 
 The final command will print out URLs and credentials for accessing the

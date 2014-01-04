@@ -21,14 +21,14 @@ if [ ! -e "$TMPDIR" ]; then
   mkdir -p "$TMPDIR"
 fi
 
-source "$PRJDIR/src/civiprj.lib.sh"
+source "$PRJDIR/src/civibuild.lib.sh"
 
 ## Make sure bundled utilities are available, regardless of local config
 export PATH="$BINDIR:$PATH"
 
 ###############################################################################
 ## Display usage message
-function civiprj_usage() {
+function civibuild_usage() {
   APP=$(basename "$0")
   cat <<EOT
 Usage: $APP create <build-name> [options]
@@ -60,7 +60,7 @@ EOT
 }
 
 ## Run an external script (based on the site-type)
-function civiprj_run() {
+function civibuild_run() {
   MAIN_SCRIPT="${SITE_CONFIG_DIR}/$1.sh"
   [ ! -f "$MAIN_SCRIPT" ] && echo "ERROR: Missing main script ($MAIN_SCRIPT)" && exit 98
 
@@ -72,10 +72,10 @@ function civiprj_run() {
 
 ###############################################################################
 ## Parse options
-source "$PRJDIR/src/civiprj.defaults.sh"
+source "$PRJDIR/src/civibuild.defaults.sh"
 
 ACTION="$1"
-[ -z "$ACTION" ] && civiprj_usage
+[ -z "$ACTION" ] && civibuild_usage
 shift
 
 case "$ACTION" in
@@ -84,7 +84,7 @@ case "$ACTION" in
     ;;
   *)
     SITE_NAME="$1"
-    [ -z "$SITE_NAME" ] && civiprj_usage
+    [ -z "$SITE_NAME" ] && civibuild_usage
     shift
 
     if [ -f "${BLDDIR}/${SITE_NAME}.sh" ]; then
@@ -101,7 +101,7 @@ while [ -n "$1" ] ; do
 
   case "$OPTION" in
     -h|--help|-?)
-      civiprj_usage
+      civibuild_usage
       ;;
 
     --civi-sql)
@@ -167,12 +167,12 @@ while [ -n "$1" ] ; do
 
     *)
       echo "Unrecognized option: $OPTION"
-      civiprj_usage
+      civibuild_usage
       ;;
   esac
 done
 
-source "$PRJDIR/src/civiprj.compute-defaults.sh"
+source "$PRJDIR/src/civibuild.compute-defaults.sh"
 
 ###############################################################################
 ## Main
@@ -190,7 +190,7 @@ case "$ACTION" in
         if [ -f "$PRJDIR/app/config/git-caches.sh" ]; then
           source "$PRJDIR/app/config/git-caches.sh"
         fi
-        civiprj_run download
+        civibuild_run download
         git_cache_deref_remotes "$GIT_CACHE_DIR" "$WEB_ROOT"
       popd > /dev/null
       if [ ! -d "$WEB_ROOT" ]; then
@@ -201,13 +201,13 @@ case "$ACTION" in
 
     if [ -n "$FORCE_INSTALL" -a -n "$CMS_DB_DSN" ]; then
       pushd "$WEB_ROOT" > /dev/null
-        civiprj_run uninstall
+        civibuild_run uninstall
       popd > /dev/null
     fi
 
     if [ -n "$FORCE_INSTALL" -o -z "$CMS_DB_DSN" ]; then
       pushd "$WEB_ROOT" > /dev/null
-        civiprj_run install
+        civibuild_run install
       popd > /dev/null
 
       if [ -n "$CIVI_SQL" ]; then
@@ -252,6 +252,6 @@ case "$ACTION" in
 
   *)
     echo "Unrecognized action: $ACTION"
-    civiprj_usage
+    civibuild_usage
     ;;
 esac
