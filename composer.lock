@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "aa98e4f054b139e34741f29e48d46887",
+    "hash": "5917445f3a144939385b7188d2d999f6",
     "packages": [
         {
             "name": "drush/drush",
@@ -735,16 +735,16 @@
         },
         {
             "name": "wp-cli/wp-cli",
-            "version": "v0.12.1",
+            "version": "v0.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wp-cli/wp-cli.git",
-                "reference": "b1241f9544131696cc4319cc72bd22ebdda3c53b"
+                "reference": "a7eaaecc62b8f5004cdf3b32273ed04884cbca2a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wp-cli/wp-cli/zipball/b1241f9544131696cc4319cc72bd22ebdda3c53b",
-                "reference": "b1241f9544131696cc4319cc72bd22ebdda3c53b",
+                "url": "https://api.github.com/repos/wp-cli/wp-cli/zipball/a7eaaecc62b8f5004cdf3b32273ed04884cbca2a",
+                "reference": "a7eaaecc62b8f5004cdf3b32273ed04884cbca2a",
                 "shasum": ""
             },
             "require": {
@@ -752,10 +752,8 @@
                 "php": ">=5.3.2",
                 "rhumsaa/array_column": "~1.1",
                 "rmccue/requests": "~1.6",
+                "symfony/finder": "~2.3",
                 "wp-cli/php-cli-tools": "0.9.3"
-            },
-            "require-dev": {
-                "symfony/finder": "~2.3"
             },
             "suggest": {
                 "psy/psysh": "Enhanced `wp shell` functionality"
@@ -783,7 +781,7 @@
                 "cli",
                 "wordpress"
             ],
-            "time": "2013-10-11 12:36:09"
+            "time": "2013-11-30 13:14:44"
         }
     ],
     "packages-dev": [
