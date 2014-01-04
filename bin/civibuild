@@ -55,7 +55,7 @@ Syntax: $APP snapshots
 Description: List available snapshots
 
 Syntax: $APP restore <build-name> [options]
-Description: Restore DBs from a snapshot
+Description: Restore HTTP/DB services from a snapshot
   <build-name>           The name of the sub-directory to build
   --snapshot <name>      The name of the snapshot subdirectory. (If omitted, assume <build-name>) [Optional]
   --cms-sql <sql-file>   The path to a SQL backup of the CMS DB [Optional]
@@ -63,6 +63,8 @@ Description: Restore DBs from a snapshot
   --civi-sql <sql-file>  The path to a SQL backup of the CiviCRM DB [Optional]
   --no-civi              Skip resetting the CiviCRM DB [Optional]
 
+Syntax: $APP restore-all
+Description: Restore *all* HTTP/DB services from their respective snapshots
 EOT
 
   exit 99;
@@ -89,6 +91,9 @@ shift
 
 case "$ACTION" in
   snapshots)
+    # don't parse SITE_NAME
+    ;;
+  restore-all)
     # don't parse SITE_NAME
     ;;
   *)
@@ -235,6 +240,15 @@ case "$ACTION" in
   restore)
     amp_snapshot_restore
     cvutil_save "${BLDDIR}/${SITE_NAME}.sh" $PERSISTENT_VARS
+    ;;
+
+  restore-all)
+    pushd "$BLDDIR" >> /dev/null
+      find . -mindepth 1 -maxdepth 1 -type d | while read dir ; do
+        SITE_NAME=$(basename $dir)
+        civibuild restore "$SITE_NAME"
+      done
+    popd >> /dev/null
     ;;
 
   *)
