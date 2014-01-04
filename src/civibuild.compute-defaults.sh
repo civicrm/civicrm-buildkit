@@ -14,4 +14,3 @@
 [ -z "$CIVI_SQL" ]           && CIVI_SQL="$SNAPSHOT_DIR/$SNAPSHOT_NAME/civi.sql.gz"
 [ -z "$CMS_SQL" ]            && CMS_SQL="$SNAPSHOT_DIR/$SNAPSHOT_NAME/cms.sql.gz"
 [ -z "$SITE_CONFIG_DIR" ]    && SITE_CONFIG_DIR="$PRJDIR/app/config/$SITE_TYPE"
-[ -z "$FACL_USERS" ]         && FACL_USERS="www-data $(whoami)"

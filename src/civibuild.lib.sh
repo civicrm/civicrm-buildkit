@@ -77,6 +77,17 @@ function cvutil_makeparent() {
 }
 
 ###############################################################################
+## Ensure that a directory exists
+## cvutil_mkdir <dir1> <dir2> ...
+function cvutil_mkdir() {
+  for f in "$@" ; do
+    if [ ! -d "$f" ]; then
+      mkdir "$f"
+    fi
+  done
+}
+
+###############################################################################
 ## Combine host and port to a single string
 ## usage: MY_VAR=$(cvutil_build_hostport $MY_HOST $MY_PORT )
 function cvutil_build_hostport() {
@@ -100,11 +111,7 @@ function civicrm_install() {
   fi
 
   ## Create CiviCRM data dirs
-  for DIR in "$CIVI_FILES" "$CIVI_TEMPLATEC" ; do
-    if [ ! -d "$DIR" ]; then
-      mkdir -p "$DIR"
-    fi
-  done
+  amp datadir "$CIVI_FILES" "$CIVI_TEMPLATEC"
 
   ## Create CiviCRM config files
   civicrm_make_settings_php
@@ -204,7 +211,7 @@ EOF
 ###############################################################################
 ## Generate config files and setup database
 function wp_install() {
-  cvutil_assertvars wp_install WEB_ROOT CMS_DB_NAME CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_URL ADMIN_USER ADMIN_PASS ADMIN_EMAIL CMS_TITLE FACL_USERS
+  cvutil_assertvars wp_install WEB_ROOT CMS_DB_NAME CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_URL ADMIN_USER ADMIN_PASS ADMIN_EMAIL CMS_TITLE
 
   CMS_DB_HOSTPORT=$(cvutil_build_hostport $CMS_DB_HOST $CMS_DB_PORT)
   pushd "$WEB_ROOT" >> /dev/null
@@ -234,18 +241,8 @@ PHP
       --title="$CMS_TITLE"
 
     ## Create WP data dirs
-    for SUBDIR in modules files ; do
-      if [ ! -d "wp-content/plugins/${SUBDIR}" ]; then
-        mkdir "wp-content/plugins/${SUBDIR}"
-      fi
-    done
-
-    ## Allow shell and WWW users to both manipulate "files" directory
-    if which setfacl; then
-      for FACL_USER in $FACL_USERS ; do
-        find "$WEB_ROOT/wp-content/plugins/files" -type d | xargs setfacl -m u:${FACL_USER}:rwx -m d:u:${FACL_USER}:rwx
-      done
-    fi
+    cvutil_mkdir "wp-content/plugins/modules"
+    amp datadir "wp-content/plugins/files"
   popd >> /dev/null
 }
 
@@ -262,7 +259,7 @@ function wp_uninstall() {
 ###############################################################################
 ## Generate config files and setup database
 function drupal_multisite_install() {
-  cvutil_assertvars drupal_multisite_install WEB_ROOT CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS FACL_USERS CMS_URL
+  cvutil_assertvars drupal_multisite_install WEB_ROOT CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS CMS_URL
   DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL")
   CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
   pushd "$WEB_ROOT" >> /dev/null
@@ -278,18 +275,8 @@ function drupal_multisite_install() {
     chmod u+w "sites/$DRUPAL_SITE_DIR"
 
     ## Allow shell and WWW users to both manipulate "files" directory
-    if which setfacl; then
-      for FACL_USER in $FACL_USERS ; do
-        find "$WEB_ROOT/sites/${DRUPAL_SITE_DIR}/files" -type d | xargs setfacl -m u:${FACL_USER}:rwx -m d:u:${FACL_USER}:rwx
-      done
-    fi
-
-    ## Create Drupal-CiviCRM dirs and config
-    for SUBDIR in modules files ; do
-      if [ ! -d "sites/${DRUPAL_SITE_DIR}/${SUBDIR}" ]; then
-        mkdir "sites/${DRUPAL_SITE_DIR}/${SUBDIR}"
-      fi
-    done
+    amp datadir "sites/${DRUPAL_SITE_DIR}/files"
+    cvutil_mkdir "sites/${DRUPAL_SITE_DIR}/modules"
   popd >> /dev/null
 }
 
@@ -313,7 +300,7 @@ function _drupal_multisite_dir() {
 ###############################################################################
 ## Drupal Single-Site -- Generate config files and setup database
 function drupal_singlesite_install() {
-  cvutil_assertvars drupal_singlesite_install WEB_ROOT CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS FACL_USERS
+  cvutil_assertvars drupal_singlesite_install WEB_ROOT CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS
 
   CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
   pushd "$WEB_ROOT" >> /dev/null
@@ -328,18 +315,8 @@ function drupal_singlesite_install() {
     chmod u+w "sites/default"
 
     ## Allow shell and WWW users to both manipulate "files" directory
-    if which setfacl; then
-      for FACL_USER in $FACL_USERS ; do
-        find "$WEB_ROOT/sites/default/files" -type d | xargs setfacl -m u:${FACL_USER}:rwx -m d:u:${FACL_USER}:rwx
-      done
-    fi
-
-    ## Create Drupal-CiviCRM dirs and config
-    for SUBDIR in modules files ; do
-      if [ ! -d "sites/default/${SUBDIR}" ]; then
-        mkdir "sites/default/${SUBDIR}"
-      fi
-    done
+    amp datadir "sites/default/files"
+    cvutil_mkdir "sites/default/modules"
   popd >> /dev/null
 }
 
