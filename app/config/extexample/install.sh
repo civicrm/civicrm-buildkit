@@ -46,3 +46,5 @@ drush -y vset site_frontpage "civicrm/dashboard"
 drush -y en civicrm_webtest
 drush -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
 drush -y user-add-role civicrm_webtest_user "$DEMO_USER"
+
+drush -y cvapi extension.install key=nz.co.fuzion.entitysetting
