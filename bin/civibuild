@@ -47,6 +47,8 @@ Usage: $APP snapshot-create <build-name> [options]
   <build-name>           The name of the sub-directory to build
   --snapshot <name>      The name of the snapshot subdirectory. (If omitted, assume <build-name>) [Optional]
 
+Usage: $APP snapshot-list
+
 Usage: $APP snapshot-restore <build-name> [options]
   <build-name>           The name of the sub-directory to build
   --snapshot <name>      The name of the snapshot subdirectory. (If omitted, assume <build-name>) [Optional]

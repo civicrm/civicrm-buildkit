@@ -3,10 +3,10 @@
 ###############################################################################
 ## Bootstrap variables (generated automatically based on how app is called)
 
-## The location of the civicrm-project tree
+## The location of the civicrm-buildkit tree
 # PRJDIR=
 
-## The location of the civicrm-project binaries
+## The location of the civicrm-buildkit binaries
 # BINDIR=
 
 ## A place to store temp files

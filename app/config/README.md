@@ -21,7 +21,7 @@ and (b) expected as outputs from the script.
 
 ## Available Commands ##
 
-All the commands in civicrm-project's "bin" directory are included in the
+All the commands in civicrm-buildkit's "bin" directory are included in the
 PATH. This specifically includes:
 
  * [amp](https://github.com/totten/amp)
