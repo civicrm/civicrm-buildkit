@@ -7,7 +7,7 @@ Each directory includes the following required files:
 
  * download.sh -- Get the source code
  * install.sh -- Create config files and database tables
- * uninstall.sh -- Destroy config fiels and adatabase tables
+ * uninstall.sh -- Destroy config files and database tables
 
 To make a new build, simply copy an existing one and edit the files
 to-taste.
