@@ -144,4 +144,3 @@ PERSISTENT_VARS="
   SITE_TYPE
 "
 # ignore: runtime options like CIVI_SQL_SKIP and FORCE_DOWNLOAD
-# future: FACL_USERS
