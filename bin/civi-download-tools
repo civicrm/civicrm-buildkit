@@ -26,7 +26,7 @@ IS_FORCE=
 ##################################################
 ## Helpers
 
-## download_url <url> <out-file>
+## usage: download_url <url> <out-file>
 function download_url() {
   #php -r "echo file_get_contents('$1');" > $2
   if which wget >> /dev/null ; then
@@ -38,10 +38,41 @@ function download_url() {
   fi
 }
 
-## echo_comment <message>
+## usage: echo_comment <message>
 function echo_comment() {
   if [ -z "$IS_QUIET" ]; then
     echo "$@"
+  fi
+}
+
+## Ensure that a command is on the PATH. If missing, then give
+## advice on possible resolutions and exit.
+## usage: check_command <command-name>
+function check_command() {
+  local cmd="$1"
+
+  cmdpath=$(which $cmd)
+  if [ -z "$cmdpath" ]; then
+    echo "Failed to locate command \"$cmd\". Please install it (and set the PATH appropriately)."
+    local is_first=1
+    for altdir in \
+      /Applications/MAMP/Library/bin \
+      /Applications/MAMP/bin/php/php*/bin \
+      /{usr,opt}{,/local}/bin \
+      /{usr,opt}{,/local}/*/bin \
+      /{usr,opt}{,/local}/lib/*/bin
+    do
+      if [ -f "$altdir/$cmd" ]; then
+        if [ -n "$is_first" ]; then
+          echo ""
+          echo "It is possible that you have already installed \"$cmd\" in a non-standard location."
+          echo "If so, please update the PATH appropriately. Possible matches were found in:"
+          is_first=
+        fi
+        echo " * $altdir"
+      fi
+    done
+    exit 3
   fi
 }
 
@@ -75,11 +106,9 @@ done
 
 ##################################################
 ## Validation
-php=$(which php)
-if [ -z "$php" ]; then
-  echo "Failed to locate PHP-CLI. Please install a PHP runtime and register in the PATH."
-  exit 3
-fi
+check_command php
+check_command mysql
+check_command mysqldump
 
 if [ ! -d "$TMPDIR" ]; then
   mkdir -p "$TMPDIR"
