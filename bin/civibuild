@@ -25,6 +25,7 @@ source "$PRJDIR/src/civibuild.lib.sh"
 
 ## Make sure bundled utilities are available, regardless of local config
 export PATH="$BINDIR:$PATH"
+civi-download-tools --quiet
 
 ###############################################################################
 ## Display usage message
