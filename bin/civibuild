@@ -214,14 +214,7 @@ case "$ACTION" in
       pushd "$WEB_ROOT" > /dev/null
         civibuild_run install
       popd > /dev/null
-
-      if [ -n "$CIVI_SQL" ]; then
-        snapshot_create_civi
-      fi
-
-      if [ -n "$CMS_SQL" ]; then
-        snapshot_create_cms
-      fi
+      amp_snapshot_create
     fi
 
     cvutil_save "${BLDDIR}/${SITE_NAME}.sh" $PERSISTENT_VARS
@@ -232,27 +225,12 @@ case "$ACTION" in
     ;;
 
   snapshot-create)
-    ## TODO: single-db support
-
-    if [ -z "$CMS_SQL_SKIP" ]; then
-      snapshot_create_civi
-    fi
-
-    if [ -z "$CIVI_SQL_SKIP" ]; then
-      snapshot_create_cms
-    fi
+    amp_snapshot_create
     ;;
 
   snapshot-restore)
-    ## TODO: single-db support
-
-    if [ -z "$CMS_SQL_SKIP" ]; then
-      snapshot_restore_cms
-    fi
-
-    if [ -z "$CIVI_SQL_SKIP" ]; then
-      snapshot_restore_civi
-    fi
+    amp_snapshot_restore
+    cvutil_save "${BLDDIR}/${SITE_NAME}.sh" $PERSISTENT_VARS
     ;;
 
   *)
