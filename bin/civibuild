@@ -52,6 +52,10 @@ Description: Download all code, create databases, create config files
   --demo-pass         Password for the CMS's demo user
   --demo-email        Email of the CMS's demo user
 
+Syntax: $APP show <build-name>
+Description: Show key details about the build
+  <build-name>        The name of the sub-directory to build
+
 Syntax: $APP snapshot <build-name> [options]
 Description: Create a snapshot of the build's DBs
   <build-name>           The name of the sub-directory to build
@@ -77,6 +81,7 @@ EOT
 }
 
 ## Run an external script (based on the site-type)
+## usage: civibuild_run <script-name>
 function civibuild_run() {
   MAIN_SCRIPT="${SITE_CONFIG_DIR}/$1.sh"
   [ ! -f "$MAIN_SCRIPT" ] && echo "ERROR: Missing main script ($MAIN_SCRIPT)" && exit 98
@@ -85,6 +90,18 @@ function civibuild_run() {
   set -ex
   source "$MAIN_SCRIPT"
   set +ex
+}
+
+## Run an external script (based on the site-type)
+## usage: civibuild_run_optional <script-name>
+function civibuild_run_optional() {
+  MAIN_SCRIPT="${SITE_CONFIG_DIR}/$1.sh"
+  if [ -f "$MAIN_SCRIPT" ]; then
+    echo "[[Execute $MAIN_SCRIPT]]"
+    set -ex
+    source "$MAIN_SCRIPT"
+    set +ex
+  fi
 }
 
 ###############################################################################
@@ -263,6 +280,18 @@ case "$ACTION" in
     fi
 
     cvutil_save "${BLDDIR}/${SITE_NAME}.sh" $PERSISTENT_VARS
+    civibuild show "$SITE_NAME"
+    ;;
+
+  show)
+    cvutil_summary "[[Show site summary]]" \
+      CMS_ROOT CMS_URL CMS_DB_DSN \
+      CIVI_DB_DSN \
+      ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS
+    civibuild_run_optional show
+    echo "[[General notes]]"
+    echo " - You may need to restart httpd."
+    echo " - You may need to add the hostname and IP to /etc/hosts or DNS."
     ;;
 
   snapshots)

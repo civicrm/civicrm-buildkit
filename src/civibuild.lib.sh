@@ -48,8 +48,9 @@ function cvutil_save() {
 ## Summarize the content of key environment variables
 ## usage: cvutil_summary <message> <var1> <var2> ...
 function cvutil_summary() {
-  echo "========================================"
-  echo $1
+  if [ -n "$1" ]; then
+    echo $1
+  fi
   shift
 
   cvutil_assertvars "$@"
