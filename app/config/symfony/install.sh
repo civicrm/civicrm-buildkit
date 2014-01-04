@@ -5,13 +5,7 @@
 ###############################################################################
 ## Create virtual-host and databases
 
-## "amp create" outputs variables, CMS_URL, CMS_DB_* and CIVI_DB_*
-if [ -n "$CMS_URL" ]; then
-  eval $(amp create -f --root="$WEB_ROOT" --name=cms --prefix=CMS_ --url="$CMS_URL")
-else
-  eval $(amp create -f --root="$WEB_ROOT" --name=cms --prefix=CMS_)
-fi
-eval $(amp create -f --root="$WEB_ROOT" --name=civi --prefix=CIVI_ --skip-url)
+amp_install
 
 ###############################################################################
 ## Setup Drupal (config files, database tables)
