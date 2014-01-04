@@ -20,6 +20,8 @@ TMPDIR="$PRJDIR/app/tmp"
 CIVIXVER=13.10.0
 CIVIXURL="http://downloads.sourceforge.net/project/civix/civix-${CIVIXVER}.tar.bz2?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fcivix%2Ffiles%2F&use_mirror=master"
 HUBURL="https://github.com/github/hub/archive/v1.11.1.tar.gz"
+IS_QUIET=
+IS_FORCE=
 
 ##################################################
 ## Helpers
@@ -35,6 +37,41 @@ function download_url() {
     echo "error: failed to locate curl or wget"
   fi
 }
+
+## echo_comment <message>
+function echo_comment() {
+  if [ -z "$IS_QUIET" ]; then
+    echo "$@"
+  fi
+}
+
+##################################################
+## Parse arguments
+while [ -n "$1" ] ; do
+  OPTION="$1"
+  shift
+
+  case "$OPTION" in
+    -q|--quiet)
+      ## Don't display advisory comments
+      ## Only display messages if we're actually making changes
+      IS_QUIET=1
+      shift
+      ;;
+
+    -f|--force)
+      ## (Re)-download everything
+      IS_FORCE=1
+      shift
+      ;;
+
+    *)
+      echo "Unrecognized option: $OPTION"
+      civibuild_usage
+      ;;
+  esac
+done
+
 
 ##################################################
 ## Validation
@@ -53,8 +90,8 @@ fi
 set -e
 pushd $PRJDIR >> /dev/null
   ## Download "composer"
-  if [ -f "$PRJDIR/bin/composer" ]; then
-    echo "[[Composer binary ($PRJDIR/bin/composer) already exists. Skipping.]]"
+  if [ -z "$IS_FORCE" -a -f "$PRJDIR/bin/composer" ]; then
+    echo_comment "[[Composer binary ($PRJDIR/bin/composer) already exists. Skipping.]]"
   else
     echo "[[Download composer]]"
     download_url "https://getcomposer.org/installer" "$TMPDIR/composer-installer"
@@ -63,13 +100,20 @@ pushd $PRJDIR >> /dev/null
   fi
 
   ## Download dependencies (via composer)
-  "$PRJDIR/bin/composer" install
+  COMPOSER_MD5=$(cat composer.json composer.lock | php -r 'echo md5(file_get_contents("php://stdin"));')
+  touch "$TMPDIR/composer-data.md5"
+  if [ -z "$IS_FORCE" -a "$(cat $TMPDIR/composer-data.md5)" == "$COMPOSER_MD5" ]; then
+    echo_comment "[[composer dependencies already installed. Skipping.]]"
+  else
+    "$PRJDIR/bin/composer" install
+    cat composer.json composer.lock | php -r 'echo md5(file_get_contents("php://stdin"));' > "$TMPDIR/composer-data.md5"
+  fi
 
   ## Download "civix"
   ## FIXME: Update civix so that it can be installed via composer as a dependency
   touch "$PRJDIR/extern/civix.txt"
-  if [ -e "$PRJDIR/bin/civix" -a -d "extern/civix" -a "$(cat $PRJDIR/extern/civix.txt)" == "$CIVIXURL" ]; then
-    echo "[[civix binary ($PRJDIR/bin/civix) already exists. Skipping.]]"
+  if [ -z "$IS_FORCE" -a -e "$PRJDIR/bin/civix" -a -d "extern/civix" -a "$(cat $PRJDIR/extern/civix.txt)" == "$CIVIXURL" ]; then
+    echo_comment "[[civix binary ($PRJDIR/bin/civix) already exists. Skipping.]]"
   else
     echo "[[Install civix]]"
 
@@ -95,10 +139,10 @@ pushd $PRJDIR >> /dev/null
 
   ## Download "hub"
   touch "$PRJDIR/extern/hub.txt"
-  if [ -e "$PRJDIR/extern/hub/bin/hub" -a -e "$PRJDIR/bin/hub" -a "$(cat $PRJDIR/extern/hub.txt)" == "$HUBURL" ]; then
-    echo "[[hub ($PRJDIR/extern/hub) already exists. Skipping.]]"
+  if [ -z "$IS_FORCE" -a -e "$PRJDIR/extern/hub/bin/hub" -a -e "$PRJDIR/bin/hub" -a "$(cat $PRJDIR/extern/hub.txt)" == "$HUBURL" ]; then
+    echo_comment "[[hub ($PRJDIR/extern/hub) already exists. Skipping.]]"
   elif [ -z "`which ruby`" -o -z "`which rake`" ]; then
-    echo "[[hub requires Ruby and Rake (which are unavailable). Skipping.]]"
+    echo_comment "[[hub requires Ruby and Rake (which are unavailable). Skipping.]]"
   else
     echo "[[Install hub]]"
 
