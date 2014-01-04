@@ -31,7 +31,9 @@ civi-download-tools --quiet
 ## Display usage message
 function civibuild_usage() {
   APP=$(basename "$0")
-  cat <<EOT
+
+  #Fails in Ubuntu 12.04 Vagrant box ==> cat <<EOT
+  php -r 'echo file_get_contents("php://stdin");' <<EOT
 Usage: $APP create <build-name> [options]
   <build-name>        The name of the sub-directory to build
   --type <type>       The name of the download/install scripts. (If omitted, assume <build-name>) [Optional]
