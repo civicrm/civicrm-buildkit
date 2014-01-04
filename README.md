@@ -45,12 +45,12 @@ simply skip this step.
 ## Installation (Vagrant)
 
 ```bash
-git clone https://github.com/civicrm/civicrm-project.git
-cd civicrm-project/vagrant/precise32
+git clone https://github.com/civicrm/civicrm-buildkit.git
+cd civicrm-buildkit/vagrant/precise32
 vagrant up
 vagrant ssh
-civiprj build drupal-demo --civi-ver=4.4 --url=http://localhost:8001
-## FIXME: ./civiprj launch drupal-demo
+civibuild build drupal-demo --civi-ver=4.4 --url=http://localhost:8001
+## FIXME: ./civibuild launch drupal-demo
 ```
 
 The final command will print out URLs and credentials for accessing the

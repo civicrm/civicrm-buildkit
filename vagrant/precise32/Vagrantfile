@@ -44,19 +44,19 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     :owner => "www-data",
     :group => "www-data",
     :mount_options => ["dmode=775","fmode=664"]
-  config.vm.synced_folder "../../", "/home/vagrant/civicrm-project", id: "civicrm-project",
+  config.vm.synced_folder "../../", "/home/vagrant/civicrm-buildkit", id: "civicrm-buildkit",
     :owner => "vagrant",
     :group => "vagrant",
     :mount_options => ["dmode=775","fmode=664"]
-  config.vm.synced_folder "../../bin", "/home/vagrant/civicrm-project/bin", id: "civicrm-project-bin",
+  config.vm.synced_folder "../../bin", "/home/vagrant/civicrm-buildkit/bin", id: "civicrm-buildkit-bin",
     :owner => "vagrant",
     :group => "vagrant",
     :mount_options => ["dmode=775","fmode=775"]
-  config.vm.synced_folder "../../vendor", "/home/vagrant/civicrm-project/vendor", id: "civicrm-project-vendor",
+  config.vm.synced_folder "../../vendor", "/home/vagrant/civicrm-buildkit/vendor", id: "civicrm-buildkit-vendor",
     :owner => "vagrant",
     :group => "vagrant",
     :mount_options => ["dmode=775","fmode=775"]
-  config.vm.synced_folder "../../extern", "/home/vagrant/civicrm-project/extern", id: "civicrm-project-extern",
+  config.vm.synced_folder "../../extern", "/home/vagrant/civicrm-buildkit/extern", id: "civicrm-buildkit-extern",
     :owner => "vagrant",
     :group => "vagrant",
     :mount_options => ["dmode=775","fmode=775"]

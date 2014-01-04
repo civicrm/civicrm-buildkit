@@ -44,8 +44,8 @@ apt-get install -y apache2 libapache2-mod-php5
 ## Ruby (required for "hub")
 apt-get install -y ruby1.8 rake
 
-## civicrm-project -- note: code is already shared (via Vagrantfile)
-PRJDIR=/home/vagrant/civicrm-project
+## civicrm-buildkit -- note: code is already shared (via Vagrantfile)
+PRJDIR=/home/vagrant/civicrm-buildkit
 sudo -u vagrant -H "$PRJDIR/bin/civi-download-tools"
 cat > /etc/profile.d/civicrm_project.sh << EOF
 PATH="$PRJDIR/bin:\$PATH"
@@ -53,7 +53,7 @@ export PATH
 EOF
 
 #[ ! -d "$PRJDIR/app/tmp/apache.d" ] && mkdir -p "$PRJDIR/app/tmp/apache.d"
-echo "Include /home/vagrant/.amp/apache.d/*.conf" > /etc/apache2/conf.d/civicrm-project
+echo "Include /home/vagrant/.amp/apache.d/*.conf" > /etc/apache2/conf.d/civicrm-buildkit
 
 sudo -u vagrant -H $PRJDIR/bin/amp config:set \
   --mysql_type="dsn" \
