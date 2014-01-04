@@ -20,7 +20,7 @@ cd civicrm-buildkit/bin
 ./civi-download-tools
 ./amp config
 ./amp test
-./civibuild build drupal-demo --civi-ver=4.4 --url=http://localhost:8001
+./civibuild create drupal-demo --civi-ver=4.4 --url=http://localhost:8001
 ## FIXME: ./civibuild launch drupal-demo
 ```
 

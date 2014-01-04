@@ -34,7 +34,8 @@ function civibuild_usage() {
 
   #Fails in Ubuntu 12.04 Vagrant box ==> cat <<EOT
   php -r 'echo file_get_contents("php://stdin");' <<EOT
-Usage: $APP create <build-name> [options]
+Syntax: $APP create <build-name> [options]
+Description: Download all code, create databases, create config files
   <build-name>        The name of the sub-directory to build
   --type <type>       The name of the download/install scripts. (If omitted, assume <build-name>) [Optional]
   --url <url>         The public URL of the site
@@ -45,13 +46,16 @@ Usage: $APP create <build-name> [options]
   --force-download    If the source tree already exists, destroy and recreate
   --force-install     If the DB/config already exists, destroy and recreate
 
-Usage: $APP snapshot-create <build-name> [options]
+Syntax: $APP snapshot <build-name> [options]
+Description: Create a snapshot of the build's DBs
   <build-name>           The name of the sub-directory to build
   --snapshot <name>      The name of the snapshot subdirectory. (If omitted, assume <build-name>) [Optional]
 
-Usage: $APP snapshot-list
+Syntax: $APP snapshots
+Description: List available snapshots
 
-Usage: $APP snapshot-restore <build-name> [options]
+Syntax: $APP restore <build-name> [options]
+Description: Restore DBs from a snapshot
   <build-name>           The name of the sub-directory to build
   --snapshot <name>      The name of the snapshot subdirectory. (If omitted, assume <build-name>) [Optional]
   --cms-sql <sql-file>   The path to a SQL backup of the CMS DB [Optional]
@@ -84,7 +88,7 @@ ACTION="$1"
 shift
 
 case "$ACTION" in
-  snapshot-list)
+  snapshots)
     # don't parse SITE_NAME
     ;;
   *)
@@ -214,45 +218,23 @@ case "$ACTION" in
       pushd "$WEB_ROOT" > /dev/null
         civibuild_run install
       popd > /dev/null
-
-      if [ -n "$CIVI_SQL" ]; then
-        snapshot_create_civi
-      fi
-
-      if [ -n "$CMS_SQL" ]; then
-        snapshot_create_cms
-      fi
+      amp_snapshot_create
     fi
 
     cvutil_save "${BLDDIR}/${SITE_NAME}.sh" $PERSISTENT_VARS
     ;;
 
-  snapshot-list)
+  snapshots)
     ls "$SNAPSHOT_DIR"
     ;;
 
-  snapshot-create)
-    ## TODO: single-db support
-
-    if [ -z "$CMS_SQL_SKIP" ]; then
-      snapshot_create_civi
-    fi
-
-    if [ -z "$CIVI_SQL_SKIP" ]; then
-      snapshot_create_cms
-    fi
+  snapshot)
+    amp_snapshot_create
     ;;
 
-  snapshot-restore)
-    ## TODO: single-db support
-
-    if [ -z "$CMS_SQL_SKIP" ]; then
-      snapshot_restore_cms
-    fi
-
-    if [ -z "$CIVI_SQL_SKIP" ]; then
-      snapshot_restore_civi
-    fi
+  restore)
+    amp_snapshot_restore
+    cvutil_save "${BLDDIR}/${SITE_NAME}.sh" $PERSISTENT_VARS
     ;;
 
   *)
