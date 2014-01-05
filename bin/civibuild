@@ -52,6 +52,9 @@ Description: Download all code, create databases, create config files
   --demo-pass         Password for the CMS's demo user
   --demo-email        Email of the CMS's demo user
 
+Syntax: $APP reinstall <build-name>
+Description: Short-hand for "$APP create <build-name> --force-install"
+
 Syntax: $APP show <build-name>
 Description: Show key details about the build
   <build-name>        The name of the sub-directory to build
@@ -281,6 +284,10 @@ case "$ACTION" in
 
     cvutil_save "${BLDDIR}/${SITE_NAME}.sh" $PERSISTENT_VARS
     civibuild show "$SITE_NAME"
+    ;;
+
+  reinstall)
+    civibuild create "$SITE_NAME" --force-install
     ;;
 
   show)
