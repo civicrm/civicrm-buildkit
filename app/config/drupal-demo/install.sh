@@ -28,10 +28,15 @@ civicrm_install
 
 drush -y updatedb
 drush -y dis overlay shortcut color
-drush -y en civicrm toolbar civicrmtheme
-drush -y vset theme_default seven
-drush -y vset civicrmtheme_theme_admin seven
-drush -y vset site_frontpage "civicrm/dashboard"
+drush -y en civicrm toolbar garland login_destination
+drush -y vset theme_default garland
+
+drush -y scr "$SITE_CONFIG_DIR/node-welcome.php"
+drush -y vset site_frontpage "welcome"
+drush -y scr "$SITE_CONFIG_DIR/login-destination.php"
+
+echo 'update block set region ="sidebar_first" where module="user" and delta="login" and theme="garland"' | drush sql-cli
+echo 'update block set region ="sidebar_first" where module="system" and delta="navigation" and theme="garland"' | drush sql-cli
 
 drush -y en civicrm_webtest
 drush -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
