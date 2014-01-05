@@ -71,11 +71,13 @@ If you're interested in working on the build types or build process, then the wo
 
 There are three variations on rebuilding. In order of slowest (most thorough) to fastest (least thorough):
 
- * **civibuild create <name> --force** -- Complete rebuild. Delete code, config files, databases; then recreate them.
- * **civibuild reinstall <name>** -- Keep the existing code, but recreate config files and databases using installation logic (PHP/bash).
- * **civibuild restore <name>** -- Keep the existing code and config files. Recreate the databases using a "clean" SQL snapshot.
+ * **civibuild create \<name> --force** -- Complete rebuild. Delete code, config files, databases; then recreate them.
+ * **civibuild reinstall \<name>** -- Keep the existing code, but recreate config files and databases using installation logic (PHP/bash).
+ * **civibuild restore \<name>** -- Keep the existing code and config files. Recreate the databases using a "clean" SQL snapshot.
 
 ## Daily Coding: Your First Patch
+
+(TODO: Write a real tutorial!)
 
 ```bash
 civicrm-buildkit$ civibuild create drupal-demo --civi-ver 4.4 --url http://localhost:8001
@@ -89,6 +91,8 @@ drupal$ hub pull-request
 ```
 
 ## Daily Coding: Housekeeping
+
+(TODO: Write a real tutorial!)
 
 From time-to-time, you may want to update your code. It's also a good idea
 to double-check that your git repos have checked out the normal/expected
