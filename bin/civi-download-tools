@@ -138,6 +138,8 @@ pushd $PRJDIR >> /dev/null
     cat composer.json composer.lock | php -r 'echo md5(file_get_contents("php://stdin"));' > "$TMPDIR/composer-data.md5"
   fi
 
+  [ ! -d "$PRJDIR/extern" ] && mkdir "$PRJDIR/extern"
+
   ## Download "civix"
   ## FIXME: Update civix so that it can be installed via composer as a dependency
   touch "$PRJDIR/extern/civix.txt"
