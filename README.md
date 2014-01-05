@@ -64,3 +64,41 @@ For example, at time of writing, it includes:
 
 For a list of available build-types as well as documentation on writing build scripts,
 see [app/config](app/config).
+
+## Rebuilds
+
+If you're interested in working on the build types or build process, then the workflow will consist of alternating two basic steps: (1) editing build scripts and (2) rebuilding. Rebuilds may take a few minutes, so it's helpful to choose the fastest type of rebuild that will meet your needs.
+
+There are three variations on rebuilding. In order of slowest (most thorough) to fastest (least thorough):
+
+ * **civibuild create <name> --force** -- Complete rebuild. Delete code, config files, databases; then recreate them.
+ * **civibuild reinstall <name>** -- Keep the existing code, but recreate config files and databases using installation logic (PHP/bash).
+ * **civibuild restore <name>** -- Keep the existing code and config files. Recreate the databases using a "clean" SQL snapshot.
+
+## Daily Coding: Your First Patch
+
+```bash
+civicrm-buildkit$ civibuild create drupal-demo --civi-ver 4.4 --url http://localhost:8001
+civicrm-buildkit$ cd build/drupal-demo/sites/all/modules/civicrm/drupal
+drupal$ hub fork
+drupal$ git checkout origin/7.x-4.4 -b mypatch
+drupal$ vi civicrm.module
+drupal$ git commit civicrm.module
+drupal$ git push myuser mypatch
+drupal$ hub pull-request
+```
+
+## Daily Coding: Housekeeping
+
+From time-to-time, you may want to update your code. It's also a good idea
+to double-check that your git repos have checked out the normal/expected
+branches.
+
+```bash
+civicrm-buildkit$ cd build/drupal-demo
+drupal-demo$ git scan status
+## If any repos look unclean, figure out why... and clean them up! Then:
+drupal-demo$ git scan update
+## If you think the DB or config structure has changed, then optionally:
+drupal-demo$ civibuild reinstall drupal-demo
+```
