@@ -17,11 +17,8 @@ PRJDIR=$(dirname "$BINDIR")
 TMPDIR="$PRJDIR/app/tmp"
 BLDDIR="$PRJDIR/build"
 
-if [ ! -e "$TMPDIR" ]; then
-  mkdir -p "$TMPDIR"
-fi
-
 source "$PRJDIR/src/civibuild.lib.sh"
+cvutil_mkdir "$TMPDIR" "$BLDDIR" "$PRJDIR/app/private"
 
 ## Make sure bundled utilities are available, regardless of local config
 export PATH="$BINDIR:$PATH"
