@@ -276,6 +276,9 @@ case "$ACTION" in
       pushd "$WEB_ROOT" > /dev/null
         civibuild_run uninstall
       popd > /dev/null
+      if [ -d "$PRIVATE_ROOT" ]; then
+        rm -rf "$PRIVATE_ROOT"
+      fi
     fi
 
     if [ -n "$FORCE_INSTALL" -o -z "$CMS_DB_DSN" ]; then

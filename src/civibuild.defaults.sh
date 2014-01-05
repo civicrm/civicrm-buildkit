@@ -9,8 +9,11 @@
 ## The location of the civicrm-buildkit binaries
 # BINDIR=
 
-## A place to store temp files
+## A place to store temp files (PRJDIR/app/tmp)
 # TMPDIR=
+
+## A place to put sites that we build (PRJDIR/build)
+# BLDDIR=
 
 ###############################################################################
 ## Common variables
@@ -28,8 +31,12 @@ SITE_TYPE=
 SITE_CONFIG_DIR=
 
 ## Root directory where the site's code will be installed
-## (default: PRJDIR/build/SITE_NAME)
+## (default: BLDDIR/SITE_NAME)
 WEB_ROOT=
+
+## Root directory where the site can put private (unpublished) data files
+## (default: app/private/SITE_NAME)
+PRIVATE_ROOT=
 
 ## Root directory where we store cached copies of git repositories
 GIT_CACHE_DIR="$TMPDIR/git-cache"

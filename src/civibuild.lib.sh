@@ -368,9 +368,10 @@ function drupal_multisite_install() {
       --sites-subdir="$DRUPAL_SITE_DIR"
     chmod u+w "sites/$DRUPAL_SITE_DIR"
 
-    ## Allow shell and WWW users to both manipulate "files" directory
-    amp datadir "sites/${DRUPAL_SITE_DIR}/files"
+    ## Setup extra directories
+    amp datadir "sites/${DRUPAL_SITE_DIR}/files" "${PRIVATE_ROOT}/${DRUPAL_SITE_DIR}"
     cvutil_mkdir "sites/${DRUPAL_SITE_DIR}/modules"
+    drush vset --yes file_private_path "${PRIVATE_ROOT}/${DRUPAL_SITE_DIR}"
   popd >> /dev/null
 }
 
@@ -381,6 +382,9 @@ function drupal_multisite_uninstall() {
   DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL")
   if [ -n "$DRUPAL_SITE_DIR" -a -d "$WEB_ROOT/sites/$DRUPAL_SITE_DIR" ]; then
     rm -rf "$WEB_ROOT/sites/$DRUPAL_SITE_DIR"
+  fi
+  if [ -n "$DRUPAL_SITE_DIR" -a -d "$PRIVATE_ROOT/$DRUPAL_SITE_DIR" ]; then
+    rm -rf "$PRIVATE_ROOT/$DRUPAL_SITE_DIR"
   fi
 }
 
@@ -408,9 +412,10 @@ function drupal_singlesite_install() {
       --site-name="$CMS_TITLE"
     chmod u+w "sites/default"
 
-    ## Allow shell and WWW users to both manipulate "files" directory
-    amp datadir "sites/default/files"
+    ## Setup extra directories
+    amp datadir "sites/default/files" "$PRIVATE_ROOT/default"
     cvutil_mkdir "sites/default/modules"
+    drush vset --yes file_private_path "$PRIVATE_ROOT/default"
   popd >> /dev/null
 }
 
@@ -427,9 +432,13 @@ function drupal_singlesite_uninstall() {
     fi
     if [ -f "sites/default/files" ]; then
       chmod u+w "sites/default/files"
-      rm -ff "sites/default/files"
+      rm -f "sites/default/files"
     fi
   popd >> /dev/null
+
+  if [ -d "$PRIVATE_ROOT/default" ]; then
+    rm -rf "$PRIVATE_ROOT/default"
+  fi
 }
 
 ###############################################################################
