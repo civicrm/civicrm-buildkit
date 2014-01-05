@@ -78,6 +78,9 @@ Description: Restore HTTP/DB services from a snapshot
 
 Syntax: $APP restore-all
 Description: Restore *all* HTTP/DB services from their respective snapshots
+
+Syntax: $APP destroy <build-name>
+Description: Destroy all data about a particular build
 EOT
 
   exit 99;
@@ -284,6 +287,13 @@ case "$ACTION" in
 
     cvutil_save "${BLDDIR}/${SITE_NAME}.sh" $PERSISTENT_VARS
     civibuild show "$SITE_NAME"
+    ;;
+
+  destroy)
+    [ -d "$WEB_ROOT" ] && rm -rf "$WEB_ROOT"
+    [ -d "$PRIVATE_ROOT" ] && rm -rf "$PRIVATE_ROOT"
+    [ -f "${BLDDIR}/${SITE_NAME}.sh" ] && rm -f "${BLDDIR}/${SITE_NAME}.sh"
+    amp cleanup
     ;;
 
   reinstall)
