@@ -2,6 +2,7 @@
 .idea
 app/cache/
 app/config/civix.ini
+app/private
 app/run/
 app/snapshot/
 app/tmp/
