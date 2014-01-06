@@ -2,6 +2,7 @@
 .idea
 app/cache/
 app/config/civix.ini
+app/config/starterkit/civicrm_starterkit/
 app/private
 app/run/
 app/snapshot/

@@ -213,7 +213,14 @@ function civicrm_install() {
   civicrm_make_test_settings_php
 
   pushd "$CIVI_CORE" >> /dev/null
-    ./bin/setup.sh
+    ## Does this build include development support (eg git or tarball-based)?
+    if [ -e "xml" -a -e "bin/setup.sh" ]; then
+      ./bin/setup.sh
+    elif [ -e "sql/civicrm.mysql" -a -e "sql/civicrm_generated.mysql" ]; then
+      cat sql/civicrm.mysql sql/civicrm_generated.mysql | mysql $CIVI_DB_ARGS
+    else
+      echo "Failed to locate civi SQL files"
+    fi
   popd >> /dev/null
 }
 
@@ -272,8 +279,10 @@ EOF
 function civicrm_make_test_settings_php() {
   cvutil_assertvars civicrm_make_test_settings_php CIVI_CORE CIVI_DB_NAME CIVI_DB_USER CIVI_DB_PASS CIVI_DB_HOST WEB_ROOT CMS_URL ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS CIVI_SITE_KEY
 
-  ## TODO: REVIEW
-  cat > "$CIVI_CORE/tests/phpunit/CiviTest/civicrm.settings.local.php" << EOF
+  ## Does this build include development support (eg git or tarball-based)?
+  if [ -d "$CIVI_CORE/tests/phpunit/CiviTest" ]; then
+    ## TODO: REVIEW
+    cat > "$CIVI_CORE/tests/phpunit/CiviTest/civicrm.settings.local.php" << EOF
 <?php
   define('CIVICRM_DSN', "mysql://${CIVI_DB_USER}:${CIVI_DB_PASS}@${CIVI_DB_HOST}:${CIVI_DB_PORT}/${CIVI_DB_NAME}");
   define('CIVICRM_TEMPLATE_COMPILEDIR', '${CIVI_TEMPLATEC}');
@@ -300,6 +309,7 @@ class CiviSeleniumSettings {
 	}
 }
 EOF
+  fi
 }
 
 ###############################################################################
@@ -359,7 +369,7 @@ function drupal_multisite_install() {
   pushd "$WEB_ROOT" >> /dev/null
     [ -f "sites/$DRUPAL_SITE_DIR/settings.php" ] && rm -f "sites/$DRUPAL_SITE_DIR/settings.php"
 
-    drush site-install -y \
+    drush site-install -y "$@" \
       --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOSTPORT}/${CMS_DB_NAME}" \
       --account-name="$ADMIN_USER" \
       --account-pass="$ADMIN_PASS" \
@@ -404,7 +414,7 @@ function drupal_singlesite_install() {
   pushd "$WEB_ROOT" >> /dev/null
     [ -f "sites/default/settings.php" ] && rm -f "sites/default/settings.php"
 
-    drush site-install -y \
+    drush site-install -y "$@" \
       --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOSTPORT}/${CMS_DB_NAME}" \
       --account-name="$ADMIN_USER" \
       --account-pass="$ADMIN_PASS" \
