@@ -32,6 +32,18 @@ CIVI_CORE="${WEB_ROOT}/sites/all/modules/civicrm"
 CIVI_SETTINGS="${WEB_ROOT}/sites/default/civicrm.settings.php"
 CIVI_FILES="${WEB_ROOT}/sites/default/files/civicrm"
 CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
-CIVI_UF="Drupal"
+CIVI_UF="Joomla"
 
 #civicrm_install
+
+set +x
+echo "================================================================================"
+echo "================================================================================"
+echo "== NOTE: The 'joomla-demo' scripts are still in development. The following    =="
+echo "== features are not supported:                                                =="
+echo "==   - Install CiviCRM                                                        =="
+echo "==   - Create demo user                                                       =="
+echo "==   - Set permissions of demo user                                           =="
+echo "================================================================================"
+echo "================================================================================"
+set -x
