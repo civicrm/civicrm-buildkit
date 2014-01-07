@@ -11,6 +11,8 @@ git clone "$GIT_CACHE_DIR/joomla/joomla-cms.git" "$WEB_ROOT"
 pushd "$WEB_ROOT" >> /dev/null
   git checkout "$CMS_VER"
 
+  ## Submitted PR to include cli/install.php in core -- https://github.com/joomla/joomla-cms/pull/2764
+  ## For the moment, we need to add it ourselves
   if [ ! -f "cli/install.php" ]; then
     cp "$SITE_CONFIG_DIR/cli-install.php" "cli/install.php"
   fi
