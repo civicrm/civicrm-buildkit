@@ -17,7 +17,13 @@ pushd "$WEB_ROOT" >> /dev/null
     cp "$SITE_CONFIG_DIR/cli-install.php" "cli/install.php"
   fi
 
-  ## Joomla installer will require deleting the "installation" directory, and that's
-  ## going to make for some ucky git statuses.
-  # rm -rf .git
+  ## TODO: Checkout Civi's code...
+  #git clone ${GIT_CACHE_DIR}/civicrm/civicrm-joomla.git    -b "$CIVI_VERSION" path/to/checkout/to
+  #git clone ${GIT_CACHE_DIR}/civicrm/civicrm-core.git      -b "$CIVI_VERSION" path/to/checkout/to
+  #git clone ${GIT_CACHE_DIR}/civicrm/civicrm-packages.git  -b "$CIVI_VERSION" path/to/checkout/to/packages
+
+  #git_set_hooks civicrm-joomla      path/to/checkout/to          "../civicrm/tools/scripts/git"
+  #git_set_hooks civicrm-core        path/to/checkout/to          "../tools/scripts/git"
+  #git_set_hooks civicrm-packages    path/to/checkout/to/packages "../../tools/scripts/git"
+
 popd >> /dev/null

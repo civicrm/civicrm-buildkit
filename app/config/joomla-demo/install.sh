@@ -22,7 +22,10 @@ pushd "$WEB_ROOT" >> /dev/null
     --admin-email="$ADMIN_EMAIL" \
     --offline
 
-  mv installation .installation.bak
+  ## Joomla requires removal of "installation" directory, which mucks up git,
+  ## so we'll push them off to the side.
+  [ -d installation ] && mv installation .installation.bak
+  [ -d .git ]         && mv .git .git.bak
 popd >> /dev/null
 
 ###############################################################################
