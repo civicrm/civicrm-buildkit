@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## download.sh -- Download Drupal and CiviCRM
+## download.sh -- Download Joomla and CiviCRM
 
 ###############################################################################
 
