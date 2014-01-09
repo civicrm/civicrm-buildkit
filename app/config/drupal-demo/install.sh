@@ -29,6 +29,11 @@ civicrm_install
 drush -y updatedb
 drush -y en civicrm toolbar locale garland login_destination userprotect
 
+## Setup CiviCRM
+echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign"]}' \
+  | drush cvapi setting.create --in=json
+drush cvapi MailSettings.create id=1 domain=example.org
+
 ## Setup theme
 #above# drush -y en garland
 drush -y vset theme_default garland
