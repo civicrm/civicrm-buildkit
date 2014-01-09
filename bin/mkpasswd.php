@@ -1,5 +1,5 @@
 #!/usr/bin/env php
-<?
+<?php
 function createRandom($len, $alphabet) {
   $alphabetSize = strlen($alphabet);
   $result = '';
