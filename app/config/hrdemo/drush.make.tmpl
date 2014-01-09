@@ -25,21 +25,21 @@ projects[] = drupal
 libraries[civicrmdrupal][destination] = modules
 libraries[civicrmdrupal][directory_name] = civicrm/drupal
 libraries[civicrmdrupal][download][type] = git
-libraries[civicrmdrupal][download][url] = %%GIT_CACHE_DIR%%/civicrm/civicrm-drupal.git
+libraries[civicrmdrupal][download][url] = %%CACHE_DIR%%/civicrm/civicrm-drupal.git
 libraries[civicrmdrupal][download][branch] = 7.x-%%CIVI_VERSION%%
 libraries[civicrmdrupal][overwrite] = TRUE
 
 libraries[civicrmpackages][destination] = modules
 libraries[civicrmpackages][directory_name] = civicrm/packages
 libraries[civicrmpackages][download][type] = git
-libraries[civicrmpackages][download][url] = %%GIT_CACHE_DIR%%/civicrm/civicrm-packages.git
+libraries[civicrmpackages][download][url] = %%CACHE_DIR%%/civicrm/civicrm-packages.git
 libraries[civicrmpackages][download][branch] = %%CIVI_VERSION%%
 libraries[civicrmpackages][overwrite] = TRUE
 
 libraries[civihr][destination] = modules
 libraries[civihr][directory_name] = civicrm/tools/extensions/civihr
 libraries[civihr][download][type] = git
-libraries[civihr][download][url] = %%GIT_CACHE_DIR%%/civicrm/civihr.git
+libraries[civihr][download][url] = %%CACHE_DIR%%/civicrm/civihr.git
 libraries[civihr][download][branch] = master
 libraries[civihr][overwrite] = TRUE
 
@@ -60,7 +60,7 @@ libraries[civihr][overwrite] = TRUE
 libraries[civicrm][destination] = modules
 libraries[civicrm][directory_name] = civicrm
 libraries[civicrm][download][type] = git
-libraries[civicrm][download][url] = %%GIT_CACHE_DIR%%/civicrm/civicrm-core.git
+libraries[civicrm][download][url] = %%CACHE_DIR%%/civicrm/civicrm-core.git
 libraries[civicrm][download][branch] = %%CIVI_VERSION%%
 libraries[civicrm][overwrite] = TRUE
 
@@ -104,6 +104,6 @@ projects[devel][version] = 1.3
 libraries[civicrmdeveloper][destination] = modules
 libraries[civicrmdeveloper][directory_name] = contrib/civicrm_developer
 libraries[civicrmdeveloper][download][type] = git
-libraries[civicrmdeveloper][download][url] = %%GIT_CACHE_DIR%%/eileenmcnaughton/civicrm_developer.git
+libraries[civicrmdeveloper][download][url] = %%CACHE_DIR%%/eileenmcnaughton/civicrm_developer.git
 libraries[civicrmdeveloper][download][branch] = master
 libraries[civicrmdeveloper][overwrite] = TRUE

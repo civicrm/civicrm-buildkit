@@ -4,8 +4,8 @@
 
 ###############################################################################
 
-git_cache_setup "https://github.com/joomla/joomla-cms.git" "$GIT_CACHE_DIR/joomla/joomla-cms.git"
-git clone "$GIT_CACHE_DIR/joomla/joomla-cms.git" "$WEB_ROOT"
+git_cache_setup "https://github.com/joomla/joomla-cms.git" "$CACHE_DIR/joomla/joomla-cms.git"
+git clone "$CACHE_DIR/joomla/joomla-cms.git" "$WEB_ROOT"
 
 [ -z "$CMS_VER" ] && CMS_VER=3.2.1
 pushd "$WEB_ROOT" >> /dev/null
@@ -18,9 +18,9 @@ pushd "$WEB_ROOT" >> /dev/null
   fi
 
   ## TODO: Checkout Civi's code...
-  #git clone ${GIT_CACHE_DIR}/civicrm/civicrm-joomla.git    -b "$CIVI_VERSION" path/to/checkout/to
-  #git clone ${GIT_CACHE_DIR}/civicrm/civicrm-core.git      -b "$CIVI_VERSION" path/to/checkout/to
-  #git clone ${GIT_CACHE_DIR}/civicrm/civicrm-packages.git  -b "$CIVI_VERSION" path/to/checkout/to/packages
+  #git clone ${CACHE_DIR}/civicrm/civicrm-joomla.git    -b "$CIVI_VERSION" path/to/checkout/to
+  #git clone ${CACHE_DIR}/civicrm/civicrm-core.git      -b "$CIVI_VERSION" path/to/checkout/to
+  #git clone ${CACHE_DIR}/civicrm/civicrm-packages.git  -b "$CIVI_VERSION" path/to/checkout/to/packages
 
   #git_set_hooks civicrm-joomla      path/to/checkout/to          "../civicrm/tools/scripts/git"
   #git_set_hooks civicrm-core        path/to/checkout/to          "../tools/scripts/git"

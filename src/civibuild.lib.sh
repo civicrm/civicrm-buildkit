@@ -197,7 +197,7 @@ function amp_snapshot_restore() {
 ###############################################################################
 ## Generate config files and setup database
 function civicrm_install() {
-  cvutil_assertvars civicrm_install CIVI_CORE CIVI_FILES CIVI_TEMPLATEC
+  cvutil_assertvars civicrm_install CIVI_CORE CIVI_FILES CIVI_TEMPLATEC CIVI_DOMAIN_NAME CIVI_DOMAIN_EMAIL
 
   if [ ! -d "$CIVI_CORE/bin" -o ! -d "$CIVI_CORE/CRM" ]; then
     echo "Failed to locate valid civi root: $CIVI_CORE"
@@ -222,6 +222,17 @@ function civicrm_install() {
       echo "Failed to locate civi SQL files"
     fi
   popd >> /dev/null
+
+  mysql $CIVI_DB_ARGS <<EOSQL
+    UPDATE civicrm_domain SET name = '$CIVI_DOMAIN_NAME';
+    SELECT @option_group_id := id
+      FROM civicrm_option_group n
+      WHERE name = 'from_email_address';
+    UPDATE civicrm_option_value
+      SET label = '$CIVI_DOMAIN_EMAIL'
+      WHERE option_group_id = @option_group_id
+      AND value = '1';
+EOSQL
 }
 
 ###############################################################################
@@ -489,7 +500,7 @@ function git_set_remote() {
 }
 
 ###############################################################################
-## Initialize (or update) a cached copy of a git repo in $GIT_CACHE_DIR
+## Initialize (or update) a cached copy of a git repo in $CACHE_DIR
 ## usage: git_cache_setup <url> <cache-dir>
 function git_cache_setup() {
   local url="$1"
@@ -536,4 +547,36 @@ function git_cache_deref_remotes() {
   done
 
   set -${_shellopt}
+}
+
+###############################################################################
+## Initialize (or update) a cached copy of an svn URL
+## usage: svn_cache_setup <url> <cache-dir>
+function svn_cache_setup() {
+  local url="$1"
+  local cachedir="$2"
+
+  if [ ! -d "$cachedir" ]; then
+    ## clone
+    cvutil_makeparent "$cachedir"
+    svn co "$url" "$cachedir"
+  else
+    ## update
+    pushd "$cachedir" >> /dev/null
+      svn up
+    popd >> /dev/null
+  fi
+}
+
+###############################################################################
+## Setup an SVN working copy from a previously cached URL
+## usage: svn_cache_clone <cache-dir> <new-working-dir>
+function svn_cache_clone() {
+  local cachedir="$1"
+  local workdir="$2"
+  if [ ! -d "$workdir" ]; then
+    cvutil_makeparent "$workdir"
+    cvutil_mkdir "$workdir"
+  fi
+  rsync -va "$cachedir/./" "$workdir/./"
 }

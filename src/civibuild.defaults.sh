@@ -39,7 +39,8 @@ WEB_ROOT=
 PRIVATE_ROOT=
 
 ## Root directory where we store cached copies of git repositories
-GIT_CACHE_DIR="$TMPDIR/git-cache"
+## (default: TMPDIR/git-cache)
+CACHE_DIR=
 
 ###############################################################################
 ## "create" variables defined by civibuild
@@ -115,6 +116,12 @@ CIVI_TEMPLATEC=
 
 ## Name of the CiviCRM UF (Drupal, Drupal6, Joomla, WordPress)
 CIVI_UF=
+
+## The name of the organization (for inclusion in footers, etc)
+CIVI_DOMAIN_NAME=
+
+## The default from email address
+CIVI_DOMAIN_EMAIL=
 
 ###############################################################################
 ## snapshot-related variables
