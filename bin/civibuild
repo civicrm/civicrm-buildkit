@@ -257,8 +257,8 @@ case "$ACTION" in
 
     if [ ! -d "$WEB_ROOT" ]; then
       pushd "$PRJDIR" > /dev/null
-        if [ -f "$PRJDIR/app/config/git-caches.sh" ]; then
-          source "$PRJDIR/app/config/git-caches.sh"
+        if [ -f "$PRJDIR/app/config/caches.sh" ]; then
+          source "$PRJDIR/app/config/caches.sh"
         fi
         civibuild_run download
         git_cache_deref_remotes "$CACHE_DIR" "$WEB_ROOT"
