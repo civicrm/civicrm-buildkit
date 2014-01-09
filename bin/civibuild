@@ -261,7 +261,7 @@ case "$ACTION" in
           source "$PRJDIR/app/config/git-caches.sh"
         fi
         civibuild_run download
-        git_cache_deref_remotes "$GIT_CACHE_DIR" "$WEB_ROOT"
+        git_cache_deref_remotes "$CACHE_DIR" "$WEB_ROOT"
       popd > /dev/null
       if [ ! -d "$WEB_ROOT" ]; then
         echo "Download failed to create directory"

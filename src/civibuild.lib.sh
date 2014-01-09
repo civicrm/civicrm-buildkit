@@ -489,7 +489,7 @@ function git_set_remote() {
 }
 
 ###############################################################################
-## Initialize (or update) a cached copy of a git repo in $GIT_CACHE_DIR
+## Initialize (or update) a cached copy of a git repo in $CACHE_DIR
 ## usage: git_cache_setup <url> <cache-dir>
 function git_cache_setup() {
   local url="$1"
@@ -536,4 +536,36 @@ function git_cache_deref_remotes() {
   done
 
   set -${_shellopt}
+}
+
+###############################################################################
+## Initialize (or update) a cached copy of an svn URL
+## usage: svn_cache_setup <url> <cache-dir>
+function svn_cache_setup() {
+  local url="$1"
+  local cachedir="$2"
+
+  if [ ! -d "$cachedir" ]; then
+    ## clone
+    cvutil_makeparent "$cachedir"
+    svn co "$url" "$cachedir"
+  else
+    ## update
+    pushd "$cachedir" >> /dev/null
+      svn up
+    popd >> /dev/null
+  fi
+}
+
+###############################################################################
+## Setup an SVN working copy from a previously cached URL
+## usage: svn_cache_clone <cache-dir> <new-working-dir>
+function svn_cache_clone() {
+  local cachedir="$1"
+  local workdir="$2"
+  if [ ! -d "$workdir" ]; then
+    cvutil_makeparent "$workdir"
+    cvutil_mkdir "$workdir"
+  fi
+  rsync -va "$cachedir/./" "$workdir/./"
 }
