@@ -69,11 +69,50 @@ see [app/config](app/config).
 
 If you're interested in working on the build types or build process, then the workflow will consist of alternating two basic steps: (1) editing build scripts and (2) rebuilding. Rebuilds may take a few minutes, so it's helpful to choose the fastest type of rebuild that will meet your needs.
 
-There are three variations on rebuilding. In order of slowest (most thorough) to fastest (least thorough):
+There are four variations on rebuilding. In order of fastest (least thorough) to slowest (most thorough):
 
- * **civibuild create \<name> --force** -- Complete rebuild. Delete code, config files, databases; then recreate them.
- * **civibuild reinstall \<name>** -- Keep the existing code, but recreate config files and databases using installation logic (PHP/bash).
- * **civibuild restore \<name>** -- Keep the existing code and config files. Recreate the databases using a "clean" SQL snapshot.
+<table>
+  <tr>
+    <th>Command</th>
+    <th>Description</th>
+    <th>Metadata</th>
+    <th>Code</th>
+    <th>Config Files</th>
+    <th>DB</th>
+  </tr>
+  <tr>
+    <td><b>civibuild restore &lt;name&gt;</b></td>
+    <td>Restore DB from pristine SQL snapshot</td>
+    <td>Keep</td>
+    <td>Keep</td>
+    <td>Keep</td>
+    <td>Recreate</td>
+  </tr>
+  <tr>
+    <td><b>civibuild reinstall &lt;name&gt;</b></td>
+    <td>Rerun CMS+Civi "install" process</td>
+    <td>Keep</td>
+    <td>Keep</td>
+    <td>Recreate</td>
+    <td>Recreate</td>
+  </tr>
+  <tr>
+    <td><b>civibuild create &lt;name&gt; --force</b></td>
+    <td>Create site, overwriting any files or DBs</td>
+    <td>Keep</td>
+    <td>Recreate</td>
+    <td>Recreate</td>
+    <td>Recreate</td>
+  </tr>
+  <tr>
+    <td><b>civibuild destroy &lt;name&gt; ; civibuild create &lt;name&gt;</b></td>
+    <td>Thoroughly destroy and recreate everything</td>
+    <td>Recreate</td>
+    <td>Recreate</td>
+    <td>Recreate</td>
+    <td>Recreate</td>
+  </tr>
+</table>
 
 ## Daily Coding: Your First Patch
 
