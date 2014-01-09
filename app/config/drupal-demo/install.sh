@@ -35,6 +35,10 @@ drush -y vset theme_default garland
 echo 'update block set region="sidebar_first" where theme="garland" and module="user" and delta="login"' | drush sql-cli
 echo 'update block set region="sidebar_first" where theme="garland" and module="system" and delta="navigation"' | drush sql-cli
 
+## Based on the block info, CRM_Core_Block::CREATE_NEW and CRM_Core_Block::ADD should be enabled by default, but they aren't.
+## "drush -y cc all" and "drush -y cc block" do *NOT* solve the problem. But this does:
+drush php-eval -u "$ADMIN_USER" 'module_load_include("inc","block","block.admin"); block_admin_display();'
+
 ## Setup welcome page
 drush -y scr "$SITE_CONFIG_DIR/node-welcome.php"
 drush -y vset site_frontpage "welcome"
