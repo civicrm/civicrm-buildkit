@@ -38,21 +38,20 @@ drush cvapi MailSettings.create id=1 domain=example.org
 
 ## Setup theme
 #above# drush -y en garland
-drush -y vset theme_default garland
-echo 'update block set region="sidebar_first" where theme="garland" and module="user" and delta="login"' | drush sql-cli
-echo 'update block set region="sidebar_first" where theme="garland" and module="system" and delta="navigation"' | drush sql-cli
+export SITE_CONFIG_DIR
+drush -y -u "$ADMIN_USER" scr "$SITE_CONFIG_DIR/install-theme.php"
 
 ## Based on the block info, CRM_Core_Block::CREATE_NEW and CRM_Core_Block::ADD should be enabled by default, but they aren't.
 ## "drush -y cc all" and "drush -y cc block" do *NOT* solve the problem. But this does:
 drush php-eval -u "$ADMIN_USER" 'module_load_include("inc","block","block.admin"); block_admin_display();'
 
 ## Setup welcome page
-drush -y scr "$SITE_CONFIG_DIR/node-welcome.php"
+drush -y scr "$SITE_CONFIG_DIR/install-welcome.php"
 drush -y vset site_frontpage "welcome"
 
 ## Setup login_destination
 #above# drush -y en login_destination
-drush -y scr "$SITE_CONFIG_DIR/login-destination.php"
+drush -y scr "$SITE_CONFIG_DIR/install-login-destination.php"
 
 ## Setup userprotect
 #above# drush -y en userprotect
@@ -64,6 +63,8 @@ done
 drush -y en civicrm_webtest
 drush -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
 drush -y user-add-role civicrm_webtest_user "$DEMO_USER"
+# In Garland, CiviCRM's toolbar looks messy unless you also activate Drupal's "toolbar"
+drush -y role-add-perm civicrm_webtest_user 'access toolbar'
 
 ## Setup CiviVolunteer
 drush -y cvapi extension.install key=org.civicrm.volunteer
