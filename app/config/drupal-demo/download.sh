@@ -4,6 +4,8 @@
 
 ###############################################################################
 
+git_cache_setup "https://github.com/civicrm/civivolunteer.git" "$CACHE_DIR/civicrm/civivolunteer.git"
+
 [ -z "$CMS_VERSION" ] && CMS_VERSION=7.x
 MAKEFILE="${TMPDIR}/${SITE_TYPE}.make"
 cat "$SITE_CONFIG_DIR/drush.make.tmpl" \

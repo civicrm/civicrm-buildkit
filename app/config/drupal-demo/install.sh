@@ -57,3 +57,7 @@ done
 drush -y en civicrm_webtest
 drush -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
 drush -y user-add-role civicrm_webtest_user "$DEMO_USER"
+
+## Setup CiviVolunteer
+drush -y cvapi extension.install key=org.civicrm.volunteer
+drush -y role-add-perm 'anonymous user' 'register to volunteer'
