@@ -197,7 +197,7 @@ function amp_snapshot_restore() {
 ###############################################################################
 ## Generate config files and setup database
 function civicrm_install() {
-  cvutil_assertvars civicrm_install CIVI_CORE CIVI_FILES CIVI_TEMPLATEC
+  cvutil_assertvars civicrm_install CIVI_CORE CIVI_FILES CIVI_TEMPLATEC CIVI_DOMAIN_NAME CIVI_DOMAIN_EMAIL
 
   if [ ! -d "$CIVI_CORE/bin" -o ! -d "$CIVI_CORE/CRM" ]; then
     echo "Failed to locate valid civi root: $CIVI_CORE"
@@ -222,6 +222,17 @@ function civicrm_install() {
       echo "Failed to locate civi SQL files"
     fi
   popd >> /dev/null
+
+  mysql $CIVI_DB_ARGS <<EOSQL
+    UPDATE civicrm_domain SET name = '$CIVI_DOMAIN_NAME';
+    SELECT @option_group_id := id
+      FROM civicrm_option_group n
+      WHERE name = 'from_email_address';
+    UPDATE civicrm_option_value
+      SET label = '$CIVI_DOMAIN_EMAIL'
+      WHERE option_group_id = @option_group_id
+      AND value = '1';
+EOSQL
 }
 
 ###############################################################################

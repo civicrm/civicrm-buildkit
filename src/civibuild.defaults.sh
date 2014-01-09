@@ -117,6 +117,12 @@ CIVI_TEMPLATEC=
 ## Name of the CiviCRM UF (Drupal, Drupal6, Joomla, WordPress)
 CIVI_UF=
 
+## The name of the organization (for inclusion in footers, etc)
+CIVI_DOMAIN_NAME=
+
+## The default from email address
+CIVI_DOMAIN_EMAIL=
+
 ###############################################################################
 ## snapshot-related variables
 
