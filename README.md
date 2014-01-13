@@ -6,7 +6,7 @@ CiviCRM development environment.
 ## Requirements
 
  * Shell (bash)
- * Git
+ * Git/SVN
  * PHP
  * MySQL (client/server)
  * Recommended: Apache/Nginx

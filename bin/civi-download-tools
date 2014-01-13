@@ -109,6 +109,8 @@ done
 check_command php
 check_command mysql
 check_command mysqldump
+check_command git
+check_command svn
 
 if [ ! -d "$TMPDIR" ]; then
   mkdir -p "$TMPDIR"
