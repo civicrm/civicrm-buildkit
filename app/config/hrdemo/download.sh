@@ -4,6 +4,8 @@
 
 ###############################################################################
 
+git_cache_setup "https://github.com/civicrm/civihr.git" "$CACHE_DIR/civicrm/civihr.git"
+
 [ -z "$CMS_VERSION" ] && CMS_VERSION=7.x
 [ -z "$CIVI_VERSION" ] && CIVI_VERSION=4.4
 
