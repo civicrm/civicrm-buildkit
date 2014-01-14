@@ -17,7 +17,7 @@ BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
 WEBDIR="$PRJDIR/web"
 TMPDIR="$PRJDIR/app/tmp"
-CIVIXVER=13.10.0
+CIVIXVER=14.01.0
 CIVIXURL="http://downloads.sourceforge.net/project/civix/civix-${CIVIXVER}.tar.bz2?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fcivix%2Ffiles%2F&use_mirror=master"
 HUBURL="https://github.com/github/hub/archive/v1.11.1.tar.gz"
 IS_QUIET=
