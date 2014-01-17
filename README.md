@@ -58,8 +58,9 @@ simply skip this step.
 civicrm-buildkit includes a small library of build scripts for different configurations.
 For example, at time of writing, it includes:
 
- * *drupal-demo*: A basic demo site running Drupal and CiviCRM
- * *wp-demo*: A basic demo site running WordPress and CiviCRM
+ * *drupal-clean*: A bare, "out-of-the-box" installation of Drupal+CiviCRM
+ * *drupal-demo*: A demo site running Drupal and CiviCRM
+ * *wp-demo*: A demo site running WordPress and CiviCRM
  * *symfony*: An experimental hybrid site running Drupal 7, Symfony 2, and CiviCRM
 
 For a list of available build-types as well as documentation on writing build scripts,
