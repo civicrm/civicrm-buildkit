@@ -34,6 +34,7 @@ drush -y en civicrm toolbar locale garland login_destination userprotect
 ## Setup CiviCRM
 echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign"]}' \
   | drush cvapi setting.create --in=json
+drush cvapi setting.create versionCheck=0
 drush cvapi MailSettings.create id=1 domain=example.org
 
 ## Setup theme
@@ -76,3 +77,6 @@ done
 ## Setup CiviVolunteer
 drush -y cvapi extension.install key=org.civicrm.volunteer
 drush -y role-add-perm 'anonymous user' 'register to volunteer'
+
+## Setup CiviCRM dashboards
+INSTALL_DASHBOARD_USERS="$ADMIN_USER;$DEMO_USER" drush scr "$SITE_CONFIG_DIR/install-dashboard.php"
