@@ -15,3 +15,6 @@
 [ -z "$CIVI_SQL" ]           && CIVI_SQL="$SNAPSHOT_DIR/$SNAPSHOT_NAME/civi.sql.gz"
 [ -z "$CMS_SQL" ]            && CMS_SQL="$SNAPSHOT_DIR/$SNAPSHOT_NAME/cms.sql.gz"
 [ -z "$SITE_CONFIG_DIR" ]    && SITE_CONFIG_DIR="$PRJDIR/app/config/$SITE_TYPE"
+[ -z "$CIVICRM_GENCODE_DIGEST" ] && CIVICRM_GENCODE_DIGEST="$TMPDIR/$SITE_NAME-gencode.md5"
+
+export CIVICRM_GENCODE_DIGEST

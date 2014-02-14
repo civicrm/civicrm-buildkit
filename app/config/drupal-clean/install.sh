@@ -29,13 +29,7 @@ civicrm_install
 ## Extra configuration
 
 drush -y updatedb
-drush -y en civicrm toolbar locale garland login_destination userprotect
-
-## Setup CiviCRM
-echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign"]}' \
-  | drush cvapi setting.create --in=json
-drush cvapi setting.create versionCheck=0
-drush cvapi MailSettings.create id=1 domain=example.org
+drush -y en civicrm toolbar locale garland
 
 ## Setup theme
 #above# drush -y en garland
@@ -46,37 +40,13 @@ drush -y -u "$ADMIN_USER" scr "$SITE_CONFIG_DIR/install-theme.php"
 ## "drush -y cc all" and "drush -y cc block" do *NOT* solve the problem. But this does:
 drush php-eval -u "$ADMIN_USER" 'module_load_include("inc","block","block.admin"); block_admin_display();'
 
-## Setup welcome page
-drush -y scr "$SITE_CONFIG_DIR/install-welcome.php"
-drush -y vset site_frontpage "welcome"
-
-## Setup login_destination
-#above# drush -y en login_destination
-drush -y scr "$SITE_CONFIG_DIR/install-login-destination.php"
-
-## Setup userprotect
-#above# drush -y en userprotect
-for perm in "change own e-mail" "change own openid" "change own password" ; do
-  drush role-remove-perm "authenticated user" "$perm"
-done
-
 ## Setup demo user
 drush -y en civicrm_webtest
 drush -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
 drush -y user-add-role civicrm_webtest_user "$DEMO_USER"
 # In Garland, CiviCRM's toolbar looks messy unless you also activate Drupal's "toolbar", so grant "access toolbar"
 # We've activated more components than typical web-test baseline, so grant rights to those components.
-for perm in 'access toolbar' \
-  'administer CiviCase' 'access all cases and activities' 'access my cases and activities' 'add cases' 'delete in CiviCase' \
-  'administer CiviCampaign' 'manage campaign' \
-  'reserve campaign contacts' 'release campaign contacts' 'interview campaign contacts' 'gotv campaign contacts' 'sign CiviCRM Petition'
+for perm in 'access toolbar'
 do
   drush -y role-add-perm civicrm_webtest_user "$perm"
 done
-
-## Setup CiviVolunteer
-drush -y cvapi extension.install key=org.civicrm.volunteer
-drush -y role-add-perm 'anonymous user' 'register to volunteer'
-
-## Setup CiviCRM dashboards
-INSTALL_DASHBOARD_USERS="$ADMIN_USER;$DEMO_USER" drush scr "$SITE_CONFIG_DIR/install-dashboard.php"
