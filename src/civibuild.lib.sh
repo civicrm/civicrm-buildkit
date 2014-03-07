@@ -242,9 +242,20 @@ function civicrm_make_settings_php() {
   cvutil_assertvars civicrm_make_settings_php CMS_DB_HOST CMS_DB_NAME CMS_DB_PASS CMS_DB_USER
   cvutil_assertvars civicrm_make_settings_php CIVI_DB_HOST CIVI_DB_NAME CIVI_DB_PASS CIVI_DB_USER
 
+  local tpl
+  for tpl in templates/CRM/common/civicrm.settings.php.template templates/CRM/common/civicrm.settings.php.tpl ; do
+    if [ -f "$CIVI_CORE/$tpl" ]; then
+      break
+    fi
+  done
+  if [ ! -f "$CIVI_CORE/$tpl" ]; then
+    echo "Failed to locate template for civicrm.settings.php"
+    exit 96
+  fi
+
   CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
   CIVI_DB_HOSTPORT=$(cvutil_build_hostport "$CIVI_DB_HOST" "$CIVI_DB_PORT")
-  cat "$CIVI_CORE/templates/CRM/common/civicrm.settings.php.template" \
+  cat "$CIVI_CORE/$tpl" \
     | sed "s;%%baseURL%%;${CMS_URL};" \
     | sed "s;%%cms%%;${CIVI_UF};" \
     | sed "s;%%CMSdbHost%%;${CMS_DB_HOSTPORT};" \
