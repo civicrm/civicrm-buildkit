@@ -10,7 +10,7 @@ amp_install
 ###############################################################################
 ## Setup Drupal (config files, database tables)
 
-drupal_singlesite_install
+drupal_install
 
 ###############################################################################
 ## Setup CiviCRM (config files, database tables)

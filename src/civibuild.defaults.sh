@@ -30,6 +30,10 @@ SITE_TYPE=
 ## Location of the build scripts (default: app/config/$SITE_TYPE)
 SITE_CONFIG_DIR=
 
+## Optional identifier to distinguish subsites in a multi-site build
+## (default: default)
+SITE_ID=default
+
 ## Root directory where the site's code will be installed
 ## (default: BLDDIR/SITE_NAME)
 WEB_ROOT=

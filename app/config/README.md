@@ -38,7 +38,6 @@ available, but they may use different implementations (GNU or BSD).
 Several helper functions are automatically loaded from [src/civibuild.lib.sh](../../src/civibuild.lib.sh),
 including:
 
- * drupal_singlesite_install - Create Drupal config files, tables, and data dirs (using "drush site-install" and "sites/default")
- * drupal_multisite_install - Create Drupal config files, tables, and data dirs (using "drush site-install" and "sites/XXX")
+ * drupal_install - Create Drupal config files, tables, and data dirs (using "drush site-install" and "sites/default")
  * wp_install - Create WordPress config files, tables, and data dirs (using wp-cli)
  * civicrm_install - Create CiviCRM config files, tables, and data dirs

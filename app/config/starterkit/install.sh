@@ -23,7 +23,7 @@ civicrm_install
 ###############################################################################
 ## Setup Drupal (config files, database tables)
 
-drupal_singlesite_install civicrm_starterkit
+drupal_install civicrm_starterkit
 
 ###############################################################################
 ## Extra configuration
