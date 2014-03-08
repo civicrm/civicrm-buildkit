@@ -102,6 +102,15 @@ function cvutil_build_hostport() {
 }
 
 ###############################################################################
+## Parse the name and ID from
+## usage: eval $(cvutil_parse_site_name_id "NAME[/ID]")
+## example: $(cvutil_parse_site_name_id "drupal-demo/2") ==> SITE_NAME=drupal-demo SITE_ID=2
+## example: $(cvutil_parse_site_name_id "drupal-demo") ==> SITE_NAME=drupal-demo
+function cvutil_parse_site_name_id() {
+  php -r '$parts=explode("/", $argv[1]);echo "SITE_NAME=" . $parts[0]."\n"; if (isset($parts[1])) echo "SITE_ID=" . $parts[1] . "\n";' "$1"
+}
+
+###############################################################################
 ## Setup HTTP and MySQL services
 ## This outputs several variables: CMS_URL, CMS_DB_* and CIVI_DB_*
 function amp_install() {
@@ -112,21 +121,29 @@ function amp_install() {
 
 function _amp_install_cms() {
   echo "[[Setup MySQL and HTTP for CMS]]"
-  cvutil_assertvars _amp_install_cms WEB_ROOT SITE_NAME TMPDIR
+  cvutil_assertvars _amp_install_cms WEB_ROOT SITE_NAME SITE_ID TMPDIR
   local amp_vars_file_path="${TMPDIR}/${SITE_NAME}-amp-vars.sh"
+  local amp_name="cms$SITE_ID"
+  [ "$SITE_ID" == "default" ] && amp_name=cms
+
   if [ -n "$CMS_URL" ]; then
-    amp create -f --root="$WEB_ROOT" --name=cms --prefix=CMS_ --url="$CMS_URL" --output-file="$amp_vars_file_path"
+    amp create -f --root="$WEB_ROOT" --name="$amp_name" --prefix=CMS_ --url="$CMS_URL" --output-file="$amp_vars_file_path"
   else
-    amp create -f --root="$WEB_ROOT" --name=cms --prefix=CMS_ --output-file="$amp_vars_file_path"
+    amp create -f --root="$WEB_ROOT" --name="$amp_name" --prefix=CMS_ --output-file="$amp_vars_file_path"
   fi
+
   source "$amp_vars_file_path"
 }
 
 function _amp_install_civi() {
   echo "[[Setup MySQL for Civi]]"
-  cvutil_assertvars _amp_install_civi WEB_ROOT SITE_NAME TMPDIR
+  cvutil_assertvars _amp_install_civi WEB_ROOT SITE_NAME SITE_ID TMPDIR
   local amp_vars_file_path="${TMPDIR}/${SITE_NAME}-amp-vars.sh"
-  amp create -f --root="$WEB_ROOT" --name=civi --prefix=CIVI_ --skip-url --output-file="$amp_vars_file_path"
+  local amp_name="civi$SITE_ID"
+  [ "$SITE_ID" == "default" ] && amp_name=civi
+
+  amp create -f --root="$WEB_ROOT" --name="$amp_name" --prefix=CIVI_ --skip-url --output-file="$amp_vars_file_path"
+
   source "$amp_vars_file_path"
 }
 
@@ -192,6 +209,12 @@ function amp_snapshot_restore() {
     fi
     gunzip --stdout "$CIVI_SQL" | mysql $CIVI_DB_ARGS
   fi
+}
+
+###############################################################################
+## Tear down HTTP and MySQL services
+function amp_uninstall() {
+  echo "WARNING: amp_uninstall: Retaining DB & site config to provide continuity among rebuilds"
 }
 
 ###############################################################################

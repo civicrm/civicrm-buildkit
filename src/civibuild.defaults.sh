@@ -55,6 +55,9 @@ FORCE_DOWNLOAD=
 ## Whether to destroy pre-existing DB's
 FORCE_INSTALL=
 
+## Whether the site has been previously installed
+IS_INSTALLED=
+
 ## Default user accounts
 ADMIN_EMAIL="admin@example.com"
 ADMIN_PASS=
@@ -159,6 +162,7 @@ PERSISTENT_VARS="
   CIVI_CORE CIVI_SITE_KEY CIVI_VERSION
   CIVI_DB_DSN CIVI_DB_USER CIVI_DB_PASS CIVI_DB_HOST CIVI_DB_PORT CIVI_DB_NAME CIVI_DB_ARGS
   CIVI_SETTINGS CIVI_FILES CIVI_TEMPLATEC CIVI_UF
+  IS_INSTALLED
   SITE_TYPE
 "
 # ignore: runtime options like CIVI_SQL_SKIP and FORCE_DOWNLOAD

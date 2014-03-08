@@ -12,8 +12,13 @@
 #[ -z "$CMS_HOSTNAME" ]       && CMS_HOSTNAME=$(php -r '$p = parse_url($argv[1]); echo $p["host"];' "$CMS_URL")
 #[ -z "$CMS_PORT" ]           && CMS_PORT=$(php -r '$p = parse_url($argv[1]); echo $p["port"];' "$CMS_URL")
 [ -z "$SNAPSHOT_DIR" ]       && SNAPSHOT_DIR="$PRJDIR/app/snapshot"
-[ -z "$CIVI_SQL" ]           && CIVI_SQL="$SNAPSHOT_DIR/$SNAPSHOT_NAME/civi.sql.gz"
-[ -z "$CMS_SQL" ]            && CMS_SQL="$SNAPSHOT_DIR/$SNAPSHOT_NAME/cms.sql.gz"
+if [ "default" == "$SITE_ID" ]; then
+  [ -z "$CIVI_SQL"  ]        && CIVI_SQL="$SNAPSHOT_DIR/$SNAPSHOT_NAME/civi.sql.gz"
+  [ -z "$CMS_SQL" ]          && CMS_SQL="$SNAPSHOT_DIR/$SNAPSHOT_NAME/cms.sql.gz"
+else
+  [ -z "$CIVI_SQL"  ]        && CIVI_SQL="$SNAPSHOT_DIR/$SNAPSHOT_NAME--$SITE_ID/civi.sql.gz"
+  [ -z "$CMS_SQL" ]          && CMS_SQL="$SNAPSHOT_DIR/$SNAPSHOT_NAME--$SITE_ID/cms.sql.gz"
+fi
 [ -z "$SITE_CONFIG_DIR" ]    && SITE_CONFIG_DIR="$PRJDIR/app/config/$SITE_TYPE"
 [ -z "$CIVICRM_GENCODE_DIGEST" ] && CIVICRM_GENCODE_DIGEST="$TMPDIR/$SITE_NAME-gencode.md5"
 
