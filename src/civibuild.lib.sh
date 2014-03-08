@@ -471,7 +471,7 @@ function _drupal_multisite_dir() {
   if [ "$2" == "default" ]; then
     echo "default"
   else
-    php -r '$p = parse_url($argv[1]); echo $p["port"] .".". $p["host"];' "$1"
+    php -r '$p = parse_url($argv[1]); if (!empty($p["port"])) echo $p["port"] . "."; echo $p["host"];' "$1"
   fi
 }
 
