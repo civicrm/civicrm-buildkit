@@ -31,9 +31,10 @@ function civibuild_usage() {
 
   #Fails in Ubuntu 12.04 Vagrant box ==> cat <<EOT
   php -r 'echo file_get_contents("php://stdin");' <<EOT
-Syntax: $APP create <build-name> [options]
+Syntax: $APP create <build-name>[/<ms-id>] [options]
 Description: Download all code, create databases, create config files
   <build-name>        The name of the sub-directory to build
+  <ms-id>             The unique id for a site within a multisite build
   --type <type>       The name of the download/install scripts. (If omitted, assume <build-name>) [Optional]
   --url <url>         The public URL of the site
   --title <title>     The title of the site
@@ -49,24 +50,29 @@ Description: Download all code, create databases, create config files
   --demo-pass         Password for the CMS's demo user
   --demo-email        Email of the CMS's demo user
 
-Syntax: $APP reinstall <build-name>
+Syntax: $APP reinstall <build-name>[/<ms-id>]
 Description: Short-hand for "$APP create <build-name> --force-install"
+  <build-name>        The name of the sub-directory to build
+  <ms-id>             The unique id for a site within a multisite build
 
-Syntax: $APP show <build-name>
+Syntax: $APP show <build-name>[/<ms-id>]
 Description: Show key details about the build
   <build-name>        The name of the sub-directory to build
+  <ms-id>             The unique id for a site within a multisite build
 
-Syntax: $APP snapshot <build-name> [options]
+Syntax: $APP snapshot <build-name>[/<ms-id>] [options]
 Description: Create a snapshot of the build's DBs
   <build-name>           The name of the sub-directory to build
+  <ms-id>                The unique id for a site within a multisite build
   --snapshot <name>      The name of the snapshot subdirectory. (If omitted, assume <build-name>) [Optional]
 
 Syntax: $APP snapshots
 Description: List available snapshots
 
-Syntax: $APP restore <build-name> [options]
+Syntax: $APP restore <build-name>[/<ms-id>] [options]
 Description: Restore HTTP/DB services from a snapshot
   <build-name>           The name of the sub-directory to build
+  <ms-id>                The unique id for a site within a multisite build
   --snapshot <name>      The name of the snapshot subdirectory. (If omitted, assume <build-name>) [Optional]
   --cms-sql <sql-file>   The path to a SQL backup of the CMS DB [Optional]
   --no-cms               Skip resetting the CMS DB [Optional]
@@ -123,13 +129,23 @@ case "$ACTION" in
     # don't parse SITE_NAME
     ;;
   *)
-    SITE_NAME="$1"
+    ## Convert "drupal-demo" or "drupal-demo/123" to vars SITE_NAME and optionally SITE_ID
+    eval $(cvutil_parse_site_name_id "$1")
     [ -z "$SITE_NAME" ] && civibuild_usage
+    [ -z "$SITE_ID" ] && civibuild_usage
     shift
 
+    ## Load settings based in SITE_NAME / SITE_ID
     if [ -f "${BLDDIR}/${SITE_NAME}.sh" ]; then
       echo "[[Load saved options from ${BLDDIR}/${SITE_NAME}.sh]]"
       source "${BLDDIR}/${SITE_NAME}.sh"
+      if [ "$SITE_ID" != "default" ]; then
+        IS_INSTALLED=
+      fi
+    fi
+    if [ -f "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh" ]; then
+      echo "[[Load saved options from ${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh]]"
+      source "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh"
     fi
     ;;
 esac
@@ -267,9 +283,11 @@ case "$ACTION" in
         echo "Download failed to create directory"
         exit 97
       fi
+    else
+      echo "Already downloaded ${SITE_NAME}"
     fi
 
-    if [ -n "$FORCE_INSTALL" -a -n "$CMS_DB_DSN" ]; then
+    if [ -n "$FORCE_INSTALL" -a -n "$IS_INSTALLED" ]; then
       pushd "$WEB_ROOT" > /dev/null
         civibuild_run uninstall
       popd > /dev/null
@@ -278,30 +296,40 @@ case "$ACTION" in
       fi
     fi
 
-    if [ -n "$FORCE_INSTALL" -o -z "$CMS_DB_DSN" ]; then
+    if [ -n "$FORCE_INSTALL" -o -z "$IS_INSTALLED" ]; then
       pushd "$WEB_ROOT" > /dev/null
         civibuild_run install
       popd > /dev/null
       amp_snapshot_create
+      IS_INSTALLED=1
+    else
+      echo "Already installed ${SITE_NAME}/${SITE_ID}"
     fi
 
-    cvutil_save "${BLDDIR}/${SITE_NAME}.sh" $PERSISTENT_VARS
-    civibuild show "$SITE_NAME"
+    if [ "$SITE_ID" == "default" ]; then
+      cvutil_save "${BLDDIR}/${SITE_NAME}.sh" $PERSISTENT_VARS
+    else
+      cvutil_save "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh" $PERSISTENT_VARS
+    fi
+
+    civibuild show "$SITE_NAME/$SITE_ID"
     ;;
 
   destroy)
     [ -d "$WEB_ROOT" ] && rm -rf "$WEB_ROOT"
     [ -d "$PRIVATE_ROOT" ] && rm -rf "$PRIVATE_ROOT"
-    [ -f "${BLDDIR}/${SITE_NAME}.sh" ] && rm -f "${BLDDIR}/${SITE_NAME}.sh"
+    for f in "${BLDDIR}/${SITE_NAME}.sh" "${BLDDIR}/${SITE_NAME}".*.sh ; do
+      [ -f "$f" ] && rm -f "$f"
+    done
     amp cleanup
     ;;
 
   reinstall)
-    civibuild create "$SITE_NAME" --force-install
+    civibuild create "$SITE_NAME/$SITE_ID" --force-install
     ;;
 
   show)
-    cvutil_summary "[[Show site summary]]" \
+    cvutil_summary "[[Show site summary ($SITE_NAME/$SITE_ID)]]" \
       CMS_ROOT CMS_URL CMS_DB_DSN \
       CIVI_DB_DSN \
       ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS

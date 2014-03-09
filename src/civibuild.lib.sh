@@ -102,6 +102,15 @@ function cvutil_build_hostport() {
 }
 
 ###############################################################################
+## Parse the name and ID from
+## usage: eval $(cvutil_parse_site_name_id "NAME[/ID]")
+## example: $(cvutil_parse_site_name_id "drupal-demo/2") ==> SITE_NAME=drupal-demo SITE_ID=2
+## example: $(cvutil_parse_site_name_id "drupal-demo") ==> SITE_NAME=drupal-demo
+function cvutil_parse_site_name_id() {
+  php -r '$parts=explode("/", $argv[1]);echo "SITE_NAME=" . $parts[0]."\n"; if (isset($parts[1])) echo "SITE_ID=" . $parts[1] . "\n";' "$1"
+}
+
+###############################################################################
 ## Setup HTTP and MySQL services
 ## This outputs several variables: CMS_URL, CMS_DB_* and CIVI_DB_*
 function amp_install() {
@@ -112,21 +121,29 @@ function amp_install() {
 
 function _amp_install_cms() {
   echo "[[Setup MySQL and HTTP for CMS]]"
-  cvutil_assertvars _amp_install_cms WEB_ROOT SITE_NAME TMPDIR
+  cvutil_assertvars _amp_install_cms WEB_ROOT SITE_NAME SITE_ID TMPDIR
   local amp_vars_file_path="${TMPDIR}/${SITE_NAME}-amp-vars.sh"
+  local amp_name="cms$SITE_ID"
+  [ "$SITE_ID" == "default" ] && amp_name=cms
+
   if [ -n "$CMS_URL" ]; then
-    amp create -f --root="$WEB_ROOT" --name=cms --prefix=CMS_ --url="$CMS_URL" --output-file="$amp_vars_file_path"
+    amp create -f --root="$WEB_ROOT" --name="$amp_name" --prefix=CMS_ --url="$CMS_URL" --output-file="$amp_vars_file_path"
   else
-    amp create -f --root="$WEB_ROOT" --name=cms --prefix=CMS_ --output-file="$amp_vars_file_path"
+    amp create -f --root="$WEB_ROOT" --name="$amp_name" --prefix=CMS_ --output-file="$amp_vars_file_path"
   fi
+
   source "$amp_vars_file_path"
 }
 
 function _amp_install_civi() {
   echo "[[Setup MySQL for Civi]]"
-  cvutil_assertvars _amp_install_civi WEB_ROOT SITE_NAME TMPDIR
+  cvutil_assertvars _amp_install_civi WEB_ROOT SITE_NAME SITE_ID TMPDIR
   local amp_vars_file_path="${TMPDIR}/${SITE_NAME}-amp-vars.sh"
-  amp create -f --root="$WEB_ROOT" --name=civi --prefix=CIVI_ --skip-url --output-file="$amp_vars_file_path"
+  local amp_name="civi$SITE_ID"
+  [ "$SITE_ID" == "default" ] && amp_name=civi
+
+  amp create -f --root="$WEB_ROOT" --name="$amp_name" --prefix=CIVI_ --skip-url --output-file="$amp_vars_file_path"
+
   source "$amp_vars_file_path"
 }
 
@@ -192,6 +209,12 @@ function amp_snapshot_restore() {
     fi
     gunzip --stdout "$CIVI_SQL" | mysql $CIVI_DB_ARGS
   fi
+}
+
+###############################################################################
+## Tear down HTTP and MySQL services
+function amp_uninstall() {
+  echo "WARNING: amp_uninstall: Retaining DB & site config to provide continuity among rebuilds"
 }
 
 ###############################################################################
@@ -383,10 +406,12 @@ function wp_uninstall() {
 }
 
 ###############################################################################
-## Generate config files and setup database
-function drupal_multisite_install() {
-  cvutil_assertvars drupal_multisite_install WEB_ROOT CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS CMS_URL
-  DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL")
+## Drupal -- Generate config files and setup database
+## usage: drupal_install <extra-drush-args>
+## To use an "install profile", simply pass it as part of <extra-drush-args>
+function drupal_install() {
+  cvutil_assertvars drupal_install WEB_ROOT SITE_ID CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS CMS_URL
+  DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
   CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
   pushd "$WEB_ROOT" >> /dev/null
     [ -f "sites/$DRUPAL_SITE_DIR/settings.php" ] && rm -f "sites/$DRUPAL_SITE_DIR/settings.php"
@@ -408,68 +433,45 @@ function drupal_multisite_install() {
 }
 
 ###############################################################################
-## Drupal Multi-Site -- Destroy config files and database tables
-function drupal_multisite_uninstall() {
-  cvutil_assertvars drupal_multisite_uninstall WEB_ROOT CMS_URL
-  DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL")
+## Drupal -- Destroy config files and database tables
+function drupal_uninstall() {
+  cvutil_assertvars drupal_uninstall WEB_ROOT SITE_ID CMS_URL
+  DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
+
   if [ -n "$DRUPAL_SITE_DIR" -a -d "$WEB_ROOT/sites/$DRUPAL_SITE_DIR" ]; then
-    rm -rf "$WEB_ROOT/sites/$DRUPAL_SITE_DIR"
+    if [ "$SITE_ID" == "default" ]; then
+      ## For default site, carfully pick files to delete.
+      ## Need to keep default.settings.php.
+      pushd "$WEB_ROOT" >> /dev/null
+        chmod u+w "sites/default"
+        if [ -f "sites/default/settings.php" ]; then
+          chmod u+w "sites/default/settings.php"
+          rm -f "sites/default/settings.php"
+        fi
+        if [ -f "sites/default/files" ]; then
+          chmod u+w "sites/default/files"
+          rm -f "sites/default/files"
+        fi
+      popd >> /dev/null
+    else
+      rm -rf "$WEB_ROOT/sites/$DRUPAL_SITE_DIR"
+    fi
   fi
+
   if [ -n "$DRUPAL_SITE_DIR" -a -d "$PRIVATE_ROOT/$DRUPAL_SITE_DIR" ]; then
     rm -rf "$PRIVATE_ROOT/$DRUPAL_SITE_DIR"
   fi
 }
 
 ###############################################################################
-## Drupal Multi-Site -- Compute the name of the multi-site subdir
-## Usage: _drupal_multisite_dir <url>
+## Drupal -- Compute the name of the multi-site subdir
+## Usage: _drupal_multisite_dir <url> <site-id>
+## Note: <site-id> is 0 for the default/base site
 function _drupal_multisite_dir() {
-  php -r '$p = parse_url($argv[1]); echo $p["port"] .".". $p["host"];' "$1"
-}
-
-###############################################################################
-## Drupal Single-Site -- Generate config files and setup database
-function drupal_singlesite_install() {
-  cvutil_assertvars drupal_singlesite_install WEB_ROOT CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS
-
-  CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
-  pushd "$WEB_ROOT" >> /dev/null
-    [ -f "sites/default/settings.php" ] && rm -f "sites/default/settings.php"
-
-    drush site-install -y "$@" \
-      --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOSTPORT}/${CMS_DB_NAME}" \
-      --account-name="$ADMIN_USER" \
-      --account-pass="$ADMIN_PASS" \
-      --account-mail="$ADMIN_EMAIL" \
-      --site-name="$CMS_TITLE"
-    chmod u+w "sites/default"
-
-    ## Setup extra directories
-    amp datadir "sites/default/files" "$PRIVATE_ROOT/default"
-    cvutil_mkdir "sites/default/modules"
-    drush vset --yes file_private_path "$PRIVATE_ROOT/default"
-  popd >> /dev/null
-}
-
-
-###############################################################################
-## Drupal Single-Site -- Destroy config files and database tables
-function drupal_singlesite_uninstall() {
-  cvutil_assertvars drupal_singlesite_uninstall WEB_ROOT
-  pushd "$WEB_ROOT" >> /dev/null
-    chmod u+w "sites/default"
-    if [ -f "sites/default/settings.php" ]; then
-      chmod u+w "sites/default/settings.php"
-      rm -f "sites/default/settings.php"
-    fi
-    if [ -f "sites/default/files" ]; then
-      chmod u+w "sites/default/files"
-      rm -f "sites/default/files"
-    fi
-  popd >> /dev/null
-
-  if [ -d "$PRIVATE_ROOT/default" ]; then
-    rm -rf "$PRIVATE_ROOT/default"
+  if [ "$2" == "default" ]; then
+    echo "default"
+  else
+    php -r '$p = parse_url($argv[1]); if (!empty($p["port"])) echo $p["port"] . "."; echo $p["host"];' "$1"
   fi
 }
 
