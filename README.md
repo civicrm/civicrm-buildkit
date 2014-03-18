@@ -149,9 +149,13 @@ branches.
 
 ```bash
 civicrm-buildkit$ cd build/drupal-demo
+
 drupal-demo$ git scan status
-## If any repos look unclean, figure out why... and clean them up! Then:
+## If any repos look unclean, figure out why... and clean them up!
+
+## Then:
 drupal-demo$ git scan update
+
 ## If you think the DB or config structure has changed, then optionally:
 drupal-demo$ civibuild reinstall drupal-demo
 ```
