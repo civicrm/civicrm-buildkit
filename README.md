@@ -119,15 +119,24 @@ There are four variations on rebuilding. In order of fastest (least thorough) to
 
 (TODO: Write a real tutorial!)
 
+Suppose we've just downloaded buildkit and want to prepare a patch for the Drupal 7.x module used in CiviCRM 4.4. This requires downloading and installing the bleeding edge (4.4.x) code for CiviCRM+Drupal as well as 
+
 ```bash
+## Download Drupal 7.x and CiviCRM 4.4.x
 civicrm-buildkit$ civibuild create drupal-demo --civi-ver 4.4 --url http://localhost:8001
+
+## Create a "fork" of civicrm-drupal on github.com for publishing changes
 civicrm-buildkit$ cd build/drupal-demo/sites/all/modules/civicrm/drupal
 drupal$ hub fork
+
+## Create some changes locally
 drupal$ git checkout origin/7.x-4.4 -b mypatch
 drupal$ vi civicrm.module
 drupal$ git commit civicrm.module
-drupal$ git push myuser mypatch
-drupal$ hub pull-request
+
+## Publish our changes on github.com
+drupal$ git push mygithubuser mypatch
+drupal$ hub pull-request -b 7.x-4.4
 ```
 
 ## Daily Coding: Housekeeping
