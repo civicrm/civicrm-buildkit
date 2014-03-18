@@ -119,7 +119,7 @@ There are four variations on rebuilding. In order of fastest (least thorough) to
 
 (TODO: Write a real tutorial!)
 
-Suppose we've just downloaded buildkit and want to prepare a patch for the Drupal 7.x module used in CiviCRM 4.4. This requires downloading and installing the bleeding edge (4.4.x) code for CiviCRM+Drupal as well as 
+Suppose we've just downloaded buildkit and want to prepare a patch for the Drupal 7.x module used in CiviCRM 4.4. This requires downloading and installing the bleeding edge (4.4.x) code for CiviCRM+Drupal as well as writing and publishing the patch.
 
 ```bash
 ## Download Drupal 7.x and CiviCRM 4.4.x
