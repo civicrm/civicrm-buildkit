@@ -160,6 +160,26 @@ drupal-demo$ git scan update
 drupal-demo$ civibuild reinstall drupal-demo
 ```
 
+## civicrm.settings.php
+
+There are a few CiviCRM settings which are commonly configured on a per-server
+or per-workstation basis. For example, civicrm.org's demo server has ~10
+sites running different builds (Drupal/WordPress * 4.4/4.5 * CiviCRM/CiviHR),
+and visitors should not be allowed to download new extensions on any of those
+sites. However, on the training server, trainees should be allowed to download
+extensions. As discussed in
+[Override CiviCRM Settings](wiki.civicrm.org/confluence/display/CRMDOC/Override+CiviCRM+Settings),
+this setting (and many others) can be configured in civicrm.settings.php.
+
+The civicrm.settings.php is created automatically as part of the build. One
+could edit the file directly, but that means editing civicrm.settings.php
+after every (re)build. The easiest way to customize the settings is to put
+extra *.php files in /etc/civicrm.settings.d -- these files will be loaded
+on every site that runs on this server (regardless of how many sites you
+create or how many times you rebuild them).
+
+For more details on how civicrm.settings.d works, see [app/civicrm.settings.d/README.txt](app/civicrm.settings.d/README.txt).
+
 ## Experimental: Multiple demo/training sites
 
 When creating a batch of identical sites for training or demonstrations,
