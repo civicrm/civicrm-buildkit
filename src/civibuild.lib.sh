@@ -229,6 +229,9 @@ function civicrm_install() {
 
   ## Create CiviCRM data dirs
   amp datadir "$CIVI_FILES" "$CIVI_TEMPLATEC"
+  if [ -n "$CIVI_EXT_DIR" ]; then
+    amp datadir "$CIVI_EXT_DIR"
+  fi
 
   ## Create CiviCRM config files
   civicrm_make_settings_php
@@ -264,6 +267,7 @@ function civicrm_make_settings_php() {
   cvutil_assertvars civicrm_make_settings_php CIVI_SETTINGS CIVI_CORE CIVI_UF CIVI_TEMPLATEC CMS_URL CIVI_SITE_KEY
   cvutil_assertvars civicrm_make_settings_php CMS_DB_HOST CMS_DB_NAME CMS_DB_PASS CMS_DB_USER
   cvutil_assertvars civicrm_make_settings_php CIVI_DB_HOST CIVI_DB_NAME CIVI_DB_PASS CIVI_DB_USER
+  cvutil_assertvars civicrm_make_settings_php SITE_CONFIG_DIR
 
   local tpl
   for tpl in templates/CRM/common/civicrm.settings.php.template templates/CRM/common/civicrm.settings.php.tpl ; do
@@ -293,8 +297,32 @@ function civicrm_make_settings_php() {
     | sed "s;%%siteKey%%;${CIVI_SITE_KEY};" \
     | sed "s;%%templateCompileDir%%;${CIVI_TEMPLATEC};" \
     > "$CIVI_SETTINGS"
-  echo  >> "$CIVI_SETTINGS"
-  echo "define('CIVICRM_MAIL_LOG', '/dev/null');" >> "$CIVI_SETTINGS"
+  echo >> "$CIVI_SETTINGS"
+
+  if [ -n "$CIVI_EXT_DIR" ]; then
+    cat >> "$CIVI_SETTINGS" << EOF
+    global \$civicrm_setting;
+    \$civicrm_setting['Directory Preferences']['extensionsDir'] = '$CIVI_EXT_DIR';
+    \$civicrm_setting['URL Preferences']['extensionsURL'] = '$CIVI_EXT_URL';
+EOF
+  fi
+
+  cat >> "$CIVI_SETTINGS" << EOF
+    global \$civibuild;
+    \$civibuild = array(
+      'PRJDIR' => '$PRJDIR',
+      'SITE_NAME' => '$SITE_NAME',
+      'SITE_TYPE' => '$SITE_TYPE',
+      'SITE_CONFIG_DIR' => '$SITE_CONFIG_DIR',
+      'SITE_ID' => '$SITE_ID',
+      'PRIVATE_ROOT' => '$PRIVATE_ROOT',
+      'CIVI_SETTINGS' => __FILE__,
+    );
+    if (file_exists(\$civibuild['PRJDIR'].'/src/civicrm.settings.php')) {
+      require_once \$civibuild['PRJDIR'].'/src/civicrm.settings.php';
+      _civibuild_civicrm_settings(\$civibuild);
+    }
+EOF
 }
 
 ###############################################################################
