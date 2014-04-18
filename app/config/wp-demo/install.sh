@@ -20,6 +20,8 @@ CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
 CIVI_CORE="${WEB_ROOT}/wp-content/plugins/civicrm/civicrm"
 CIVI_SETTINGS="${WEB_ROOT}/wp-content/plugins/civicrm/civicrm.settings.php"
 CIVI_FILES="${WEB_ROOT}/wp-content/plugins/files/civicrm"
+CIVI_EXT_DIR="${WEB_ROOT}/wp-content/plugins/files/civicrm/ext"
+CIVI_EXT_URL="${CMS_URL}/wp-content/plugins/files/civicrm/ext"
 CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
 CIVI_UF="WordPress"
 

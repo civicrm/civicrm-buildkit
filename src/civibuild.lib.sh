@@ -229,6 +229,9 @@ function civicrm_install() {
 
   ## Create CiviCRM data dirs
   amp datadir "$CIVI_FILES" "$CIVI_TEMPLATEC"
+  if [ -n "$CIVI_EXT_DIR" ]; then
+    amp datadir "$CIVI_EXT_DIR"
+  fi
 
   ## Create CiviCRM config files
   civicrm_make_settings_php
@@ -295,6 +298,15 @@ function civicrm_make_settings_php() {
     | sed "s;%%templateCompileDir%%;${CIVI_TEMPLATEC};" \
     > "$CIVI_SETTINGS"
   echo >> "$CIVI_SETTINGS"
+
+  if [ -n "$CIVI_EXT_DIR" ]; then
+    cat >> "$CIVI_SETTINGS" << EOF
+    global \$civicrm_setting;
+    \$civicrm_setting['Directory Preferences']['extensionsDir'] = '$CIVI_EXT_DIR';
+    \$civicrm_setting['URL Preferences']['extensionsURL'] = '$CIVI_EXT_URL';
+EOF
+  fi
+
   cat >> "$CIVI_SETTINGS" << EOF
     global \$civibuild;
     \$civibuild = array(

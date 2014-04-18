@@ -130,6 +130,12 @@ CIVI_DOMAIN_NAME=
 ## The default from email address
 CIVI_DOMAIN_EMAIL=
 
+## Path to the web-managed extension folder (optional)
+CIVI_EXT_DIR=
+
+## URL of the web-managed extension folder (required iff CIVI_EXT_DIR is set)
+CIVI_EXT_URL=
+
 ###############################################################################
 ## snapshot-related variables
 
