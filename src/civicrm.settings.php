@@ -5,7 +5,7 @@
 // -- but then transitioned to "civibuild.settings.php".  This provides
 // compatibility.
 
-require_once './civibuild.settings.php';
+require_once __DIR__ . '/civibuild.settings.php';
 function _civibuild_civicrm_settings($civibuild) {
   _civibuild_settings($civibuild['CIVI_SETTINGS'], 'civicrm.settings.d', $civibuild);
 }
