@@ -111,6 +111,31 @@ function cvutil_parse_site_name_id() {
 }
 
 ###############################################################################
+## Append the civibuild settings directives to a file
+## usage: cvutil_append_settings <php-file> <settings-dir-name>
+## example: cvutil_append_settings "/var/www/build/drupal/sites/foo/civicrm.settings.php" "civicrm.settings.d"
+## example: cvutil_append_settings "/var/www/build/drupal/sites/foo/settings.php" "drupal.settings.d"
+function cvutil_append_settings() {
+  local FILE="$1"
+  local NAME="$2"
+  cvutil_assertvars cvutil_append_settings PRJDIR SITE_NAME SITE_TYPE SITE_CONFIG_DIR SITE_ID PRIVATE_ROOT FILE NAME
+  cat >> "$FILE" << EOF
+    global \$civibuild;
+    \$civibuild['PRJDIR'] = '$PRJDIR';
+    \$civibuild['SITE_CONFIG_DIR'] = '$SITE_CONFIG_DIR';
+    \$civibuild['SITE_TYPE'] = '$SITE_TYPE';
+    \$civibuild['SITE_NAME'] = '$SITE_NAME';
+    \$civibuild['SITE_ID'] = '$SITE_ID';
+    \$civibuild['PRIVATE_ROOT'] = '$PRIVATE_ROOT';
+
+    if (file_exists(\$civibuild['PRJDIR'].'/src/civibuild.settings.php')) {
+      require_once \$civibuild['PRJDIR'].'/src/civibuild.settings.php';
+      _civibuild_settings(__FILE__, '$NAME', \$civibuild);
+    }
+EOF
+}
+
+###############################################################################
 ## Setup HTTP and MySQL services
 ## This outputs several variables: CMS_URL, CMS_DB_* and CIVI_DB_*
 function amp_install() {
@@ -307,22 +332,7 @@ function civicrm_make_settings_php() {
 EOF
   fi
 
-  cat >> "$CIVI_SETTINGS" << EOF
-    global \$civibuild;
-    \$civibuild = array(
-      'PRJDIR' => '$PRJDIR',
-      'SITE_NAME' => '$SITE_NAME',
-      'SITE_TYPE' => '$SITE_TYPE',
-      'SITE_CONFIG_DIR' => '$SITE_CONFIG_DIR',
-      'SITE_ID' => '$SITE_ID',
-      'PRIVATE_ROOT' => '$PRIVATE_ROOT',
-      'CIVI_SETTINGS' => __FILE__,
-    );
-    if (file_exists(\$civibuild['PRJDIR'].'/src/civicrm.settings.php')) {
-      require_once \$civibuild['PRJDIR'].'/src/civicrm.settings.php';
-      _civibuild_civicrm_settings(\$civibuild);
-    }
-EOF
+  cvutil_append_settings "$CIVI_SETTINGS" "civicrm.settings.d"
 }
 
 ###############################################################################
@@ -452,6 +462,9 @@ function drupal_install() {
       --site-name="$CMS_TITLE" \
       --sites-subdir="$DRUPAL_SITE_DIR"
     chmod u+w "sites/$DRUPAL_SITE_DIR"
+    chmod u+w "sites/$DRUPAL_SITE_DIR/settings.php"
+    cvutil_append_settings "$WEB_ROOT/sites/$DRUPAL_SITE_DIR/settings.php" "drupal.settings.d"
+    chmod u-w "sites/$DRUPAL_SITE_DIR/settings.php"
 
     ## Setup extra directories
     amp datadir "sites/${DRUPAL_SITE_DIR}/files" "${PRIVATE_ROOT}/${DRUPAL_SITE_DIR}"

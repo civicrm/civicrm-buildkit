@@ -4,10 +4,10 @@ buildkit, simply create a *.php file in a suitable directory.
 The following directories will be scanned (listed from highest to lowest
 priority):
 
-  $SITE_DIR/civicrm.settings.d
-  /etc/civicrm.settings.d
-  $PRJDIR/app/config/$TYPE/civicrm.settings.d
-  $PRJDIR/app/civicrm.settings.d
+  $SITE_DIR/drupal.settings.d
+  /etc/drupal.settings.d
+  $PRJDIR/app/config/$TYPE/drupal.settings.d
+  $PRJDIR/app/drupal.settings.d
 
 If the same file appears in multiple directories, it will only be loaded
 from the directory with highest priority.
