@@ -19,6 +19,8 @@ git clone https://github.com/civicrm/civicrm-buildkit.git
 cd civicrm-buildkit/bin
 ./civi-download-tools
 ./amp config
+## At this point, check to make sure you follow the instructions in amp config,
+## which involve adding a line to your Apache configuration file
 ./amp test
 ./civibuild create drupal-demo --civi-ver 4.4 --url http://localhost:8001
 ## FIXME: ./civibuild launch drupal-demo
