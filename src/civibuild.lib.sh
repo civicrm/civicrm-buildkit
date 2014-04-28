@@ -430,6 +430,8 @@ PHP
     ## Create WP data dirs
     cvutil_mkdir "wp-content/plugins/modules"
     amp datadir "wp-content/plugins/files"
+
+    cvutil_append_settings "wp-config.php" "wp-config.d"
   popd >> /dev/null
 }
 
