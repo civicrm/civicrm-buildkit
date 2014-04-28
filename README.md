@@ -162,7 +162,7 @@ drupal-demo$ git scan update
 drupal-demo$ civibuild reinstall drupal-demo
 ```
 
-## civicrm.settings.php; settings.php
+## civicrm.settings.php; settings.php; wp-config.php
 
 There are a few CiviCRM settings which are commonly configured on a per-server
 or per-workstation basis. For example, civicrm.org's demo server has ~10
@@ -182,7 +182,9 @@ create or how many times you rebuild them).
 
 For more details on how civicrm.settings.d works, see [app/civicrm.settings.d/README.txt](app/civicrm.settings.d/README.txt).
 
-A parallel structure exists for Drupal's settings.php. See [app/drupal.settings.d/README.txt](app/drupal.settings.d/README.txt).
+A parallel structure exists for the CMS settings files. See also:
+ * [app/drupal.settings.d/README.txt](app/drupal.settings.d/README.txt)
+ * [app/wp-config.d/README.txt](app/wp-config.d/README.txt)
 
 ## Experimental: Multiple demo/training sites
 
