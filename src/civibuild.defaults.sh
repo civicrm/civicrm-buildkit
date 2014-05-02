@@ -137,6 +137,16 @@ CIVI_EXT_DIR=
 ## URL of the web-managed extension folder (required iff CIVI_EXT_DIR is set)
 CIVI_EXT_URL=
 
+## DB credentials for Civi test DB
+## (suggested: autogenerate via 'amp create -f --root="$WEB_ROOT" --name=civi --prefix=TEST_ --skip-url')
+TEST_DB_DSN=
+TEST_DB_ARGS=
+TEST_DB_HOST=
+TEST_DB_NAME=
+TEST_DB_PASS=
+TEST_DB_PORT=
+TEST_DB_USER=
+
 ###############################################################################
 ## snapshot-related variables
 
@@ -158,6 +168,9 @@ CMS_SQL=
 ## True if we should skip loading CMS_SQL [non-persistent]
 CMS_SQL_SKIP=
 
+## True if we should skip loading TEST_SQL [non-persistent]
+TEST_SQL_SKIP=
+
 ###############################################################################
 ## Upgrade-testing variables
 
@@ -177,6 +190,7 @@ PERSISTENT_VARS="
   CMS_DB_DSN CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_PORT CMS_DB_NAME CMS_DB_ARGS
   CIVI_CORE CIVI_SITE_KEY CIVI_VERSION
   CIVI_DB_DSN CIVI_DB_USER CIVI_DB_PASS CIVI_DB_HOST CIVI_DB_PORT CIVI_DB_NAME CIVI_DB_ARGS
+  TEST_DB_DSN TEST_DB_USER TEST_DB_PASS TEST_DB_HOST TEST_DB_PORT TEST_DB_NAME TEST_DB_ARGS
   CIVI_SETTINGS CIVI_FILES CIVI_TEMPLATEC CIVI_UF
   IS_INSTALLED
   SITE_TYPE
