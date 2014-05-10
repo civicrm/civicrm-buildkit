@@ -166,19 +166,23 @@ drupal-demo$ civibuild reinstall drupal-demo
 ## Daily Coding: Upgrade Testing
 
 When one makes a schema change, one must also prepare and test an upgrade
-script.
+script. The basic cycle is:
 
-The basic cycle is:
-
- 1. Modify the upgrade script (*.mysql or *.php)
- 2. Load a DB snapshot from an older version
- 3. Execute the upgrade logic
+ 1. Modify the upgrade script (*.mysql or *.php -- eg CRM/Upgrade/Incremental/php/FourFive.php)
+ 2. Load a DB snapshot from an older version (e.g. CiviCRM 4.3.0)
+ 3. Execute the upgrade script
  4. Repeat until the upgrade works as expected
 
 You can do these steps manually. Of course, it's a bit tedious to generate
 and track the DB snapshots while reloading them and rerunning the upgrade
 logic.  If you're particularly impatient/mindless (like me), you can use the
-command "civibuild upgrade-test BUILDNAME SQLFILE".  For example:
+command:
+
+```bash
+civibuild upgrade-test BUILDNAME SQLFILE
+```
+
+For example:
 
 ```bash
 civicrm-buildkit$ cd build/drupal-demo/sites/all/modules/civicrm
