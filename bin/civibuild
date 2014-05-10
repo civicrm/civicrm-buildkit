@@ -82,6 +82,13 @@ Description: Restore HTTP/DB services from a snapshot
 Syntax: $APP restore-all
 Description: Restore *all* HTTP/DB services from their respective snapshots
 
+Syntax: $APP upgrade-test <build-name>[/<ms-id>] <sql-bz2-files>...
+Description: Loads each DB snapshot and runs the current upgrade logic
+  <build-name>           The name of the sub-directory to build
+  <ms-id>                The unique id for a site within a multisite build
+  <sql-bz2-files>        One or more *.sql.bz2 files.
+                         [Default path: $UPGRADE_DATA_DIR/]
+
 Syntax: $APP destroy <build-name>
 Description: Destroy all data about a particular build
 EOT
@@ -150,7 +157,7 @@ case "$ACTION" in
     ;;
 esac
 
-
+declare -a ARGS=()
 while [ -n "$1" ] ; do
   OPTION="$1"
   shift
@@ -252,8 +259,12 @@ while [ -n "$1" ] ; do
       ;;
 
     *)
-      echo "Unrecognized option: $OPTION"
-      civibuild_usage
+      if [ "${OPTION::1}" == "-" ]; then
+        echo "Unrecognized option: $OPTION"
+        civibuild_usage
+      else
+        ARGS=("${ARGS[@]}" "$OPTION")
+      fi
       ;;
   esac
 done
@@ -359,6 +370,19 @@ case "$ACTION" in
         civibuild restore "$SITE_NAME"
       done
     popd >> /dev/null
+    ;;
+
+  upgrade-test|ut)
+    ## civicrm-upgrade-test only works with drush right now
+    if grep -q drupal "$WEB_ROOT/index.php" ; then
+      cvutil_makeparent "$UPGRADE_LOG_DIR"
+      cvutil_mkdir "$UPGRADE_LOG_DIR"
+      pushd "$PRJDIR/vendor/civicrm/upgrade-test/databases" > /dev/null
+        civicrm-upgrade-test --db "$CIVI_DB_NAME" --web "$WEB_ROOT" --out "$UPGRADE_LOG_DIR" --junit-xml "$UPGRADE_LOG_DIR/civicrm-upgrade-test.xml" "${ARGS[@]}"
+      popd > /dev/null
+    else
+      echo "Skipped. civicrm-upgrade-test currently requires Drupal 7 and Drush."
+    fi
     ;;
 
   *)

@@ -4,6 +4,7 @@ app/cache/
 app/civicrm.settings.d/*.local.php
 app/config/civix.ini
 app/config/starterkit/civicrm_starterkit/
+app/debug/
 app/private
 app/run/
 app/snapshot/

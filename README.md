@@ -36,6 +36,7 @@ CiviCRM:
 
  * [amp](https://github.com/totten/amp) - Abstracted interface for local httpd/sql service (Apache/nginx/MySQL)
  * **civibuild** - CLI tool which builds a complete source tree (with CMS+Civi+addons), provisions httpd/sql, etc.
+ * [civicrm-upgrade-test](https://github.com/civicrm/civicrm-upgrade-test) - Scripts and data files for testing upgrades
  * [composer](http://getcomposer.org/) - Dependency manager for PHP packages
  * [civix](https://github.com/totten/civix) - Code-generator for CiviCRM extensions
  * [git-scan](https://github.com/totten/git-scan/) - Git extension for working with many git repositories
@@ -162,6 +163,72 @@ drupal-demo$ git scan update
 drupal-demo$ civibuild reinstall drupal-demo
 ```
 
+## Daily Coding: Upgrade Testing
+
+When one makes a schema change, one must also prepare and test an upgrade
+script.
+
+The basic cycle is:
+
+ 1. Modify the upgrade script (*.mysql or *.php)
+ 2. Load a DB snapshot from an older version
+ 3. Execute the upgrade logic
+ 4. Repeat until the upgrade works as expected
+
+You can do these steps manually. Of course, it's a bit tedious to generate
+and track the DB snapshots while reloading them and rerunning the upgrade
+logic.  If you're particularly impatient/mindless (like me), you can use the
+command "civibuild upgrade-test BUILDNAME SQLFILE".  For example:
+
+```bash
+civicrm-buildkit$ cd build/drupal-demo/sites/all/modules/civicrm
+civicrm$ vi CRM/Upgrade/Incremental/php/FourFive.php
+civicrm$ civibuild upgrade-test drupal-demo 4.3.0-setupsh.sql.bz2
+## Uhoh, that didn't work! Try again...
+civicrm$ vi CRM/Upgrade/Incremental/php/FourFive.php
+civicrm$ civibuild upgrade-test drupal-demo 4.3.0-setupsh.sql.bz2
+## Hooray! It worked.
+```
+
+The file "4.3.0-setupsh.sql.bz2" is a standard DB snapshot bundled with
+buildkit -- it contains a database from CiviCRM 4.3.0 with
+randomly-generated data.  The "upgrade-test" command will load
+"4.3.0-setupsh.sql.bz2", execute a headless upgrade, and write any errors to
+the log.  (See console output for details.)
+
+Of course, it's fairly common to encounter different upgrade issues
+depending on the original DB -- an upgrade script might work if the original
+DB is v4.3 but fail for v4.2.  It's a good idea to test your upgrade logic
+against multiple versions:
+
+```bash
+civicrm$ civibuild upgrade-test drupal-demo '4.2.*' '4.3.*' '4.4.*'
+```
+
+All of the tests above use standard DB snapshots with randomly-generated
+data.  If you want to test something more specific, then create your own DB
+snapshot and use it, eg:
+
+```bash
+## Make your own DB with weird data; save a snapshot
+civicrm$ echo "update civicrm_contact set weird=data" | mysql exampledbname
+civicrm$ mysqldump exampledbname | gzip > /tmp/my-snapshot.sql.gz
+## Write some upgrade logic & try it
+civicrm$ vi CRM/Upgrade/Incremental/php/FourFive.php
+civicrm$ civibuild upgrade-test drupal-demo /tmp/my-snapshot.sql.gz
+## Uhoh, that didn't work! Try again...
+civicrm$ vi CRM/Upgrade/Incremental/php/FourFive.php
+civicrm$ civibuild upgrade-test drupal-demo /tmp/my-snapshot.sql.gz
+## Hooray! It worked.
+```
+
+If at any point you need to backout and load a "known-working" database,
+then use the DB created by the original build:
+
+```bash
+$ civibuild restore drupal-demo
+```
+
 ## civicrm.settings.php; settings.php; wp-config.php
 
 There are a few CiviCRM settings which are commonly configured on a per-server
@@ -191,7 +258,7 @@ A parallel structure exists for the CMS settings files. See also:
 When creating a batch of identical sites for training or demonstrations,
 one may want to create a single source-code-build with several
 databases/websites running on top (using "Drupal multi-site"). To install
-extra sites,  use the notation "civibuild create buildname/site-id" as in:   
+extra sites,  use the notation "civibuild create buildname/site-id" as in:
 
 ```bash
 ## Create the original build
@@ -206,4 +273,4 @@ civibuild create training/03 --url http://demo03.example.org --admin-pass s3cr3t
 for num in $(seq -w 1 20) ; do
   civibuild create training/${num} --url http://demo${num}.example.org --admin-pass s3cr3t
 done
-``` 
+```

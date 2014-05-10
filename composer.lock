@@ -3,8 +3,40 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "5917445f3a144939385b7188d2d999f6",
+    "hash": "c4fcea34c6314618fd6ac7d9173b8ea4",
     "packages": [
+        {
+            "name": "civicrm/upgrade-test",
+            "version": "0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/civicrm/civicrm-upgrade-test.git",
+                "reference": "82851297615da1f0c7ca3749562fc725240cddb3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/82851297615da1f0c7ca3749562fc725240cddb3",
+                "reference": "82851297615da1f0c7ca3749562fc725240cddb3",
+                "shasum": ""
+            },
+            "bin": [
+                "civicrm-upgrade-test"
+            ],
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "AGPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Tim Otten",
+                    "email": "to-git@think.hm"
+                }
+            ],
+            "description": "Collection of scripts and data-files for testing CiviCRM upgrades",
+            "homepage": "https://github.com/civicrm/civicrm-upgrade-test",
+            "time": "2014-05-10 03:50:28"
+        },
         {
             "name": "drush/drush",
             "version": "dev-master",
