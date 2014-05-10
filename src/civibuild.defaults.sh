@@ -46,6 +46,7 @@ PRIVATE_ROOT=
 ## (default: TMPDIR/git-cache)
 CACHE_DIR=
 
+
 ###############################################################################
 ## "create" variables defined by civibuild
 
@@ -156,6 +157,15 @@ CMS_SQL=
 
 ## True if we should skip loading CMS_SQL [non-persistent]
 CMS_SQL_SKIP=
+
+###############################################################################
+## Upgrade-testing variables
+
+## Directory which stores the normal snapshots for upgrade-testing
+UPGRADE_DATA_DIR="$PRJDIR/vendor/civicrm/upgrade-test/databases"
+
+## Directory where the civibuid can put debug output about this site
+UPGRADE_LOG_DIR=
 
 ###############################################################################
 ## List of variables to save in the site's data file for use in future
