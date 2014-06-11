@@ -140,7 +140,7 @@ pushd $PRJDIR >> /dev/null
 
   ## Download "civix"
   ## FIXME: Update civix so that it can be installed via composer as a dependency
-  touch "$PRJDIR/extern/civix.txt"
+  mkdir -p "$PRJDIR/extern" && touch "$PRJDIR/extern/civix.txt"
   if [ -z "$IS_FORCE" -a -e "$PRJDIR/bin/civix" -a -d "extern/civix" -a "$(cat $PRJDIR/extern/civix.txt)" == "$CIVIXURL" ]; then
     echo_comment "[[civix binary ($PRJDIR/bin/civix) already exists. Skipping.]]"
   else
