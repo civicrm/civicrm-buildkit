@@ -37,6 +37,7 @@ Description: Download all code, create databases, create config files
   <ms-id>             The unique id for a site within a multisite build
   --type <type>       The name of the download/install scripts. (If omitted, assume <build-name>) [Optional]
   --url <url>         The public URL of the site
+  --web-root <path>   The full path to the website root. Defaults to $BLDDIR/$SITE_NAME
   --title <title>     The title of the site
   --civi-ver <ver>    The branch or tag of CiviCRM desired (master, 4.4, 4.3, 4.3.0, etc) [Optional]
   --cms-ver <ver>     The release of the CMS desired [Optional]
@@ -255,6 +256,11 @@ while [ -n "$1" ] ; do
 
     --url)
       CMS_URL="$1"
+      shift
+      ;;
+
+    --web-root)
+      WEB_ROOT="$1"
       shift
       ;;
 
