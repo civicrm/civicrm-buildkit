@@ -54,7 +54,7 @@ export PATH
 EOF
 
 #[ ! -d "$PRJDIR/app/tmp/apache.d" ] && mkdir -p "$PRJDIR/app/tmp/apache.d"
-echo "Include /home/vagrant/.amp/apache.d/*.conf" > /etc/apache2/conf.d/civicrm-buildkit
+echo "IncludeOptional /home/vagrant/.amp/apache.d/*.conf" > /etc/apache2/conf.d/civicrm-buildkit
 
 sudo -u vagrant -H $PRJDIR/bin/amp config:set \
   --mysql_type="mycnf" \
