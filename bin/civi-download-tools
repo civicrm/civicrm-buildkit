@@ -151,9 +151,9 @@ pushd $PRJDIR >> /dev/null
     echo "[[Install civix]]"
 
     ## Cleanup
-    [ -f app/tmp/civix ] && rm -rf app/tmp/civix
-    [ -f extern/civix ] && rm -rf extern/civix
-    [ -f "$TMPDIR/civix.tar.bz2" ] && rm -rf "$TMPDIR/civix.tar.bz2"
+    [ -e app/tmp/civix ] && rm -rf app/tmp/civix
+    [ -e extern/civix ] && rm -rf extern/civix
+    [ -e "$TMPDIR/civix.tar.bz2" ] && rm -rf "$TMPDIR/civix.tar.bz2"
     mkdir -p extern/civix
 
     ## Download
@@ -162,7 +162,7 @@ pushd $PRJDIR >> /dev/null
 
     ## Setup a relative symlink
     pushd bin >> /dev/null
-      [ -f civix ] && rm -f civix
+      [ -e civix ] && rm -f civix
       ln -s ../extern/civix/civix civix
     popd >> /dev/null
 
