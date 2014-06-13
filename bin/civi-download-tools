@@ -19,7 +19,7 @@ WEBDIR="$PRJDIR/web"
 TMPDIR="$PRJDIR/app/tmp"
 CIVIXVER=14.01.0
 CIVIXURL="http://downloads.sourceforge.net/project/civix/civix-${CIVIXVER}.tar.bz2?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fcivix%2Ffiles%2F&use_mirror=master"
-HUBURL="https://github.com/github/hub/archive/v1.11.1.tar.gz"
+HUBURL="https://github.com/github/hub/archive/v1.12.1.tar.gz"
 IS_QUIET=
 IS_FORCE=
 
@@ -180,9 +180,9 @@ pushd $PRJDIR >> /dev/null
     echo "[[Install hub]]"
 
     ## Cleanup
-    [ -f app/tmp/hub ] && rm -rf app/tmp/hub
-    [ -f extern/hub ] && rm -rf extern/hub
-    [ -f "$TMPDIR/hub.tar.gz" ] && rm -rf "$TMPDIR/hub.tar.gz"
+    [ -e app/tmp/hub ] && rm -rf app/tmp/hub
+    [ -e extern/hub ] && rm -rf extern/hub
+    [ -e "$TMPDIR/hub.tar.gz" ] && rm -rf "$TMPDIR/hub.tar.gz"
     mkdir -p app/tmp/hub extern/hub
 
     ## Download
