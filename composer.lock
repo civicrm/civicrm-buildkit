@@ -1,22 +1,23 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
     ],
-    "hash": "c4fcea34c6314618fd6ac7d9173b8ea4",
+    "hash": "a6999585430d6b00a5b6a88e8029f8bd",
     "packages": [
         {
             "name": "civicrm/upgrade-test",
-            "version": "0.1",
+            "version": "0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/civicrm/civicrm-upgrade-test.git",
-                "reference": "82851297615da1f0c7ca3749562fc725240cddb3"
+                "reference": "da1bc634539a312eea5d0155f515e565953d72f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/82851297615da1f0c7ca3749562fc725240cddb3",
-                "reference": "82851297615da1f0c7ca3749562fc725240cddb3",
+                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/da1bc634539a312eea5d0155f515e565953d72f2",
+                "reference": "da1bc634539a312eea5d0155f515e565953d72f2",
                 "shasum": ""
             },
             "bin": [
@@ -35,7 +36,7 @@
             ],
             "description": "Collection of scripts and data-files for testing CiviCRM upgrades",
             "homepage": "https://github.com/civicrm/civicrm-upgrade-test",
-            "time": "2014-05-10 03:50:28"
+            "time": "2014-06-13 08:31:34"
         },
         {
             "name": "drush/drush",

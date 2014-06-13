@@ -10,6 +10,7 @@ app/run/
 app/snapshot/
 app/tmp/
 bin/amp
+bin/civicrm-upgrade-test
 bin/civix
 bin/composer
 bin/drush
