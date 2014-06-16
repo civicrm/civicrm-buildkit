@@ -323,6 +323,8 @@ case "$ACTION" in
       echo "Already installed ${SITE_NAME}/${SITE_ID}"
     fi
 
+    _amp_snapshot_restore_test
+
     if [ "$SITE_ID" == "default" ]; then
       cvutil_save "${BLDDIR}/${SITE_NAME}.sh" $PERSISTENT_VARS
     else
@@ -349,6 +351,7 @@ case "$ACTION" in
     cvutil_summary "[[Show site summary ($SITE_NAME/$SITE_ID)]]" \
       CMS_ROOT CMS_URL CMS_DB_DSN \
       CIVI_DB_DSN \
+      TEST_DB_DSN \
       ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS
     civibuild_run_optional show
     echo "[[General notes]]"

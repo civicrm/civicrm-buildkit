@@ -122,25 +122,35 @@ There are four variations on rebuilding. In order of fastest (least thorough) to
 
 (TODO: Write a real tutorial!)
 
-Suppose we've just downloaded buildkit and want to prepare a patch for the Drupal 7.x module used in CiviCRM 4.4. This requires downloading and installing the bleeding edge (4.4.x) code for CiviCRM+Drupal as well as writing and publishing the patch.
+Suppose we've just downloaded buildkit and want to prepare a patch for
+CiviCRM 4.4.  This requires downloading and installing the bleeding edge
+(4.4.x) code for CiviCRM+CMS as well as writing and publishing the patch.
 
 ```bash
 ## Download Drupal 7.x and CiviCRM 4.4.x
 civicrm-buildkit$ civibuild create drupal-demo --civi-ver 4.4 --url http://localhost:8001
 
-## Create a "fork" of civicrm-drupal on github.com for publishing changes
-civicrm-buildkit$ cd build/drupal-demo/sites/all/modules/civicrm/drupal
-drupal$ hub fork
+## Create a "fork" of civicrm-core on github.com for publishing changes
+civicrm-buildkit$ cd build/drupal-demo/sites/all/modules/civicrm
+civicrm$ hub fork
 
 ## Create some changes locally
-drupal$ git checkout origin/7.x-4.4 -b mypatch
-drupal$ vi civicrm.module
-drupal$ git commit civicrm.module
+civicrm$ git checkout origin/4.4 -b 4.4-mypatch
+civicrm$ vi CRM/Utils/Array.php
+civicrm$ git commit CRM/Utils/Array.php
 
 ## Publish our changes on github.com
-drupal$ git push mygithubuser mypatch
-drupal$ hub pull-request -b 7.x-4.4
+civicrm$ git push mygithubuser 4.4-mypatch
+civicrm$ hub pull-request -b 4.4
 ```
+
+Please note: A build may include several different git repositories. The
+commands should look about the same on any repository, although different
+git repositories may use different names for their versions/branches (eg the
+civicrm-core, civicrm-joomla, and civicrm-wordpress repositories have
+branches named "4.4", but the civicrm-drupal repository has a branch named
+"7.x-4.4").
+
 
 ## Daily Coding: Housekeeping
 
@@ -163,7 +173,22 @@ drupal-demo$ git scan update
 drupal-demo$ civibuild reinstall drupal-demo
 ```
 
-## Daily Coding: Upgrade Testing
+## Daily Coding: Unit Tests
+
+```bash
+civicrm-buildkit$ cd build/drupal-demo/sites/all/modules/civicrm/tools
+
+## Run all the API tests
+tools$ ./scripts/phpunit api_v3_AllTests
+
+## Run a single test class
+tools$ ./scripts/phpunit api_v3_ContactTest
+
+## Run a single test function in a single test class
+tools$ ./scripts/phpunit --filter testCreateNameOrganization api_v3_ContactTest
+```
+
+## Daily Coding: Upgrade Tests
 
 When one makes a schema change, one must also prepare and test an upgrade
 script. The basic cycle is:

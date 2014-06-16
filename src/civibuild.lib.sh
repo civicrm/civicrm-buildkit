@@ -137,11 +137,12 @@ EOF
 
 ###############################################################################
 ## Setup HTTP and MySQL services
-## This outputs several variables: CMS_URL, CMS_DB_* and CIVI_DB_*
+## This outputs several variables: CMS_URL, CMS_DB_*, CIVI_DB_*, and TEST_DB_*
 function amp_install() {
   ## TODO: single-db support
   _amp_install_cms
   _amp_install_civi
+  _amp_install_test
 }
 
 function _amp_install_cms() {
@@ -167,7 +168,19 @@ function _amp_install_civi() {
   local amp_name="civi$SITE_ID"
   [ "$SITE_ID" == "default" ] && amp_name=civi
 
-  amp create -f --root="$WEB_ROOT" --name="$amp_name" --prefix=CIVI_ --skip-url --output-file="$amp_vars_file_path"
+  amp create -f --root="$WEB_ROOT" --name="$amp_name" --prefix=CIVI_ --skip-url --output-file="$amp_vars_file_path" --perm=super
+
+  source "$amp_vars_file_path"
+}
+
+function _amp_install_test() {
+  echo "[[Setup MySQL for Test]]"
+  cvutil_assertvars _amp_install_test WEB_ROOT SITE_NAME SITE_ID TMPDIR
+  local amp_vars_file_path="${TMPDIR}/${SITE_NAME}-amp-vars.sh"
+  local amp_name="test$SITE_ID"
+  [ "$SITE_ID" == "default" ] && amp_name=test
+
+  amp create -f --root="$WEB_ROOT" --name="$amp_name" --prefix=TEST_ --skip-url --output-file="$amp_vars_file_path" --perm=super
 
   source "$amp_vars_file_path"
 }
@@ -198,42 +211,73 @@ function amp_snapshot_restore() {
   ## TODO: single-db support
 
   if [ -z "$CMS_SQL_SKIP" ]; then
-    local orig_CMS_DB_ARGS="$CMS_DB_ARGS"
-    _amp_install_cms
-    if [ "$CMS_DB_ARGS" != "$orig_CMS_DB_ARGS" ]; then
-      ## shouldn't happen unless someone has been mucking around...
-      echo "WARNING: CMS DB has changed! Config files may be stale!" > /dev/stderr
-      echo "  OLD: $orig_CMS_DB_ARG" > /dev/stderr
-      echo "  NEW: $CMS_DB_ARGS" > /dev/stderr
-    fi
-
-    echo "[[Restore CMS DB ($CMS_DB_NAME) from file ($CMS_SQL)]]"
-    cvutil_assertvars amp_snapshot_restore WEB_ROOT CMS_SQL CMS_DB_ARGS CMS_DB_NAME
-    if [ ! -f "$CMS_SQL" ]; then
-      echo "Missing SQL file: $CMS_SQL" >> /dev/stderr
-      exit 1
-    fi
-    gunzip --stdout "$CMS_SQL" | mysql $CMS_DB_ARGS
+    _amp_snapshot_restore_cms
   fi
 
   if [ -z "$CIVI_SQL_SKIP" ]; then
-    local orig_CIVI_DB_ARGS="$CIVI_DB_ARGS"
-    _amp_install_civi
-    if [ "$CIVI_DB_ARGS" != "$orig_CIVI_DB_ARGS" ]; then
-      ## shouldn't happen unless someone has been mucking around...
-      echo "WARNING: Civi DB has changed! Config files may be stale!" > /dev/stderr
-      echo "  OLD: $orig_CIVI_DB_ARG" > /dev/stderr
-      echo "  NEW: $CIVI_DB_ARGS" > /dev/stderr
-    fi
-
-    echo "[[Restore Civi DB ($CIVI_DB_NAME) from file ($CIVI_SQL)]]"
-    cvutil_assertvars amp_snapshot_restore WEB_ROOT CIVI_SQL CIVI_DB_ARGS CIVI_DB_NAME
-    if [ ! -f "$CIVI_SQL" ]; then
-      echo "Missing SQL file: $CIVI_SQL" >> /dev/stderr
-      exit 1
-    fi
-    gunzip --stdout "$CIVI_SQL" | mysql $CIVI_DB_ARGS
+    _amp_snapshot_restore_civi
   fi
+
+  if [ -z "$TEST_SQL_SKIP" ]; then
+    _amp_snapshot_restore_test
+  fi
+}
+
+function _amp_snapshot_restore_cms() {
+  local orig_CMS_DB_ARGS="$CMS_DB_ARGS"
+  _amp_install_cms
+  if [ "$CMS_DB_ARGS" != "$orig_CMS_DB_ARGS" ]; then
+    ## shouldn't happen unless someone has been mucking around...
+    echo "WARNING: CMS DB has changed! Config files may be stale!" > /dev/stderr
+    echo "  OLD: $orig_CMS_DB_ARG" > /dev/stderr
+    echo "  NEW: $CMS_DB_ARGS" > /dev/stderr
+  fi
+
+  echo "[[Restore CMS DB ($CMS_DB_NAME) from file ($CMS_SQL)]]"
+  cvutil_assertvars amp_snapshot_restore WEB_ROOT CMS_SQL CMS_DB_ARGS CMS_DB_NAME
+  if [ ! -f "$CMS_SQL" ]; then
+    echo "Missing SQL file: $CMS_SQL" >> /dev/stderr
+    exit 1
+  fi
+  gunzip --stdout "$CMS_SQL" | mysql $CMS_DB_ARGS
+}
+
+function _amp_snapshot_restore_civi() {
+  local orig_CIVI_DB_ARGS="$CIVI_DB_ARGS"
+  _amp_install_civi
+  if [ "$CIVI_DB_ARGS" != "$orig_CIVI_DB_ARGS" ]; then
+    ## shouldn't happen unless someone has been mucking around...
+    echo "WARNING: Civi DB has changed! Config files may be stale!" > /dev/stderr
+    echo "  OLD: $orig_CIVI_DB_ARG" > /dev/stderr
+    echo "  NEW: $CIVI_DB_ARGS" > /dev/stderr
+  fi
+
+  echo "[[Restore Civi DB ($CIVI_DB_NAME) from file ($CIVI_SQL)]]"
+  cvutil_assertvars amp_snapshot_restore WEB_ROOT CIVI_SQL CIVI_DB_ARGS CIVI_DB_NAME
+  if [ ! -f "$CIVI_SQL" ]; then
+    echo "Missing SQL file: $CIVI_SQL" >> /dev/stderr
+    exit 1
+  fi
+  gunzip --stdout "$CIVI_SQL" | mysql $CIVI_DB_ARGS
+}
+
+function _amp_snapshot_restore_test() {
+  local orig_TEST_DB_ARGS="$TEST_DB_ARGS"
+  _amp_install_test
+  if [ "$TEST_DB_ARGS" != "$orig_TEST_DB_ARGS" ]; then
+    ## shouldn't happen unless someone has been mucking around...
+    echo "WARNING: TEST DB has changed! Config files may be stale!" > /dev/stderr
+    echo "  OLD: $orig_TEST_DB_ARG" > /dev/stderr
+    echo "  NEW: $TEST_DB_ARGS" > /dev/stderr
+  fi
+  echo "[[Restore Test DB ($TEST_DB_NAME) from file ($CIVI_SQL)]]"
+  cvutil_assertvars amp_snapshot_restore WEB_ROOT CIVI_SQL TEST_DB_ARGS TEST_DB_NAME
+  if [ ! -f "$CIVI_SQL" ]; then
+    echo "Missing SQL file: $CIVI_SQL" >> /dev/stderr
+    exit 1
+  fi
+  gunzip --stdout "$CIVI_SQL" | mysql -o $TEST_DB_ARGS
+
 }
 
 ###############################################################################
@@ -367,7 +411,13 @@ function civicrm_make_test_settings_php() {
     ## TODO: REVIEW
     cat > "$CIVI_CORE/tests/phpunit/CiviTest/civicrm.settings.local.php" << EOF
 <?php
-  define('CIVICRM_DSN', "mysql://${CIVI_DB_USER}:${CIVI_DB_PASS}@${CIVI_DB_HOST}:${CIVI_DB_PORT}/${CIVI_DB_NAME}");
+  if (defined('CIVICRM_WEBTEST')) {
+    // For Selenium tests, use normal DB
+    define('CIVICRM_DSN', "mysql://${CIVI_DB_USER}:${CIVI_DB_PASS}@${CIVI_DB_HOST}:${CIVI_DB_PORT}/${CIVI_DB_NAME}");
+  } else {
+    // For unit tests, use headless test DB
+    define('CIVICRM_DSN', "mysql://${TEST_DB_USER}:${TEST_DB_PASS}@${TEST_DB_HOST}:${TEST_DB_PORT}/${TEST_DB_NAME}");
+  }
   define('CIVICRM_TEMPLATE_COMPILEDIR', '${CIVI_TEMPLATEC}');
   define('DONT_DOCUMENT_TEST_CONFIG', TRUE);
 EOF
