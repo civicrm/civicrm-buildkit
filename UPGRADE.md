@@ -1,3 +1,9 @@
+# General
+
+New versions of buildkit are likely to include new versions of tools. The
+new tools will download automatically when you first run "civibuild".
+If you prefer to download explicitly, then re-run "civi-download-tools".
+
 # v14.05.0 => v14.06.0
 
 In version v14.05 (and earlier), each build included two databases: one CMS
