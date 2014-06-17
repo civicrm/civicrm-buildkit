@@ -19,7 +19,8 @@ WEBDIR="$PRJDIR/web"
 TMPDIR="$PRJDIR/app/tmp"
 CIVIXVER=14.01.0
 CIVIXURL="http://downloads.sourceforge.net/project/civix/civix-${CIVIXVER}.tar.bz2?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fcivix%2Ffiles%2F&use_mirror=master"
-HUBURL="https://github.com/github/hub/archive/v1.12.1.tar.gz"
+HUBTAG="v1.12.1"
+HUBURL="https://github.com/github/hub"
 IS_QUIET=
 IS_FORCE=
 
@@ -175,7 +176,7 @@ pushd $PRJDIR >> /dev/null
 
   ## Download "hub"
   touch "$PRJDIR/extern/hub.txt"
-  if [ -z "$IS_FORCE" -a -e "$PRJDIR/extern/hub/bin/hub" -a -e "$PRJDIR/bin/hub" -a "$(cat $PRJDIR/extern/hub.txt)" == "$HUBURL" ]; then
+  if [ -z "$IS_FORCE" -a -e "$PRJDIR/extern/hub/bin/hub" -a -e "$PRJDIR/bin/hub" -a "$(cat $PRJDIR/extern/hub.txt)" == "$HUBURL $HUBTAG" ]; then
     echo_comment "[[hub ($PRJDIR/extern/hub) already exists. Skipping.]]"
   elif [ -z "`which ruby`" -o -z "`which rake`" ]; then
     echo_comment "[[hub requires Ruby and Rake (which are unavailable). Skipping.]]"
@@ -185,12 +186,13 @@ pushd $PRJDIR >> /dev/null
     ## Cleanup
     [ -e app/tmp/hub ] && rm -rf app/tmp/hub
     [ -e extern/hub ] && rm -rf extern/hub
-    [ -e "$TMPDIR/hub.tar.gz" ] && rm -rf "$TMPDIR/hub.tar.gz"
-    mkdir -p app/tmp/hub extern/hub
+    mkdir -p app/tmp extern/hub
 
     ## Download
-    download_url "$HUBURL" "$TMPDIR/hub.tar.gz"
-    tar xz  --strip-components 1 -C app/tmp/hub -f "$TMPDIR/hub.tar.gz"
+    git clone "$HUBURL" app/tmp/hub
+    pushd app/tmp/hub
+      git checkout $HUBTAG
+    popd
 
     ## Build
     pushd app/tmp/hub >> /dev/null
@@ -204,7 +206,7 @@ pushd $PRJDIR >> /dev/null
     popd >> /dev/null
 
     ## Mark as downloaded
-    echo "$HUBURL" > "$PRJDIR/extern/hub.txt"
+    echo "$HUBURL $HUBTAG" > "$PRJDIR/extern/hub.txt"
   fi
 
 popd >> /dev/null
