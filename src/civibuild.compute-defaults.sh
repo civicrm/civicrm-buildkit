@@ -2,6 +2,7 @@
 
 [ -z "$CACHE_DIR" ]          && CACHE_DIR="$TMPDIR/git-cache"
 [ -z "$WEB_ROOT" ]           && WEB_ROOT="$BLDDIR/$SITE_NAME"
+[ -z "$CMS_ROOT" ]           && CMS_ROOT="$WEB_ROOT"
 [ -z "$PRIVATE_ROOT" ]       && PRIVATE_ROOT="$PRJDIR/app/private/$SITE_NAME"
 [ -z "$UPGRADE_LOG_DIR" ]    && UPGRADE_LOG_DIR="$PRJDIR/app/debug/$SITE_NAME"
 [ -z "$CIVI_SITE_KEY" ]      && CIVI_SITE_KEY=$(cvutil_makepasswd 16)

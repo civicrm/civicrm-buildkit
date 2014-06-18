@@ -147,15 +147,15 @@ function amp_install() {
 
 function _amp_install_cms() {
   echo "[[Setup MySQL and HTTP for CMS]]"
-  cvutil_assertvars _amp_install_cms WEB_ROOT SITE_NAME SITE_ID TMPDIR
+  cvutil_assertvars _amp_install_cms CMS_ROOT SITE_NAME SITE_ID TMPDIR
   local amp_vars_file_path="${TMPDIR}/${SITE_NAME}-amp-vars.sh"
   local amp_name="cms$SITE_ID"
   [ "$SITE_ID" == "default" ] && amp_name=cms
 
   if [ -n "$CMS_URL" ]; then
-    amp create -f --root="$WEB_ROOT" --name="$amp_name" --prefix=CMS_ --url="$CMS_URL" --output-file="$amp_vars_file_path"
+    amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=CMS_ --url="$CMS_URL" --output-file="$amp_vars_file_path"
   else
-    amp create -f --root="$WEB_ROOT" --name="$amp_name" --prefix=CMS_ --output-file="$amp_vars_file_path"
+    amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=CMS_ --output-file="$amp_vars_file_path"
   fi
 
   source "$amp_vars_file_path"
@@ -163,24 +163,24 @@ function _amp_install_cms() {
 
 function _amp_install_civi() {
   echo "[[Setup MySQL for Civi]]"
-  cvutil_assertvars _amp_install_civi WEB_ROOT SITE_NAME SITE_ID TMPDIR
+  cvutil_assertvars _amp_install_civi CMS_ROOT SITE_NAME SITE_ID TMPDIR
   local amp_vars_file_path="${TMPDIR}/${SITE_NAME}-amp-vars.sh"
   local amp_name="civi$SITE_ID"
   [ "$SITE_ID" == "default" ] && amp_name=civi
 
-  amp create -f --root="$WEB_ROOT" --name="$amp_name" --prefix=CIVI_ --skip-url --output-file="$amp_vars_file_path" --perm=super
+  amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=CIVI_ --skip-url --output-file="$amp_vars_file_path" --perm=super
 
   source "$amp_vars_file_path"
 }
 
 function _amp_install_test() {
   echo "[[Setup MySQL for Test]]"
-  cvutil_assertvars _amp_install_test WEB_ROOT SITE_NAME SITE_ID TMPDIR
+  cvutil_assertvars _amp_install_test CMS_ROOT SITE_NAME SITE_ID TMPDIR
   local amp_vars_file_path="${TMPDIR}/${SITE_NAME}-amp-vars.sh"
   local amp_name="test$SITE_ID"
   [ "$SITE_ID" == "default" ] && amp_name=test
 
-  amp create -f --root="$WEB_ROOT" --name="$amp_name" --prefix=TEST_ --skip-url --output-file="$amp_vars_file_path" --perm=super
+  amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=TEST_ --skip-url --output-file="$amp_vars_file_path" --perm=super
 
   source "$amp_vars_file_path"
 }
@@ -192,14 +192,14 @@ function amp_snapshot_create() {
 
   if [ -z "$CMS_SQL_SKIP" ]; then
     echo "[[Save CMS DB ($CMS_DB_NAME) to file ($CMS_SQL)]]"
-    cvutil_assertvars amp_snapshot_create WEB_ROOT CMS_SQL CMS_DB_ARGS CMS_DB_NAME
+    cvutil_assertvars amp_snapshot_create CMS_SQL CMS_DB_ARGS CMS_DB_NAME
     cvutil_makeparent "$CMS_SQL"
     mysqldump $CMS_DB_ARGS | gzip > "$CMS_SQL"
   fi
 
   if [ -z "$CIVI_SQL_SKIP" ]; then
     echo "[[Save Civi DB ($CIVI_DB_NAME) to file ($CIVI_SQL)]]"
-    cvutil_assertvars amp_snapshot_create WEB_ROOT CIVI_SQL CIVI_DB_ARGS CIVI_DB_NAME
+    cvutil_assertvars amp_snapshot_create CIVI_SQL CIVI_DB_ARGS CIVI_DB_NAME
     cvutil_makeparent "$CIVI_SQL"
     mysqldump $CIVI_DB_ARGS | gzip > "$CIVI_SQL"
   fi
@@ -234,7 +234,7 @@ function _amp_snapshot_restore_cms() {
   fi
 
   echo "[[Restore CMS DB ($CMS_DB_NAME) from file ($CMS_SQL)]]"
-  cvutil_assertvars amp_snapshot_restore WEB_ROOT CMS_SQL CMS_DB_ARGS CMS_DB_NAME
+  cvutil_assertvars amp_snapshot_restore CMS_SQL CMS_DB_ARGS CMS_DB_NAME
   if [ ! -f "$CMS_SQL" ]; then
     echo "Missing SQL file: $CMS_SQL" >> /dev/stderr
     exit 1
@@ -253,7 +253,7 @@ function _amp_snapshot_restore_civi() {
   fi
 
   echo "[[Restore Civi DB ($CIVI_DB_NAME) from file ($CIVI_SQL)]]"
-  cvutil_assertvars amp_snapshot_restore WEB_ROOT CIVI_SQL CIVI_DB_ARGS CIVI_DB_NAME
+  cvutil_assertvars amp_snapshot_restore CIVI_SQL CIVI_DB_ARGS CIVI_DB_NAME
   if [ ! -f "$CIVI_SQL" ]; then
     echo "Missing SQL file: $CIVI_SQL" >> /dev/stderr
     exit 1
@@ -271,7 +271,7 @@ function _amp_snapshot_restore_test() {
     echo "  NEW: $TEST_DB_ARGS" > /dev/stderr
   fi
   echo "[[Restore Test DB ($TEST_DB_NAME) from file ($CIVI_SQL)]]"
-  cvutil_assertvars amp_snapshot_restore WEB_ROOT CIVI_SQL TEST_DB_ARGS TEST_DB_NAME
+  cvutil_assertvars amp_snapshot_restore CIVI_SQL TEST_DB_ARGS TEST_DB_NAME
   if [ ! -f "$CIVI_SQL" ]; then
     echo "Missing SQL file: $CIVI_SQL" >> /dev/stderr
     exit 1
@@ -404,7 +404,7 @@ EOF
 ###############################################################################
 ## Generate civicrm.settings.php and CiviSeleniumSettings.php for testing
 function civicrm_make_test_settings_php() {
-  cvutil_assertvars civicrm_make_test_settings_php CIVI_CORE CIVI_DB_NAME CIVI_DB_USER CIVI_DB_PASS CIVI_DB_HOST WEB_ROOT CMS_URL ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS CIVI_SITE_KEY
+  cvutil_assertvars civicrm_make_test_settings_php CIVI_CORE CIVI_DB_NAME CIVI_DB_USER CIVI_DB_PASS CIVI_DB_HOST CMS_URL ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS CIVI_SITE_KEY
 
   ## Does this build include development support (eg git or tarball-based)?
   if [ -d "$CIVI_CORE/tests/phpunit/CiviTest" ]; then
@@ -448,10 +448,10 @@ EOF
 ###############################################################################
 ## Generate config files and setup database
 function wp_install() {
-  cvutil_assertvars wp_install WEB_ROOT CMS_DB_NAME CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_URL ADMIN_USER ADMIN_PASS ADMIN_EMAIL CMS_TITLE
+  cvutil_assertvars wp_install CMS_ROOT CMS_DB_NAME CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_URL ADMIN_USER ADMIN_PASS ADMIN_EMAIL CMS_TITLE
 
   CMS_DB_HOSTPORT=$(cvutil_build_hostport $CMS_DB_HOST $CMS_DB_PORT)
-  pushd "$WEB_ROOT" >> /dev/null
+  pushd "$CMS_ROOT" >> /dev/null
     [ -f "wp-config.php" ] && rm -f "wp-config.php"
     wp core config \
       --dbname="$CMS_DB_NAME" \
@@ -488,8 +488,8 @@ PHP
 ###############################################################################
 ## Destroy config files and database tables
 function wp_uninstall() {
-  cvutil_assertvars wp_uninstall WEB_ROOT
-  pushd "$WEB_ROOT" >> /dev/null
+  cvutil_assertvars wp_uninstall CMS_ROOT
+  pushd "$CMS_ROOT" >> /dev/null
     [ -f "wp-config.php" ] && rm -f "wp-config.php"
     [ -f "wp-content/plugins/files" ] && rm -rf "wp-content/plugins/files"
   popd >> /dev/null
@@ -500,10 +500,10 @@ function wp_uninstall() {
 ## usage: drupal_install <extra-drush-args>
 ## To use an "install profile", simply pass it as part of <extra-drush-args>
 function drupal_install() {
-  cvutil_assertvars drupal_install WEB_ROOT SITE_ID CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS CMS_URL
+  cvutil_assertvars drupal_install CMS_ROOT SITE_ID CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS CMS_URL
   DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
   CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
-  pushd "$WEB_ROOT" >> /dev/null
+  pushd "$CMS_ROOT" >> /dev/null
     [ -f "sites/$DRUPAL_SITE_DIR/settings.php" ] && rm -f "sites/$DRUPAL_SITE_DIR/settings.php"
 
     drush site-install -y "$@" \
@@ -515,7 +515,7 @@ function drupal_install() {
       --sites-subdir="$DRUPAL_SITE_DIR"
     chmod u+w "sites/$DRUPAL_SITE_DIR"
     chmod u+w "sites/$DRUPAL_SITE_DIR/settings.php"
-    cvutil_append_settings "$WEB_ROOT/sites/$DRUPAL_SITE_DIR/settings.php" "drupal.settings.d"
+    cvutil_append_settings "$CMS_ROOT/sites/$DRUPAL_SITE_DIR/settings.php" "drupal.settings.d"
     chmod u-w "sites/$DRUPAL_SITE_DIR/settings.php"
 
     ## Setup extra directories
@@ -528,14 +528,14 @@ function drupal_install() {
 ###############################################################################
 ## Drupal -- Destroy config files and database tables
 function drupal_uninstall() {
-  cvutil_assertvars drupal_uninstall WEB_ROOT SITE_ID CMS_URL
+  cvutil_assertvars drupal_uninstall CMS_ROOT SITE_ID CMS_URL
   DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
 
-  if [ -n "$DRUPAL_SITE_DIR" -a -d "$WEB_ROOT/sites/$DRUPAL_SITE_DIR" ]; then
+  if [ -n "$DRUPAL_SITE_DIR" -a -d "$CMS_ROOT/sites/$DRUPAL_SITE_DIR" ]; then
     if [ "$SITE_ID" == "default" ]; then
       ## For default site, carfully pick files to delete.
       ## Need to keep default.settings.php.
-      pushd "$WEB_ROOT" >> /dev/null
+      pushd "$CMS_ROOT" >> /dev/null
         chmod u+w "sites/default"
         if [ -f "sites/default/settings.php" ]; then
           chmod u+w "sites/default/settings.php"
@@ -547,7 +547,7 @@ function drupal_uninstall() {
         fi
       popd >> /dev/null
     else
-      rm -rf "$WEB_ROOT/sites/$DRUPAL_SITE_DIR"
+      rm -rf "$CMS_ROOT/sites/$DRUPAL_SITE_DIR"
     fi
   fi
 
