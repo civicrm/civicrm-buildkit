@@ -626,8 +626,9 @@ function git_cache_setup() {
     php -r 'echo time();' > $lastrun
     if [ ! -d "$cachedir" ]; then
       ## clone
+      echo "[[Initialize cache dir: $cachedir]]"
       cvutil_makeparent "$cachedir"
-      git clone --mirror "$url"  "$cachedir"
+      git clone --mirror "$url" "$cachedir"
     else
       ## update
       pushd "$cachedir" >> /dev/null
@@ -693,6 +694,7 @@ function svn_cache_setup() {
     php -r 'echo time();' > $lastrun
     if [ ! -d "$cachedir" ]; then
       ## clone
+      echo "[[Initialize cache dir: $cachedir]]"
       cvutil_makeparent "$cachedir"
       svn co "$url" "$cachedir"
     else
