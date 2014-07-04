@@ -31,19 +31,22 @@ function civibuild_usage() {
 
   #Fails in Ubuntu 12.04 Vagrant box ==> cat <<EOT
   php -r 'echo file_get_contents("php://stdin");' <<EOT
-Syntax: $APP create <build-name>[/<ms-id>] [options]
-Description: Download all code, create databases, create config files
+Common options:
   <build-name>        The name of the sub-directory to build
   <ms-id>             The unique id for a site within a multisite build
+
+Syntax: $APP create    <build-name>[/<ms-id>] [options]
+Syntax: $APP download  <build-name>           [options]
+Syntax: $APP install   <build-name>[/<ms-id>] [options]
+Syntax: $APP reinstall <build-name>[/<ms-id>] [options]
+Description: Download and/or install the application
   --type <type>       The name of the download/install scripts. (If omitted, assume <build-name>) [Optional]
-  --url <url>         The public URL of the site
-  --web-root <path>   The full path to the website root. Defaults to $BLDDIR/$SITE_NAME
-  --title <title>     The title of the site
+  --web-root <path>   The full path to the website root. [Default: ${BLDDIR}/<build-name>]
   --civi-ver <ver>    The branch or tag of CiviCRM desired (master, 4.4, 4.3, 4.3.0, etc) [Optional]
   --cms-ver <ver>     The release of the CMS desired [Optional]
-  --force             If the source tree or DB already exists, destroy and recreate
-  --force-download    If the source tree already exists, destroy and recreate
-  --force-install     If the DB/config already exists, destroy and recreate
+
+  --url <url>         The public URL of the site
+  --title <title>     The title of the site
   --admin-user        Name of the CMS's administrative user
   --admin-pass        Password for the CMS's administrative user
   --admin-email       Email of the CMS's administrative user
@@ -51,29 +54,18 @@ Description: Download all code, create databases, create config files
   --demo-pass         Password for the CMS's demo user
   --demo-email        Email of the CMS's demo user
 
-Syntax: $APP reinstall <build-name>[/<ms-id>]
-Description: Short-hand for "$APP create <build-name> --force-install"
-  <build-name>        The name of the sub-directory to build
-  <ms-id>             The unique id for a site within a multisite build
+  --force             If necessary, destroy pre-existing files/directories/DBs
+                      (For "reinstall", "--force" is implicit.)
 
 Syntax: $APP show <build-name>[/<ms-id>]
 Description: Show key details about the build
-  <build-name>        The name of the sub-directory to build
-  <ms-id>             The unique id for a site within a multisite build
-
-Syntax: $APP snapshot <build-name>[/<ms-id>] [options]
-Description: Create a snapshot of the build's DBs
-  <build-name>           The name of the sub-directory to build
-  <ms-id>                The unique id for a site within a multisite build
-  --snapshot <name>      The name of the snapshot subdirectory. (If omitted, assume <build-name>) [Optional]
 
 Syntax: $APP snapshots
 Description: List available snapshots
 
-Syntax: $APP restore <build-name>[/<ms-id>] [options]
-Description: Restore HTTP/DB services from a snapshot
-  <build-name>           The name of the sub-directory to build
-  <ms-id>                The unique id for a site within a multisite build
+Syntax: $APP snapshot <build-name>[/<ms-id>] [options]
+Syntax: $APP restore  <build-name>[/<ms-id>] [options]
+Description: Create or restore a snapshot of the CMS+CRM DBs
   --snapshot <name>      The name of the snapshot subdirectory. (If omitted, assume <build-name>) [Optional]
   --cms-sql <sql-file>   The path to a SQL backup of the CMS DB [Optional]
   --no-cms               Skip resetting the CMS DB [Optional]
@@ -85,8 +77,6 @@ Description: Restore *all* HTTP/DB services from their respective snapshots
 
 Syntax: $APP upgrade-test <build-name>[/<ms-id>] <sql-bz2-files>...
 Description: Loads each DB snapshot and runs the current upgrade logic
-  <build-name>           The name of the sub-directory to build
-  <ms-id>                The unique id for a site within a multisite build
   <sql-bz2-files>        One or more *.sql.bz2 files.
                          [Default path: $UPGRADE_DATA_DIR/]
 
@@ -385,8 +375,13 @@ case "$ACTION" in
     amp cleanup
     ;;
 
-  reinstall)
-    FORCE_INSTALL=1
+  download|dl)
+    civibuild_download
+    civibuild_save
+    ;;
+
+  install|reinstall)
+    [ "$ACTION" == "reinstall" ] && FORCE_INSTALL=1
     civibuild_install
     civibuild_save
     civibuild_show
