@@ -121,6 +121,94 @@ function civibuild_run_optional() {
   fi
 }
 
+## Run the download scripts if necessary
+## i.e. run them if FORCE_DOWNLOAD or if
+## the folder doesn't exist
+function civibuild_download() {
+  cvutil_assertvars civibuild_download WEB_ROOT PRJDIR CACHE_DIR SITE_NAME SITE_TYPE
+
+  echo "[[Download $SITE_NAME (type '$SITE_TYPE' in '$WEB_ROOT')]]"
+
+  if [ -n "$FORCE_DOWNLOAD" -a -d "$WEB_ROOT" ]; then
+    rm -rf "$WEB_ROOT"
+  fi
+
+  if [ ! -d "$WEB_ROOT" ]; then
+    pushd "$PRJDIR" > /dev/null
+      if [ -f "$PRJDIR/app/config/caches.sh" ]; then
+        source "$PRJDIR/app/config/caches.sh"
+      fi
+      civibuild_run download
+      git_cache_deref_remotes "$CACHE_DIR" "$WEB_ROOT"
+    popd > /dev/null
+    if [ ! -d "$WEB_ROOT" ]; then
+      echo "Download failed to create directory"
+      exit 97
+    fi
+  else
+    echo "Already downloaded ${SITE_NAME}"
+  fi
+}
+
+## Run the installation scripts if necessary
+## i.e. run them if FORCE_INSTALL or if the
+## site wasn't previously installed
+function civibuild_install() {
+  cvutil_assertvars civibuild_install WEB_ROOT PRIVATE_ROOT SITE_NAME SITE_ID SITE_TYPE
+
+  echo "[[Install $SITE_NAME/$SITE_ID (type '$SITE_TYPE' in '$WEB_ROOT')]]"
+
+  if [ ! -d "$WEB_ROOT" ]; then
+    echo "Cannot install: missing root '$WEB_ROOT'"
+    exit 96
+  fi
+
+  if [ -n "$FORCE_INSTALL" -a -n "$IS_INSTALLED" ]; then
+    pushd "$WEB_ROOT" > /dev/null
+      civibuild_run uninstall
+    popd > /dev/null
+    if [ -d "$PRIVATE_ROOT" ]; then
+      rm -rf "$PRIVATE_ROOT"
+    fi
+  fi
+
+  if [ -n "$FORCE_INSTALL" -o -z "$IS_INSTALLED" ]; then
+    pushd "$WEB_ROOT" > /dev/null
+      civibuild_run install
+    popd > /dev/null
+    amp_snapshot_create
+    IS_INSTALLED=1
+  else
+    echo "Already installed ${SITE_NAME}/${SITE_ID}"
+  fi
+
+  _amp_snapshot_restore_test
+}
+
+## Write any persistent settings to disk
+function civibuild_save() {
+  cvutil_assertvars civibuild_save BLDDIR SITE_NAME SITE_ID PERSISTENT_VARS
+
+  if [ "$SITE_ID" == "default" ]; then
+    cvutil_save "${BLDDIR}/${SITE_NAME}.sh" $PERSISTENT_VARS
+  else
+    cvutil_save "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh" $PERSISTENT_VARS
+  fi
+}
+
+function civibuild_show() {
+  cvutil_assertvars civibuild_show SITE_NAME SITE_ID
+  cvutil_summary "[[Show site summary ($SITE_NAME/$SITE_ID)]]" \
+    CMS_ROOT CMS_URL CMS_DB_DSN \
+    CIVI_DB_DSN \
+    TEST_DB_DSN \
+    ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS
+  civibuild_run_optional show
+  echo "[[General notes]]"
+  echo " - You may need to restart httpd."
+  echo " - You may need to add the hostname and IP to /etc/hosts or DNS."
+}
+
 ###############################################################################
 ## Parse options
 source "$PRJDIR/src/civibuild.defaults.sh"
@@ -282,56 +370,10 @@ source "$PRJDIR/src/civibuild.compute-defaults.sh"
 
 case "$ACTION" in
   create)
-    echo "[[Create $SITE_NAME (type '$SITE_TYPE' in '$WEB_ROOT')]]"
-
-    if [ -n "$FORCE_DOWNLOAD" -a -d "$WEB_ROOT" ]; then
-      rm -rf "$WEB_ROOT"
-    fi
-
-    if [ ! -d "$WEB_ROOT" ]; then
-      pushd "$PRJDIR" > /dev/null
-        if [ -f "$PRJDIR/app/config/caches.sh" ]; then
-          source "$PRJDIR/app/config/caches.sh"
-        fi
-        civibuild_run download
-        git_cache_deref_remotes "$CACHE_DIR" "$WEB_ROOT"
-      popd > /dev/null
-      if [ ! -d "$WEB_ROOT" ]; then
-        echo "Download failed to create directory"
-        exit 97
-      fi
-    else
-      echo "Already downloaded ${SITE_NAME}"
-    fi
-
-    if [ -n "$FORCE_INSTALL" -a -n "$IS_INSTALLED" ]; then
-      pushd "$WEB_ROOT" > /dev/null
-        civibuild_run uninstall
-      popd > /dev/null
-      if [ -d "$PRIVATE_ROOT" ]; then
-        rm -rf "$PRIVATE_ROOT"
-      fi
-    fi
-
-    if [ -n "$FORCE_INSTALL" -o -z "$IS_INSTALLED" ]; then
-      pushd "$WEB_ROOT" > /dev/null
-        civibuild_run install
-      popd > /dev/null
-      amp_snapshot_create
-      IS_INSTALLED=1
-    else
-      echo "Already installed ${SITE_NAME}/${SITE_ID}"
-    fi
-
-    _amp_snapshot_restore_test
-
-    if [ "$SITE_ID" == "default" ]; then
-      cvutil_save "${BLDDIR}/${SITE_NAME}.sh" $PERSISTENT_VARS
-    else
-      cvutil_save "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh" $PERSISTENT_VARS
-    fi
-
-    civibuild show "$SITE_NAME/$SITE_ID"
+    civibuild_download
+    civibuild_install
+    civibuild_save
+    civibuild_show
     ;;
 
   destroy)
@@ -344,19 +386,14 @@ case "$ACTION" in
     ;;
 
   reinstall)
-    civibuild create "$SITE_NAME/$SITE_ID" --force-install
+    FORCE_INSTALL=1
+    civibuild_install
+    civibuild_save
+    civibuild_show
     ;;
 
   show)
-    cvutil_summary "[[Show site summary ($SITE_NAME/$SITE_ID)]]" \
-      CMS_ROOT CMS_URL CMS_DB_DSN \
-      CIVI_DB_DSN \
-      TEST_DB_DSN \
-      ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS
-    civibuild_run_optional show
-    echo "[[General notes]]"
-    echo " - You may need to restart httpd."
-    echo " - You may need to add the hostname and IP to /etc/hosts or DNS."
+    civibuild_show
     ;;
 
   snapshots)
