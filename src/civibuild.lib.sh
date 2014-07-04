@@ -53,7 +53,7 @@ function cvutil_summary() {
   fi
   shift
 
-  cvutil_assertvars "$@"
+  cvutil_assertvars cvutil_summary "$@"
   for var in "$@" ; do
     eval "val=\$$var"
     echo " - $var: $val"

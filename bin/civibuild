@@ -31,19 +31,22 @@ function civibuild_usage() {
 
   #Fails in Ubuntu 12.04 Vagrant box ==> cat <<EOT
   php -r 'echo file_get_contents("php://stdin");' <<EOT
-Syntax: $APP create <build-name>[/<ms-id>] [options]
-Description: Download all code, create databases, create config files
+Common options:
   <build-name>        The name of the sub-directory to build
   <ms-id>             The unique id for a site within a multisite build
+
+Syntax: $APP create    <build-name>[/<ms-id>] [options]
+Syntax: $APP download  <build-name>           [options]
+Syntax: $APP install   <build-name>[/<ms-id>] [options]
+Syntax: $APP reinstall <build-name>[/<ms-id>] [options]
+Description: Download and/or install the application
   --type <type>       The name of the download/install scripts. (If omitted, assume <build-name>) [Optional]
-  --url <url>         The public URL of the site
-  --web-root <path>   The full path to the website root. Defaults to $BLDDIR/$SITE_NAME
-  --title <title>     The title of the site
+  --web-root <path>   The full path to the website root. [Default: ${BLDDIR}/<build-name>]
   --civi-ver <ver>    The branch or tag of CiviCRM desired (master, 4.4, 4.3, 4.3.0, etc) [Optional]
   --cms-ver <ver>     The release of the CMS desired [Optional]
-  --force             If the source tree or DB already exists, destroy and recreate
-  --force-download    If the source tree already exists, destroy and recreate
-  --force-install     If the DB/config already exists, destroy and recreate
+
+  --url <url>         The public URL of the site
+  --title <title>     The title of the site
   --admin-user        Name of the CMS's administrative user
   --admin-pass        Password for the CMS's administrative user
   --admin-email       Email of the CMS's administrative user
@@ -51,29 +54,18 @@ Description: Download all code, create databases, create config files
   --demo-pass         Password for the CMS's demo user
   --demo-email        Email of the CMS's demo user
 
-Syntax: $APP reinstall <build-name>[/<ms-id>]
-Description: Short-hand for "$APP create <build-name> --force-install"
-  <build-name>        The name of the sub-directory to build
-  <ms-id>             The unique id for a site within a multisite build
+  --force             If necessary, destroy pre-existing files/directories/DBs
+                      (For "reinstall", "--force" is implicit.)
 
 Syntax: $APP show <build-name>[/<ms-id>]
 Description: Show key details about the build
-  <build-name>        The name of the sub-directory to build
-  <ms-id>             The unique id for a site within a multisite build
-
-Syntax: $APP snapshot <build-name>[/<ms-id>] [options]
-Description: Create a snapshot of the build's DBs
-  <build-name>           The name of the sub-directory to build
-  <ms-id>                The unique id for a site within a multisite build
-  --snapshot <name>      The name of the snapshot subdirectory. (If omitted, assume <build-name>) [Optional]
 
 Syntax: $APP snapshots
 Description: List available snapshots
 
-Syntax: $APP restore <build-name>[/<ms-id>] [options]
-Description: Restore HTTP/DB services from a snapshot
-  <build-name>           The name of the sub-directory to build
-  <ms-id>                The unique id for a site within a multisite build
+Syntax: $APP snapshot <build-name>[/<ms-id>] [options]
+Syntax: $APP restore  <build-name>[/<ms-id>] [options]
+Description: Create or restore a snapshot of the CMS+CRM DBs
   --snapshot <name>      The name of the snapshot subdirectory. (If omitted, assume <build-name>) [Optional]
   --cms-sql <sql-file>   The path to a SQL backup of the CMS DB [Optional]
   --no-cms               Skip resetting the CMS DB [Optional]
@@ -85,8 +77,6 @@ Description: Restore *all* HTTP/DB services from their respective snapshots
 
 Syntax: $APP upgrade-test <build-name>[/<ms-id>] <sql-bz2-files>...
 Description: Loads each DB snapshot and runs the current upgrade logic
-  <build-name>           The name of the sub-directory to build
-  <ms-id>                The unique id for a site within a multisite build
   <sql-bz2-files>        One or more *.sql.bz2 files.
                          [Default path: $UPGRADE_DATA_DIR/]
 
@@ -119,6 +109,94 @@ function civibuild_run_optional() {
     source "$MAIN_SCRIPT"
     set +ex
   fi
+}
+
+## Run the download scripts if necessary
+## i.e. run them if FORCE_DOWNLOAD or if
+## the folder doesn't exist
+function civibuild_download() {
+  cvutil_assertvars civibuild_download WEB_ROOT PRJDIR CACHE_DIR SITE_NAME SITE_TYPE
+
+  echo "[[Download $SITE_NAME (type '$SITE_TYPE' in '$WEB_ROOT')]]"
+
+  if [ -n "$FORCE_DOWNLOAD" -a -d "$WEB_ROOT" ]; then
+    rm -rf "$WEB_ROOT"
+  fi
+
+  if [ ! -d "$WEB_ROOT" ]; then
+    pushd "$PRJDIR" > /dev/null
+      if [ -f "$PRJDIR/app/config/caches.sh" ]; then
+        source "$PRJDIR/app/config/caches.sh"
+      fi
+      civibuild_run download
+      git_cache_deref_remotes "$CACHE_DIR" "$WEB_ROOT"
+    popd > /dev/null
+    if [ ! -d "$WEB_ROOT" ]; then
+      echo "Download failed to create directory"
+      exit 97
+    fi
+  else
+    echo "Already downloaded ${SITE_NAME}"
+  fi
+}
+
+## Run the installation scripts if necessary
+## i.e. run them if FORCE_INSTALL or if the
+## site wasn't previously installed
+function civibuild_install() {
+  cvutil_assertvars civibuild_install WEB_ROOT PRIVATE_ROOT SITE_NAME SITE_ID SITE_TYPE
+
+  echo "[[Install $SITE_NAME/$SITE_ID (type '$SITE_TYPE' in '$WEB_ROOT')]]"
+
+  if [ ! -d "$WEB_ROOT" ]; then
+    echo "Cannot install: missing root '$WEB_ROOT'"
+    exit 96
+  fi
+
+  if [ -n "$FORCE_INSTALL" -a -n "$IS_INSTALLED" ]; then
+    pushd "$WEB_ROOT" > /dev/null
+      civibuild_run uninstall
+    popd > /dev/null
+    if [ -d "$PRIVATE_ROOT" ]; then
+      rm -rf "$PRIVATE_ROOT"
+    fi
+  fi
+
+  if [ -n "$FORCE_INSTALL" -o -z "$IS_INSTALLED" ]; then
+    pushd "$WEB_ROOT" > /dev/null
+      civibuild_run install
+    popd > /dev/null
+    amp_snapshot_create
+    IS_INSTALLED=1
+  else
+    echo "Already installed ${SITE_NAME}/${SITE_ID}"
+  fi
+
+  _amp_snapshot_restore_test
+}
+
+## Write any persistent settings to disk
+function civibuild_save() {
+  cvutil_assertvars civibuild_save BLDDIR SITE_NAME SITE_ID PERSISTENT_VARS
+
+  if [ "$SITE_ID" == "default" ]; then
+    cvutil_save "${BLDDIR}/${SITE_NAME}.sh" $PERSISTENT_VARS
+  else
+    cvutil_save "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh" $PERSISTENT_VARS
+  fi
+}
+
+function civibuild_show() {
+  cvutil_assertvars civibuild_show SITE_NAME SITE_ID
+  cvutil_summary "[[Show site summary ($SITE_NAME/$SITE_ID)]]" \
+    CMS_ROOT CMS_URL CMS_DB_DSN \
+    CIVI_DB_DSN \
+    TEST_DB_DSN \
+    ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS
+  civibuild_run_optional show
+  echo "[[General notes]]"
+  echo " - You may need to restart httpd."
+  echo " - You may need to add the hostname and IP to /etc/hosts or DNS."
 }
 
 ###############################################################################
@@ -282,56 +360,10 @@ source "$PRJDIR/src/civibuild.compute-defaults.sh"
 
 case "$ACTION" in
   create)
-    echo "[[Create $SITE_NAME (type '$SITE_TYPE' in '$WEB_ROOT')]]"
-
-    if [ -n "$FORCE_DOWNLOAD" -a -d "$WEB_ROOT" ]; then
-      rm -rf "$WEB_ROOT"
-    fi
-
-    if [ ! -d "$WEB_ROOT" ]; then
-      pushd "$PRJDIR" > /dev/null
-        if [ -f "$PRJDIR/app/config/caches.sh" ]; then
-          source "$PRJDIR/app/config/caches.sh"
-        fi
-        civibuild_run download
-        git_cache_deref_remotes "$CACHE_DIR" "$WEB_ROOT"
-      popd > /dev/null
-      if [ ! -d "$WEB_ROOT" ]; then
-        echo "Download failed to create directory"
-        exit 97
-      fi
-    else
-      echo "Already downloaded ${SITE_NAME}"
-    fi
-
-    if [ -n "$FORCE_INSTALL" -a -n "$IS_INSTALLED" ]; then
-      pushd "$WEB_ROOT" > /dev/null
-        civibuild_run uninstall
-      popd > /dev/null
-      if [ -d "$PRIVATE_ROOT" ]; then
-        rm -rf "$PRIVATE_ROOT"
-      fi
-    fi
-
-    if [ -n "$FORCE_INSTALL" -o -z "$IS_INSTALLED" ]; then
-      pushd "$WEB_ROOT" > /dev/null
-        civibuild_run install
-      popd > /dev/null
-      amp_snapshot_create
-      IS_INSTALLED=1
-    else
-      echo "Already installed ${SITE_NAME}/${SITE_ID}"
-    fi
-
-    _amp_snapshot_restore_test
-
-    if [ "$SITE_ID" == "default" ]; then
-      cvutil_save "${BLDDIR}/${SITE_NAME}.sh" $PERSISTENT_VARS
-    else
-      cvutil_save "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh" $PERSISTENT_VARS
-    fi
-
-    civibuild show "$SITE_NAME/$SITE_ID"
+    civibuild_download
+    civibuild_install
+    civibuild_save
+    civibuild_show
     ;;
 
   destroy)
@@ -343,20 +375,20 @@ case "$ACTION" in
     amp cleanup
     ;;
 
-  reinstall)
-    civibuild create "$SITE_NAME/$SITE_ID" --force-install
+  download|dl)
+    civibuild_download
+    civibuild_save
+    ;;
+
+  install|reinstall)
+    [ "$ACTION" == "reinstall" ] && FORCE_INSTALL=1
+    civibuild_install
+    civibuild_save
+    civibuild_show
     ;;
 
   show)
-    cvutil_summary "[[Show site summary ($SITE_NAME/$SITE_ID)]]" \
-      CMS_ROOT CMS_URL CMS_DB_DSN \
-      CIVI_DB_DSN \
-      TEST_DB_DSN \
-      ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS
-    civibuild_run_optional show
-    echo "[[General notes]]"
-    echo " - You may need to restart httpd."
-    echo " - You may need to add the hostname and IP to /etc/hosts or DNS."
+    civibuild_show
     ;;
 
   snapshots)
