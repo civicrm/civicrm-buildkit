@@ -622,7 +622,7 @@ function git_cache_setup() {
     fi
   fi
 
-  if pidlockfile.php "$lock" $$ ; then
+  if pidlockfile.php "$lock" $$ $CACHE_LOCK_WAIT ; then
     php -r 'echo time();' > $lastrun
     if [ ! -d "$cachedir" ]; then
       ## clone
@@ -689,7 +689,7 @@ function svn_cache_setup() {
     fi
   fi
 
-  if pidlockfile.php "$lock" $$ ; then
+  if pidlockfile.php "$lock" $$ $CACHE_LOCK_WAIT ; then
     php -r 'echo time();' > $lastrun
     if [ ! -d "$cachedir" ]; then
       ## clone
