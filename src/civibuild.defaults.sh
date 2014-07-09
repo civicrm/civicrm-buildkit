@@ -46,6 +46,11 @@ PRIVATE_ROOT=
 ## (default: TMPDIR/git-cache)
 CACHE_DIR=
 
+## Time to wait before allowing updates to git/svn caches (seconds)
+CACHE_TTL=60
+
+## When updating a cache record, first attempt to lock it. Wait up to X seconds to acquire lock.
+CACHE_LOCK_WAIT=120
 
 ###############################################################################
 ## "create" variables defined by civibuild

@@ -612,9 +612,18 @@ function git_cache_setup() {
   local url="$1"
   local cachedir="$2"
   local lock="${cachedir}.lock"
+  local lastrun="${cachedir}.lastrun"
   ## TODO: defensive programming: $cachedir should not end in "/"
 
-  if pidlockfile.php "$lock" $$ ; then
+  if [ -d "$cachedir" -a -f "$lastrun" -a -z "$FORCE_DOWNLOAD" ]; then
+    if php -r 'exit($argv[1] + file_get_contents($argv[2]) < time() ? 1 : 0);' $CACHE_TTL "$lastrun" ; then
+      echo "SKIP: git_cache_setup '$url' $cachedir' (recently updated; ttl=$CACHE_TTL)"
+      return
+    fi
+  fi
+
+  if pidlockfile.php "$lock" $$ $CACHE_LOCK_WAIT ; then
+    php -r 'echo time();' > $lastrun
     if [ ! -d "$cachedir" ]; then
       ## clone
       cvutil_makeparent "$cachedir"
@@ -670,9 +679,18 @@ function svn_cache_setup() {
   local url="$1"
   local cachedir="$2"
   local lock="${cachedir}.lock"
+  local lastrun="${cachedir}.lastrun"
   ## TODO: defensive programming: $cachedir should not end in "/"
 
-  if pidlockfile.php "$lock" $$ ; then
+  if [ -d "$cachedir" -a -f "$lastrun" -a -z "$FORCE_DOWNLOAD" ]; then
+    if php -r 'exit($argv[1] + file_get_contents($argv[2]) < time() ? 1 : 0);' $CACHE_TTL "$lastrun" ; then
+      echo "SKIP: svn_cache_setup '$url' $cachedir' (recently updated; ttl=$CACHE_TTL)"
+      return
+    fi
+  fi
+
+  if pidlockfile.php "$lock" $$ $CACHE_LOCK_WAIT ; then
+    php -r 'echo time();' > $lastrun
     if [ ! -d "$cachedir" ]; then
       ## clone
       cvutil_makeparent "$cachedir"
