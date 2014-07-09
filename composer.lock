@@ -635,12 +635,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/totten/amp.git",
-                "reference": "ab06210d8d2514f20219c9b95d43e4e830a86f44"
+                "reference": "ed753673fb85232214d40a6abbe62807dcc55fab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/totten/amp/zipball/ab06210d8d2514f20219c9b95d43e4e830a86f44",
-                "reference": "ab06210d8d2514f20219c9b95d43e4e830a86f44",
+                "url": "https://api.github.com/repos/totten/amp/zipball/ed753673fb85232214d40a6abbe62807dcc55fab",
+                "reference": "ed753673fb85232214d40a6abbe62807dcc55fab",
                 "shasum": ""
             },
             "require": {
@@ -676,7 +676,7 @@
             ],
             "description": "CLI Interface to *AMP-style stacks",
             "homepage": "https://github.com/totten/amp",
-            "time": "2014-05-01 05:46:02"
+            "time": "2014-07-08 17:34:02"
         },
         {
             "name": "totten/git-scan",
