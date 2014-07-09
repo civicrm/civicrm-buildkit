@@ -684,12 +684,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/totten/git-scan.git",
-                "reference": "814d947921f12546fa745b283594f80fc30f92fc"
+                "reference": "7cbefd74fd74571a70298ff57e248ebdf0174d96"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/totten/git-scan/zipball/814d947921f12546fa745b283594f80fc30f92fc",
-                "reference": "814d947921f12546fa745b283594f80fc30f92fc",
+                "url": "https://api.github.com/repos/totten/git-scan/zipball/7cbefd74fd74571a70298ff57e248ebdf0174d96",
+                "reference": "7cbefd74fd74571a70298ff57e248ebdf0174d96",
                 "shasum": ""
             },
             "require": {
@@ -719,7 +719,7 @@
                 }
             ],
             "description": "CLI tool for scanning/updating git repos",
-            "time": "2014-01-19 22:16:24"
+            "time": "2014-07-08 17:03:24"
         },
         {
             "name": "wp-cli/php-cli-tools",
