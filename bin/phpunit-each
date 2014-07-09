@@ -1,0 +1,25 @@
+#!/bin/bash
+
+HASERROR=0
+
+SRCDIR="$1"
+shift
+
+XMLDIR="$1"
+shift
+
+if [ ! -d "$XMLDIR" -o ! -d "$SRCDIR/tools" ]; then
+  echo "usage: $0 <civi-src-dir> <xml-output-dir> <Test_1> <Test_2> ..."
+  exit 1
+fi
+
+pushd "$SRCDIR/tools"
+  for TEST in "$@" ; do
+    ./scripts/phpunit --tap --log-junit "$XMLDIR/$TEST.xml" "$TEST"
+    if [ $? != "0" ]; then
+      HASERROR=1
+    fi
+  done
+popd
+
+exit $HASERROR
