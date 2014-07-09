@@ -611,17 +611,25 @@ function git_set_remote() {
 function git_cache_setup() {
   local url="$1"
   local cachedir="$2"
+  local lock="${cachedir}.lock"
+  ## TODO: defensive programming: $cachedir should not end in "/"
 
-  if [ ! -d "$cachedir" ]; then
-    ## clone
-    cvutil_makeparent "$cachedir"
-    git clone --mirror "$url"  "$cachedir"
+  if pidlockfile.php "$lock" $$ ; then
+    if [ ! -d "$cachedir" ]; then
+      ## clone
+      cvutil_makeparent "$cachedir"
+      git clone --mirror "$url"  "$cachedir"
+    else
+      ## update
+      pushd "$cachedir" >> /dev/null
+        git remote set-url origin "$url"
+        git fetch origin
+      popd >> /dev/null
+    fi
+
+    rm -f "$lock"
   else
-    ## update
-    pushd "$cachedir" >> /dev/null
-      git remote set-url origin "$url"
-      git fetch origin
-    popd >> /dev/null
+    echo "ERROR: git_cache_setup '$url' '$cachdir': failed to acquire lock"
   fi
 }
 
@@ -661,16 +669,24 @@ function git_cache_deref_remotes() {
 function svn_cache_setup() {
   local url="$1"
   local cachedir="$2"
+  local lock="${cachedir}.lock"
+  ## TODO: defensive programming: $cachedir should not end in "/"
 
-  if [ ! -d "$cachedir" ]; then
-    ## clone
-    cvutil_makeparent "$cachedir"
-    svn co "$url" "$cachedir"
+  if pidlockfile.php "$lock" $$ ; then
+    if [ ! -d "$cachedir" ]; then
+      ## clone
+      cvutil_makeparent "$cachedir"
+      svn co "$url" "$cachedir"
+    else
+      ## update
+      pushd "$cachedir" >> /dev/null
+        svn up
+      popd >> /dev/null
+    fi
+
+    rm -f "$lock"
   else
-    ## update
-    pushd "$cachedir" >> /dev/null
-      svn up
-    popd >> /dev/null
+    echo "ERROR: svn_cache_setup '$url' '$cachedir': failed to acquire lock"
   fi
 }
 
