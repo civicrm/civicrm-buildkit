@@ -93,6 +93,7 @@ CIVI_VERSION=master
 CMS_URL=
 
 ## Path to the base of the CMS
+## (default: WEB_ROOT)
 CMS_ROOT=
 
 ## DB credentials for CMS
