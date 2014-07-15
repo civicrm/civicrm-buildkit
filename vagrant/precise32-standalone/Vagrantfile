@@ -39,8 +39,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
-  config.vm.synced_folder "../../app/tmp/apt", "/var/cache/apt/archives/"
-  config.vm.synced_folder "../../app/tmp/composer", "/home/vagrant/.composer"
+  config.vm.synced_folder "../../app/tmp/apt", "/var/cache/apt/archives/",
+    :create => true,
+    :owner => "root",
+    :group => "root"
+  config.vm.synced_folder "../../app/tmp/composer", "/home/vagrant/.composer",
+    :create => true,
+    :owner => "vagrant",
+    :group => "vagrant"
   config.vm.synced_folder "../../", "/home/vagrant/buildkit.host", id: "buildkit.host",
     :owner => "vagrant",
     :group => "vagrant",

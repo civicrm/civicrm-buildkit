@@ -25,18 +25,20 @@ apt-get install -y \
   zip
 
 ## MySQL
-MYSQLPASS=$(makepasswd --chars=16)
-echo "mysql-server-5.5 mysql-server/root_password password $MYSQLPASS" | debconf-set-selections
-echo "mysql-server-5.5 mysql-server/root_password_again password $MYSQLPASS" | debconf-set-selections
-apt-get install -y mysql-server-5.5 mysql-client-5.5
-cat > /root/.my.cnf << EOF
+if [ ! -f /usr/sbin/mysqld ]; then
+  MYSQLPASS=$(makepasswd --chars=16)
+  echo "mysql-server-5.5 mysql-server/root_password password $MYSQLPASS" | debconf-set-selections
+  echo "mysql-server-5.5 mysql-server/root_password_again password $MYSQLPASS" | debconf-set-selections
+  apt-get install -y mysql-server-5.5 mysql-client-5.5
+  cat > /root/.my.cnf << EOF
 [client]
 user=root
 password=$MYSQLPASS
 EOF
-chmod 600 /root/.my.cnf
-cp /root/.my.cnf /home/vagrant/.my.cnf
-chown vagrant.vagrant /home/vagrant/.my.cnf
+  chmod 600 /root/.my.cnf
+  cp /root/.my.cnf /home/vagrant/.my.cnf
+  chown vagrant.vagrant /home/vagrant/.my.cnf
+fi
 
 ## PHP
 apt-get install -y php5-{cli,imap,ldap,curl,mysql,intl,gd} php-apc
@@ -47,13 +49,22 @@ apt-get install -y apache2 libapache2-mod-php5
 ## Ruby (required for "hub")
 apt-get install -y ruby1.8 rake
 
-## civicrm-buildkit -- Re-install within VM
+## civicrm-buildkit -- Copy from remote (RPRJDIR) to local (LPRJDIR)
 LPRJDIR=/home/vagrant/buildkit
 RPRJDIR=/home/vagrant/buildkit.host
-[ ! -d "$LPRJDIR" ]                   && sudo -u vagrant -H git clone "file://$RPRJDIR" "$LPRJDIR"
+if [ ! -d "$LPRJDIR" ]; then
+  sudo -u vagrant -H git clone "file://$RPRJDIR" "$LPRJDIR"
+  pushd "$LPRJDIR" >> /dev/null
+    sudo -u vagrant -H git remote set-url origin https://github.com/civicrm/civicrm-buildkit.git
+  popd >> /dev/null
+fi
+
+## apt composer git-cache
 [ ! -d "$LPRJDIR/app/tmp" ]           && sudo -u vagrant -H mkdir -p "$LPRJDIR/app/tmp"
 [ ! -d "$RPRJDIR/app/tmp" ]           && sudo -u vagrant -H mkdir -p "$RPRJDIR/app/tmp"
+[ ! -d "$RPRJDIR/app/tmp/git-cache" ] && sudo -u vagrant -H mkdir -p "$RPRJDIR/app/tmp/git-cache"
 [ ! -e "$LPRJDIR/app/tmp/git-cache" ] && sudo -u vagrant -H ln -s "$RPRJDIR/app/tmp/git-cache" "$LPRJDIR/app/tmp/git-cache"
+#This can reduce downloads, but composer fails to setup symlinks if you use it:
 #[ ! -d "$LPRJDIR/vendor" ]            && sudo -u vagrant -H mkdir -p "$LPRJDIR/vendor"
 #sudo -u vagrant -H rsync -a "$RPRJDIR/vendor/./" "$LPRJDIR/vendor/./"
 sudo -u vagrant -H "$LPRJDIR/bin/civi-download-tools"
@@ -62,8 +73,16 @@ PATH="$LPRJDIR/bin:\$PATH"
 export PATH
 EOF
 
-#[ ! -d "$LPRJDIR/app/tmp/apache.d" ] && mkdir -p "$LPRJDIR/app/tmp/apache.d"
-echo "IncludeOptional /home/vagrant/.amp/apache.d/*.conf" > /etc/apache2/conf.d/civicrm-buildkit
+AMP_APACHE="/home/vagrant/.amp/apache.d"
+if apache2 -v | grep 'Apache/2\.2\.'  -q ; then
+  [ ! -d "$AMP_APACHE" ] && sudo -u vagrant -H mkdir -p "$AMP_APACHE"
+  echo "" > "$AMP_APACHE/placeholder.conf"
+  chown vagrant.vagrant "$AMP_APACHE/placeholder.conf"
+
+  echo "Include $AMP_APACHE/*.conf" > /etc/apache2/conf.d/civicrm-buildkit
+else
+  echo "IncludeOptional /home/vagrant/.amp/apache.d/*.conf" > /etc/apache2/conf.d/civicrm-buildkit
+fi
 
 sudo -u vagrant -H $LPRJDIR/bin/amp config:set \
   --mysql_type="mycnf" \
