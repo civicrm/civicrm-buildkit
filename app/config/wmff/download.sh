@@ -1,6 +1,6 @@
 #!/bin/bash
 set +x
-git_cache_setup "https://git.wikimedia.org/git/wikimedia/fundraising/crm.git" "$CACHE_DIR/wikimedia/fundraising/crm.git"
+git_cache_setup "https://gerrit.wikimedia.org/r/wikimedia/fundraising/crm.git" "$CACHE_DIR/wikimedia/fundraising/crm.git"
 git_cache_setup "https://gerrit.wikimedia.org/r/wikimedia/fundraising/crm/civicrm.git" "$CACHE_DIR/wikimedia/fundraising/civicrm.git"
 git_cache_setup "https://gerrit.wikimedia.org/r/wikimedia/fundraising/crm/drupal.git" "$CACHE_DIR/wikimedia/fundraising/drupal.git"
 set -x
