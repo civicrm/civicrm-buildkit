@@ -622,6 +622,7 @@ function git_cache_setup() {
     fi
   fi
 
+  cvutil_makeparent "$lock"
   if pidlockfile.php "$lock" $$ $CACHE_LOCK_WAIT ; then
     php -r 'echo time();' > $lastrun
     if [ ! -d "$cachedir" ]; then
@@ -690,6 +691,7 @@ function svn_cache_setup() {
     fi
   fi
 
+  cvutil_makeparent "$lock"
   if pidlockfile.php "$lock" $$ $CACHE_LOCK_WAIT ; then
     php -r 'echo time();' > $lastrun
     if [ ! -d "$cachedir" ]; then
