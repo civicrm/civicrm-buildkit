@@ -47,18 +47,22 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
     offline2civicrm \
     paypal_audit \
     queue2civicrm \
+    queue2civicrm_tests \
     recurring \
     recurring_globalcollect \
+    twigext_l10n_tests \
     syslog \
     thank_you \
     wmf_civicrm \
     wmf_common \
     wmf_communication \
+    wmf_communication_tests \
     wmf_contribution_search \
     wmf_fredge_qc \
     wmf_logging \
     wmf_refund_qc \
     wmf_reports \
+    wmf_test_settings \
     wmf_unsubscribe \
     wmf_unsubscribe_qc
 
