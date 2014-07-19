@@ -38,6 +38,8 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
     garland \
     contribution_audit \
     contribution_tracking \
+    devel \
+    environment_indicator \
     exchange_rates \
     ganglia_reporter \
     globalcollect_audit \
@@ -47,10 +49,13 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
     queue2civicrm \
     recurring \
     recurring_globalcollect \
+    syslog \
     thank_you \
     wmf_civicrm \
     wmf_common \
+    wmf_communication \
     wmf_contribution_search \
+    wmf_fredge_qc \
     wmf_logging \
     wmf_refund_qc \
     wmf_reports \
