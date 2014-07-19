@@ -127,6 +127,8 @@ function cvutil_append_settings() {
     \$civibuild['SITE_NAME'] = '$SITE_NAME';
     \$civibuild['SITE_ID'] = '$SITE_ID';
     \$civibuild['PRIVATE_ROOT'] = '$PRIVATE_ROOT';
+    \$civibuild['WEB_ROOT'] = '$WEB_ROOT';
+    \$civibuild['CMS_ROOT'] = '$CMS_ROOT';
 
     if (file_exists(\$civibuild['PRJDIR'].'/src/civibuild.settings.php')) {
       require_once \$civibuild['PRJDIR'].'/src/civibuild.settings.php';
