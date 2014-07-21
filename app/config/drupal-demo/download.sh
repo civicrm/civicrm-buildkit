@@ -7,11 +7,14 @@
 git_cache_setup "https://github.com/civicrm/civivolunteer.git" "$CACHE_DIR/civicrm/civivolunteer.git"
 
 [ -z "$CMS_VERSION" ] && CMS_VERSION=7.x
+[ -z "$VOL_VERSION" ] && VOL_VERSION='4.4-1.x'
+
 MAKEFILE="${TMPDIR}/${SITE_TYPE}.make"
 cat "$SITE_CONFIG_DIR/drush.make.tmpl" \
   | sed "s;%%CACHE_DIR%%;${CACHE_DIR};" \
   | sed "s;%%CIVI_VERSION%%;${CIVI_VERSION};" \
   | sed "s;%%CMS_VERSION%%;${CMS_VERSION};" \
+  | sed "s;%%VOL_VERSION%%;${VOL_VERSION}"; \
   > "$MAKEFILE"
 
 drush -y make --working-copy "$MAKEFILE" "$WEB_ROOT"
