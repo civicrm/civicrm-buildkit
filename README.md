@@ -9,7 +9,7 @@ CiviCRM development environment.
  * Git/SVN
  * PHP
  * MySQL (client/server)
- * Recommended: Apache/Nginx
+ * Recommended: Apache (TODO: nginx)
  * Recommended: Ruby/Rake
 
 ## Installation
