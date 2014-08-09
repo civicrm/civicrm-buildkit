@@ -1,4 +1,4 @@
-#!/usr/bin/env php
+#!/usr/bin/env php -d display_errors=1
 <?php
 
 // Claim a lock on behalf of a given PID.  The lock is considered released
