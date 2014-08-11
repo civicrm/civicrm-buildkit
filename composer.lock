@@ -39,24 +39,62 @@
             "time": "2014-06-13 08:31:34"
         },
         {
+            "name": "d11wtq/boris",
+            "version": "v1.0.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/d11wtq/boris.git",
+                "reference": "125dd4e5752639af7678a22ea597115646d89c6e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/d11wtq/boris/zipball/125dd4e5752639af7678a22ea597115646d89c6e",
+                "reference": "125dd4e5752639af7678a22ea597115646d89c6e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "suggest": {
+                "ext-pcntl": "*",
+                "ext-posix": "*",
+                "ext-readline": "*"
+            },
+            "bin": [
+                "bin/boris"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Boris": "lib"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "time": "2014-01-17 12:21:18"
+        },
+        {
             "name": "drush/drush",
             "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/drush-ops/drush.git",
-                "reference": "d1d13676f5beacaa9f8619088fe3ae45ea28a6cf"
+                "reference": "d5251cb72800bfee1cd0fbe3de8a5f91e4057f36"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drush-ops/drush/zipball/d1d13676f5beacaa9f8619088fe3ae45ea28a6cf",
-                "reference": "d1d13676f5beacaa9f8619088fe3ae45ea28a6cf",
+                "url": "https://api.github.com/repos/drush-ops/drush/zipball/d5251cb72800bfee1cd0fbe3de8a5f91e4057f36",
+                "reference": "d5251cb72800bfee1cd0fbe3de8a5f91e4057f36",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.3"
+                "d11wtq/boris": "*",
+                "pear/console_table": "1.1.5",
+                "php": ">=5.3.0",
+                "symfony/yaml": "2.2.1"
             },
             "require-dev": {
-                "phpunit/phpunit": ">=3.5"
+                "phpunit/phpunit": ">=3.5",
+                "symfony/process": "2.4.5"
             },
             "bin": [
                 "drush",
@@ -65,9 +103,14 @@
                 "drush.complete.sh"
             ],
             "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Drush": "lib/"
+                }
+            },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "GPLv2"
+                "GPL-2.0+"
             ],
             "authors": [
                 {
@@ -96,26 +139,25 @@
                 },
                 {
                     "name": "Jonathan Hedstrom",
-                    "email": "jhedstrom@gmail.com",
-                    "homepage": "http://professorbikeybike.com"
+                    "email": "jhedstrom@gmail.com"
                 }
             ],
             "description": "Drush is a command line shell and scripting interface for Drupal, a veritable Swiss Army knife designed to make life easier for those of us who spend some of our working hours hacking away at the command prompt.",
             "homepage": "http://www.drush.org",
-            "time": "2013-10-26 07:40:45"
+            "time": "2014-08-09 09:50:15"
         },
         {
             "name": "mustache/mustache",
-            "version": "v2.4.1",
+            "version": "v2.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/mustache.php.git",
-                "reference": "14bc3b4f6a4770b535fc433bfd0435471ed386c6"
+                "reference": "1430ca884912eaba2b3830856b45685733b16789"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/mustache.php/zipball/14bc3b4f6a4770b535fc433bfd0435471ed386c6",
-                "reference": "14bc3b4f6a4770b535fc433bfd0435471ed386c6",
+                "url": "https://api.github.com/repos/bobthecow/mustache.php/zipball/1430ca884912eaba2b3830856b45685733b16789",
+                "reference": "1430ca884912eaba2b3830856b45685733b16789",
                 "shasum": ""
             },
             "require": {
@@ -147,7 +189,62 @@
                 "mustache",
                 "templating"
             ],
-            "time": "2013-08-13 04:49:23"
+            "time": "2014-06-20 19:34:49"
+        },
+        {
+            "name": "pear/console_table",
+            "version": "1.1.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/RobLoach/Console_Table.git",
+                "reference": "9f80c91a9fc01a3cce71ae80ea5bd473cb0eba4c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/RobLoach/Console_Table/zipball/9f80c91a9fc01a3cce71ae80ea5bd473cb0eba4c",
+                "reference": "9f80c91a9fc01a3cce71ae80ea5bd473cb0eba4c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=4.0.0"
+            },
+            "suggest": {
+                "pear/Console_Color": ">=0.0.4"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "Table.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD"
+            ],
+            "authors": [
+                {
+                    "name": "Jan Schneider",
+                    "homepage": "http://pear.php.net/user/yunosh"
+                },
+                {
+                    "name": "Tal Peer",
+                    "homepage": "http://pear.php.net/user/tal"
+                },
+                {
+                    "name": "Xavier Noguer",
+                    "homepage": "http://pear.php.net/user/xnoguer"
+                },
+                {
+                    "name": "Richard Heyes",
+                    "homepage": "http://pear.php.net/user/richard"
+                }
+            ],
+            "description": "Class that makes it easy to build console style tables.",
+            "homepage": "https://github.com/pear/Console_Table",
+            "keywords": [
+                "console"
+            ],
+            "time": "2012-12-07 14:43:01"
         },
         {
             "name": "rhumsaa/array_column",
@@ -176,7 +273,8 @@
             "authors": [
                 {
                     "name": "Ben Ramsey",
-                    "homepage": "http://benramsey.com"
+                    "homepage": "http://benramsey.com",
+                    "role": "Developer"
                 }
             ],
             "description": "Provides functionality for array_column() to projects using PHP earlier than version 5.5.",
@@ -190,16 +288,16 @@
         },
         {
             "name": "rmccue/requests",
-            "version": "v1.6.0",
+            "version": "v1.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rmccue/Requests.git",
-                "reference": "756374edd59ac69268ed35481a506ebd4e732525"
+                "reference": "6aac485666c2955077d77b796bbdd25f0013a4ea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rmccue/Requests/zipball/756374edd59ac69268ed35481a506ebd4e732525",
-                "reference": "756374edd59ac69268ed35481a506ebd4e732525",
+                "url": "https://api.github.com/repos/rmccue/Requests/zipball/6aac485666c2955077d77b796bbdd25f0013a4ea",
+                "reference": "6aac485666c2955077d77b796bbdd25f0013a4ea",
                 "shasum": ""
             },
             "require": {
@@ -235,7 +333,7 @@
                 "iri",
                 "sockets"
             ],
-            "time": "2013-10-06 13:30:32"
+            "time": "2014-05-18 04:59:02"
         },
         {
             "name": "symfony/config",
@@ -274,7 +372,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -327,7 +427,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -383,7 +485,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -430,7 +534,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -477,7 +583,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -524,7 +632,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -571,7 +681,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -584,17 +696,17 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.3.6",
+            "version": "v2.2.1",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "6bb881b948368482e1abf1a75c08bcf88a1c5fc3"
+                "reference": "3f6d4ab3fd8226ab4ba0be9fc8a238f4338b79ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/6bb881b948368482e1abf1a75c08bcf88a1c5fc3",
-                "reference": "6bb881b948368482e1abf1a75c08bcf88a1c5fc3",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/3f6d4ab3fd8226ab4ba0be9fc8a238f4338b79ab",
+                "reference": "3f6d4ab3fd8226ab4ba0be9fc8a238f4338b79ab",
                 "shasum": ""
             },
             "require": {
@@ -603,7 +715,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.3-dev"
+                    "dev-master": "2.2-dev"
                 }
             },
             "autoload": {
@@ -618,7 +730,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -627,7 +741,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
-            "time": "2013-09-22 18:04:39"
+            "time": "2013-03-23 07:49:54"
         },
         {
             "name": "totten/amp",
@@ -635,12 +749,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/totten/amp.git",
-                "reference": "45b47a35847af0d3ef9ea8e259864a9717346f31"
+                "reference": "18933dc6a48b33bf69107a7cbd8159874a03a55e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/totten/amp/zipball/45b47a35847af0d3ef9ea8e259864a9717346f31",
-                "reference": "45b47a35847af0d3ef9ea8e259864a9717346f31",
+                "url": "https://api.github.com/repos/totten/amp/zipball/18933dc6a48b33bf69107a7cbd8159874a03a55e",
+                "reference": "18933dc6a48b33bf69107a7cbd8159874a03a55e",
                 "shasum": ""
             },
             "require": {
@@ -649,10 +763,9 @@
                 "symfony/console": "2.3.6",
                 "symfony/dependency-injection": "2.3.6",
                 "symfony/filesystem": "2.3.6",
-                "symfony/finder": "2.3.6",
                 "symfony/process": "2.3.6",
                 "symfony/templating": "2.3.6",
-                "symfony/yaml": "2.3.6"
+                "symfony/yaml": "~2.2.1"
             },
             "bin": [
                 "bin/amp"
@@ -676,7 +789,7 @@
             ],
             "description": "CLI Interface to *AMP-style stacks",
             "homepage": "https://github.com/totten/amp",
-            "time": "2014-08-09 00:19:21"
+            "time": "2014-08-11 02:20:28"
         },
         {
             "name": "totten/git-scan",
@@ -829,6 +942,7 @@
         "totten/amp": 20,
         "totten/git-scan": 20
     },
+    "prefer-stable": false,
     "platform": {
         "php": ">=5.3.3"
     },
