@@ -635,12 +635,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/totten/amp.git",
-                "reference": "45b47a35847af0d3ef9ea8e259864a9717346f31"
+                "reference": "c18d2574a02edc24d8286b71f0958f5cb86ed9f7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/totten/amp/zipball/45b47a35847af0d3ef9ea8e259864a9717346f31",
-                "reference": "45b47a35847af0d3ef9ea8e259864a9717346f31",
+                "url": "https://api.github.com/repos/totten/amp/zipball/c18d2574a02edc24d8286b71f0958f5cb86ed9f7",
+                "reference": "c18d2574a02edc24d8286b71f0958f5cb86ed9f7",
                 "shasum": ""
             },
             "require": {
@@ -684,12 +684,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/totten/git-scan.git",
-                "reference": "19dffd7f932daba28d47293f47697a71cb82da2c"
+                "reference": "890cd038db3e569190877c10f4e7cb66b3ee0969"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/totten/git-scan/zipball/19dffd7f932daba28d47293f47697a71cb82da2c",
-                "reference": "19dffd7f932daba28d47293f47697a71cb82da2c",
+                "url": "https://api.github.com/repos/totten/git-scan/zipball/890cd038db3e569190877c10f4e7cb66b3ee0969",
+                "reference": "890cd038db3e569190877c10f4e7cb66b3ee0969",
                 "shasum": ""
             },
             "require": {
