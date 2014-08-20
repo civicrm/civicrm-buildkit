@@ -192,21 +192,7 @@ function civibuild_save() {
 
 function civibuild_show() {
   if [ -n "$SHOW_HTML" ]; then
-    echo "[[Generate HTML ($SHOW_HTML)]]"
-    cvutil_assertvars civibuild_show PERSISTENT_VARS SHOW_LAST_SCAN SHOW_NEW_SCAN SHOW_HTML SITE_NAME WEB_ROOT
-    if [ ! -f "$SHOW_LAST_SCAN" ]; then
-      cvutil_makeparent "$SHOW_LAST_SCAN"
-      echo '{"details":[],"root":""}' > "$SHOW_LAST_SCAN"
-    fi
-
-    cvutil_makeparent "$SHOW_NEW_SCAN"
-    pushd "$WEB_ROOT"
-      git scan export > "$SHOW_NEW_SCAN"
-    popd
-
-    cvutil_export $PERSISTENT_VARS SHOW_LAST_SCAN SHOW_NEW_SCAN SITE_NAME
-    cvutil_makeparent "$SHOW_HTML"
-    $PRJDIR/src/civibuild.show-html.php > "$SHOW_HTML"
+    civibuild_show_html
   fi
 
   cvutil_assertvars civibuild_show SITE_NAME SITE_ID
@@ -219,6 +205,24 @@ function civibuild_show() {
   echo "[[General notes]]"
   echo " - You may need to restart httpd."
   echo " - You may need to add the hostname and IP to /etc/hosts or DNS."
+}
+
+function civibuild_show_html() {
+  echo "[[Generate HTML ($SHOW_HTML)]]"
+  cvutil_assertvars civibuild_show PERSISTENT_VARS SHOW_LAST_SCAN SHOW_NEW_SCAN SHOW_HTML SITE_NAME WEB_ROOT
+  if [ ! -f "$SHOW_LAST_SCAN" ]; then
+    cvutil_makeparent "$SHOW_LAST_SCAN"
+    echo '{"details":[],"root":""}' > "$SHOW_LAST_SCAN"
+  fi
+
+  cvutil_makeparent "$SHOW_NEW_SCAN"
+  pushd "$WEB_ROOT"
+    git scan export > "$SHOW_NEW_SCAN"
+  popd
+
+  cvutil_export $PERSISTENT_VARS SHOW_LAST_SCAN SHOW_NEW_SCAN SITE_NAME
+  cvutil_makeparent "$SHOW_HTML"
+  $PRJDIR/src/civibuild.show-html.php > "$SHOW_HTML"
 }
 
 ###############################################################################
