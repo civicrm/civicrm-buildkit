@@ -45,6 +45,15 @@ function cvutil_save() {
 }
 
 ###############################################################################
+## Export environment variables for use by a sub-process
+## usage: cvutil_export() <var1> <var2> ...
+function cvutil_export() {
+  for var in "$@" ; do
+    export $var
+  done
+}
+
+###############################################################################
 ## Summarize the content of key environment variables
 ## usage: cvutil_summary <message> <var1> <var2> ...
 function cvutil_summary() {
