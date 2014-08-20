@@ -15,6 +15,6 @@
     "wp-cli/wp-cli": "0.13",
     "totten/amp": "dev-master",
     "totten/git-scan": "dev-master",
-    "civicrm/upgrade-test": "0.2"
+    "civicrm/upgrade-test": "0.3"
   }
 }

@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "civicrm/upgrade-test",
-            "version": "0.2",
+            "version": "0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/civicrm/civicrm-upgrade-test.git",
-                "reference": "da1bc634539a312eea5d0155f515e565953d72f2"
+                "reference": "76bcca6d771083a6fd2ff972156ad70be6f8d601"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/da1bc634539a312eea5d0155f515e565953d72f2",
-                "reference": "da1bc634539a312eea5d0155f515e565953d72f2",
+                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/76bcca6d771083a6fd2ff972156ad70be6f8d601",
+                "reference": "76bcca6d771083a6fd2ff972156ad70be6f8d601",
                 "shasum": ""
             },
             "bin": [
@@ -36,7 +36,7 @@
             ],
             "description": "Collection of scripts and data-files for testing CiviCRM upgrades",
             "homepage": "https://github.com/civicrm/civicrm-upgrade-test",
-            "time": "2014-06-13 08:31:34"
+            "time": "2014-08-20 08:31:34"
         },
         {
             "name": "drush/drush",
