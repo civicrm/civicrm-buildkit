@@ -42,7 +42,8 @@ $time = date('Y-m-d H:i:s');
     <h1>Build summary for <?php ev('SITE_NAME'); ?> (<?php echo $time ?>)</h1>
 
     <?php if (getenv('SHOW_NEW_SCAN')) { ?>
-      <h2>Git Changes</h2>
+      <h2>Git Scan</h2>
+      <small>(Compare <a href="git-scan.last.json">git-scan.last.json</a> [<a href="git-scan.last.txt">txt</a>] and <a href="git-scan.new.json">git-scan.new.json</a> [<a href="git-scan.new.txt">txt</a>])</small>
       <table class="git-changes">
         <thead>
           <tr>
@@ -65,10 +66,6 @@ $time = date('Y-m-d H:i:s');
           <?php } /* end: foreach($row) */ ?>
         </tbody>
       </table>
-
-      <h2>Git Repos (JSON)</h2>
-
-      <textarea class="git-new-scan"><?php echo htmlspecialchars(file_get_contents(getenv('SHOW_NEW_SCAN'))) ?></textarea>
     <?php } /* end: if (SHOW_NEW_SCAN) */ ?>
 
     <h2>Build Variables</h2>
@@ -96,12 +93,10 @@ $time = date('Y-m-d H:i:s');
     <pre>
 civibuild download <?php ev('SITE_NAME'); ?> --type <?php ev('SITE_TYPE'); ?>
 
-
 ## FIXME: Load specific git commits
 <?php /* #git scan import &lt;&lt; EOJSON
 #<?php echo htmlspecialchars(file_get_contents(getenv('SHOW_NEW_SCAN'))) ?>
 #EOJSON */ ?>
-
 civibuild install <?php ev('SITE_NAME'); ?> \
   --url <?php ev('CMS_URL') ?> \
   --admin-user <?php ev('ADMIN_USER'); ?> --admin-pass <?php ev('ADMIN_PASS'); ?> \

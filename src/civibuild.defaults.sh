@@ -189,7 +189,7 @@ UPGRADE_LOG_DIR=
 ###############################################################################
 ## "show" variables
 
-## Path the HTML output file
+## Path the HTML output directory
 SHOW_HTML=
 
 ## Path to the last git summary file (from "git scan export")

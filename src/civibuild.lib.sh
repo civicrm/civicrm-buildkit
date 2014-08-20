@@ -92,7 +92,7 @@ function cvutil_makeparent() {
 function cvutil_mkdir() {
   for f in "$@" ; do
     if [ ! -d "$f" ]; then
-      mkdir "$f"
+      mkdir -p "$f"
     fi
   done
 }
