@@ -59,7 +59,7 @@ Description: Download and/or install the application
 
 Syntax: $APP show <build-name>[/<ms-id>] [options]
 Description: Show key details about the build
-  --html <file>       A new HTML file which will report build status in detail
+  --html <dir>        A new HTML dir which will report build status in detail
   --new-scan <file>   A new JSON file which summarizes the git structure
   --last-scan <file>  An existing JSON file which summarizes the old git structure
 
@@ -221,8 +221,13 @@ function civibuild_show_html() {
   popd
 
   cvutil_export $PERSISTENT_VARS SHOW_LAST_SCAN SHOW_NEW_SCAN SITE_NAME
-  cvutil_makeparent "$SHOW_HTML"
-  $PRJDIR/src/civibuild.show-html.php > "$SHOW_HTML"
+
+  cvutil_mkdir "$SHOW_HTML"
+  php $PRJDIR/src/views/show-index.php > "$SHOW_HTML/index.html"
+  cat "$SHOW_LAST_SCAN" > "$SHOW_HTML/git-scan.last.json"
+  cat "$SHOW_NEW_SCAN" > "$SHOW_HTML/git-scan.new.json"
+  cat "$SHOW_LAST_SCAN" | php -r 'print_r(json_decode(file_get_contents("php://stdin"),TRUE));' > "$SHOW_HTML/git-scan.last.txt"
+  cat "$SHOW_NEW_SCAN" | php -r 'print_r(json_decode(file_get_contents("php://stdin"),TRUE));' > "$SHOW_HTML/git-scan.new.txt"
 }
 
 ###############################################################################
