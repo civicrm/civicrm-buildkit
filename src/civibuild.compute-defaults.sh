@@ -23,5 +23,7 @@ else
 fi
 [ -z "$SITE_CONFIG_DIR" ]    && SITE_CONFIG_DIR="$PRJDIR/app/config/$SITE_TYPE"
 [ -z "$CIVICRM_GENCODE_DIGEST" ] && CIVICRM_GENCODE_DIGEST="$TMPDIR/$SITE_NAME-gencode.md5"
+[ -z "$SHOW_LAST_SCAN" ]     && SHOW_LAST_SCAN="$TMPDIR/git-scan-${SITE_NAME}-last.json"
+[ -z "$SHOW_NEW_SCAN" ]      && SHOW_NEW_SCAN="$TMPDIR/git-scan-${SITE_NAME}-new.json"
 
 export CIVICRM_GENCODE_DIGEST

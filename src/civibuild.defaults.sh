@@ -187,6 +187,20 @@ UPGRADE_DATA_DIR="$PRJDIR/vendor/civicrm/upgrade-test/databases"
 UPGRADE_LOG_DIR=
 
 ###############################################################################
+## "show" variables
+
+## Path the HTML output file
+SHOW_HTML=
+
+## Path to the last git summary file (from "git scan export")
+## (Default: TMPDIR/git-scan-$SITE_NAME-last.json)
+SHOW_LAST_SCAN=
+
+## Path to which we will write a new git summary file (using "git scan export")
+## (Default: TMPDIR/git-scan-$SITE_NAME-new.json)
+SHOW_NEW_SCAN=
+
+###############################################################################
 ## List of variables to save in the site's data file for use in future
 ## invocations
 PERSISTENT_VARS="
