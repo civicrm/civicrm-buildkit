@@ -645,7 +645,7 @@ function git_cache_setup() {
       ## update
       pushd "$cachedir" >> /dev/null
         git remote set-url origin "$url"
-        git fetch origin
+        git fetch origin +refs/heads/*:refs/heads/* -u
       popd >> /dev/null
     fi
 
