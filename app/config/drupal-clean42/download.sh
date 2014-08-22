@@ -11,7 +11,8 @@ git_cache_setup "https://github.com/CiviCRM42/civicrm42-packages.git" "$CACHE_DI
 ## Force version 4.2
 CIVI_VERSION=4.2
 [ -z "$CMS_VERSION" ] && CMS_VERSION=7.x
-MAKEFILE="${TMPDIR}/${SITE_TYPE}.make"
+MAKEFILE="${TMPDIR}/${SITE_TYPE}/${SITE_NAME}/${SITE_ID}.make"
+cvutil_makeparent "$MAKEFILE"
 cat "$SITE_CONFIG_DIR/drush.make.tmpl" \
   | sed "s;%%CACHE_DIR%%;${CACHE_DIR};" \
   | sed "s;%%CIVI_VERSION%%;${CIVI_VERSION};" \

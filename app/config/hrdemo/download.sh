@@ -10,7 +10,8 @@ git_cache_setup "https://github.com/civicrm/civihr.git" "$CACHE_DIR/civicrm/civi
 [ -z "$CIVI_VERSION" ] && CIVI_VERSION=4.4
 [ -z "$HR_VERSION" ] && HR_VERSION=master
 
-MAKEFILE="${TMPDIR}/${SITE_TYPE}.make"
+MAKEFILE="${TMPDIR}/${SITE_TYPE}/${SITE_NAME}/${SITE_ID}.make"
+cvutil_makeparent "$MAKEFILE"
 cat "$SITE_CONFIG_DIR/drush.make.tmpl" \
   | sed "s;%%CACHE_DIR%%;${CACHE_DIR};" \
   | sed "s;%%CIVI_VERSION%%;${CIVI_VERSION};" \
