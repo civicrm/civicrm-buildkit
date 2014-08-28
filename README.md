@@ -22,7 +22,7 @@ cd civicrm-buildkit/bin
 ## At this point, check to make sure you follow the instructions output by amp config,
 ## which involve adding a line to your Apache configuration file
 ./amp test
-./civibuild create drupal-demo --civi-ver 4.4 --url http://localhost:8001
+./civibuild create drupal-demo --civi-ver 4.5 --url http://localhost:8001
 ## FIXME: ./civibuild launch drupal-demo
 ```
 
@@ -123,33 +123,33 @@ There are four variations on rebuilding. In order of fastest (least thorough) to
 (TODO: Write a real tutorial!)
 
 Suppose we've just downloaded buildkit and want to prepare a patch for
-CiviCRM 4.4.  This requires downloading and installing the bleeding edge
-(4.4.x) code for CiviCRM+CMS as well as writing and publishing the patch.
+CiviCRM 4.5.  This requires downloading and installing the bleeding edge
+(4.5.x) code for CiviCRM+CMS as well as writing and publishing the patch.
 
 ```bash
-## Download Drupal 7.x and CiviCRM 4.4.x
-civicrm-buildkit$ civibuild create drupal-demo --civi-ver 4.4 --url http://localhost:8001
+## Download Drupal 7.x and CiviCRM 4.5.x
+civicrm-buildkit$ civibuild create drupal-demo --civi-ver 4.5 --url http://localhost:8001
 
 ## Create a "fork" of civicrm-core on github.com for publishing changes
 civicrm-buildkit$ cd build/drupal-demo/sites/all/modules/civicrm
 civicrm$ hub fork
 
 ## Create some changes locally
-civicrm$ git checkout origin/4.4 -b 4.4-mypatch
+civicrm$ git checkout origin/4.5 -b 4.5-mypatch
 civicrm$ vi CRM/Utils/Array.php
 civicrm$ git commit CRM/Utils/Array.php
 
 ## Publish our changes on github.com
-civicrm$ git push mygithubuser 4.4-mypatch
-civicrm$ hub pull-request -b 4.4
+civicrm$ git push mygithubuser 4.5-mypatch
+civicrm$ hub pull-request -b 4.5
 ```
 
 Please note: A build may include several different git repositories. The
 commands should look about the same on any repository, although different
 git repositories may use different names for their versions/branches (eg the
 civicrm-core, civicrm-joomla, and civicrm-wordpress repositories have
-branches named "4.4", but the civicrm-drupal repository has a branch named
-"7.x-4.4").
+branches named "4.5", but the civicrm-drupal repository has a branch named
+"7.x-4.5").
 
 
 ## Daily Coding: Housekeeping
@@ -291,7 +291,7 @@ extra sites,  use the notation "civibuild create buildname/site-id" as in:
 
 ```bash
 ## Create the original build
-civibuild create training --type drupal-demo --civi-ver 4.4 --url http://demo00.example.org --admin-pass s3cr3t
+civibuild create training --type drupal-demo --civi-ver 4.5 --url http://demo00.example.org --admin-pass s3cr3t
 
 ## Create additional sites (01 - 03)
 civibuild create training/01 --url http://demo01.example.org --admin-pass s3cr3t
