@@ -298,13 +298,7 @@ function _amp_snapshot_restore_cms() {
     echo "  NEW: $CMS_DB_ARGS" > /dev/stderr
   fi
 
-  echo "[[Restore CMS DB ($CMS_DB_NAME) from file ($CMS_SQL)]]"
-  cvutil_assertvars amp_snapshot_restore CMS_SQL CMS_DB_ARGS CMS_DB_NAME
-  if [ ! -f "$CMS_SQL" ]; then
-    echo "Missing SQL file: $CMS_SQL" >> /dev/stderr
-    exit 1
-  fi
-  gunzip --stdout "$CMS_SQL" | mysql $CMS_DB_ARGS
+  _amp_snapshot_restore CMS "$CMS_SQL"
 }
 
 function _amp_snapshot_restore_civi() {
@@ -317,13 +311,7 @@ function _amp_snapshot_restore_civi() {
     echo "  NEW: $CIVI_DB_ARGS" > /dev/stderr
   fi
 
-  echo "[[Restore Civi DB ($CIVI_DB_NAME) from file ($CIVI_SQL)]]"
-  cvutil_assertvars amp_snapshot_restore CIVI_SQL CIVI_DB_ARGS CIVI_DB_NAME
-  if [ ! -f "$CIVI_SQL" ]; then
-    echo "Missing SQL file: $CIVI_SQL" >> /dev/stderr
-    exit 1
-  fi
-  gunzip --stdout "$CIVI_SQL" | mysql $CIVI_DB_ARGS
+  _amp_snapshot_restore CIVI "$CIVI_SQL"
 }
 
 function _amp_snapshot_restore_test() {
@@ -335,15 +323,28 @@ function _amp_snapshot_restore_test() {
     echo "  OLD: $orig_TEST_DB_ARG" > /dev/stderr
     echo "  NEW: $TEST_DB_ARGS" > /dev/stderr
   fi
-  echo "[[Restore Test DB ($TEST_DB_NAME) from file ($CIVI_SQL)]]"
-  cvutil_assertvars amp_snapshot_restore CIVI_SQL TEST_DB_ARGS TEST_DB_NAME
-  if [ ! -f "$CIVI_SQL" ]; then
-    echo "Missing SQL file: $CIVI_SQL" >> /dev/stderr
+
+  _amp_snapshot_restore TEST "$CIVI_SQL"
+}
+
+## Load a sql snapshot into the given DB
+## usage: _amp_snapshot_restore <DB_PREFIX> <sql-file>
+## example: _amp_snapshot_restore CMS "/path/to/cms.sql.gz"
+## example: _amp_snapshot_restore CIVI "/path/to/civi.sql.gz"
+function _amp_snapshot_restore() {
+  cvutil_assertvars amp_snapshot_restore_X $1_DB_ARGS $1_DB_NAME
+  local db_name=$(eval echo \$${1}_DB_NAME)
+  local db_args=$(eval echo \$${1}_DB_ARGS)
+  local sql_file="$2"
+
+  echo "[[Restore \"$1\" DB ($db_name) from file ($sql_file)]]"
+  if [ ! -f "$sql_file" ]; then
+    echo "Missing SQL file: $sql_file" >> /dev/stderr
     exit 1
   fi
-  gunzip --stdout "$CIVI_SQL" | mysql -o $TEST_DB_ARGS
-
+  gunzip --stdout "$sql_file" | mysql $db_args
 }
+
 
 ###############################################################################
 ## Tear down HTTP and MySQL services
