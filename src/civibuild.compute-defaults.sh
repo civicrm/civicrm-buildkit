@@ -25,5 +25,6 @@ fi
 [ -z "$CIVICRM_GENCODE_DIGEST" ] && CIVICRM_GENCODE_DIGEST="$TMPDIR/$SITE_NAME-gencode.md5"
 [ -z "$SHOW_LAST_SCAN" ]     && SHOW_LAST_SCAN="$TMPDIR/git-scan-${SITE_NAME}-last.json"
 [ -z "$SHOW_NEW_SCAN" ]      && SHOW_NEW_SCAN="$TMPDIR/git-scan-${SITE_NAME}-new.json"
+[ -z "$SITE_TOKEN" ]         && SITE_TOKEN=$(cvutil_makepasswd 16)
 
 export CIVICRM_GENCODE_DIGEST

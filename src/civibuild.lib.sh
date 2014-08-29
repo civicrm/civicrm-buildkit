@@ -157,7 +157,7 @@ function cvutil_parse_site_name_id() {
 function cvutil_append_settings() {
   local FILE="$1"
   local NAME="$2"
-  cvutil_assertvars cvutil_append_settings PRJDIR SITE_NAME SITE_TYPE SITE_CONFIG_DIR SITE_ID PRIVATE_ROOT FILE NAME
+  cvutil_assertvars cvutil_append_settings PRJDIR SITE_NAME SITE_TYPE SITE_CONFIG_DIR SITE_ID SITE_TOKEN PRIVATE_ROOT FILE NAME
   cat >> "$FILE" << EOF
     global \$civibuild;
     \$civibuild['PRJDIR'] = '$PRJDIR';
@@ -165,6 +165,7 @@ function cvutil_append_settings() {
     \$civibuild['SITE_TYPE'] = '$SITE_TYPE';
     \$civibuild['SITE_NAME'] = '$SITE_NAME';
     \$civibuild['SITE_ID'] = '$SITE_ID';
+    \$civibuild['SITE_TOKEN'] = '$SITE_TOKEN';
     \$civibuild['PRIVATE_ROOT'] = '$PRIVATE_ROOT';
     \$civibuild['WEB_ROOT'] = '$WEB_ROOT';
     \$civibuild['CMS_ROOT'] = '$CMS_ROOT';

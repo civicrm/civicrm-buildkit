@@ -34,6 +34,10 @@ SITE_CONFIG_DIR=
 ## (default: default)
 SITE_ID=default
 
+## A unique token for this site used to secure any distributed civibuild tasks
+## (default: random)
+SITE_TOKEN=
+
 ## Root directory where the site's code will be installed
 ## (default: BLDDIR/SITE_NAME)
 WEB_ROOT=
@@ -216,6 +220,6 @@ PERSISTENT_VARS="
   TEST_DB_DSN TEST_DB_USER TEST_DB_PASS TEST_DB_HOST TEST_DB_PORT TEST_DB_NAME TEST_DB_ARGS
   CIVI_SETTINGS CIVI_FILES CIVI_TEMPLATEC CIVI_UF
   IS_INSTALLED
-  SITE_TYPE
+  SITE_TOKEN SITE_TYPE
 "
 # ignore: runtime options like CIVI_SQL_SKIP and FORCE_DOWNLOAD
