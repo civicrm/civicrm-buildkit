@@ -151,14 +151,21 @@ function cvutil_parse_site_name_id() {
 
 ###############################################################################
 ## Append the civibuild settings directives to a file
-## usage: cvutil_append_settings <php-file> <settings-dir-name>
-## example: cvutil_append_settings "/var/www/build/drupal/sites/foo/civicrm.settings.php" "civicrm.settings.d"
-## example: cvutil_append_settings "/var/www/build/drupal/sites/foo/settings.php" "drupal.settings.d"
-function cvutil_append_settings() {
+## usage: cvutil_inject_settings <php-file> <settings-dir-name>
+## example: cvutil_inject_settings "/var/www/build/drupal/sites/foo/civicrm.settings.php" "civicrm.settings.d"
+## example: cvutil_inject_settings "/var/www/build/drupal/sites/foo/settings.php" "drupal.settings.d"
+function cvutil_inject_settings() {
   local FILE="$1"
   local NAME="$2"
-  cvutil_assertvars cvutil_append_settings PRJDIR SITE_NAME SITE_TYPE SITE_CONFIG_DIR SITE_ID SITE_TOKEN PRIVATE_ROOT FILE NAME
-  cat >> "$FILE" << EOF
+  cvutil_assertvars cvutil_inject_settings PRJDIR SITE_NAME SITE_TYPE SITE_CONFIG_DIR SITE_ID SITE_TOKEN PRIVATE_ROOT FILE NAME
+
+  ## Prepare temp file
+  local TMPFILE="${TMPDIR}/${SITE_TYPE}/${SITE_NAME}/${SITE_ID}.settings.tmp"
+  cvutil_makeparent "$TMPFILE"
+
+  cat > "$TMPFILE" << EOF
+<?php
+    #### If deployed via civibuild, include any "pre" scripts
     global \$civibuild;
     \$civibuild['PRJDIR'] = '$PRJDIR';
     \$civibuild['SITE_CONFIG_DIR'] = '$SITE_CONFIG_DIR';
@@ -172,9 +179,25 @@ function cvutil_append_settings() {
 
     if (file_exists(\$civibuild['PRJDIR'].'/src/civibuild.settings.php')) {
       require_once \$civibuild['PRJDIR'].'/src/civibuild.settings.php';
-      _civibuild_settings(__FILE__, '$NAME', \$civibuild);
+      _civibuild_settings(__FILE__, '$NAME', \$civibuild, 'pre');
+    }
+
+EOF
+
+  # Don't know if FILE has good newlines, so prefix/postfix both have extras
+  sed 's/^<?php//' < "$FILE" >> "$TMPFILE"
+
+  cat >> "$TMPFILE" << EOF
+
+    #### If deployed via civibuild, include any "post" scripts
+    if (file_exists(\$civibuild['PRJDIR'].'/src/civibuild.settings.php')) {
+      require_once \$civibuild['PRJDIR'].'/src/civibuild.settings.php';
+      _civibuild_settings(__FILE__, '$NAME', \$civibuild, 'post');
     }
 EOF
+
+  ## Replace main file with temp file
+  cat < "$TMPFILE" > "$FILE"
 }
 
 ###############################################################################
@@ -418,7 +441,7 @@ function civicrm_make_settings_php() {
 EOF
   fi
 
-  cvutil_append_settings "$CIVI_SETTINGS" "civicrm.settings.d"
+  cvutil_inject_settings "$CIVI_SETTINGS" "civicrm.settings.d"
 }
 
 ###############################################################################
@@ -464,7 +487,7 @@ function civicrm_make_test_settings_php() {
   define('DONT_DOCUMENT_TEST_CONFIG', TRUE);
 EOF
 
-    cvutil_append_settings "$CIVI_CORE/tests/phpunit/CiviTest/civicrm.settings.local.php" "civitest.settings.d"
+    cvutil_inject_settings "$CIVI_CORE/tests/phpunit/CiviTest/civicrm.settings.local.php" "civitest.settings.d"
 
   ## TODO: REVIEW
   cat > "$CIVI_CORE/tests/phpunit/CiviTest/CiviSeleniumSettings.php" << EOF
@@ -525,7 +548,7 @@ PHP
     cvutil_mkdir "wp-content/plugins/modules"
     amp datadir "wp-content/plugins/files"
 
-    cvutil_append_settings "wp-config.php" "wp-config.d"
+    cvutil_inject_settings "wp-config.php" "wp-config.d"
   popd >> /dev/null
 }
 
@@ -559,7 +582,7 @@ function drupal_install() {
       --sites-subdir="$DRUPAL_SITE_DIR"
     chmod u+w "sites/$DRUPAL_SITE_DIR"
     chmod u+w "sites/$DRUPAL_SITE_DIR/settings.php"
-    cvutil_append_settings "$CMS_ROOT/sites/$DRUPAL_SITE_DIR/settings.php" "drupal.settings.d"
+    cvutil_inject_settings "$CMS_ROOT/sites/$DRUPAL_SITE_DIR/settings.php" "drupal.settings.d"
     chmod u-w "sites/$DRUPAL_SITE_DIR/settings.php"
 
     ## Setup extra directories
