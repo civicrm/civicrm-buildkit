@@ -213,7 +213,7 @@ function amp_install() {
 function _amp_install_cms() {
   echo "[[Setup MySQL and HTTP for CMS]]"
   cvutil_assertvars _amp_install_cms CMS_ROOT SITE_NAME SITE_ID TMPDIR
-  local amp_vars_file_path="${TMPDIR}/${SITE_NAME}-amp-vars.sh"
+  local amp_vars_file_path=$(mktemp.php ampvar)
   local amp_name="cms$SITE_ID"
   [ "$SITE_ID" == "default" ] && amp_name=cms
 
@@ -224,30 +224,33 @@ function _amp_install_cms() {
   fi
 
   source "$amp_vars_file_path"
+  rm -f "$amp_vars_file_path"
 }
 
 function _amp_install_civi() {
   echo "[[Setup MySQL for Civi]]"
   cvutil_assertvars _amp_install_civi CMS_ROOT SITE_NAME SITE_ID TMPDIR
-  local amp_vars_file_path="${TMPDIR}/${SITE_NAME}-amp-vars.sh"
+  local amp_vars_file_path=$(mktemp.php ampvar)
   local amp_name="civi$SITE_ID"
   [ "$SITE_ID" == "default" ] && amp_name=civi
 
   amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=CIVI_ --skip-url --output-file="$amp_vars_file_path" --perm=super
 
   source "$amp_vars_file_path"
+  rm -f "$amp_vars_file_path"
 }
 
 function _amp_install_test() {
   echo "[[Setup MySQL for Test]]"
   cvutil_assertvars _amp_install_test CMS_ROOT SITE_NAME SITE_ID TMPDIR
-  local amp_vars_file_path="${TMPDIR}/${SITE_NAME}-amp-vars.sh"
+  local amp_vars_file_path=$(mktemp.php ampvar)
   local amp_name="test$SITE_ID"
   [ "$SITE_ID" == "default" ] && amp_name=test
 
   amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=TEST_ --skip-url --output-file="$amp_vars_file_path" --perm=super
 
   source "$amp_vars_file_path"
+  rm -f "$amp_vars_file_path"
 }
 
 ## Create a headless clone DB
@@ -257,9 +260,10 @@ function _amp_install_test() {
 function _amp_install_clone() {
   echo "[[Setup MySQL for \"$2\"]]"
   cvutil_assertvars _amp_install_cms CLONE_DIR SITE_NAME SITE_ID TMPDIR
-  local amp_vars_file_path="${TMPDIR}/${SITE_NAME}-amp-vars.sh"
+  local amp_vars_file_path=$(mktemp.php ampvar)
   amp create -f --root="$CLONE_DIR" --name=$1 --prefix=$2_ --skip-url --output-file="$amp_vars_file_path" --perm=super
   source "$amp_vars_file_path"
+  rm -f "$amp_vars_file_path"
 }
 
 ## Export the description of an amp install and import as shell variables
@@ -267,9 +271,10 @@ function _amp_install_clone() {
 ## example: _amp_imprt /var/www/build/myproject civi CIVI
 function _amp_import() {
   cvutil_assertvars _amp_install_cms SITE_NAME SITE_ID TMPDIR
-  local amp_vars_file_path="${TMPDIR}/${SITE_NAME}-amp-vars.sh"
+  local amp_vars_file_path=$(mktemp.php ampvar)
   amp export --root="$1" --name=$2 --prefix=$3_ --output-file="$amp_vars_file_path"
   source "$amp_vars_file_path"
+  rm -f "$amp_vars_file_path"
 }
 
 ###############################################################################
@@ -499,14 +504,18 @@ function civicrm_make_test_settings_php() {
     ## TODO: REVIEW
     cat > "$CIVI_CORE/tests/phpunit/CiviTest/civicrm.settings.local.php" << EOF
 <?php
-  if (defined('CIVICRM_WEBTEST')) {
-    // For Selenium tests, use normal DB
-    define('CIVICRM_DSN', "mysql://${CIVI_DB_USER}:${CIVI_DB_PASS}@${CIVI_DB_HOST}:${CIVI_DB_PORT}/${CIVI_DB_NAME}");
-  } else {
-    // For unit tests, use headless test DB
-    define('CIVICRM_DSN', "mysql://${TEST_DB_USER}:${TEST_DB_PASS}@${TEST_DB_HOST}:${TEST_DB_PORT}/${TEST_DB_NAME}");
+  if (!defined('CIVICRM_DSN')) {
+    if (defined('CIVICRM_WEBTEST')) {
+      // For Selenium tests, use normal DB
+      define('CIVICRM_DSN', "mysql://${CIVI_DB_USER}:${CIVI_DB_PASS}@${CIVI_DB_HOST}:${CIVI_DB_PORT}/${CIVI_DB_NAME}");
+    } else {
+      // For unit tests, use headless test DB
+      define('CIVICRM_DSN', "mysql://${TEST_DB_USER}:${TEST_DB_PASS}@${TEST_DB_HOST}:${TEST_DB_PORT}/${TEST_DB_NAME}");
+    }
   }
-  define('CIVICRM_TEMPLATE_COMPILEDIR', '${CIVI_TEMPLATEC}');
+  if (!defined('CIVICRM_TEMPLATE_COMPILEDIR')) {
+    define('CIVICRM_TEMPLATE_COMPILEDIR', '${CIVI_TEMPLATEC}');
+  }
   define('DONT_DOCUMENT_TEST_CONFIG', TRUE);
 EOF
 
