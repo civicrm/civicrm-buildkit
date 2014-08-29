@@ -252,23 +252,65 @@ function civibuild_show_html() {
 }
 
 function civibuild_clone_create() {
-  echo "TODO: civibuild_clone_create[ID=$CLONE_ID] [ROOT=$CLONE_ROOT] DIR=[$CLONE_DIR]"
   if [ -z "$CLONE_ID" ]; then
     echo "missing required parameter: --clone-id 123"
     exit 1
   fi
+  cvutil_assertvars civibuild_clone_create CLONE_DIR CLONE_ID CMS_SQL CIVI_SQL
+
+  ## TODO: if [ CMS_SQL or CIVI_SQL is newer than $CLONE_DIR ] IS_NEW=1
+  if [ ! -d "$CLONE_DIR" ]; then
+    IS_NEW=1
+  fi
+
+  if [ -n "$IS_NEW" -o -n "$FORCE_INSTALL" ]; then
+    cvutil_mkdir "$CLONE_DIR"
+    pushd $CLONE_DIR >> /dev/null
+      _amp_install_clone cms CLONE_CMS
+      _amp_snapshot_restore CLONE_CMS "$CMS_SQL"
+      _amp_install_clone civi CLONE_CIVI
+      _amp_snapshot_restore CLONE_CIVI "$CIVI_SQL"
+    popd >> /dev/null
+  else
+    #echo "[[Clone already exists ($CLONE_DIR). Snapshots appear unchanged. Use --force to re-create]]"
+    echo "[[Clone already exists ($CLONE_DIR). Use --force to re-create]]"
+    civibuild_clone_import
+  fi
 }
 
+## Destroy a clone
 function civibuild_clone_destroy() {
-  echo "TODO: civibuild_clone_destroy [ID=$CLONE_ID] [ROOT=$CLONE_ROOT] DIR=[$CLONE_DIR]"
+  if [ -z $CLONE_ID ]; then
+    cvutil_assertvars civibuild_clone_destroy CLONE_ROOT
+    if [ -d "$CLONE_ROOT" ]; then
+      rm -rf "$CLONE_ROOT"
+    fi
+  else
+    cvutil_assertvars civibuild_clone_destroy CLONE_DIR
+    if [ -d "$CLONE_DIR" ]; then
+      rm -rf "$CLONE_DIR"
+    fi
+  fi
+  amp cleanup
 }
 
-function civibuild_clone_show() {
-  echo "TODO: civibuild_clone_show [ID=$CLONE_ID] [ROOT=$CLONE_ROOT] DIR=[$CLONE_DIR]"
+## Load DB details for a clone
+function civibuild_clone_import() {
   if [ -z "$CLONE_ID" ]; then
     echo "missing required parameter: --clone-id 123"
     exit 1
   fi
+  cvutil_assertvars civibuild_clone_create CLONE_DIR CLONE_ID
+  _amp_import "$CLONE_DIR" cms CLONE_CMS
+  _amp_import "$CLONE_DIR" civi CLONE_CIVI
+}
+
+## Display DB details for a clone
+function civibuild_clone_show() {
+  cvutil_assertvars civibuild_clone_show SITE_NAME SITE_ID CLONE_ID
+  cvutil_summary "[[Show clone summary ($SITE_NAME/$SITE_ID/$CLONE_ID)]]" \
+    CLONE_CMS_DB_DSN \
+    CLONE_CIVI_DB_DSN
 }
 
 ###############################################################################
@@ -458,10 +500,10 @@ case "$ACTION" in
 
   clone-destroy)
     civibuild_clone_destroy
-    civibuild_clone_show
     ;;
 
   clone-show)
+    civibuild_clone_import
     civibuild_clone_show
     ;;
 

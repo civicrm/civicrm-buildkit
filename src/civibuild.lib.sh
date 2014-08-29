@@ -250,6 +250,28 @@ function _amp_install_test() {
   source "$amp_vars_file_path"
 }
 
+## Create a headless clone DB
+## usage: _amp_install_clone <name> <shell-prefix>
+## example: _amp_install_clone cms CLONE_CMS
+## example: _amp_install_clone civi CLONE_CIVI
+function _amp_install_clone() {
+  echo "[[Setup MySQL for \"$2\"]]"
+  cvutil_assertvars _amp_install_cms CLONE_DIR SITE_NAME SITE_ID TMPDIR
+  local amp_vars_file_path="${TMPDIR}/${SITE_NAME}-amp-vars.sh"
+  amp create -f --root="$CLONE_DIR" --name=$1 --prefix=$2_ --skip-url --output-file="$amp_vars_file_path" --perm=super
+  source "$amp_vars_file_path"
+}
+
+## Export the description of an amp install and import as shell variables
+## usage: _amp_import <root> <name> <shell-prefix>
+## example: _amp_imprt /var/www/build/myproject civi CIVI
+function _amp_import() {
+  cvutil_assertvars _amp_install_cms SITE_NAME SITE_ID TMPDIR
+  local amp_vars_file_path="${TMPDIR}/${SITE_NAME}-amp-vars.sh"
+  amp export --root="$1" --name=$2 --prefix=$3_ --output-file="$amp_vars_file_path"
+  source "$amp_vars_file_path"
+}
+
 ###############################################################################
 ## Backup the databases & http config (using the same structure as amp_install)
 function amp_snapshot_create() {
