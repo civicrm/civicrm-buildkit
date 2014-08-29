@@ -75,6 +75,13 @@ Description: Create or restore a snapshot of the CMS+CRM DBs
   --civi-sql <sql-file>  The path to a SQL backup of the CiviCRM DB [Optional]
   --no-civi              Skip resetting the CiviCRM DB [Optional]
 
+Syntax: $APP clone-create <build-name>[/<ms-id>] [options] [snapshot-options]
+Syntax: $APP clone-show <build-name>[/<ms-id>] [options]
+Syntax: $APP clone-destroy <build-name>[/<ms-id>] [options]
+Description: Create, export, or destroy a DB clone based on a snapshot
+  --clone-id <name>      The name of the specific clone. [Required for clone-create, clone-show]
+  --force                If necessary, destroy pre-existing files/directories/DBs
+
 Syntax: $APP restore-all
 Description: Restore *all* HTTP/DB services from their respective snapshots
 
@@ -244,6 +251,26 @@ function civibuild_show_html() {
   cat "$SHOW_NEW_SCAN" | php -r 'print_r(json_decode(file_get_contents("php://stdin"),TRUE));' > "$SHOW_HTML/git-scan.new.txt"
 }
 
+function civibuild_clone_create() {
+  echo "TODO: civibuild_clone_create[ID=$CLONE_ID] [ROOT=$CLONE_ROOT] DIR=[$CLONE_DIR]"
+  if [ -z "$CLONE_ID" ]; then
+    echo "missing required parameter: --clone-id 123"
+    exit 1
+  fi
+}
+
+function civibuild_clone_destroy() {
+  echo "TODO: civibuild_clone_destroy [ID=$CLONE_ID] [ROOT=$CLONE_ROOT] DIR=[$CLONE_DIR]"
+}
+
+function civibuild_clone_show() {
+  echo "TODO: civibuild_clone_show [ID=$CLONE_ID] [ROOT=$CLONE_ROOT] DIR=[$CLONE_DIR]"
+  if [ -z "$CLONE_ID" ]; then
+    echo "missing required parameter: --clone-id 123"
+    exit 1
+  fi
+}
+
 ###############################################################################
 ## Parse options
 source "$PRJDIR/src/civibuild.defaults.sh"
@@ -313,6 +340,11 @@ while [ -n "$1" ] ; do
 
     --civi-ver)
       CIVI_VERSION="$1"
+      shift
+      ;;
+
+    --clone-id)
+      CLONE_ID="$1"
       shift
       ;;
 
@@ -419,6 +451,20 @@ source "$PRJDIR/src/civibuild.compute-defaults.sh"
 ## Main
 
 case "$ACTION" in
+  clone-create)
+    civibuild_clone_create
+    civibuild_clone_show
+    ;;
+
+  clone-destroy)
+    civibuild_clone_destroy
+    civibuild_clone_show
+    ;;
+
+  clone-show)
+    civibuild_clone_show
+    ;;
+
   create)
     civibuild_download
     civibuild_install

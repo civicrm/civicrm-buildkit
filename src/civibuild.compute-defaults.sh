@@ -4,6 +4,8 @@
 [ -z "$WEB_ROOT" ]           && WEB_ROOT="$BLDDIR/$SITE_NAME"
 [ -z "$CMS_ROOT" ]           && CMS_ROOT="$WEB_ROOT"
 [ -z "$PRIVATE_ROOT" ]       && PRIVATE_ROOT="$PRJDIR/app/private/$SITE_NAME"
+[ -z "$CLONE_ROOT" ]         && CLONE_ROOT="$PRJDIR/app/clone/$SITE_NAME/$SITE_ID"
+[ -z "$CLONE_DIR" ]          && CLONE_DIR="$CLONE_ROOT/$CLONE_ID"
 [ -z "$UPGRADE_LOG_DIR" ]    && UPGRADE_LOG_DIR="$PRJDIR/app/debug/$SITE_NAME"
 [ -z "$CIVI_SITE_KEY" ]      && CIVI_SITE_KEY=$(cvutil_makepasswd 16)
 [ -z "$ADMIN_PASS" ]         && ADMIN_PASS=$(cvutil_makepasswd 12)
