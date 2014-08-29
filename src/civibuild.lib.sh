@@ -464,6 +464,8 @@ function civicrm_make_test_settings_php() {
   define('DONT_DOCUMENT_TEST_CONFIG', TRUE);
 EOF
 
+    cvutil_append_settings "$CIVI_CORE/tests/phpunit/CiviTest/civicrm.settings.local.php" "civitest.settings.d"
+
   ## TODO: REVIEW
   cat > "$CIVI_CORE/tests/phpunit/CiviTest/CiviSeleniumSettings.php" << EOF
 <?php
