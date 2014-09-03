@@ -640,13 +640,17 @@ function git_cache_setup() {
       ## clone
       echo "[[Initialize cache dir: $cachedir]]"
       cvutil_makeparent "$cachedir"
-      git clone --mirror "$url" "$cachedir"
+      timeout.php $SCM_TIMEOUT git clone --mirror "$url" "$cachedir"
     else
       ## update
-      pushd "$cachedir" >> /dev/null
-        git remote set-url origin "$url"
-        git fetch origin +refs/heads/*:refs/heads/* -u
-      popd >> /dev/null
+      if [ -z "$OFFLINE" ]; then
+        pushd "$cachedir" >> /dev/null
+          git remote set-url origin "$url"
+          timeout.php $SCM_TIMEOUT git fetch origin +refs/heads/*:refs/heads/* -u
+        popd >> /dev/null
+      else
+        echo "[[Offline mode. Skip cache update: $cachedir]]"
+      fi
     fi
 
     rm -f "$lock"
@@ -709,12 +713,16 @@ function svn_cache_setup() {
       ## clone
       echo "[[Initialize cache dir: $cachedir]]"
       cvutil_makeparent "$cachedir"
-      svn co "$url" "$cachedir"
+      timeout.php $SCM_TIMEOUT svn co "$url" "$cachedir"
     else
       ## update
-      pushd "$cachedir" >> /dev/null
-        svn up
-      popd >> /dev/null
+      if [ -z "$OFFLINE" ]; then
+        pushd "$cachedir" >> /dev/null
+          timeout.php $SCM_TIMEOUT svn up
+        popd >> /dev/null
+      else
+        echo "[[Offline mode. Skip cache update: $cachedir]]"
+      fi
     fi
 
     rm -f "$lock"

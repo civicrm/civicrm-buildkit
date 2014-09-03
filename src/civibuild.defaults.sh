@@ -52,6 +52,9 @@ CACHE_TTL=60
 ## When updating a cache record, first attempt to lock it. Wait up to X seconds to acquire lock.
 CACHE_LOCK_WAIT=120
 
+## When checking out or updating git/svn, wait up to X seconds for process to complete
+SCM_TIMEOUT=3600
+
 ###############################################################################
 ## "create" variables defined by civibuild
 
