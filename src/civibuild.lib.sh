@@ -31,6 +31,36 @@ function cvutil_assertvars() {
 }
 
 ###############################################################################
+## Prompt user for confirmation
+## (In automated scripts or blank response, use default)
+##
+## usage: cvutil_confirm <message> <interactive-default> <script-default>
+## example: cvutil_confirm "Are you sure? [Y/n] " y y
+function cvutil_confirm() {
+  local msg="$1"
+  local i_default="$2"
+  local s_default="$3"
+  if tty -s ; then
+    echo -n "$msg"
+    read _cvutil_confirm
+    if [ "x$_cvutil_confirm" == "x" ]; then
+      _cvutil_confirm="$i_default"
+    fi
+  else
+    echo "${msg}${s_default}"
+    _cvutil_confirm="$s_default"
+  fi
+  case "$_cvutil_confirm" in
+    y|Y|1)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+###############################################################################
 ## Save a list of environment variables to a file
 ## usage: cvutil_save() <filename> <var1> <var2> ...
 function cvutil_save() {
