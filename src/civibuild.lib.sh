@@ -525,20 +525,44 @@ EOF
   cat > "$CIVI_CORE/tests/phpunit/CiviTest/CiviSeleniumSettings.php" << EOF
 <?php
 class CiviSeleniumSettings {
-	var \$publicSandbox  = false;
-	var \$browser = '*firefox';
-	var \$sandboxURL = '${CMS_URL}';
-	var \$sandboxPATH = '';
-	var \$username = '${DEMO_USER}';
-	var \$password = '${DEMO_PASS}';
-	var \$adminUsername = '${ADMIN_USER}';
-	var \$adminPassword = '${ADMIN_PASS}';
-	var \$adminApiKey = 'apikey${ADMIN_PASS}';
-	var \$siteKey = '${CIVI_SITE_KEY}';
-        var \$UFemail = 'noreply@civicrm.org';
-	function __construct() {
-		\$this->fullSandboxPath = \$this->sandboxURL . \$this->sandboxPATH;
-	}
+  var \$publicSandbox  = false;
+  var \$browser = '*firefox';
+  var \$sandboxURL = '${CMS_URL}';
+  var \$sandboxPATH = '';
+  var \$username = '${DEMO_USER}';
+  var \$password = '${DEMO_PASS}';
+  var \$adminUsername = '${ADMIN_USER}';
+  var \$adminPassword = '${ADMIN_PASS}';
+  var \$adminApiKey = 'apikey${ADMIN_PASS}';
+  var \$siteKey = '${CIVI_SITE_KEY}';
+  var \$UFemail = 'noreply@civicrm.org';
+  var \$cookies;
+
+  function __construct() {
+    \$this->fullSandboxPath = \$this->sandboxURL . \$this->sandboxPATH;
+    \$this->cookies = array(
+      \$this->createConstCookie(),
+    );
+  }
+
+  /**
+   * @return array
+   */
+  function createConstCookie() {
+    global \$civibuild;
+    \$now = time();
+    \$civiConsts = array(
+      'CIVICRM_DSN' => CIVICRM_DSN,
+      'CIVICRM_UF_DSN' => CIVICRM_UF_DSN,
+      'ts' => \$now,
+      'sig' => md5(implode(';;', array(CIVICRM_DSN, CIVICRM_UF_DSN, \$civibuild['SITE_TOKEN'], \$now))),
+    );
+
+    return array(
+      'name' => 'civiConsts',
+      'value' => urlencode(json_encode(\$civiConsts)),
+    );
+  }
 }
 EOF
   fi
