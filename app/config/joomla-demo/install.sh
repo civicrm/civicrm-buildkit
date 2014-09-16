@@ -47,24 +47,24 @@ pushd "$WEB_ROOT" >> /dev/null
     to="$1"
     cvutil_mkdir $(dirname "$to")
     pushd $(dirname "$to") >> /dev/null
-      # ln -s "$from" $(basename "$to")
-      mv "$from" $(basename "$to")
+      ln -s "$from" $(basename "$to")
+      # mv "$from" $(basename "$to")
     popd >> /dev/null
   }
-  cvutil_link plugins/user/civicrm                   ../../src/civicrm/admin/plugins/civicrm
-  cvutil_link plugins/quickicon/civicrmicon          ../../src/civicrm/admin/plugins/civicrmicon
-  cvutil_link plugins/system/civicrmsys              ../../src/civicrm/admin/plugins/civicrmsys
-  cvutil_link administrator/components/com_civicrm   ../../src/civicrm/admin 
-  cvutil_link components/com_civicrm                    ../src/civicrm/site
+  cvutil_link plugins/user/civicrm                   "$PRIVATE_ROOT"/src/civicrm/admin/plugins/civicrm
+  cvutil_link plugins/quickicon/civicrmicon          "$PRIVATE_ROOT"/src/civicrm/admin/plugins/civicrmicon
+  cvutil_link plugins/system/civicrmsys              "$PRIVATE_ROOT"/src/civicrm/admin/plugins/civicrmsys
+  cvutil_link administrator/components/com_civicrm   "$PRIVATE_ROOT"/src/civicrm/admin 
+  cvutil_link components/com_civicrm                 "$PRIVATE_ROOT"/src/civicrm/site
 
 popd >> /dev/null
 
 CIVI_DOMAIN_NAME="Demonstrators Anonymous"
 CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
-CIVI_CORE="${WEB_ROOT}/${SITE_NAME}/administrator/components/com_civicrm/civicrm"
-CIVI_SETTINGS="${WEB_ROOT}/${SITE_NAME}/components/com_civicrm/civicrm.settings.php"
-CIVI_ADMSETTINGS="${WEB_ROOT}/${SITE_NAME}/administrator/components/com_civicrm/civicrm.settings.php"
-CIVI_FILES="${WEB_ROOT}/${SITE_NAME}/media/civicrm"
+CIVI_CORE="${WEB_ROOT}/administrator/components/com_civicrm/civicrm"
+CIVI_SETTINGS="${WEB_ROOT}/components/com_civicrm/civicrm.settings.php"
+CIVI_ADMSETTINGS="${WEB_ROOT}/administrator/components/com_civicrm/civicrm.settings.php"
+CIVI_FILES="${WEB_ROOT}/media/civicrm"
 CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
 CIVI_UF="Joomla"
 
