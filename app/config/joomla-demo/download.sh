@@ -8,6 +8,10 @@
 cvutil_mkdir "$PRIVATE_ROOT" "$PRIVATE_ROOT/src"
 
 pushd "$PRIVATE_ROOT" >> /dev/null
+	if [ -d src/civicrm -a  -n "$FORCE_DOWNLOAD" ]; then
+		rm -rf src/civicrm
+	fi
+
 	git clone ${CACHE_DIR}/civicrm/civicrm-joomla.git    -b "$CIVI_VERSION" src/civicrm
 	git clone ${CACHE_DIR}/civicrm/civicrm-core.git      -b "$CIVI_VERSION" src/civicrm/admin/civicrm
 	git clone ${CACHE_DIR}/civicrm/civicrm-packages.git  -b "$CIVI_VERSION" src/civicrm/admin/civicrm/packages
