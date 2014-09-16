@@ -4,9 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-
-    "hash": "0a7d0cee9e60359da2ba3f6be23251f8",
-
+    "hash": "92a9b77dd9fbe497be4abb9a834fd235",
     "packages": [
         {
             "name": "civicrm/upgrade-test",
@@ -80,12 +78,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/drush-ops/drush.git",
-                "reference": "6db1c9bf96eb40dd6456117312ba0e5395cc8f5c"
+                "reference": "3841f5efe8eb2c84b86a20778206db48489ecab4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drush-ops/drush/zipball/6db1c9bf96eb40dd6456117312ba0e5395cc8f5c",
-                "reference": "6db1c9bf96eb40dd6456117312ba0e5395cc8f5c",
+                "url": "https://api.github.com/repos/drush-ops/drush/zipball/3841f5efe8eb2c84b86a20778206db48489ecab4",
+                "reference": "3841f5efe8eb2c84b86a20778206db48489ecab4",
                 "shasum": ""
             },
             "require": {
@@ -146,7 +144,7 @@
             ],
             "description": "Drush is a command line shell and scripting interface for Drupal, a veritable Swiss Army knife designed to make life easier for those of us who spend some of our working hours hacking away at the command prompt.",
             "homepage": "http://www.drush.org",
-            "time": "2014-09-15 13:20:16"
+            "time": "2014-09-16 03:13:03"
         },
         {
             "name": "jsproffitt/amp",
@@ -252,12 +250,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/JSProffitt/joomla-console.git",
-                "reference": "1c6a343133fd75c7ff77bdf4b1ac7e8f20b048c7"
+                "reference": "afa73282497921ed379128a74408459b75e5bf6f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JSProffitt/joomla-console/zipball/1c6a343133fd75c7ff77bdf4b1ac7e8f20b048c7",
-                "reference": "1c6a343133fd75c7ff77bdf4b1ac7e8f20b048c7",
+                "url": "https://api.github.com/repos/JSProffitt/joomla-console/zipball/afa73282497921ed379128a74408459b75e5bf6f",
+                "reference": "afa73282497921ed379128a74408459b75e5bf6f",
                 "shasum": ""
             },
             "require": {
@@ -292,7 +290,7 @@
             "support": {
                 "source": "https://github.com/JSProffitt/joomla-console/tree/master"
             },
-            "time": "2014-09-14 18:38:34"
+            "time": "2014-09-16 13:34:31"
         },
         {
             "name": "mustache/mustache",
@@ -379,7 +377,61 @@
                 "xml"
             ],
             "time": "2013-02-24 15:01:54"
-
+        },
+        {
+            "name": "pear/console_table",
+            "version": "1.1.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/RobLoach/Console_Table.git",
+                "reference": "9f80c91a9fc01a3cce71ae80ea5bd473cb0eba4c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/RobLoach/Console_Table/zipball/9f80c91a9fc01a3cce71ae80ea5bd473cb0eba4c",
+                "reference": "9f80c91a9fc01a3cce71ae80ea5bd473cb0eba4c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=4.0.0"
+            },
+            "suggest": {
+                "pear/Console_Color": ">=0.0.4"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "Table.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD"
+            ],
+            "authors": [
+                {
+                    "name": "Jan Schneider",
+                    "homepage": "http://pear.php.net/user/yunosh"
+                },
+                {
+                    "name": "Tal Peer",
+                    "homepage": "http://pear.php.net/user/tal"
+                },
+                {
+                    "name": "Xavier Noguer",
+                    "homepage": "http://pear.php.net/user/xnoguer"
+                },
+                {
+                    "name": "Richard Heyes",
+                    "homepage": "http://pear.php.net/user/richard"
+                }
+            ],
+            "description": "Class that makes it easy to build console style tables.",
+            "homepage": "https://github.com/pear/Console_Table",
+            "keywords": [
+                "console"
+            ],
+            "time": "2012-12-07 14:43:01"
         },
         {
             "name": "rhumsaa/array_column",

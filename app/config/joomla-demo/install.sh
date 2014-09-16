@@ -1,5 +1,7 @@
 #!/bin/bash
 
+CMS_VERSION=${CMS_VERSION:-latest}
+
 ## install.sh -- Create config files and databases; fill the databases
 
 ###############################################################################
@@ -30,6 +32,7 @@ amp_install
 #   [ -d .git ]         && mv .git .git.bak
 # popd >> /dev/null
 
+
 joomla site:create "$SITE_NAME" --www="$WEB_ROOT" --mysql="$CMS_DB_USER:$CMS_DB_PASS@$CMS_DB_HOST:$CMS_DB_PORT" --joomla="$CMS_VERSION" --dbname="$CMS_DB_NAME" --nousers
 
 # Create Admin User
@@ -47,8 +50,9 @@ pushd "$WEB_ROOT" >> /dev/null
     to="$1"
     cvutil_mkdir $(dirname "$to")
     pushd $(dirname "$to") >> /dev/null
-      ln -s "$from" $(basename "$to")
+      # ln -s "$from" $(basename "$to")
       # mv "$from" $(basename "$to")
+      cp -R "$from" $(basename "$to")
     popd >> /dev/null
   }
   cvutil_link plugins/user/civicrm                   "$PRIVATE_ROOT"/src/civicrm/admin/plugins/civicrm
@@ -91,8 +95,8 @@ cvutil_mkdir "$TMPDIR/$SITE_NAME"{,/joomlaxml,/joomlaxml/admin}
 php "$CIVI_CORE/distmaker/utils/joomlaxml.php" "$CIVI_CORE" "$TMPDIR/$SITE_NAME/joomlaxml" "$CIVI_VERSION" alt
 cp -f "$TMPDIR/$SITE_NAME/joomlaxml/civicrm.xml" "$WEB_ROOT/administrator/components/com_civicrm/civicrm.xml"
 cp -f "$TMPDIR/$SITE_NAME/joomlaxml/admin/access.xml" "$WEB_ROOT/administrator/components/com_civicrm/access.xml"
-#echo '<?php /* AUTO-GENERATED */ ?>' > "administrator/components/com_civicrm/script.civicrm.php"
-cp -f "src/civicrm/script.civicrm.php" "administrator/components/com_civicrm/script.civicrm.php"
+echo '<?php /* AUTO-GENERATED */ ?>' > "$WEB_ROOT/administrator/components/com_civicrm/script.civicrm.php"
+cat "$PRIVATE_ROOT/src/civicrm/script.civicrm.php" >> "$WEB_ROOT/administrator/components/com_civicrm/script.civicrm.php"
 
 #Only in joomla-demo.working-from-tarball/administrator/language/en-GB: en-GB.com_civicrm.ini
 #Only in joomla-demo.working-from-tarball/administrator/language/en-GB: en-GB.com_civicrm.sys.ini
@@ -100,15 +104,6 @@ cp -f "src/civicrm/script.civicrm.php" "administrator/components/com_civicrm/scr
 
 # Run Joomla Discover Install
 joomla extension:install "$SITE_NAME" civicrm --www="$WEB_ROOT" --mysql="$CMS_DB_USER":"$CMS_DB_PASS"@"$CMS_DB_HOSTPORT"
-
-set +x
-echo "================================================================================"
-echo "================================================================================"
-echo "== NOTE: The 'joomla-demo' scripts are still in development. The following    =="
-echo "== features are not supported:                                                =="
-echo "==   - Install CiviCRM                                                        =="
-echo "==   - Create demo user                                                       =="
-echo "==   - Set permissions of demo user                                           =="
-echo "================================================================================"
-echo "================================================================================"
-set -x
+pushd "$WEB_ROOT/media/civicrm">> /dev/null
+  find . -type d -exec chmod 775 {} \;
+popd >> /dev/null
