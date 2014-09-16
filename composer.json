@@ -9,12 +9,27 @@
   "config": {
     "bin-dir": "bin"
   },
+  "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/jsproffitt/joomla-console"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/jsproffitt/amp"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/jsproffitt/git-scan"
+        }
+    ],
   "require": {
     "php": ">=5.3.3",
     "drush/drush": "dev-master",
-    "wp-cli/wp-cli": "0.13",
-    "totten/amp": "dev-master",
-    "totten/git-scan": "dev-master",
-    "civicrm/upgrade-test": "0.3"
+    "wp-cli/wp-cli": "0.17",
+    "jsproffitt/amp": "dev-master",
+    "jsproffitt/git-scan": "dev-master",
+    "civicrm/upgrade-test": "0.3",
+    "jsproffitt/joomla-console": "dev-master"
   }
 }
