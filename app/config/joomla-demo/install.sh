@@ -1,7 +1,5 @@
 #!/bin/bash
 
-CMS_VERSION=${CMS_VERSION:-latest}
-
 ## install.sh -- Create config files and databases; fill the databases
 
 ###############################################################################
@@ -11,8 +9,6 @@ amp_install
 
 ###############################################################################
 ## Setup Joomla (config files, database tables)
-
-
 
 # pushd "$WEB_ROOT" >> /dev/null
 #   CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
@@ -32,49 +28,37 @@ amp_install
 #   [ -d .git ]         && mv .git .git.bak
 # popd >> /dev/null
 
+pushd "$CMS_ROOT" >> /dev/null
 
-joomla site:create "$SITE_NAME" --www="$WEB_ROOT" --mysql="$CMS_DB_USER:$CMS_DB_PASS@$CMS_DB_HOST:$CMS_DB_PORT" --joomla="$CMS_VERSION" --dbname="$CMS_DB_NAME" --nousers
+  joomla site:create . --download=no --install=yes \
+    --joomla="$CMS_VERSION" \
+    --mysql="$CMS_DB_USER:$CMS_DB_PASS@$CMS_DB_HOST:$CMS_DB_PORT" \
+    --dbname="$CMS_DB_NAME" \
+    --nousers
+
+popd >>/dev/null
 
 # Create Admin User
-joomla user:create -b "$WEB_ROOT" --name="Demonstrators Anonymous Administrator" --user="$ADMIN_USER" --pass="$ADMIN_PASS" --email="$ADMIN_EMAIL" --group='super users'
+joomla user:create -b "$CMS_ROOT" --name="Demonstrators Anonymous Administrator" --user="$ADMIN_USER" --pass="$ADMIN_PASS" --email="$ADMIN_EMAIL" --group='super users'
 
 # Create Demo User
-joomla user:create -b "$WEB_ROOT" --name="Demo User" --user="$DEMO_USER" --pass="$DEMO_PASS" --email="$DEMO_EMAIL" --group=registered
+joomla user:create -b "$CMS_ROOT" --name="Demo User" --user="$DEMO_USER" --pass="$DEMO_PASS" --email="$DEMO_EMAIL" --group=registered
 
 ###############################################################################
 ## Setup CiviCRM (config files, database tables)
-pushd "$WEB_ROOT" >> /dev/null
-  ## usage: cvutil_link <to> <from>
-  function cvutil_link() {
-    from="$2"
-    to="$1"
-    cvutil_mkdir $(dirname "$to")
-    pushd $(dirname "$to") >> /dev/null
-      # ln -s "$from" $(basename "$to")
-      # mv "$from" $(basename "$to")
-      cp -R "$from" $(basename "$to")
-    popd >> /dev/null
-  }
-  cvutil_link plugins/user/civicrm                   "$PRIVATE_ROOT"/src/civicrm/admin/plugins/civicrm
-  cvutil_link plugins/quickicon/civicrmicon          "$PRIVATE_ROOT"/src/civicrm/admin/plugins/civicrmicon
-  cvutil_link plugins/system/civicrmsys              "$PRIVATE_ROOT"/src/civicrm/admin/plugins/civicrmsys
-  cvutil_link administrator/components/com_civicrm   "$PRIVATE_ROOT"/src/civicrm/admin 
-  cvutil_link components/com_civicrm                 "$PRIVATE_ROOT"/src/civicrm/site
-
-popd >> /dev/null
 
 CIVI_DOMAIN_NAME="Demonstrators Anonymous"
 CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
-CIVI_CORE="${WEB_ROOT}/administrator/components/com_civicrm/civicrm"
-CIVI_SETTINGS="${WEB_ROOT}/components/com_civicrm/civicrm.settings.php"
-CIVI_ADMSETTINGS="${WEB_ROOT}/administrator/components/com_civicrm/civicrm.settings.php"
-CIVI_FILES="${WEB_ROOT}/media/civicrm"
+CIVI_CORE="${CMS_ROOT}/administrator/components/com_civicrm/civicrm"
+CIVI_SETTINGS="${CMS_ROOT}/components/com_civicrm/civicrm.settings.php"
+CIVI_ADMSETTINGS="${CMS_ROOT}/administrator/components/com_civicrm/civicrm.settings.php"
+CIVI_FILES="${CMS_ROOT}/media/civicrm"
 CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
 CIVI_UF="Joomla"
 
 cat > "$CIVI_CORE/civicrm.config.php" <<EOF
 <?php
-define('CIVICRM_JOOMLA_BASE', '$WEB_ROOT');
+define('CIVICRM_JOOMLA_BASE', '$CMS_ROOT');
 define('CIVICRM_SETTINGS_PATH', '$CIVI_ADMSETTINGS');
 \$error = @include_once( '$CIVI_ADMSETTINGS' );
 if ( \$error == false ) {
@@ -93,17 +77,20 @@ sed "s;$CMS_URL;$CMS_URL/administrator/;g" < "$CIVI_SETTINGS" > "$CIVI_ADMSETTIN
 
 cvutil_mkdir "$TMPDIR/$SITE_NAME"{,/joomlaxml,/joomlaxml/admin}
 php "$CIVI_CORE/distmaker/utils/joomlaxml.php" "$CIVI_CORE" "$TMPDIR/$SITE_NAME/joomlaxml" "$CIVI_VERSION" alt
-cp -f "$TMPDIR/$SITE_NAME/joomlaxml/civicrm.xml" "$WEB_ROOT/administrator/components/com_civicrm/civicrm.xml"
-cp -f "$TMPDIR/$SITE_NAME/joomlaxml/admin/access.xml" "$WEB_ROOT/administrator/components/com_civicrm/access.xml"
-echo '<?php /* AUTO-GENERATED */ ?>' > "$WEB_ROOT/administrator/components/com_civicrm/script.civicrm.php"
-cat "$PRIVATE_ROOT/src/civicrm/script.civicrm.php" >> "$WEB_ROOT/administrator/components/com_civicrm/script.civicrm.php"
+cp -f "$TMPDIR/$SITE_NAME/joomlaxml/civicrm.xml" "$CMS_ROOT/administrator/components/com_civicrm/civicrm.xml"
+cp -f "$TMPDIR/$SITE_NAME/joomlaxml/admin/access.xml" "$CMS_ROOT/administrator/components/com_civicrm/access.xml"
+echo '<?php /* AUTO-GENERATED */ ?>' > "$CMS_ROOT/administrator/components/com_civicrm/script.civicrm.php"
+cat "$WEB_ROOT/src/civicrm/script.civicrm.php" >> "$CMS_ROOT/administrator/components/com_civicrm/script.civicrm.php"
 
 #Only in joomla-demo.working-from-tarball/administrator/language/en-GB: en-GB.com_civicrm.ini
 #Only in joomla-demo.working-from-tarball/administrator/language/en-GB: en-GB.com_civicrm.sys.ini
 
 
 # Run Joomla Discover Install
-joomla extension:install "$SITE_NAME" civicrm --www="$WEB_ROOT" --mysql="$CMS_DB_USER":"$CMS_DB_PASS"@"$CMS_DB_HOSTPORT"
-pushd "$WEB_ROOT/media/civicrm">> /dev/null
-  find . -type d -exec chmod 775 {} \;
+pushd "$CMS_ROOT"
+#fixme  joomla extension:install . civicrm --mysql="$CMS_DB_USER":"$CMS_DB_PASS"@"$CMS_DB_HOSTPORT"
+popd
+
+pushd "$CMS_ROOT/media/civicrm">> /dev/null
+#fixme  find . -type d -exec chmod 775 {} \;
 popd >> /dev/null
