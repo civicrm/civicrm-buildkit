@@ -10,32 +10,12 @@ amp_install
 ###############################################################################
 ## Setup Joomla (config files, database tables)
 
-# pushd "$WEB_ROOT" >> /dev/null
-#   CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
-#   php cli/install.php \
-#     --db-user="$CMS_DB_USER" \
-#     --db-name="$CMS_DB_NAME" \
-#     --db-host="$CMS_DB_HOSTPORT" \
-#     --db-pass="$CMS_DB_PASS" \
-#     --admin-user="$ADMIN_USER" \
-#     --admin-pass="$ADMIN_PASS" \
-#     --admin-email="$ADMIN_EMAIL" \
-#     --offline
-
-#   ## Joomla requires removal of "installation" directory, which mucks up git,
-#   ## so we'll push them off to the side.
-#   [ -d installation ] && mv installation .installation.bak
-#   [ -d .git ]         && mv .git .git.bak
-# popd >> /dev/null
-
 pushd "$CMS_ROOT" >> /dev/null
-
   joomla site:create . --download=no --install=yes \
     --joomla="$CMS_VERSION" \
     --mysql="$CMS_DB_USER:$CMS_DB_PASS@$CMS_DB_HOST:$CMS_DB_PORT" \
     --dbname="$CMS_DB_NAME" \
     --nousers
-
 popd >>/dev/null
 
 # Create Admin User
@@ -73,8 +53,8 @@ EOF
 
 civicrm_install
 sed "s;$CMS_URL;$CMS_URL/administrator/;g" < "$CIVI_SETTINGS" > "$CIVI_ADMSETTINGS"
-## $CMS_URL/
 
+## NOTE: Evertyhing below here is generally untested; may need a mix of changes to the script and to upstream code
 cvutil_mkdir "$TMPDIR/$SITE_NAME"{,/joomlaxml,/joomlaxml/admin}
 php "$CIVI_CORE/distmaker/utils/joomlaxml.php" "$CIVI_CORE" "$TMPDIR/$SITE_NAME/joomlaxml" "$CIVI_VERSION" alt
 cp -f "$TMPDIR/$SITE_NAME/joomlaxml/civicrm.xml" "$CMS_ROOT/administrator/components/com_civicrm/civicrm.xml"
@@ -85,12 +65,7 @@ cat "$WEB_ROOT/src/civicrm/script.civicrm.php" >> "$CMS_ROOT/administrator/compo
 #Only in joomla-demo.working-from-tarball/administrator/language/en-GB: en-GB.com_civicrm.ini
 #Only in joomla-demo.working-from-tarball/administrator/language/en-GB: en-GB.com_civicrm.sys.ini
 
-
 # Run Joomla Discover Install
 pushd "$CMS_ROOT"
 #fixme  joomla extension:install . civicrm --mysql="$CMS_DB_USER":"$CMS_DB_PASS"@"$CMS_DB_HOSTPORT"
 popd
-
-pushd "$CMS_ROOT/media/civicrm">> /dev/null
-#fixme  find . -type d -exec chmod 775 {} \;
-popd >> /dev/null

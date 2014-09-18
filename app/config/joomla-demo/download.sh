@@ -22,12 +22,14 @@ pushd "$WEB_ROOT" >> /dev/null
   git_set_hooks civicrm-core        src/civicrm/admin/civicrm                      "../tools/scripts/git"
   git_set_hooks civicrm-packages    src/civicrm/admin/civicrm/packages          "../../tools/scripts/git"
 
+  ## NOTE: Evertyhing below here is generally untested; may need a mix of changes to the script and to upstream code
   pushd src/civicrm/admin > /dev/null
     #ln -s admin.civicrm.php civicrm.php
     mv admin.civicrm.php civicrm.php
   popd >> /dev/null
 popd >> /dev/null
 
+## NOTE: Evertyhing below here is generally untested; may need a mix of changes to the script and to upstream code
 pushd "$WEB_ROOT/joomla" >> /dev/null
   ## usage: cvutil_link <to> <from>
   function cvutil_link() {
