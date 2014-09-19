@@ -162,18 +162,21 @@ function civibuild_install() {
     exit 96
   fi
 
-  if [ -n "$FORCE_INSTALL" -a -n "$IS_INSTALLED" ]; then
-
+  if [ -z "$FORCE_INSTALL" -a -n "$IS_INSTALLED" ]; then
     if cvutil_confirm "About to re-install \"$WEB_ROOT\". Are you sure you want destroy existing data? [y/N] " n y; then
-      pushd "$WEB_ROOT" > /dev/null
-        civibuild_run uninstall
-      popd > /dev/null
-      if [ -d "$PRIVATE_ROOT" ]; then
-        rm -rf "$PRIVATE_ROOT"
-      fi
+      FORCE_INSTALL=1
     else
       echo "Aborted" 1>&2
       exit 1
+    fi
+  fi
+
+  if [ -n "$FORCE_INSTALL" -a -n "$IS_INSTALLED" ]; then
+    pushd "$WEB_ROOT" > /dev/null
+      civibuild_run uninstall
+    popd > /dev/null
+    if [ -d "$PRIVATE_ROOT" ]; then
+      rm -rf "$PRIVATE_ROOT"
     fi
   fi
 
