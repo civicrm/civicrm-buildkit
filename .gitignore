@@ -10,6 +10,7 @@ app/run/
 app/snapshot/
 app/tmp/
 bin/amp
+bin/boris
 bin/civicrm-upgrade-test
 bin/civix
 bin/composer
@@ -18,6 +19,7 @@ bin/drush.bat
 bin/drush.complete.sh
 bin/drush.php
 bin/git-scan
+bin/joomla
 bin/hub
 bin/wp
 bin/wp.bat

@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0a7d0cee9e60359da2ba3f6be23251f8",
+    "hash": "19278893ec9fe8db7b384574aabc6733",
     "packages": [
         {
             "name": "civicrm/upgrade-test",
@@ -36,7 +36,41 @@
             ],
             "description": "Collection of scripts and data-files for testing CiviCRM upgrades",
             "homepage": "https://github.com/civicrm/civicrm-upgrade-test",
-            "time": "2014-08-20 08:31:34"
+            "time": "2014-08-20 09:26:06"
+        },
+        {
+            "name": "d11wtq/boris",
+            "version": "v1.0.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/d11wtq/boris.git",
+                "reference": "125dd4e5752639af7678a22ea597115646d89c6e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/d11wtq/boris/zipball/125dd4e5752639af7678a22ea597115646d89c6e",
+                "reference": "125dd4e5752639af7678a22ea597115646d89c6e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "suggest": {
+                "ext-pcntl": "*",
+                "ext-posix": "*",
+                "ext-readline": "*"
+            },
+            "bin": [
+                "bin/boris"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Boris": "lib"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "time": "2014-01-17 12:21:18"
         },
         {
             "name": "drush/drush",
@@ -44,19 +78,23 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/drush-ops/drush.git",
-                "reference": "d1d13676f5beacaa9f8619088fe3ae45ea28a6cf"
+                "reference": "46fb060b4984445faa5852b675f21206f2cbc983"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drush-ops/drush/zipball/d1d13676f5beacaa9f8619088fe3ae45ea28a6cf",
-                "reference": "d1d13676f5beacaa9f8619088fe3ae45ea28a6cf",
+                "url": "https://api.github.com/repos/drush-ops/drush/zipball/46fb060b4984445faa5852b675f21206f2cbc983",
+                "reference": "46fb060b4984445faa5852b675f21206f2cbc983",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.3"
+                "d11wtq/boris": "*",
+                "pear/console_table": "1.1.5",
+                "php": ">=5.3.0",
+                "symfony/yaml": "~2.2"
             },
             "require-dev": {
-                "phpunit/phpunit": ">=3.5"
+                "phpunit/phpunit": ">=3.5",
+                "symfony/process": "2.4.5"
             },
             "bin": [
                 "drush",
@@ -65,9 +103,14 @@
                 "drush.complete.sh"
             ],
             "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Drush": "lib/"
+                }
+            },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "GPLv2"
+                "GPL-2.0+"
             ],
             "authors": [
                 {
@@ -96,13 +139,51 @@
                 },
                 {
                     "name": "Jonathan Hedstrom",
-                    "email": "jhedstrom@gmail.com",
-                    "homepage": "http://professorbikeybike.com"
+                    "email": "jhedstrom@gmail.com"
                 }
             ],
             "description": "Drush is a command line shell and scripting interface for Drupal, a veritable Swiss Army knife designed to make life easier for those of us who spend some of our working hours hacking away at the command prompt.",
             "homepage": "http://www.drush.org",
-            "time": "2013-10-26 07:40:45"
+            "time": "2014-09-18 01:49:25"
+        },
+        {
+            "name": "joomlatools/joomla-console",
+            "version": "dev-master-buildkit",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/totten/joomla-console.git",
+                "reference": "c2c339c7e49986f737a7ac8396ae1234beecb8c8"
+            },
+            "require": {
+                "symfony/console": "2.4.*"
+            },
+            "bin": [
+                "bin/joomla"
+            ],
+            "type": "project",
+            "autoload": {
+                "psr-0": {
+                    "Joomlatools\\": "src/"
+                }
+            },
+            "license": [
+                "MPLv2"
+            ],
+            "authors": [
+                {
+                    "name": "Joomlatools",
+                    "email": "info@joomlatools.com",
+                    "homepage": "https://www.joomlatools.com"
+                }
+            ],
+            "description": "This command-line script helps to ease the management of Joomla sites in your development environment.",
+            "homepage": "https://github.com/joomlatools/joomla-console",
+            "keywords": [
+                "console",
+                "joomla",
+                "tools"
+            ],
+            "time": "2014-09-18 06:10:30"
         },
         {
             "name": "mustache/mustache",
@@ -191,6 +272,61 @@
             "time": "2013-02-24 15:01:54"
         },
         {
+            "name": "pear/console_table",
+            "version": "1.1.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/RobLoach/Console_Table.git",
+                "reference": "9f80c91a9fc01a3cce71ae80ea5bd473cb0eba4c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/RobLoach/Console_Table/zipball/9f80c91a9fc01a3cce71ae80ea5bd473cb0eba4c",
+                "reference": "9f80c91a9fc01a3cce71ae80ea5bd473cb0eba4c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=4.0.0"
+            },
+            "suggest": {
+                "pear/Console_Color": ">=0.0.4"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "Table.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD"
+            ],
+            "authors": [
+                {
+                    "name": "Jan Schneider",
+                    "homepage": "http://pear.php.net/user/yunosh"
+                },
+                {
+                    "name": "Tal Peer",
+                    "homepage": "http://pear.php.net/user/tal"
+                },
+                {
+                    "name": "Xavier Noguer",
+                    "homepage": "http://pear.php.net/user/xnoguer"
+                },
+                {
+                    "name": "Richard Heyes",
+                    "homepage": "http://pear.php.net/user/richard"
+                }
+            ],
+            "description": "Class that makes it easy to build console style tables.",
+            "homepage": "https://github.com/pear/Console_Table",
+            "keywords": [
+                "console"
+            ],
+            "time": "2012-12-07 14:43:01"
+        },
+        {
             "name": "rhumsaa/array_column",
             "version": "1.1.2",
             "source": {
@@ -217,7 +353,8 @@
             "authors": [
                 {
                     "name": "Ben Ramsey",
-                    "homepage": "http://benramsey.com"
+                    "homepage": "http://benramsey.com",
+                    "role": "Developer"
                 }
             ],
             "description": "Provides functionality for array_column() to projects using PHP earlier than version 5.5.",
@@ -280,17 +417,17 @@
         },
         {
             "name": "symfony/config",
-            "version": "v2.3.6",
+            "version": "v2.5.4",
             "target-dir": "Symfony/Component/Config",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Config.git",
-                "reference": "1ced3d6c88b22df8cd1fe5209dbd6a89df362a29"
+                "reference": "080eabdc256c1d7a3a7cf6296271edb68eb1ab2b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Config/zipball/1ced3d6c88b22df8cd1fe5209dbd6a89df362a29",
-                "reference": "1ced3d6c88b22df8cd1fe5209dbd6a89df362a29",
+                "url": "https://api.github.com/repos/symfony/Config/zipball/080eabdc256c1d7a3a7cf6296271edb68eb1ab2b",
+                "reference": "080eabdc256c1d7a3a7cf6296271edb68eb1ab2b",
                 "shasum": ""
             },
             "require": {
@@ -300,7 +437,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.3-dev"
+                    "dev-master": "2.5-dev"
                 }
             },
             "autoload": {
@@ -314,31 +451,31 @@
             ],
             "authors": [
                 {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
                     "name": "Symfony Community",
                     "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
                 }
             ],
             "description": "Symfony Config Component",
             "homepage": "http://symfony.com",
-            "time": "2013-09-19 09:45:20"
+            "time": "2014-08-31 03:22:04"
         },
         {
             "name": "symfony/console",
-            "version": "v2.3.6",
+            "version": "v2.4.9",
             "target-dir": "Symfony/Component/Console",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Console.git",
-                "reference": "f880062d56edefb25b36f2defa65aafe65959dc7"
+                "reference": "6cdbe19f8f9025a84ccc45c3870e388e424bea5c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Console/zipball/f880062d56edefb25b36f2defa65aafe65959dc7",
-                "reference": "f880062d56edefb25b36f2defa65aafe65959dc7",
+                "url": "https://api.github.com/repos/symfony/Console/zipball/6cdbe19f8f9025a84ccc45c3870e388e424bea5c",
+                "reference": "6cdbe19f8f9025a84ccc45c3870e388e424bea5c",
                 "shasum": ""
             },
             "require": {
@@ -353,7 +490,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.3-dev"
+                    "dev-master": "2.4-dev"
                 }
             },
             "autoload": {
@@ -367,31 +504,31 @@
             ],
             "authors": [
                 {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
                     "name": "Symfony Community",
                     "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
                 }
             ],
             "description": "Symfony Console Component",
             "homepage": "http://symfony.com",
-            "time": "2013-09-25 06:04:15"
+            "time": "2014-08-14 14:51:32"
         },
         {
             "name": "symfony/dependency-injection",
-            "version": "v2.3.6",
+            "version": "v2.5.4",
             "target-dir": "Symfony/Component/DependencyInjection",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/DependencyInjection.git",
-                "reference": "81620c3551d411b0f7ec3bd6e978000569ec004a"
+                "reference": "dcfdfbfdab2dc5bf00e5274719126a3079c6d02c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/DependencyInjection/zipball/81620c3551d411b0f7ec3bd6e978000569ec004a",
-                "reference": "81620c3551d411b0f7ec3bd6e978000569ec004a",
+                "url": "https://api.github.com/repos/symfony/DependencyInjection/zipball/dcfdfbfdab2dc5bf00e5274719126a3079c6d02c",
+                "reference": "dcfdfbfdab2dc5bf00e5274719126a3079c6d02c",
                 "shasum": ""
             },
             "require": {
@@ -399,6 +536,7 @@
             },
             "require-dev": {
                 "symfony/config": "~2.2",
+                "symfony/expression-language": "~2.4",
                 "symfony/yaml": "~2.0"
             },
             "suggest": {
@@ -409,7 +547,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.3-dev"
+                    "dev-master": "2.5-dev"
                 }
             },
             "autoload": {
@@ -423,31 +561,31 @@
             ],
             "authors": [
                 {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
                     "name": "Symfony Community",
                     "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
                 }
             ],
             "description": "Symfony DependencyInjection Component",
             "homepage": "http://symfony.com",
-            "time": "2013-09-26 22:39:53"
+            "time": "2014-08-31 03:22:04"
         },
         {
             "name": "symfony/filesystem",
-            "version": "v2.3.6",
+            "version": "v2.5.4",
             "target-dir": "Symfony/Component/Filesystem",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Filesystem.git",
-                "reference": "2b8995042086c5552c94d33b5553c492e9cfc00e"
+                "reference": "a765efd199e02ff4001c115c318e219030be9364"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Filesystem/zipball/2b8995042086c5552c94d33b5553c492e9cfc00e",
-                "reference": "2b8995042086c5552c94d33b5553c492e9cfc00e",
+                "url": "https://api.github.com/repos/symfony/Filesystem/zipball/a765efd199e02ff4001c115c318e219030be9364",
+                "reference": "a765efd199e02ff4001c115c318e219030be9364",
                 "shasum": ""
             },
             "require": {
@@ -456,7 +594,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.3-dev"
+                    "dev-master": "2.5-dev"
                 }
             },
             "autoload": {
@@ -470,31 +608,31 @@
             ],
             "authors": [
                 {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
                     "name": "Symfony Community",
                     "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
                 }
             ],
             "description": "Symfony Filesystem Component",
             "homepage": "http://symfony.com",
-            "time": "2013-09-19 09:45:20"
+            "time": "2014-09-03 09:00:14"
         },
         {
             "name": "symfony/finder",
-            "version": "v2.3.6",
+            "version": "v2.5.4",
             "target-dir": "Symfony/Component/Finder",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Finder.git",
-                "reference": "a175521f680b178e63c5d0ab87c6b046c0990c3f"
+                "reference": "f40854d1a19c339c7f969f8f6d6d6e9153311c4c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Finder/zipball/a175521f680b178e63c5d0ab87c6b046c0990c3f",
-                "reference": "a175521f680b178e63c5d0ab87c6b046c0990c3f",
+                "url": "https://api.github.com/repos/symfony/Finder/zipball/f40854d1a19c339c7f969f8f6d6d6e9153311c4c",
+                "reference": "f40854d1a19c339c7f969f8f6d6d6e9153311c4c",
                 "shasum": ""
             },
             "require": {
@@ -503,7 +641,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.3-dev"
+                    "dev-master": "2.5-dev"
                 }
             },
             "autoload": {
@@ -517,31 +655,31 @@
             ],
             "authors": [
                 {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
                     "name": "Symfony Community",
                     "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
                 }
             ],
             "description": "Symfony Finder Component",
             "homepage": "http://symfony.com",
-            "time": "2013-09-19 09:45:20"
+            "time": "2014-09-03 09:00:14"
         },
         {
             "name": "symfony/process",
-            "version": "v2.3.6",
+            "version": "v2.5.4",
             "target-dir": "Symfony/Component/Process",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Process.git",
-                "reference": "81191e354fe9dad0451036ccf0fdf283649d3f1e"
+                "reference": "136cf0bdaacea81f779583376d47dd8aef4fc6ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Process/zipball/81191e354fe9dad0451036ccf0fdf283649d3f1e",
-                "reference": "81191e354fe9dad0451036ccf0fdf283649d3f1e",
+                "url": "https://api.github.com/repos/symfony/Process/zipball/136cf0bdaacea81f779583376d47dd8aef4fc6ba",
+                "reference": "136cf0bdaacea81f779583376d47dd8aef4fc6ba",
                 "shasum": ""
             },
             "require": {
@@ -550,7 +688,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.3-dev"
+                    "dev-master": "2.5-dev"
                 }
             },
             "autoload": {
@@ -564,40 +702,46 @@
             ],
             "authors": [
                 {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
                     "name": "Symfony Community",
                     "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
                 }
             ],
             "description": "Symfony Process Component",
             "homepage": "http://symfony.com",
-            "time": "2013-10-09 21:17:57"
+            "time": "2014-08-31 03:22:04"
         },
         {
             "name": "symfony/templating",
-            "version": "v2.3.6",
+            "version": "v2.5.4",
             "target-dir": "Symfony/Component/Templating",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Templating.git",
-                "reference": "a5a03ed34119b18900771c054b0f7a367660f7fa"
+                "reference": "8d392ee592214f5c804dabbbe9496799288ef6c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Templating/zipball/a5a03ed34119b18900771c054b0f7a367660f7fa",
-                "reference": "a5a03ed34119b18900771c054b0f7a367660f7fa",
+                "url": "https://api.github.com/repos/symfony/Templating/zipball/8d392ee592214f5c804dabbbe9496799288ef6c9",
+                "reference": "8d392ee592214f5c804dabbbe9496799288ef6c9",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
+            "require-dev": {
+                "psr/log": "~1.0"
+            },
+            "suggest": {
+                "psr/log": "For using debug logging in loaders"
+            },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.3-dev"
+                    "dev-master": "2.5-dev"
                 }
             },
             "autoload": {
@@ -611,31 +755,31 @@
             ],
             "authors": [
                 {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
                     "name": "Symfony Community",
                     "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
                 }
             ],
             "description": "Symfony Templating Component",
             "homepage": "http://symfony.com",
-            "time": "2013-09-19 09:45:20"
+            "time": "2014-07-09 09:05:48"
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.3.6",
+            "version": "v2.5.4",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "6bb881b948368482e1abf1a75c08bcf88a1c5fc3"
+                "reference": "01a7695bcfb013d0a15c6757e15aae120342986f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/6bb881b948368482e1abf1a75c08bcf88a1c5fc3",
-                "reference": "6bb881b948368482e1abf1a75c08bcf88a1c5fc3",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/01a7695bcfb013d0a15c6757e15aae120342986f",
+                "reference": "01a7695bcfb013d0a15c6757e15aae120342986f",
                 "shasum": ""
             },
             "require": {
@@ -644,7 +788,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.3-dev"
+                    "dev-master": "2.5-dev"
                 }
             },
             "autoload": {
@@ -658,17 +802,17 @@
             ],
             "authors": [
                 {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
                     "name": "Symfony Community",
                     "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
                 }
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
-            "time": "2013-09-22 18:04:39"
+            "time": "2014-08-31 03:22:04"
         },
         {
             "name": "totten/amp",
@@ -676,24 +820,23 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/totten/amp.git",
-                "reference": "c18d2574a02edc24d8286b71f0958f5cb86ed9f7"
+                "reference": "3262d51f8a2caed65acea7fbdedb0a80bf9ee970"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/totten/amp/zipball/c18d2574a02edc24d8286b71f0958f5cb86ed9f7",
-                "reference": "c18d2574a02edc24d8286b71f0958f5cb86ed9f7",
+                "url": "https://api.github.com/repos/totten/amp/zipball/3262d51f8a2caed65acea7fbdedb0a80bf9ee970",
+                "reference": "3262d51f8a2caed65acea7fbdedb0a80bf9ee970",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3",
-                "symfony/config": "2.3.6",
-                "symfony/console": "2.3.6",
-                "symfony/dependency-injection": "2.3.6",
-                "symfony/filesystem": "2.3.6",
-                "symfony/finder": "2.3.6",
-                "symfony/process": "2.3.6",
-                "symfony/templating": "2.3.6",
-                "symfony/yaml": "2.3.6"
+                "symfony/config": "~2.3",
+                "symfony/console": "~2.3",
+                "symfony/dependency-injection": "~2.3",
+                "symfony/filesystem": "~2.3",
+                "symfony/process": "~2.3",
+                "symfony/templating": "~2.3",
+                "symfony/yaml": "~2.2"
             },
             "bin": [
                 "bin/amp"
@@ -717,7 +860,7 @@
             ],
             "description": "CLI Interface to *AMP-style stacks",
             "homepage": "https://github.com/totten/amp",
-            "time": "2014-08-14 01:59:55"
+            "time": "2014-09-18 04:13:17"
         },
         {
             "name": "totten/git-scan",
@@ -725,20 +868,23 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/totten/git-scan.git",
-                "reference": "890cd038db3e569190877c10f4e7cb66b3ee0969"
+                "reference": "83b7269637a183c696238988de3ff10fcf52086a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/totten/git-scan/zipball/890cd038db3e569190877c10f4e7cb66b3ee0969",
-                "reference": "890cd038db3e569190877c10f4e7cb66b3ee0969",
+                "url": "https://api.github.com/repos/totten/git-scan/zipball/83b7269637a183c696238988de3ff10fcf52086a",
+                "reference": "83b7269637a183c696238988de3ff10fcf52086a",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3",
-                "symfony/console": "2.3.6",
-                "symfony/filesystem": "2.3.6",
-                "symfony/finder": "2.3.6",
-                "symfony/process": "2.3.6"
+                "symfony/console": "~2.3",
+                "symfony/filesystem": "~2.3",
+                "symfony/finder": "~2.3",
+                "symfony/process": "~2.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "3.7.*"
             },
             "bin": [
                 "bin/git-scan"
@@ -760,7 +906,7 @@
                 }
             ],
             "description": "CLI tool for scanning/updating git repos",
-            "time": "2014-08-14 02:02:36"
+            "time": "2014-09-18 05:12:23"
         },
         {
             "name": "wp-cli/php-cli-tools",
@@ -875,13 +1021,19 @@
 
     ],
     "aliases": [
-
+        {
+            "alias": "1.1.0",
+            "alias_normalized": "1.1.0.0",
+            "version": "dev-master-buildkit",
+            "package": "joomlatools/joomla-console"
+        }
     ],
     "minimum-stability": "stable",
     "stability-flags": {
         "drush/drush": 20,
         "totten/amp": 20,
-        "totten/git-scan": 20
+        "totten/git-scan": 20,
+        "joomlatools/joomla-console": 20
     },
     "prefer-stable": false,
     "platform": {

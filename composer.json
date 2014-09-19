@@ -15,6 +15,13 @@
     "wp-cli/wp-cli": "0.17",
     "totten/amp": "dev-master",
     "totten/git-scan": "dev-master",
-    "civicrm/upgrade-test": "0.3"
-  }
+    "civicrm/upgrade-test": "0.3",
+    "joomlatools/joomla-console": "dev-master-buildkit as 1.1.0"
+  },
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/totten/joomla-console.git"
+    }
+  ]
 }

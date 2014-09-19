@@ -4,26 +4,51 @@
 
 ###############################################################################
 
-git_cache_setup "https://github.com/joomla/joomla-cms.git" "$CACHE_DIR/joomla/joomla-cms.git"
-git clone "$CACHE_DIR/joomla/joomla-cms.git" "$WEB_ROOT"
+CMS_VERSION=${CMS_VERSION:-latest}
+CMS_ROOT="$WEB_ROOT/joomla"
 
-[ -z "$CMS_VER" ] && CMS_VER=3.2.1
+cvutil_mkdir "$WEB_ROOT" "$WEB_ROOT/joomla" "$WEB_ROOT/src"
+
+pushd "$WEB_ROOT/joomla" >> /dev/null
+  joomla site:create . --download=yes --install=no --joomla="$CMS_VERSION"
+popd >> /dev/null
+
 pushd "$WEB_ROOT" >> /dev/null
-  git checkout "$CMS_VER"
+  git clone ${CACHE_DIR}/civicrm/civicrm-joomla.git    -b "$CIVI_VERSION" src/civicrm
+  git clone ${CACHE_DIR}/civicrm/civicrm-core.git      -b "$CIVI_VERSION" src/civicrm/admin/civicrm
+  git clone ${CACHE_DIR}/civicrm/civicrm-packages.git  -b "$CIVI_VERSION" src/civicrm/admin/civicrm/packages
 
-  ## Submitted PR to include cli/install.php in core -- https://github.com/joomla/joomla-cms/pull/2764
-  ## For the moment, we need to add it ourselves
-  if [ ! -f "cli/install.php" ]; then
-    cp "$SITE_CONFIG_DIR/cli-install.php" "cli/install.php"
-  fi
+  git_set_hooks civicrm-joomla      src/civicrm                      "../admin/civicrm/tools/scripts/git"
+  git_set_hooks civicrm-core        src/civicrm/admin/civicrm                      "../tools/scripts/git"
+  git_set_hooks civicrm-packages    src/civicrm/admin/civicrm/packages          "../../tools/scripts/git"
 
-  ## TODO: Checkout Civi's code...
-  #git clone ${CACHE_DIR}/civicrm/civicrm-joomla.git    -b "$CIVI_VERSION" path/to/checkout/to
-  #git clone ${CACHE_DIR}/civicrm/civicrm-core.git      -b "$CIVI_VERSION" path/to/checkout/to
-  #git clone ${CACHE_DIR}/civicrm/civicrm-packages.git  -b "$CIVI_VERSION" path/to/checkout/to/packages
+  ## NOTE: Evertyhing below here is generally untested; may need a mix of changes to the script and to upstream code
+  pushd src/civicrm/admin > /dev/null
+    #ln -s admin.civicrm.php civicrm.php
+    mv admin.civicrm.php civicrm.php
+  popd >> /dev/null
+popd >> /dev/null
 
-  #git_set_hooks civicrm-joomla      path/to/checkout/to          "../civicrm/tools/scripts/git"
-  #git_set_hooks civicrm-core        path/to/checkout/to          "../tools/scripts/git"
-  #git_set_hooks civicrm-packages    path/to/checkout/to/packages "../../tools/scripts/git"
+## NOTE: Evertyhing below here is generally untested; may need a mix of changes to the script and to upstream code
+pushd "$WEB_ROOT/joomla" >> /dev/null
+  ## usage: cvutil_link <to> <from>
+  function cvutil_link() {
+    from="$2"
+    to="$1"
+    cvutil_mkdir $(dirname "$to")
+    pushd $(dirname "$to") >> /dev/null
+      if test -L $(basename "$to") ; then
+        rm -f $(basename "$to")
+      fi
+      ln -s "$from" $(basename "$to")
+      # mv "$from" $(basename "$to")
+      # cp -R "$from" $(basename "$to")
+    popd >> /dev/null
+  }
 
+  cvutil_link plugins/user/civicrm                   "$WEB_ROOT"/src/civicrm/admin/plugins/civicrm
+  cvutil_link plugins/quickicon/civicrmicon          "$WEB_ROOT"/src/civicrm/admin/plugins/civicrmicon
+  cvutil_link plugins/system/civicrmsys              "$WEB_ROOT"/src/civicrm/admin/plugins/civicrmsys
+  cvutil_link administrator/components/com_civicrm   "$WEB_ROOT"/src/civicrm/admin
+  cvutil_link components/com_civicrm                 "$WEB_ROOT"/src/civicrm/site
 popd >> /dev/null
