@@ -16,6 +16,10 @@ if (is_numeric(getenv('TEST_TOKEN'))) {
       $civibuild['SITE_ID'],
       $testToken);
 
+    if (getenv('CIVIBUILD_CLONE_FORCE')) {
+      $cmd .= ' --force';
+    }
+
     exec($cmd, $output);
 
     $vars = array();
