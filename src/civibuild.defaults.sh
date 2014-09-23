@@ -34,6 +34,10 @@ SITE_CONFIG_DIR=
 ## (default: default)
 SITE_ID=default
 
+## A unique token for this site used to secure any distributed civibuild tasks
+## (default: random)
+SITE_TOKEN=
+
 ## Root directory where the site's code will be installed
 ## (default: BLDDIR/SITE_NAME)
 WEB_ROOT=
@@ -158,6 +162,7 @@ TEST_DB_USER=
 
 ###############################################################################
 ## snapshot-related variables
+## (also used for cloning)
 
 ## Path to the directory which stores snapshots (default: PRJDIR/app/snapshot) [non-persistent]
 SNAPSHOT_DIR=
@@ -179,6 +184,20 @@ CMS_SQL_SKIP=
 
 ## True if we should skip loading TEST_SQL [non-persistent]
 TEST_SQL_SKIP=
+
+###############################################################################
+## Clone-related variables
+
+## Unique name of a particular clone
+CLONE_ID=
+
+## Base directory in whch we store clones metadata
+## [default: app/clone/$SITE_NAME/$SITE_ID ]
+CLONE_ROOT=
+
+## Directory storing the activty clone's metadata
+## [default: $CLONE_ROOT/$CLONE_ID]
+CLONE_DIR=
 
 ###############################################################################
 ## Upgrade-testing variables
@@ -216,6 +235,6 @@ PERSISTENT_VARS="
   TEST_DB_DSN TEST_DB_USER TEST_DB_PASS TEST_DB_HOST TEST_DB_PORT TEST_DB_NAME TEST_DB_ARGS
   CIVI_SETTINGS CIVI_FILES CIVI_TEMPLATEC CIVI_UF
   IS_INSTALLED
-  SITE_TYPE
+  SITE_TOKEN SITE_TYPE
 "
 # ignore: runtime options like CIVI_SQL_SKIP and FORCE_DOWNLOAD

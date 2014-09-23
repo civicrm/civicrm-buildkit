@@ -151,29 +151,53 @@ function cvutil_parse_site_name_id() {
 
 ###############################################################################
 ## Append the civibuild settings directives to a file
-## usage: cvutil_append_settings <php-file> <settings-dir-name>
-## example: cvutil_append_settings "/var/www/build/drupal/sites/foo/civicrm.settings.php" "civicrm.settings.d"
-## example: cvutil_append_settings "/var/www/build/drupal/sites/foo/settings.php" "drupal.settings.d"
-function cvutil_append_settings() {
+## usage: cvutil_inject_settings <php-file> <settings-dir-name>
+## example: cvutil_inject_settings "/var/www/build/drupal/sites/foo/civicrm.settings.php" "civicrm.settings.d"
+## example: cvutil_inject_settings "/var/www/build/drupal/sites/foo/settings.php" "drupal.settings.d"
+function cvutil_inject_settings() {
   local FILE="$1"
   local NAME="$2"
-  cvutil_assertvars cvutil_append_settings PRJDIR SITE_NAME SITE_TYPE SITE_CONFIG_DIR SITE_ID PRIVATE_ROOT FILE NAME
-  cat >> "$FILE" << EOF
+  cvutil_assertvars cvutil_inject_settings PRJDIR SITE_NAME SITE_TYPE SITE_CONFIG_DIR SITE_ID SITE_TOKEN PRIVATE_ROOT FILE NAME
+
+  ## Prepare temp file
+  local TMPFILE="${TMPDIR}/${SITE_TYPE}/${SITE_NAME}/${SITE_ID}.settings.tmp"
+  cvutil_makeparent "$TMPFILE"
+
+  cat > "$TMPFILE" << EOF
+<?php
+    #### If deployed via civibuild, include any "pre" scripts
     global \$civibuild;
     \$civibuild['PRJDIR'] = '$PRJDIR';
     \$civibuild['SITE_CONFIG_DIR'] = '$SITE_CONFIG_DIR';
     \$civibuild['SITE_TYPE'] = '$SITE_TYPE';
     \$civibuild['SITE_NAME'] = '$SITE_NAME';
     \$civibuild['SITE_ID'] = '$SITE_ID';
+    \$civibuild['SITE_TOKEN'] = '$SITE_TOKEN';
     \$civibuild['PRIVATE_ROOT'] = '$PRIVATE_ROOT';
     \$civibuild['WEB_ROOT'] = '$WEB_ROOT';
     \$civibuild['CMS_ROOT'] = '$CMS_ROOT';
 
     if (file_exists(\$civibuild['PRJDIR'].'/src/civibuild.settings.php')) {
       require_once \$civibuild['PRJDIR'].'/src/civibuild.settings.php';
-      _civibuild_settings(__FILE__, '$NAME', \$civibuild);
+      _civibuild_settings(__FILE__, '$NAME', \$civibuild, 'pre');
+    }
+
+EOF
+
+  # Don't know if FILE has good newlines, so prefix/postfix both have extras
+  sed 's/^<?php//' < "$FILE" >> "$TMPFILE"
+
+  cat >> "$TMPFILE" << EOF
+
+    #### If deployed via civibuild, include any "post" scripts
+    if (file_exists(\$civibuild['PRJDIR'].'/src/civibuild.settings.php')) {
+      require_once \$civibuild['PRJDIR'].'/src/civibuild.settings.php';
+      _civibuild_settings(__FILE__, '$NAME', \$civibuild, 'post');
     }
 EOF
+
+  ## Replace main file with temp file
+  cat < "$TMPFILE" > "$FILE"
 }
 
 ###############################################################################
@@ -189,7 +213,7 @@ function amp_install() {
 function _amp_install_cms() {
   echo "[[Setup MySQL and HTTP for CMS]]"
   cvutil_assertvars _amp_install_cms CMS_ROOT SITE_NAME SITE_ID TMPDIR
-  local amp_vars_file_path="${TMPDIR}/${SITE_NAME}-amp-vars.sh"
+  local amp_vars_file_path=$(mktemp.php ampvar)
   local amp_name="cms$SITE_ID"
   [ "$SITE_ID" == "default" ] && amp_name=cms
 
@@ -200,30 +224,57 @@ function _amp_install_cms() {
   fi
 
   source "$amp_vars_file_path"
+  rm -f "$amp_vars_file_path"
 }
 
 function _amp_install_civi() {
   echo "[[Setup MySQL for Civi]]"
   cvutil_assertvars _amp_install_civi CMS_ROOT SITE_NAME SITE_ID TMPDIR
-  local amp_vars_file_path="${TMPDIR}/${SITE_NAME}-amp-vars.sh"
+  local amp_vars_file_path=$(mktemp.php ampvar)
   local amp_name="civi$SITE_ID"
   [ "$SITE_ID" == "default" ] && amp_name=civi
 
   amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=CIVI_ --skip-url --output-file="$amp_vars_file_path" --perm=super
 
   source "$amp_vars_file_path"
+  rm -f "$amp_vars_file_path"
 }
 
 function _amp_install_test() {
   echo "[[Setup MySQL for Test]]"
   cvutil_assertvars _amp_install_test CMS_ROOT SITE_NAME SITE_ID TMPDIR
-  local amp_vars_file_path="${TMPDIR}/${SITE_NAME}-amp-vars.sh"
+  local amp_vars_file_path=$(mktemp.php ampvar)
   local amp_name="test$SITE_ID"
   [ "$SITE_ID" == "default" ] && amp_name=test
 
   amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=TEST_ --skip-url --output-file="$amp_vars_file_path" --perm=super
 
   source "$amp_vars_file_path"
+  rm -f "$amp_vars_file_path"
+}
+
+## Create a headless clone DB
+## usage: _amp_install_clone <name> <shell-prefix>
+## example: _amp_install_clone cms CLONE_CMS
+## example: _amp_install_clone civi CLONE_CIVI
+function _amp_install_clone() {
+  echo "[[Setup MySQL for \"$2\"]]"
+  cvutil_assertvars _amp_install_cms CLONE_DIR SITE_NAME SITE_ID TMPDIR
+  local amp_vars_file_path=$(mktemp.php ampvar)
+  amp create -f --root="$CLONE_DIR" --name=$1 --prefix=$2_ --skip-url --output-file="$amp_vars_file_path" --perm=super
+  source "$amp_vars_file_path"
+  rm -f "$amp_vars_file_path"
+}
+
+## Export the description of an amp install and import as shell variables
+## usage: _amp_import <root> <name> <shell-prefix>
+## example: _amp_imprt /var/www/build/myproject civi CIVI
+function _amp_import() {
+  cvutil_assertvars _amp_install_cms SITE_NAME SITE_ID TMPDIR
+  local amp_vars_file_path=$(mktemp.php ampvar)
+  amp export --root="$1" --name=$2 --prefix=$3_ --output-file="$amp_vars_file_path"
+  source "$amp_vars_file_path"
+  rm -f "$amp_vars_file_path"
 }
 
 ###############################################################################
@@ -274,13 +325,7 @@ function _amp_snapshot_restore_cms() {
     echo "  NEW: $CMS_DB_ARGS" > /dev/stderr
   fi
 
-  echo "[[Restore CMS DB ($CMS_DB_NAME) from file ($CMS_SQL)]]"
-  cvutil_assertvars amp_snapshot_restore CMS_SQL CMS_DB_ARGS CMS_DB_NAME
-  if [ ! -f "$CMS_SQL" ]; then
-    echo "Missing SQL file: $CMS_SQL" >> /dev/stderr
-    exit 1
-  fi
-  gunzip --stdout "$CMS_SQL" | mysql $CMS_DB_ARGS
+  _amp_snapshot_restore CMS "$CMS_SQL"
 }
 
 function _amp_snapshot_restore_civi() {
@@ -293,13 +338,7 @@ function _amp_snapshot_restore_civi() {
     echo "  NEW: $CIVI_DB_ARGS" > /dev/stderr
   fi
 
-  echo "[[Restore Civi DB ($CIVI_DB_NAME) from file ($CIVI_SQL)]]"
-  cvutil_assertvars amp_snapshot_restore CIVI_SQL CIVI_DB_ARGS CIVI_DB_NAME
-  if [ ! -f "$CIVI_SQL" ]; then
-    echo "Missing SQL file: $CIVI_SQL" >> /dev/stderr
-    exit 1
-  fi
-  gunzip --stdout "$CIVI_SQL" | mysql $CIVI_DB_ARGS
+  _amp_snapshot_restore CIVI "$CIVI_SQL"
 }
 
 function _amp_snapshot_restore_test() {
@@ -311,15 +350,28 @@ function _amp_snapshot_restore_test() {
     echo "  OLD: $orig_TEST_DB_ARG" > /dev/stderr
     echo "  NEW: $TEST_DB_ARGS" > /dev/stderr
   fi
-  echo "[[Restore Test DB ($TEST_DB_NAME) from file ($CIVI_SQL)]]"
-  cvutil_assertvars amp_snapshot_restore CIVI_SQL TEST_DB_ARGS TEST_DB_NAME
-  if [ ! -f "$CIVI_SQL" ]; then
-    echo "Missing SQL file: $CIVI_SQL" >> /dev/stderr
+
+  _amp_snapshot_restore TEST "$CIVI_SQL"
+}
+
+## Load a sql snapshot into the given DB
+## usage: _amp_snapshot_restore <DB_PREFIX> <sql-file>
+## example: _amp_snapshot_restore CMS "/path/to/cms.sql.gz"
+## example: _amp_snapshot_restore CIVI "/path/to/civi.sql.gz"
+function _amp_snapshot_restore() {
+  cvutil_assertvars amp_snapshot_restore_X $1_DB_ARGS $1_DB_NAME
+  local db_name=$(eval echo \$${1}_DB_NAME)
+  local db_args=$(eval echo \$${1}_DB_ARGS)
+  local sql_file="$2"
+
+  echo "[[Restore \"$1\" DB ($db_name) from file ($sql_file)]]"
+  if [ ! -f "$sql_file" ]; then
+    echo "Missing SQL file: $sql_file" >> /dev/stderr
     exit 1
   fi
-  gunzip --stdout "$CIVI_SQL" | mysql -o $TEST_DB_ARGS
-
+  gunzip --stdout "$sql_file" | mysql $db_args
 }
+
 
 ###############################################################################
 ## Tear down HTTP and MySQL services
@@ -417,7 +469,7 @@ function civicrm_make_settings_php() {
 EOF
   fi
 
-  cvutil_append_settings "$CIVI_SETTINGS" "civicrm.settings.d"
+  cvutil_inject_settings "$CIVI_SETTINGS" "civicrm.settings.d"
 }
 
 ###############################################################################
@@ -452,35 +504,65 @@ function civicrm_make_test_settings_php() {
     ## TODO: REVIEW
     cat > "$CIVI_CORE/tests/phpunit/CiviTest/civicrm.settings.local.php" << EOF
 <?php
-  if (defined('CIVICRM_WEBTEST')) {
-    // For Selenium tests, use normal DB
-    define('CIVICRM_DSN', "mysql://${CIVI_DB_USER}:${CIVI_DB_PASS}@${CIVI_DB_HOST}:${CIVI_DB_PORT}/${CIVI_DB_NAME}");
-  } else {
-    // For unit tests, use headless test DB
-    define('CIVICRM_DSN', "mysql://${TEST_DB_USER}:${TEST_DB_PASS}@${TEST_DB_HOST}:${TEST_DB_PORT}/${TEST_DB_NAME}");
+  if (!defined('CIVICRM_DSN')) {
+    if (defined('CIVICRM_WEBTEST')) {
+      // For Selenium tests, use normal DB
+      define('CIVICRM_DSN', "mysql://${CIVI_DB_USER}:${CIVI_DB_PASS}@${CIVI_DB_HOST}:${CIVI_DB_PORT}/${CIVI_DB_NAME}");
+    } else {
+      // For unit tests, use headless test DB
+      define('CIVICRM_DSN', "mysql://${TEST_DB_USER}:${TEST_DB_PASS}@${TEST_DB_HOST}:${TEST_DB_PORT}/${TEST_DB_NAME}");
+    }
   }
-  define('CIVICRM_TEMPLATE_COMPILEDIR', '${CIVI_TEMPLATEC}');
+  if (!defined('CIVICRM_TEMPLATE_COMPILEDIR')) {
+    define('CIVICRM_TEMPLATE_COMPILEDIR', '${CIVI_TEMPLATEC}');
+  }
   define('DONT_DOCUMENT_TEST_CONFIG', TRUE);
 EOF
+
+    cvutil_inject_settings "$CIVI_CORE/tests/phpunit/CiviTest/civicrm.settings.local.php" "civitest.settings.d"
 
   ## TODO: REVIEW
   cat > "$CIVI_CORE/tests/phpunit/CiviTest/CiviSeleniumSettings.php" << EOF
 <?php
 class CiviSeleniumSettings {
-	var \$publicSandbox  = false;
-	var \$browser = '*firefox';
-	var \$sandboxURL = '${CMS_URL}';
-	var \$sandboxPATH = '';
-	var \$username = '${DEMO_USER}';
-	var \$password = '${DEMO_PASS}';
-	var \$adminUsername = '${ADMIN_USER}';
-	var \$adminPassword = '${ADMIN_PASS}';
-	var \$adminApiKey = 'apikey${ADMIN_PASS}';
-	var \$siteKey = '${CIVI_SITE_KEY}';
-        var \$UFemail = 'noreply@civicrm.org';
-	function __construct() {
-		\$this->fullSandboxPath = \$this->sandboxURL . \$this->sandboxPATH;
-	}
+  var \$publicSandbox  = false;
+  var \$browser = '*firefox';
+  var \$sandboxURL = '${CMS_URL}';
+  var \$sandboxPATH = '';
+  var \$username = '${DEMO_USER}';
+  var \$password = '${DEMO_PASS}';
+  var \$adminUsername = '${ADMIN_USER}';
+  var \$adminPassword = '${ADMIN_PASS}';
+  var \$adminApiKey = 'apikey${ADMIN_PASS}';
+  var \$siteKey = '${CIVI_SITE_KEY}';
+  var \$UFemail = 'noreply@civicrm.org';
+  var \$cookies;
+
+  function __construct() {
+    \$this->fullSandboxPath = \$this->sandboxURL . \$this->sandboxPATH;
+    \$this->cookies = array(
+      \$this->createConstCookie(),
+    );
+  }
+
+  /**
+   * @return array
+   */
+  function createConstCookie() {
+    global \$civibuild;
+    \$now = time();
+    \$civiConsts = array(
+      'CIVICRM_DSN' => CIVICRM_DSN,
+      'CIVICRM_UF_DSN' => CIVICRM_UF_DSN,
+      'ts' => \$now,
+      'sig' => md5(implode(';;', array(CIVICRM_DSN, CIVICRM_UF_DSN, \$civibuild['SITE_TOKEN'], \$now))),
+    );
+
+    return array(
+      'name' => 'civiConsts',
+      'value' => urlencode(json_encode(\$civiConsts)),
+    );
+  }
 }
 EOF
   fi
@@ -522,7 +604,7 @@ PHP
     cvutil_mkdir "wp-content/plugins/modules"
     amp datadir "wp-content/plugins/files"
 
-    cvutil_append_settings "wp-config.php" "wp-config.d"
+    cvutil_inject_settings "wp-config.php" "wp-config.d"
   popd >> /dev/null
 }
 
@@ -556,7 +638,7 @@ function drupal_install() {
       --sites-subdir="$DRUPAL_SITE_DIR"
     chmod u+w "sites/$DRUPAL_SITE_DIR"
     chmod u+w "sites/$DRUPAL_SITE_DIR/settings.php"
-    cvutil_append_settings "$CMS_ROOT/sites/$DRUPAL_SITE_DIR/settings.php" "drupal.settings.d"
+    cvutil_inject_settings "$CMS_ROOT/sites/$DRUPAL_SITE_DIR/settings.php" "drupal.settings.d"
     chmod u-w "sites/$DRUPAL_SITE_DIR/settings.php"
 
     ## Setup extra directories

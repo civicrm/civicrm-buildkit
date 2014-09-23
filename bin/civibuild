@@ -75,6 +75,13 @@ Description: Create or restore a snapshot of the CMS+CRM DBs
   --civi-sql <sql-file>  The path to a SQL backup of the CiviCRM DB [Optional]
   --no-civi              Skip resetting the CiviCRM DB [Optional]
 
+Syntax: $APP clone-create <build-name>[/<ms-id>] [options] [snapshot-options]
+Syntax: $APP clone-show <build-name>[/<ms-id>] [options]
+Syntax: $APP clone-destroy <build-name>[/<ms-id>] [options]
+Description: Create, export, or destroy a DB clone based on a snapshot
+  --clone-id <name>      The name of the specific clone. [Required for clone-create, clone-show]
+  --force                If necessary, destroy pre-existing files/directories/DBs
+
 Syntax: $APP restore-all
 Description: Restore *all* HTTP/DB services from their respective snapshots
 
@@ -244,6 +251,68 @@ function civibuild_show_html() {
   cat "$SHOW_NEW_SCAN" | php -r 'print_r(json_decode(file_get_contents("php://stdin"),TRUE));' > "$SHOW_HTML/git-scan.new.txt"
 }
 
+function civibuild_clone_create() {
+  if [ -z "$CLONE_ID" ]; then
+    echo "missing required parameter: --clone-id 123"
+    exit 1
+  fi
+  cvutil_assertvars civibuild_clone_create CLONE_DIR CLONE_ID CMS_SQL CIVI_SQL
+
+  if [ ! -d "$CLONE_DIR" -o "$CMS_SQL" -nt "$CLONE_DIR/.mark" -o "$CMS_SQL" -nt "$CLONE_DIR/.mark" ]; then
+    IS_NEW=1
+  fi
+
+  if [ -n "$IS_NEW" -o -n "$FORCE_INSTALL" ]; then
+    cvutil_mkdir "$CLONE_DIR"
+    pushd $CLONE_DIR >> /dev/null
+      _amp_install_clone cms CLONE_CMS
+      _amp_snapshot_restore CLONE_CMS "$CMS_SQL"
+      _amp_install_clone civi CLONE_CIVI
+      _amp_snapshot_restore CLONE_CIVI "$CIVI_SQL"
+    popd >> /dev/null
+    touch "$CLONE_DIR/.mark"
+  else
+    #echo "[[Clone already exists ($CLONE_DIR). Snapshots appear unchanged. Use --force to re-create]]"
+    echo "[[Clone already exists ($CLONE_DIR). Use --force to re-create]]"
+    civibuild_clone_import
+  fi
+}
+
+## Destroy a clone
+function civibuild_clone_destroy() {
+  if [ -z $CLONE_ID ]; then
+    cvutil_assertvars civibuild_clone_destroy CLONE_ROOT
+    if [ -d "$CLONE_ROOT" ]; then
+      rm -rf "$CLONE_ROOT"
+    fi
+  else
+    cvutil_assertvars civibuild_clone_destroy CLONE_DIR
+    if [ -d "$CLONE_DIR" ]; then
+      rm -rf "$CLONE_DIR"
+    fi
+  fi
+  amp cleanup
+}
+
+## Load DB details for a clone
+function civibuild_clone_import() {
+  if [ -z "$CLONE_ID" ]; then
+    echo "missing required parameter: --clone-id 123"
+    exit 1
+  fi
+  cvutil_assertvars civibuild_clone_create CLONE_DIR CLONE_ID
+  _amp_import "$CLONE_DIR" cms CLONE_CMS
+  _amp_import "$CLONE_DIR" civi CLONE_CIVI
+}
+
+## Display DB details for a clone
+function civibuild_clone_show() {
+  cvutil_assertvars civibuild_clone_show SITE_NAME SITE_ID CLONE_ID
+  cvutil_summary "[[Show clone summary ($SITE_NAME/$SITE_ID/$CLONE_ID)]]" \
+    CLONE_CMS_DB_DSN \
+    CLONE_CIVI_DB_DSN
+}
+
 ###############################################################################
 ## Parse options
 source "$PRJDIR/src/civibuild.defaults.sh"
@@ -313,6 +382,11 @@ while [ -n "$1" ] ; do
 
     --civi-ver)
       CIVI_VERSION="$1"
+      shift
+      ;;
+
+    --clone-id)
+      CLONE_ID="$1"
       shift
       ;;
 
@@ -419,6 +493,20 @@ source "$PRJDIR/src/civibuild.compute-defaults.sh"
 ## Main
 
 case "$ACTION" in
+  clone-create)
+    civibuild_clone_create
+    civibuild_clone_show
+    ;;
+
+  clone-destroy)
+    civibuild_clone_destroy
+    ;;
+
+  clone-show)
+    civibuild_clone_import
+    civibuild_clone_show
+    ;;
+
   create)
     civibuild_download
     civibuild_install
@@ -430,6 +518,7 @@ case "$ACTION" in
     if cvutil_confirm "Are you sure you want destroy \"$WEB_ROOT\"? [y/N] " n y; then
       [ -d "$WEB_ROOT" ] && rm -rf "$WEB_ROOT"
       [ -d "$PRIVATE_ROOT" ] && rm -rf "$PRIVATE_ROOT"
+      [ -d "$CLONE_ROOT" ] && rm -rf "$CLONE_ROOT"
       for f in "${BLDDIR}/${SITE_NAME}.sh" "${BLDDIR}/${SITE_NAME}".*.sh ; do
         [ -f "$f" ] && rm -f "$f"
       done
