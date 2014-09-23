@@ -258,8 +258,7 @@ function civibuild_clone_create() {
   fi
   cvutil_assertvars civibuild_clone_create CLONE_DIR CLONE_ID CMS_SQL CIVI_SQL
 
-  ## TODO: if [ CMS_SQL or CIVI_SQL is newer than $CLONE_DIR ] IS_NEW=1
-  if [ ! -d "$CLONE_DIR" ]; then
+  if [ ! -d "$CLONE_DIR" -o "$CMS_SQL" -nt "$CLONE_DIR/.mark" -o "$CMS_SQL" -nt "$CLONE_DIR/.mark" ]; then
     IS_NEW=1
   fi
 
@@ -271,6 +270,7 @@ function civibuild_clone_create() {
       _amp_install_clone civi CLONE_CIVI
       _amp_snapshot_restore CLONE_CIVI "$CIVI_SQL"
     popd >> /dev/null
+    touch "$CLONE_DIR/.mark"
   else
     #echo "[[Clone already exists ($CLONE_DIR). Snapshots appear unchanged. Use --force to re-create]]"
     echo "[[Clone already exists ($CLONE_DIR). Use --force to re-create]]"
