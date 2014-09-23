@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ba998cc84614a668dc2818c8b604432f",
+    "hash": "e69348e6eaea5086e7372643733e3735",
     "packages": [
         {
             "name": "brianium/habitat",
@@ -130,7 +130,7 @@
             ],
             "description": "Collection of scripts and data-files for testing CiviCRM upgrades",
             "homepage": "https://github.com/civicrm/civicrm-upgrade-test",
-            "time": "2014-08-20 09:26:06"
+            "time": "2014-08-20 08:31:34"
         },
         {
             "name": "d11wtq/boris",
@@ -172,12 +172,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/drush-ops/drush.git",
-                "reference": "46fb060b4984445faa5852b675f21206f2cbc983"
+                "reference": "d1d13676f5beacaa9f8619088fe3ae45ea28a6cf"
             },
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/drush-ops/drush/zipball/46fb060b4984445faa5852b675f21206f2cbc983",
-                "reference": "46fb060b4984445faa5852b675f21206f2cbc983",
+                "reference": "d1d13676f5beacaa9f8619088fe3ae45ea28a6cf",
                 "shasum": ""
             },
             "require": {
@@ -238,7 +238,7 @@
             ],
             "description": "Drush is a command line shell and scripting interface for Drupal, a veritable Swiss Army knife designed to make life easier for those of us who spend some of our working hours hacking away at the command prompt.",
             "homepage": "http://www.drush.org",
-            "time": "2014-09-18 01:49:25"
+            "time": "2013-10-26 07:40:45"
         },
         {
             "name": "joomlatools/joomla-console",
@@ -922,8 +922,7 @@
             "authors": [
                 {
                     "name": "Ben Ramsey",
-                    "homepage": "http://benramsey.com",
-                    "role": "Developer"
+                    "homepage": "http://benramsey.com"
                 }
             ],
             "description": "Provides functionality for array_column() to projects using PHP earlier than version 5.5.",

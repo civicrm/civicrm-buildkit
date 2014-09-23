@@ -11,7 +11,7 @@
   },
   "require": {
     "php": ">=5.3.3",
-    "drush/drush": "dev-master",
+    "drush/drush": "dev-master#d1d13676f5beacaa9f8619088fe3ae45ea28a6cf",
     "wp-cli/wp-cli": "0.17",
     "totten/amp": "dev-master",
     "totten/git-scan": "dev-master",
