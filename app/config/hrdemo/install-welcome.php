@@ -47,7 +47,7 @@ Some features to check out as you start exploring:
 <li>Review HR Reports from the <strong>Contact Reports</strong> menu.</li>
 </ul>
 
-Learn more and stay up to date about CiviHR by <strong><a href="https://civicrm.org/civicrm-blog-categories/civihr" target="_blank" title="CiviHR Blog - opens in a new window">reading or subscribing to the CiviHR blog</a></strong>. You can use the <strong><a href="http://forum.civicrm.org/index.php/board,87.0.html">CiviHR forum board</a></strong> to discuss CiviHR with other folks in the community.
+Learn more and stay up to date about CiviHR by <strong><a href="https://civicrm.org/civicrm-blog-categories/civihr" target="_blank" title="CiviHR Blog - opens in a new window">reading or subscribing to the CiviHR blog</a></strong>. You can use the <strong><a href="http://forum.civicrm.org/index.php/board,87.0.html" target="_blank">CiviHR forum board</a></strong> to discuss CiviHR with other folks in the community.
 
 Want to install your own copy of CiviHR? <a href="https://civicrm.org/extensions/civihr" target="_blank">Information about downloading and installation can be found here</a>.
 ';
