@@ -42,7 +42,7 @@ $node->body[$node->language][0]['value']   = '
  <li>Recruitment with an online job application process</li>
 </ul>
 
-For more information, please post your queries on the <strong><a href="http://forum.civicrm.org/index.php/board,87.0.html">CiviHR forum board</a></strong>. To stay updated about new developments in CiviHR, please subscribe to the <strong><a href="https://civicrm.org/civicrm-blog-categories/civihr" target="_blank" title="CiviHR Blog - opens in a new window">CiviHR blog</a></strong>.
+For more information, please post your queries on the <strong><a href="http://forum.civicrm.org/index.php/board,87.0.html" target="_blank">CiviHR forum board</a></strong>. To stay updated about new developments in CiviHR, please subscribe to the <strong><a href="https://civicrm.org/civicrm-blog-categories/civihr" target="_blank" title="CiviHR Blog - opens in a new window">CiviHR blog</a></strong>.
 
 Want to install your own copy of CiviHR? <a href="https://civicrm.org/extensions/civihr" target="_blank">Information about downloading and installation can be found here</a>.
 ';
