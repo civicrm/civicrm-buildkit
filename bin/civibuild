@@ -18,6 +18,7 @@ TMPDIR="$PRJDIR/app/tmp"
 BLDDIR="$PRJDIR/build"
 
 source "$PRJDIR/src/civibuild.lib.sh"
+source "$PRJDIR/src/civibuild.aliases.sh"
 cvutil_mkdir "$TMPDIR" "$BLDDIR" "$PRJDIR/app/private"
 
 ## Make sure bundled utilities are available, regardless of local config
@@ -334,6 +335,9 @@ case "$ACTION" in
     [ -z "$SITE_NAME" ] && civibuild_usage
     [ -z "$SITE_ID" ] && civibuild_usage
     shift
+
+    ## Convert certains aliases like "d45" into better defaults
+    civibuild_alias_resolve "$SITE_NAME"
 
     ## Load settings based in SITE_NAME / SITE_ID
     if [ -f "${BLDDIR}/${SITE_NAME}.sh" ]; then
