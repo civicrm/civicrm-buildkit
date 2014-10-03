@@ -23,7 +23,10 @@ cvutil_mkdir "$TMPDIR" "$BLDDIR" "$PRJDIR/app/private"
 
 ## Make sure bundled utilities are available, regardless of local config
 export PATH="$BINDIR:$PATH"
-civi-download-tools --quiet
+
+if [ -z "$OFFLINE" ]; then
+  civi-download-tools --quiet
+fi
 
 ###############################################################################
 ## Display usage message
