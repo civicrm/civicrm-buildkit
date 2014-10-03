@@ -475,17 +475,22 @@ EOF
 ###############################################################################
 ## Generate a "setup.conf" file
 function civicrm_make_setup_conf() {
-  cvutil_assertvars civicrm_make_setup_conf CIVI_CORE CIVI_UF CIVI_DB_NAME CIVI_DB_USER CIVI_DB_PASS
+  cvutil_assertvars civicrm_make_setup_conf PRJDIR CMS_ROOT CIVI_CORE CIVI_UF CIVI_DB_NAME CIVI_DB_USER CIVI_DB_PASS
 
   cat > "$CIVI_CORE/bin/setup.conf" << EOF
+    ## INFRA-114
+    PRJDIR="$PRJDIR"
+    CMS_ROOT="$CMS_ROOT"
+    eval \`\$PRJDIR/bin/amp export --root="\$CMS_ROOT" -Ncivi\`
+    DBNAME="\$AMP_DB_NAME"
+    DBUSER="\$AMP_DB_USER"
+    DBPASS="\$AMP_DB_PASS"
+    DBHOST="\$AMP_DB_HOST"
+    DBPORT="\$AMP_DB_PORT"
+    ##
     SVNROOT="$CIVI_CORE"
     CIVISOURCEDIR="$CIVI_CORE"
     SCHEMA=schema/Schema.xml
-    DBNAME="$CIVI_DB_NAME"
-    DBUSER="$CIVI_DB_USER"
-    DBPASS="$CIVI_DB_PASS"
-    DBHOST="$CIVI_DB_HOST"
-    DBPORT="$CIVI_DB_PORT"
     DBARGS=""
     PHP5PATH=
     DBLOAD="$DBLOAD"
