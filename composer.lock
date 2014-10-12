@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e69348e6eaea5086e7372643733e3735",
+    "hash": "eb4b76dcdaa0999c5f2a86fb4f8210b6",
     "packages": [
         {
             "name": "brianium/habitat",
@@ -176,7 +176,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drush-ops/drush/zipball/46fb060b4984445faa5852b675f21206f2cbc983",
+                "url": "https://api.github.com/repos/drush-ops/drush/zipball/d1d13676f5beacaa9f8619088fe3ae45ea28a6cf",
                 "reference": "d1d13676f5beacaa9f8619088fe3ae45ea28a6cf",
                 "shasum": ""
             },
@@ -187,8 +187,7 @@
                 "symfony/yaml": "~2.2"
             },
             "require-dev": {
-                "phpunit/phpunit": ">=3.5",
-                "symfony/process": "2.4.5"
+                "phpunit/phpunit": ">=3.5"
             },
             "bin": [
                 "drush",
@@ -197,14 +196,9 @@
                 "drush.complete.sh"
             ],
             "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Drush": "lib/"
-                }
-            },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "GPL-2.0+"
+                "GPLv2"
             ],
             "authors": [
                 {
@@ -233,7 +227,8 @@
                 },
                 {
                     "name": "Jonathan Hedstrom",
-                    "email": "jhedstrom@gmail.com"
+                    "email": "jhedstrom@gmail.com",
+                    "homepage": "http://professorbikeybike.com"
                 }
             ],
             "description": "Drush is a command line shell and scripting interface for Drupal, a veritable Swiss Army knife designed to make life easier for those of us who spend some of our working hours hacking away at the command prompt.",
@@ -1388,12 +1383,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/totten/amp.git",
-                "reference": "3262d51f8a2caed65acea7fbdedb0a80bf9ee970"
+                "reference": "8dc281d654514c7bd27f115ceb294b30603671fb"
             },
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/totten/amp/zipball/3262d51f8a2caed65acea7fbdedb0a80bf9ee970",
-                "reference": "3262d51f8a2caed65acea7fbdedb0a80bf9ee970",
+                "reference": "8dc281d654514c7bd27f115ceb294b30603671fb",
                 "shasum": ""
             },
             "require": {
@@ -1428,7 +1423,7 @@
             ],
             "description": "CLI Interface to *AMP-style stacks",
             "homepage": "https://github.com/totten/amp",
-            "time": "2014-09-18 04:13:17"
+            "time": "2014-10-12 18:49:36"
         },
         {
             "name": "totten/git-scan",
@@ -1585,9 +1580,7 @@
             "time": "2014-09-12 00:49:44"
         }
     ],
-    "packages-dev": [
-
-    ],
+    "packages-dev": [],
     "aliases": [
         {
             "alias": "0.7",
@@ -1614,7 +1607,5 @@
     "platform": {
         "php": ">=5.3.3"
     },
-    "platform-dev": [
-
-    ]
+    "platform-dev": []
 }
