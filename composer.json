@@ -13,7 +13,7 @@
     "php": ">=5.3.3",
     "drush/drush": "dev-master#d1d13676f5beacaa9f8619088fe3ae45ea28a6cf",
     "wp-cli/wp-cli": "0.17",
-    "totten/amp": "dev-master",
+    "totten/amp": "dev-master#8dc281d654514c7bd27f115ceb294b30603671fb",
     "totten/git-scan": "dev-master",
     "civicrm/upgrade-test": "0.3",
     "brianium/paratest": "dev-batching as 0.7",
