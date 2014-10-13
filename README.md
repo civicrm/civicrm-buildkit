@@ -65,6 +65,7 @@ For example, at time of writing, it includes:
  * *drupal-demo*: A demo site running Drupal and CiviCRM
  * *wp-demo*: A demo site running WordPress and CiviCRM
  * *symfony*: An experimental hybrid site running Drupal 7, Symfony 2, and CiviCRM
+ * *extdir*: A mock website akin to civicrm.org/extdir/ . Useful testing the extension download process.
 
 For a list of available build-types as well as documentation on writing build scripts,
 see [app/config](app/config).
