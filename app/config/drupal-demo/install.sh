@@ -38,8 +38,8 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   ## Setup CiviCRM
   echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign"]}' \
     | drush cvapi setting.create --in=json
-  drush cvapi setting.create versionCheck=0
-  drush cvapi MailSettings.create id=1 is_default=1 domain=example.org
+  drush cvapi setting.create versionCheck=0 debug=1
+  drush cvapi MailSettings.create id=1 is_default=1 domain=example.org debug=1
 
   ## Setup theme
   #above# drush -y en garland
@@ -79,7 +79,7 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   done
 
   ## Setup CiviVolunteer
-  drush -y cvapi extension.install key=org.civicrm.volunteer
+  drush -y cvapi extension.install key=org.civicrm.volunteer debug=1
   drush -y role-add-perm 'anonymous user' 'register to volunteer'
 
   ## Setup CiviCRM dashboards
