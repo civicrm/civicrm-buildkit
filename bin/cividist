@@ -1,0 +1,145 @@
+#!/bin/bash
+set -e
+
+###############################################################################
+## Variables and constants
+MAX_AGE=${MAX_AGE:-14}
+MAX_REFS=${MAX_REFS:-10000}
+GIT_REMOTE=${GIT_REMOTE:-origin}
+PRJ=${PRJ:-.}
+SRC=${SRC:-$PRJ/src}
+TARS=${TARS:-$PRJ/out/tar}
+BY_DATE=${BY_DATE:-$PRJ/web/by-date}
+BY_HASH=${BY_HASH:-$PRJ/web/by-hash}
+DATE=$( date '+%Y-%m-%d' )
+
+###############################################################################
+## Fetch the latest code
+function cividist_update() {
+  git scan foreach -c "pwd; git fetch $GIT_REMOTE"
+  pushd l10n
+    svn up
+  popd
+}
+
+###############################################################################
+## Prepare any tarballs
+##
+## Find refs ("4.4", "4.4.7", "master", etc) in the main civicrm repository.
+## Checkout the corresponding refs across all repos and run distmaker.
+## Put the output files in $BY_HASH and $BY_DATE.
+function cividist_build() {
+  git show-ref | grep "\(refs/remotes/$GIT_REMOTE/\|refs/tags/\)" | head -n$MAX_REFS | while read COMMIT REF ; do
+    git scan foreach -c "pwd; git checkout . ; git clean -f -d"
+    if ./bin/givi checkout $REF; then
+      ## FIXME: Should compute separate hashes for each combo of (civi-ver,cms,cms-major-ver)
+      local hash=$(git scan hash)
+      local refname=$(basename $REF)
+
+      if [ -d "$BY_HASH/$hash" ]; then
+        echo "[$DATE $REF] Found hash $hash" 1>&2
+      else
+        echo "[$DATE $REF] Building hash $hash]" 1>&2
+        mkdir "$BY_HASH/$hash"
+        sleep 5
+        pushd distmaker >> /dev/null
+          if env DM_TARGETDIR="$BY_HASH/$hash" DM_REF_CORE="$REF" DM_VERSION_SUFFIX="-$DATE" ./distmaker.sh all ; then
+            echo "[$DATE $REF] Built hash $hash" 1>&2
+          else
+            echo "[$DATE $REF] Build failed for hash $hash" 1>&2
+          fi
+        popd >> /dev/null
+      fi
+
+      if [ -d "$BY_DATE/$DATE/$refname" ]; then
+        echo "[$DATE $REF] Found $DATE/$refname" 1>&2
+      else
+        echo "[$DATE $REF] Initialize $DATE/$refname from $hash" 1>&2
+        mkdir -p "$BY_DATE/$DATE/$refname"
+        ln -s "$BY_HASH/$hash"/* "$BY_DATE/$DATE/$refname/"
+      fi
+    else
+      echo "[$DATE $REF] Checkout failed" 1>&2
+    fi
+  done
+
+  ## Update "latest" symlink
+  [ -L "$BY_DATE/latest" ] && rm -f "$BY_DATE/latest"
+  [ ! -e "$BY_DATE/latest" ] && ln -s "$BY_DATE/$DATE" "$BY_DATE/latest"
+}
+
+###############################################################################
+## Delete old tarballs and symlinks
+
+function cividist_prune() {
+  echo "[Prune old symlinks]"
+  find "$BY_DATE" -mtime +$MAX_AGE -type l | while read FILE ; do
+    echo " - $FILE"
+    rm -f "$FILE"
+  done
+
+  echo "[Prune orphans]"
+  find-symlink-tree-orphans "$BY_HASH" "$BY_DATE" | while read ORPHAN ; do
+    echo " - $ORPHAN"
+    rm -f $ORPHAN
+  done
+
+  echo "[Prune empty directories]"
+  find "$BY_DATE" "$BY_HASH" -type d -empty | while read DIR ; do
+    echo " - $DIR"
+    rmdir $DIR
+  done
+}
+
+###############################################################################
+function cividist_help() {
+  echo "Maintain a rotating list of nightly tarballs"
+  echo "usage: $(basename $0) <update|build|prune>"
+  echo " - update: Fetch latest code from git"
+  echo " - build: Generate tarballs for any new/modified branches/tags"
+  echo " - prune: Remove any old/orphaned tarballs"
+}
+
+###############################################################################
+## Main
+
+if [ -z "$1" ]; then
+  cividist_help
+  exit 0
+fi
+
+if [ ! -d "$SRC/distmaker" -o ! -d "$TARS" ]; then
+  echo "Please prepare a 'dist' folder using buildkit and run the command within that folder."
+  exit
+fi
+
+## Finesse the path variables
+PRJ=$(realpath "$PRJ")
+SRC=$(realpath "$SRC")
+TARS=$(realpath "$TARS")
+[ ! -d "$BY_DATE" ] && mkdir -p "$BY_DATE"
+BY_DATE=$(realpath "$BY_DATE")
+[ ! -d "$BY_HASH" ] && mkdir -p "$BY_HASH"
+BY_HASH=$(realpath "$BY_HASH")
+
+## Main loop
+pushd $SRC >> /dev/null
+  while [ -n "$1" ]; do
+    case "$1" in
+      update)
+        cividist_update
+        ;;
+      build)
+        cividist_build
+        ;;
+      prune)
+        cividist_prune
+        ;;
+      *)
+        cividist_help
+        exit 1
+        ;;
+    esac
+    shift
+  done
+popd >> /dev/null
