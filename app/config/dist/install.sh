@@ -2,6 +2,8 @@
 
 ## install.sh -- Create config files and databases; fill the databases
 
+CMS_ROOT="$WEB_ROOT/web"
+
 ###############################################################################
 ## Create virtual-host and databases
 
@@ -17,6 +19,9 @@ cat > "$WEB_ROOT/src/distmaker/distmaker.conf" <<EODIST
 [ -z "\$DM_TMPDIR" ]      && DM_TMPDIR=$WEB_ROOT/out/tmp
 [ -z "\$DM_TARGETDIR" ]   && DM_TARGETDIR=$WEB_ROOT/out/tar
 [ -z "\$DM_VERSION" ]     && DM_VERSION=\$( php -r '\$x=simplexml_load_file("../xml/version.xml"); echo \$x->version_no;' )
+## distmaker.conf gets loaded multiple times, but we only want suffix applied once
+DM_VERSION=\${DM_VERSION}\${DM_VERSION_SUFFIX}
+export DM_VERSION_SUFFIX=
 
 DM_PHP=php
 DM_RSYNC=rsync
