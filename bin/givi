@@ -631,7 +631,10 @@ class Givi {
     if ($this->dryRun) {
       $r = NULL;
     } else {
-      $r = system($command);
+      $r = system($command, $exit_code);
+      if ($exit_code) {
+        throw new RuntimeException("Command [$command] exited abnormally [$exit_code]");
+      }
     }
 
     $this->dirStack->pop();
@@ -767,7 +770,10 @@ class HttpClient {
       $command .= ' ' . escapeshellarg($arg);
     }
     printf("\n\n\nRUN: %s\n", $command);
-    $r = system($command);
+    $r = system($command, $exit_code);
+    if ($exit_code) {
+      throw new RuntimeException("Command [$command] exited abnormally [$exit_code]");
+    }
 
     return $r;
   }
