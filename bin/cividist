@@ -29,7 +29,7 @@ function cividist_update() {
 ## Checkout the corresponding refs across all repos and run distmaker.
 ## Put the output files in $BY_HASH and $BY_DATE.
 function cividist_build() {
-  git show-ref | grep "\(refs/remotes/$GIT_REMOTE/\|refs/tags/\)" | head -n$MAX_REFS | while read COMMIT REF ; do
+  for REF in "$@" ; do
     git scan foreach -c "pwd; git checkout . ; git clean -f -d"
     if ./bin/givi checkout $REF; then
       ## FIXME: Should compute separate hashes for each combo of (civi-ver,cms,cms-major-ver)
@@ -94,10 +94,20 @@ function cividist_prune() {
 ###############################################################################
 function cividist_help() {
   echo "Maintain a rotating list of nightly tarballs"
-  echo "usage: $(basename $0) <update|build|prune>"
-  echo " - update: Fetch latest code from git"
-  echo " - build: Generate tarballs for any new/modified branches/tags"
-  echo " - prune: Remove any old/orphaned tarballs"
+  echo
+  echo "Fetch latest code from git"
+  echo "usage: $(basename $0) update"
+  echo
+  echo "Generate tarballs for any inputted branches/tags"
+  echo "usage: $(basename $0) build [refspec1 [refspec2...]]"
+  echo "example: $(basename $0) build 4.4.0 4.4.1 origin/4.4"
+  echo "example:"
+  echo "    git show-ref | grep refs/tags | while read COMMIT REF; do"
+  echo "      $(basename $0) build \$REF"
+  echo "    done"
+  echo
+  echo "Remove any old/orphaned tarballs"
+  echo "usage: $(basename $0) prune"
 }
 
 ###############################################################################
@@ -124,22 +134,20 @@ BY_HASH=$(realpath "$BY_HASH")
 
 ## Main loop
 pushd $SRC >> /dev/null
-  while [ -n "$1" ]; do
-    case "$1" in
-      update)
-        cividist_update
-        ;;
-      build)
-        cividist_build
-        ;;
-      prune)
-        cividist_prune
-        ;;
-      *)
-        cividist_help
-        exit 1
-        ;;
-    esac
-    shift
-  done
+  case "$1" in
+    update)
+      cividist_update
+      ;;
+    build)
+      shift
+      cividist_build "$@"
+      ;;
+    prune)
+      cividist_prune
+      ;;
+    *)
+      cividist_help
+      exit 1
+      ;;
+  esac
 popd >> /dev/null
