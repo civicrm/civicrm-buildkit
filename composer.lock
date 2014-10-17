@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "eb4b76dcdaa0999c5f2a86fb4f8210b6",
+    "hash": "d96ce7367f4aef70ab743dcac6e29be7",
     "packages": [
         {
             "name": "brianium/habitat",
@@ -130,7 +130,7 @@
             ],
             "description": "Collection of scripts and data-files for testing CiviCRM upgrades",
             "homepage": "https://github.com/civicrm/civicrm-upgrade-test",
-            "time": "2014-08-20 08:31:34"
+            "time": "2014-08-20 09:26:06"
         },
         {
             "name": "d11wtq/boris",
@@ -176,7 +176,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drush-ops/drush/zipball/d1d13676f5beacaa9f8619088fe3ae45ea28a6cf",
+                "url": "https://api.github.com/repos/drush-ops/drush/zipball/46fb060b4984445faa5852b675f21206f2cbc983",
                 "reference": "d1d13676f5beacaa9f8619088fe3ae45ea28a6cf",
                 "shasum": ""
             },
@@ -187,7 +187,8 @@
                 "symfony/yaml": "~2.2"
             },
             "require-dev": {
-                "phpunit/phpunit": ">=3.5"
+                "phpunit/phpunit": ">=3.5",
+                "symfony/process": "2.4.5"
             },
             "bin": [
                 "drush",
@@ -196,9 +197,14 @@
                 "drush.complete.sh"
             ],
             "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Drush": "lib/"
+                }
+            },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "GPLv2"
+                "GPL-2.0+"
             ],
             "authors": [
                 {
@@ -227,8 +233,7 @@
                 },
                 {
                     "name": "Jonathan Hedstrom",
-                    "email": "jhedstrom@gmail.com",
-                    "homepage": "http://professorbikeybike.com"
+                    "email": "jhedstrom@gmail.com"
                 }
             ],
             "description": "Drush is a command line shell and scripting interface for Drupal, a veritable Swiss Army knife designed to make life easier for those of us who spend some of our working hours hacking away at the command prompt.",
@@ -917,7 +922,8 @@
             "authors": [
                 {
                     "name": "Ben Ramsey",
-                    "homepage": "http://benramsey.com"
+                    "homepage": "http://benramsey.com",
+                    "role": "Developer"
                 }
             ],
             "description": "Provides functionality for array_column() to projects using PHP earlier than version 5.5.",
@@ -1431,12 +1437,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/totten/git-scan.git",
-                "reference": "83b7269637a183c696238988de3ff10fcf52086a"
+                "reference": "495f9ee8db337b3903929a6bf713f6b427e99d8e"
             },
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/totten/git-scan/zipball/83b7269637a183c696238988de3ff10fcf52086a",
-                "reference": "83b7269637a183c696238988de3ff10fcf52086a",
+                "reference": "495f9ee8db337b3903929a6bf713f6b427e99d8e",
                 "shasum": ""
             },
             "require": {
@@ -1469,7 +1475,7 @@
                 }
             ],
             "description": "CLI tool for scanning/updating git repos",
-            "time": "2014-09-18 05:12:23"
+            "time": "2014-10-17 22:15:37"
         },
         {
             "name": "wp-cli/php-cli-tools",

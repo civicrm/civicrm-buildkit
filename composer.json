@@ -14,7 +14,7 @@
     "drush/drush": "dev-master#d1d13676f5beacaa9f8619088fe3ae45ea28a6cf",
     "wp-cli/wp-cli": "0.17",
     "totten/amp": "dev-master#8dc281d654514c7bd27f115ceb294b30603671fb",
-    "totten/git-scan": "dev-master",
+    "totten/git-scan": "dev-master#495f9ee8db337b3903929a6bf713f6b427e99d8e",
     "civicrm/upgrade-test": "0.3",
     "brianium/paratest": "dev-batching as 0.7",
     "phpunit/phpunit": "3.7.27",

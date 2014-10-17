@@ -1,0 +1,99 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * usage: find-symlink-tree-orphans <datadir> <symlinkdir>
+ *
+ * Suppose $datadir contains a bunch of files and $symlinkdir
+ * contains references to those files. Orphans are files in
+ * $datadir which don't have a corresponding link from
+ * $symlinkdir.
+ *
+ * @param array $argv
+ * @return int exit code
+ */
+function main($argv) {
+  $options = parse_argv($argv);
+  $links = find_symlinks($options['symdir']);
+  $orphans = find_orphans($options['datadir'], $links);
+  foreach ($orphans as $orphan) {
+    echo $orphan;
+    echo "\n";
+  }
+  return 0;
+}
+
+/**
+ * @param array $argv
+ * @return array with keys "datadir", "symdir"
+ */
+function parse_argv($argv) {
+  $options = array(
+    'datadir' => @$argv[1],
+    'symdir' => @$argv[2]
+  );
+
+  if (empty($options['datadir']) || !is_dir($options['datadir'])) {
+    fatal("Argument 1 should be datadir\n");
+  }
+
+  if (empty($options['symdir']) || !is_dir($options['symdir'])) {
+    fatal("Argument 2 should be symdir\n");
+  }
+
+  return $options;
+}
+
+/**
+ * @return array (string $from => string $to)
+ */
+function find_symlinks($dir) {
+  $links = array(); // (string $from => string $to)
+
+  $files = new RecursiveIteratorIterator(
+    new RecursiveDirectoryIterator($dir),
+    RecursiveIteratorIterator::LEAVES_ONLY
+  );
+  foreach ($files as $file) {
+    if (is_link($file)) {
+      $links[(string)$file] = realpath($file);
+    }
+  }
+
+  return $links;
+}
+
+/**
+ * Build a list of files in $dir which are not
+ * referenced by $inbound.
+ *
+ * @param string $dir
+ * @param array $inbound
+ * @return array (string $path)
+ */
+function find_orphans($datadir, $inbound) {
+  $files = new RecursiveIteratorIterator(
+    new RecursiveDirectoryIterator($datadir),
+    RecursiveIteratorIterator::LEAVES_ONLY
+  );
+  $orphans = array();
+  foreach ($files as $file) {
+    if (is_file($file)) {
+      $inbound_pos = array_search(realpath($file), $inbound);
+      if ($inbound_pos === FALSE) {
+        $orphans[] = (string)$file;
+      } else {
+        // performance - future array_search() will never need to match again
+        unset($inbound[$inbound_pos]);
+      }
+    }
+  }
+  return $orphans;
+}
+
+function fatal($msg, $code = 1) {
+  fwrite(STDERR, $msg);
+  exit($code);
+}
+
+exit(main($argv));
