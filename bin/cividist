@@ -111,6 +111,11 @@ function cividist_help() {
 }
 
 ###############################################################################
+function cividist_realpath() {
+  env RP="$1" php -r "echo realpath(getenv('RP'));"
+}
+
+###############################################################################
 ## Main
 
 if [ -z "$1" ]; then
@@ -124,13 +129,13 @@ if [ ! -d "$SRC/distmaker" -o ! -d "$TARS" ]; then
 fi
 
 ## Finesse the path variables
-PRJ=$(realpath "$PRJ")
-SRC=$(realpath "$SRC")
-TARS=$(realpath "$TARS")
+PRJ=$(cividist_realpath "$PRJ")
+SRC=$(cividist_realpath "$SRC")
+TARS=$(cividist_realpath "$TARS")
 [ ! -d "$BY_DATE" ] && mkdir -p "$BY_DATE"
-BY_DATE=$(realpath "$BY_DATE")
+BY_DATE=$(cividist_realpath "$BY_DATE")
 [ ! -d "$BY_HASH" ] && mkdir -p "$BY_HASH"
-BY_HASH=$(realpath "$BY_HASH")
+BY_HASH=$(cividist_realpath "$BY_HASH")
 
 ## Main loop
 pushd $SRC >> /dev/null
