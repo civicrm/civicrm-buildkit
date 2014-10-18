@@ -1,7 +1,6 @@
 # civicrm-buildkit (experimental)
 
-civicrm-buildkit is a collection of tools and scripts for preparing a useful
-CiviCRM development environment.
+A collection of tools and scripts for creating one or more CiviCRM development/demo/testing environments.
 
 ## Requirements
 
@@ -119,13 +118,13 @@ There are four variations on rebuilding. In order of fastest (least thorough) to
   </tr>
 </table>
 
-## Daily Coding: Your First Patch
+## Daily Coding: Your First Pull-Request
 
 (TODO: Write a real tutorial!)
 
 Suppose we've just downloaded buildkit and want to prepare a patch for
-CiviCRM 4.5.  This requires downloading and installing the bleeding edge
-(4.5.x) code for CiviCRM+CMS as well as writing and publishing the patch.
+CiviCRM 4.6.  This requires downloading and installing the bleeding edge
+(4.6.x) code for CiviCRM+CMS as well as writing and publishing the patch.
 
 ```bash
 ## Download Drupal 7.x and CiviCRM 4.5.x
