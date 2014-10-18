@@ -1,4 +1,4 @@
-# civicrm-buildkit (experimental)
+# civicrm-buildkit
 
 A collection of tools and scripts for creating one or more CiviCRM development/demo/testing environments.
 
