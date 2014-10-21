@@ -34,6 +34,8 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   drush -y updatedb
   drush -y en civicrm toolbar locale garland
+  ## disable annoying/unneeded modules
+  drush -y dis overlay
 
   ## Setup theme
   #above# drush -y en garland
