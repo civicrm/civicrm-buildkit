@@ -34,6 +34,8 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   drush -y updatedb
   drush -y en civicrm toolbar locale garland login_destination userprotect
+  ## disable annoying/unneeded modules
+  drush -y dis overlay
 
   ## Setup CiviCRM
   echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign"]}' \
