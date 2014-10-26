@@ -11,6 +11,7 @@ array_shift($files);
 
 foreach ($files as $file) {
   $content = file_get_contents($file);
-  $content = str_replace($sep, '&#x0001;', $content);
+  #$content = str_replace($sep, '&#x0001;', $content);
+  $content = str_replace($sep, '', $content);
   file_put_contents($file, $content);
 }
