@@ -112,7 +112,6 @@ check_command php
 check_command mysql
 check_command mysqldump
 check_command git
-check_command svn
 check_command tar
 check_command bzip2
 check_command gzip
