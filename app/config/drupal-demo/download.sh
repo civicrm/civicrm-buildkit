@@ -19,5 +19,3 @@ cat "$SITE_CONFIG_DIR/drush.make.tmpl" \
   > "$MAKEFILE"
 
 drush -y make --working-copy "$MAKEFILE" "$WEB_ROOT"
-
-svn_cache_clone "$CACHE_DIR/civicrm/l10n-trunk.svn" "$WEB_ROOT/sites/all/modules/civicrm/l10n"
