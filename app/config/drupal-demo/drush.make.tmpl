@@ -43,12 +43,12 @@ libraries[civicrmpackages][overwrite] = TRUE
 ; libraries[civicrm_l10n][download][url] = "https://raw.github.com/civicrm/l10n/master/po/fr_CA/civicrm.mo"
 ; libraries[civicrm_l10n][overwrite] = TRUE
 
-; Overwrite .mo files with latest version from SVN
-; libraries[civicrm_l10n_latest][destination] = modules
-; libraries[civicrm_l10n_latest][directory_name] = civicrm/l10n
-; libraries[civicrm_l10n_latest][download][type] = svn
-; libraries[civicrm_l10n_latest][download][url] = http://svn.civicrm.org/l10n/trunk/
-; libraries[civicrm_l10n_latest][overwrite] = TRUE
+; Overwrite .mo files with latest versions
+libraries[civicrm_l10n_latest][destination] = modules
+libraries[civicrm_l10n_latest][directory_name] = civicrm/l10n
+libraries[civicrm_l10n_latest][download][type] = get
+libraries[civicrm_l10n_latest][download][url] = http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
+libraries[civicrm_l10n_latest][overwrite] = TRUE
 
 libraries[civicrm][destination] = modules
 libraries[civicrm][directory_name] = civicrm
@@ -110,9 +110,3 @@ libraries[civivolunteer][download][type] = git
 libraries[civivolunteer][download][url] = %%CACHE_DIR%%/civicrm/civivolunteer.git
 libraries[civivolunteer][download][branch] = %%VOL_VERSION%%
 libraries[civivolunteer][overwrite] = TRUE
-
-libraries[l10n][destination] = modules
-libraries[l10n][directory_name] = civicrm/l10n
-libraries[l10n][download][type] = get
-libraries[l10n][download][url] = http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
-libraries[l10n][overwrite] = TRUE
