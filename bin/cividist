@@ -55,7 +55,7 @@ function cividist_validate() {
 function cividist_build() {
   for REF in "$@" ; do
     git scan foreach -c "pwd; git checkout . ; git clean -f -d"
-    if ./bin/givi checkout $REF; then
+    if givi checkout $REF; then
       ## FIXME: Should compute separate hashes for each combo of (civi-ver,cms,cms-major-ver)
       local hash=$(git scan hash)
       local refname=$(basename $REF)
@@ -65,7 +65,6 @@ function cividist_build() {
       else
         echo "[$DATE $REF] Building hash $hash]" 1>&2
         mkdir "$BY_HASH/$hash"
-        sleep 5
         pushd distmaker >> /dev/null
           if env DM_TARGETDIR="$BY_HASH/$hash" DM_REF_CORE="$REF" DM_VERSION_SUFFIX="-$DATE" ./distmaker.sh all ; then
             echo "[$DATE $REF] Built hash $hash" 1>&2
