@@ -12,14 +12,38 @@ TARS=${TARS:-$PRJ/out/tar}
 BY_DATE=${BY_DATE:-$PRJ/web/by-date}
 BY_HASH=${BY_HASH:-$PRJ/web/by-hash}
 DATE=$( date '+%Y-%m-%d' )
+## #minutes before redownloading L10n (12*60=720 min)
+L10N_TTL=720
+L10N_URL=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
+L10N_EXAMPLE=fr_FR
 
 ###############################################################################
 ## Fetch the latest code
 function cividist_update() {
   git scan foreach -c "pwd; git fetch $GIT_REMOTE"
-  pushd l10n
-    svn up
-  popd
+  if cividist_l10n_is_current ; then
+    echo "[l10n] Appears recent (less than $L10N_TTL minutes old)" 1>&2
+  else
+    echo "[l10n] Appears stale (more than $L10N_TTL minutes old). Updating." 1>&2
+
+    L10N_TMP=$(mktemp.php)
+    rm -f "$L10N_TMP"
+    download_url "$L10N_URL" "$L10N_TMP"
+
+    rm -rf l10n
+    tar xzf "$L10N_TMP"
+    touch l10n
+    rm -f "$L10N_TMP"
+  fi
+}
+
+###############################################################################
+## Make sure the build looks normal
+function cividist_validate() {
+  if [ ! -d "l10n/$L10N_EXAMPLE" ]; then
+    echo "[l10n] Appears invalid. Missing common language ($L10N_EXAMPLE)." 1>&2
+    exit 1
+  fi
 }
 
 ###############################################################################
@@ -116,6 +140,31 @@ function cividist_realpath() {
 }
 
 ###############################################################################
+## usage: if cividist_l10n_is_current ; then echo "All good" ; else "Oh noes!" ; fi
+function cividist_l10n_is_current() {
+  if [ ! -d l10n ]; then
+    return 2
+  fi
+  if test `find -mindepth 1 -maxdepth 1 -type d -name l10n -mmin +$L10N_TTL` ; then
+    return 1
+  fi
+  return 0
+}
+
+###############################################################################
+## usage: download_url <url> <out-file>
+function download_url() {
+  #php -r "echo file_get_contents('$1');" > $2
+  if which wget >> /dev/null ; then
+    wget -O "$2" "$1"
+  elif which curl >> /dev/null ; then
+    curl -L -o "$2" "$1"
+  else
+    echo "error: failed to locate curl or wget"
+  fi
+}
+
+###############################################################################
 ## Main
 
 if [ -z "$1" ]; then
@@ -142,8 +191,10 @@ pushd $SRC >> /dev/null
   case "$1" in
     update)
       cividist_update
+      cividist_validate
       ;;
     build)
+      cividist_validate
       shift
       cividist_build "$@"
       ;;

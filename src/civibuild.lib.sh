@@ -201,6 +201,51 @@ EOF
 }
 
 ###############################################################################
+## usage: http_download <url> <local-file>
+function http_download() {
+  #php -r "echo file_get_contents('$1');" > $2
+  if which wget >> /dev/null ; then
+    timeout.php $SCM_TIMEOUT wget -O "$2" "$1"
+  elif which curl >> /dev/null ; then
+    timeout.php $SCM_TIMEOUT curl -L -o "$2" "$1"
+  else
+    echo "error: failed to locate curl or wget"
+  fi
+}
+
+## usage: http_cache_setup <url> <local-file> [<ttl-minutes>]
+function http_cache_setup() {
+  local url="$1"
+  local cachefile="$2"
+  local lock="${cachefile}.lock"
+  local lastrun="${cachefile}.lastrun"
+  local ttl=${3:-$CACHE_TTL}
+
+  if [ -f "$cachefile" -a -f "$lastrun" ]; then
+    if php -r 'exit($argv[1] + file_get_contents($argv[2]) < time() ? 1 : 0);' "$ttl" "$lastrun" ; then
+      echo "SKIP: http_cache_setup '$url' $cachefile' (recently updated; ttl=$ttl)"
+      return
+    fi
+  fi
+
+  cvutil_makeparent "$lock"
+  if pidlockfile.php "$lock" $$ $CACHE_LOCK_WAIT ; then
+    php -r 'echo time();' > $lastrun
+    if [ ! -f "$cachefile" -o -z "$OFFLINE" ]; then
+      echo "[[Update HTTP cache: $url => $cachefile]]"
+      cvutil_makeparent "$cachefile"
+      http_download "$url" "$cachefile"
+    else
+      echo "[[Offline mode. Skip cache update: $cachefile]]"
+    fi
+
+    rm -f "$lock"
+  else
+    echo "ERROR: http_cache_setup '$url' '$cachdir': failed to acquire lock"
+  fi
+}
+
+###############################################################################
 ## Setup HTTP and MySQL services
 ## This outputs several variables: CMS_URL, CMS_DB_*, CIVI_DB_*, and TEST_DB_*
 function amp_install() {
