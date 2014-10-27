@@ -313,6 +313,7 @@ function civibuild_clone_import() {
 function civibuild_clone_show() {
   cvutil_assertvars civibuild_clone_show SITE_NAME SITE_ID CLONE_ID
   cvutil_summary "[[Show clone summary ($SITE_NAME/$SITE_ID/$CLONE_ID)]]" \
+    CLONE_DIR \
     CLONE_CMS_DB_DSN \
     CLONE_CIVI_DB_DSN
 }

@@ -31,10 +31,19 @@ if (is_numeric(getenv('TEST_TOKEN'))) {
     if (empty($vars)) {
       throw new RuntimeException("Call to [$cmd] failed: " . implode("\n", $output));
     }
+
+    $cmd = sprintf("amp datadir %s", escapeshellarg($vars['CLONE_DIR'] . '/templates_c'));
+    exec($cmd, $datadir_output, $datadir_ret);
+    if ($datadir_ret) {
+      throw new RuntimeException("Call to [$cmd] failed: " . implode("\n", $datadir_output));
+    }
+
     return $vars;
   }
 
   $cloneVars = _civibuild_clone_create(getenv('TEST_TOKEN'));
   define('CIVICRM_DSN', $cloneVars['CLONE_CIVI_DB_DSN']);
   define('CIVICRM_UF_DSN', $cloneVars['CLONE_CMS_DB_DSN']);
+  // If a test-case is aggressive about smarty cleanups, then it can interfere with concurrent procs
+  define('CIVICRM_TEMPLATE_COMPILEDIR', $cloneVars['CLONE_DIR'] . '/templates_c');
 }
