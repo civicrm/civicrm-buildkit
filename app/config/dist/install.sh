@@ -10,7 +10,7 @@ CMS_ROOT="$WEB_ROOT/web"
 amp_install
 
 ###############################################################################
-cvutil_mkdir "$WEB_ROOT/out" "$WEB_ROOT/out/gen" "$WEB_ROOT/out/tmp" "$WEB_ROOT/out/tar"
+cvutil_mkdir "$WEB_ROOT/out" "$WEB_ROOT/out/gen" "$WEB_ROOT/out/tmp" "$WEB_ROOT/out/tar" "$WEB_ROOT/out/config"
 
 cat > "$WEB_ROOT/src/distmaker/distmaker.conf" <<EODIST
 #!/bin/bash
@@ -46,3 +46,13 @@ DM_REF_PACKAGES=\${DM_REF_DIRNAME}\${DM_REF_BASENAME}
 
 EODIST
 
+# create a minimal civicrm.settings.php file; needed for joomla's xml-generation script
+cat > "$WEB_ROOT/out/config/civicrm.settings.php" << EOSETTING
+<?php
+define('CIVICRM_GETTEXT_RESOURCEDIR', '$WEB_ROOT/src/l10n/');
+define('CIVICRM_UF', 'Drupal');
+global \$civicrm_root;
+\$civicrm_root = '$WEB_ROOT/src';
+?>
+EOSETTING
+echo "<?php define('CIVICRM_CONFDIR', '$WEB_ROOT/out/config'); ?>" > "$WEB_ROOT/src/settings_location.php"
