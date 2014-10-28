@@ -17,6 +17,9 @@ L10N_TTL=720
 L10N_URL=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
 L10N_EXAMPLE=fr_FR
 
+## If we make substantive changes to build process, then increment HASH_SUFFIX
+HASH_SUFFIX=-0001
+
 ###############################################################################
 ## Fetch the latest code
 function cividist_update() {
@@ -57,7 +60,7 @@ function cividist_build() {
     git scan foreach -c "pwd; git checkout . ; git clean -f -d"
     if givi checkout $REF; then
       ## FIXME: Should compute separate hashes for each combo of (civi-ver,cms,cms-major-ver)
-      local hash=$(git scan hash)
+      local hash=$(git scan hash)${HASH_SUFFIX}
       local refname=$(basename $REF)
 
       if [ -d "$BY_HASH/$hash" ]; then
