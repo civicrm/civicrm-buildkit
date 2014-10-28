@@ -822,6 +822,24 @@ function git_cache_setup() {
 }
 
 ###############################################################################
+## usage: git_cache_clone <cache-dir> <...clone options...>
+function git_cache_clone() {
+  local cachedir="$1"
+  shift
+  case "$GIT_CLONE_MODE" in
+    full)
+      git clone "$cachedir" "$@"
+      ;;
+    shallow)
+      git clone --depth 1 "$cachedir" "$@"
+      ;;
+    reference)
+      git clone --reference "$cachedir" "$cachedir" "$@"
+      ;;
+  esac
+}
+
+###############################################################################
 ## Fix the remote configurations of any git repos in <build-dir>, changing any
 ## references to <cache-base-dir> to proper remotes
 ## usage: git_cache_deref_remotes <cache-base-dir> <build-dir>

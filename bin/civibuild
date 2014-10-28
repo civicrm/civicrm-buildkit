@@ -48,6 +48,7 @@ Description: Download and/or install the application
   --web-root <path>   The full path to the website root. [Default: ${BLDDIR}/<build-name>]
   --civi-ver <ver>    The branch or tag of CiviCRM desired (master, 4.4, 4.3, 4.3.0, etc) [Optional]
   --cms-ver <ver>     The release of the CMS desired [Optional]
+  --git-clone-mode <> How to perform clone (full, shallow, reference) [Optional]
 
   --url <url>         The public URL of the site
   --title <title>     The title of the site
@@ -434,6 +435,11 @@ while [ -n "$1" ] ; do
 
     --force-install)
       FORCE_INSTALL=1
+      ;;
+
+    --git-clone-mode)
+      GIT_CLONE_MODE="$1"
+      shift
       ;;
 
     --html)

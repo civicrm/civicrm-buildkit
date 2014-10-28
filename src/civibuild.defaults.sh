@@ -59,6 +59,10 @@ CACHE_LOCK_WAIT=120
 ## When checking out or updating git/svn, wait up to X seconds for process to complete
 SCM_TIMEOUT=3600
 
+## When cloning, how much data should be loaded?
+## values: full, shallow, reference
+GIT_CLONE_MODE=full
+
 ###############################################################################
 ## "create" variables defined by civibuild
 
