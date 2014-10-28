@@ -62,9 +62,12 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   ## Setup userprotect
   #above# drush -y en userprotect
-  for perm in "change own e-mail" "change own openid" "change own password" ; do
-    drush role-remove-perm "authenticated user" "$perm"
-  done
+  drush scr "$PRJDIR/src/drush/perm.php" <<EOPERM
+    role "authenticated user"
+    remove "change own e-mail"
+    remove "change own openid"
+    remove "change own password"
+EOPERM
 
   ## Setup demo user
   drush -y en civicrm_webtest
@@ -72,17 +75,30 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   drush -y user-add-role civicrm_webtest_user "$DEMO_USER"
   # In Garland, CiviCRM's toolbar looks messy unless you also activate Drupal's "toolbar", so grant "access toolbar"
   # We've activated more components than typical web-test baseline, so grant rights to those components.
-  for perm in 'access toolbar' \
-    'administer CiviCase' 'access all cases and activities' 'access my cases and activities' 'add cases' 'delete in CiviCase' \
-    'administer CiviCampaign' 'manage campaign' \
-    'reserve campaign contacts' 'release campaign contacts' 'interview campaign contacts' 'gotv campaign contacts' 'sign CiviCRM Petition'
-  do
-    drush -y role-add-perm civicrm_webtest_user "$perm"
-  done
+  drush scr "$PRJDIR/src/drush/perm.php" <<EOPERM
+    role 'civicrm_webtest_user'
+    add 'access toolbar'
+    add 'administer CiviCase'
+    add 'access all cases and activities'
+    add 'access my cases and activities'
+    add 'add cases'
+    add 'delete in CiviCase'
+    add 'administer CiviCampaign'
+    add 'manage campaign'
+    add 'reserve campaign contacts'
+    add 'release campaign contacts'
+    add 'interview campaign contacts'
+    add 'gotv campaign contacts'
+    add 'sign CiviCRM Petition'
+EOPERM
 
   ## Setup CiviVolunteer
   drush -y cvapi extension.install key=org.civicrm.volunteer debug=1
-  drush -y role-add-perm 'anonymous user' 'register to volunteer'
+  drush scr "$PRJDIR/src/drush/perm.php" <<EOPERM
+    role 'anonymous user'
+    role 'authenticated user'
+    add 'register to volunteer'
+EOPERM
 
   drush -y -u "$ADMIN_USER" cvapi extension.install key=eu.tttp.civisualize debug=1
 
