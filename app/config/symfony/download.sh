@@ -15,7 +15,7 @@ cat "$SITE_CONFIG_DIR/drush.make.tmpl" \
 
 drush -y make --working-copy "$MAKEFILE" "$WEB_ROOT"
 
-git clone https://github.com/totten/civicrm-symfony.git "$WEB_ROOT/symfony"
+git_cache_clone https://github.com/totten/civicrm-symfony.git "$WEB_ROOT/symfony"
 pushd "$WEB_ROOT/symfony" >> /dev/null
   composer install --no-scripts 
 popd >> /dev/null

@@ -8,7 +8,7 @@ set +x
 if [ ! -d "$SITE_CONFIG_DIR/civicrm_starterkit" ]; then
   echo "----------------------------------------------------------------------------------------------------"
   echo "[[ civicrm_starterkit: Clone repository to $SITE_CONFIG_DIR/civicrm_starterkit ]]"
-  git clone "http://git.drupal.org/project/civicrm_starterkit.git" "$SITE_CONFIG_DIR/civicrm_starterkit"
+  git_cache_clone "http://git.drupal.org/project/civicrm_starterkit.git" "$SITE_CONFIG_DIR/civicrm_starterkit"
 else
   echo "[[ civicrm_starterkit: Use existing clone. You may want to manually update for the latest changes. ]]"
   echo "----------------------------------------------------------------------------------------------------"
