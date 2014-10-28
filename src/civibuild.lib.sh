@@ -831,7 +831,7 @@ function git_cache_clone() {
       git clone "$cachedir" "$@"
       ;;
     shallow)
-      git clone --depth 1 "$cachedir" "$@"
+      git clone --depth 1 "file://$cachedir" "$@"
       ;;
     reference)
       git clone --reference "$cachedir" "$cachedir" "$@"
