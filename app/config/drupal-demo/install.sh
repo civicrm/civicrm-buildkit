@@ -84,6 +84,8 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   drush -y cvapi extension.install key=org.civicrm.volunteer debug=1
   drush -y role-add-perm 'anonymous user' 'register to volunteer'
 
+  drush -y cvapi extension.install key=eu.tttp.civisualize debug=1
+
   ## Setup CiviCRM dashboards
   INSTALL_DASHBOARD_USERS="$ADMIN_USER;$DEMO_USER" drush scr "$SITE_CONFIG_DIR/install-dashboard.php"
 
