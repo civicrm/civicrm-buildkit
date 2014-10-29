@@ -63,8 +63,11 @@ For example, at time of writing, it includes:
  * *drupal-clean*: A bare, "out-of-the-box" installation of Drupal+CiviCRM
  * *drupal-demo*: A demo site running Drupal and CiviCRM
  * *wp-demo*: A demo site running WordPress and CiviCRM
+ * *hrdemo* A demo site running Drupal, CiviCRM, and CiviHR
  * *symfony*: An experimental hybrid site running Drupal 7, Symfony 2, and CiviCRM
  * *extdir*: A mock website akin to civicrm.org/extdir/ . Useful testing the extension download process.
+ * *dist*: A website containing nightly builds akin to dist.civicrm.org. Useful for preparing CiviCRM tarballs.
+ * *joomla-demo*: WIP/incomplete/broken
 
 For a list of available build-types as well as documentation on writing build scripts,
 see [app/config](app/config).
@@ -123,8 +126,8 @@ There are four variations on rebuilding. In order of fastest (least thorough) to
 (TODO: Write a real tutorial!)
 
 Suppose we've just downloaded buildkit and want to prepare a patch for
-CiviCRM 4.6.  This requires downloading and installing the bleeding edge
-(4.6.x) code for CiviCRM+CMS as well as writing and publishing the patch.
+CiviCRM 4.5.  This requires downloading and installing the bleeding edge
+(4.5.x) code for CiviCRM+CMS as well as writing and publishing the patch.
 
 ```bash
 ## Download Drupal 7.x and CiviCRM 4.5.x
