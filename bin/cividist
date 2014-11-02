@@ -12,13 +12,14 @@ TARS=${TARS:-$PRJ/out/tar}
 BY_DATE=${BY_DATE:-$PRJ/web/by-date}
 BY_HASH=${BY_HASH:-$PRJ/web/by-hash}
 DATE=$( date '+%Y-%m-%d' )
+FILE_SUFFIX=$( date '+%Y%m%d' )
 ## #minutes before redownloading L10n (12*60=720 min)
 L10N_TTL=720
 L10N_URL=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
 L10N_EXAMPLE=fr_FR
 
 ## If we make substantive changes to build process, then increment HASH_SUFFIX
-HASH_SUFFIX=-0001
+HASH_SUFFIX=-0002
 
 ###############################################################################
 ## Fetch the latest code
@@ -67,18 +68,13 @@ function cividist_build() {
         echo "[$DATE $REF] Found hash $hash" 1>&2
       else
         echo "[$DATE $REF] Building hash $hash]" 1>&2
-        mkdir "$BY_HASH/$hash"
-        pushd distmaker >> /dev/null
-          if env DM_TARGETDIR="$BY_HASH/$hash" DM_REF_CORE="$REF" DM_VERSION_SUFFIX="-$DATE" ./distmaker.sh all ; then
-            echo "[$DATE $REF] Built hash $hash" 1>&2
-          else
-            echo "[$DATE $REF] Build failed for hash $hash" 1>&2
-          fi
-        popd >> /dev/null
+        _cividist_build_hash "$hash"
       fi
 
       if [ -d "$BY_DATE/$DATE/$refname" ]; then
         echo "[$DATE $REF] Found $DATE/$refname" 1>&2
+      elif is_empty_dir "$BY_HASH/$hash" ; then
+        echo "[$DATE $REF] Cannot initialize $DATE/$refname; $hash is empty" 1>&2
       else
         echo "[$DATE $REF] Initialize $DATE/$refname from $hash" 1>&2
         mkdir -p "$BY_DATE/$DATE/$refname"
@@ -92,6 +88,37 @@ function cividist_build() {
   ## Update "latest" symlink
   [ -L "$BY_DATE/latest" ] && rm -f "$BY_DATE/latest"
   [ ! -e "$BY_DATE/latest" ] && ln -s "$BY_DATE/$DATE" "$BY_DATE/latest"
+}
+
+###############################################################################
+## Create tarballs and move the resulting files under $BY_HASH/$hash
+##
+## usage: _cividist_build_hash <hash>
+## depends: BY_HASH, DATE, REF, FILE_SUFFIX
+function _cividist_build_hash() {
+  local hash="$1"
+  local hashtmp="$BY_HASH/$hash.tmp"
+  local hashout="$BY_HASH/$hash"
+
+  [ -d "$hashtmp" ] && rm -rf "$hashtmp"
+  [ -d "$hashout" ] && rm -rf "$hashout"
+
+  mkdir -p "$hashtmp"
+
+  pushd distmaker >> /dev/null
+    if env DM_TARGETDIR="$hashtmp" DM_REF_CORE="$REF" DM_VERSION_SUFFIX= ./distmaker.sh all ; then
+      echo "[$DATE $REF] Built hash $hash" 1>&2
+      pushd "$hashtmp" >> /dev/null
+        regmv '\.zip$' "-${FILE_SUFFIX}.zip"
+        regmv '\.tgz$' "-${FILE_SUFFIX}.tgz"
+        regmv '\.tar\.gz$' "-${FILE_SUFFIX}.tar.gz"
+      popd >> /dev/null
+      mv "$hashtmp" "$hashout"
+    else
+      echo "[$DATE $REF] Build failed for hash $hash" 1>&2
+      [ -d "$hashtmp" ] && rm -rf "$hashtmp"
+    fi
+  popd >> /dev/null
 }
 
 ###############################################################################
@@ -163,6 +190,19 @@ function download_url() {
     curl -L -o "$2" "$1"
   else
     echo "error: failed to locate curl or wget"
+  fi
+}
+
+###############################################################################
+## usage: if is_empty_dir "$dir"; then ...; fi
+function is_empty_dir() {
+  pushd "$1" >> /dev/null
+    files=$(shopt -s nullglob;shopt -s dotglob;echo *)
+  popd >> /dev/null
+  if [ ${#files} -gt 0 ]; then
+    return 1
+  else
+    return 0
   fi
 }
 
