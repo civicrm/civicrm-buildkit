@@ -1,0 +1,79 @@
+#!/usr/bin/env php
+<?php
+namespace regmv;
+
+## Rename files in the current directory using a regular expression
+##
+## I'd use "mmv", but it's not quite portable for civicrm-buildkit.  regmv
+## is implemented in PHP (to be a bit more portable); for simplicity of
+## implementation, it only works on files in current directory, and it uses
+## regular expressions
+
+/**
+ * Build list of files to rename
+ *
+ * @return array (string $fromFile => string $toFile) 
+ */
+function plan($glob, $fromPat, $toPat) {
+  $files = (array) glob($glob);
+  $renames = array();
+  foreach ($files as $file) {
+    $from = $file;
+    $to = preg_replace("/$fromPat/", $toPat, $from);
+    if ($to && $to != $from) {
+      $renames[$from] = $to;
+    }
+  }
+  return $renames;
+}
+
+/**
+ * Rename the files
+ *
+ * @param array (string $fromFile => string $toFile)
+ */
+function execute($renames, $isTest = FALSE) {
+  foreach ($renames as $fromFile => $toFile) {
+    echo "$fromFile => $toFile\n";
+    if (!$isTest) \rename($fromFile,$toFile);
+  }
+}
+
+function parseOpt($argv) {
+  $opt = array(
+    'test' => FALSE,
+    'from' => NULL,
+    'to' => NULL,
+  );
+  array_shift($argv);
+  if (!empty($argv[0]) && $argv[0] == '-t')  {
+    $opt['test'] = TRUE;
+    array_shift($argv);
+  }
+  if (!empty($argv[0])) {
+    $opt['from'] = array_shift($argv);
+  }
+  if (!empty($argv[0])) {
+    $opt['to'] = array_shift($argv);
+  }
+  return $opt;
+}
+
+function main($argv) {
+  $opt = parseOpt($argv);
+
+  if (empty($opt['from']) || empty($opt['to'])) {
+    echo "Rename files in the current directory using a regular expression\n";
+    echo "usage: regmv [-t] <from-pat> <to-pat>\n";
+    echo "examples:\n";
+    echo "  regmv '^(.*)\.tgz\$' '$1.tar.gz'\n";
+    echo "  regmv 'tgz$' 'tar.gz'\n";
+    echo "options:\n";
+    echo "  -t   Test mode\n";
+  } else {
+    $renames = plan('*', $opt['from'], $opt['to']);
+    execute($renames, $opt['test']);
+  }
+}
+
+main($argv);
