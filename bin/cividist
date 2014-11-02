@@ -73,6 +73,8 @@ function cividist_build() {
 
       if [ -d "$BY_DATE/$DATE/$refname" ]; then
         echo "[$DATE $REF] Found $DATE/$refname" 1>&2
+      elif is_empty_dir "$BY_HASH/$hash" ; then
+        echo "[$DATE $REF] Cannot initialize $DATE/$refname; $hash is empty" 1>&2
       else
         echo "[$DATE $REF] Initialize $DATE/$refname from $hash" 1>&2
         mkdir -p "$BY_DATE/$DATE/$refname"
@@ -98,8 +100,11 @@ function _cividist_build_hash() {
   local hashtmp="$BY_HASH/$hash.tmp"
   local hashout="$BY_HASH/$hash"
 
+  [ -d "$hashtmp" ] && rm -rf "$hashtmp"
+  [ -d "$hashout" ] && rm -rf "$hashout"
+
   mkdir -p "$hashtmp"
-  mkdir -p "$hashout"
+
   pushd distmaker >> /dev/null
     if env DM_TARGETDIR="$hashtmp" DM_REF_CORE="$REF" DM_VERSION_SUFFIX= ./distmaker.sh all ; then
       echo "[$DATE $REF] Built hash $hash" 1>&2
@@ -108,13 +113,10 @@ function _cividist_build_hash() {
         regmv '\.tgz$' "-${FILE_SUFFIX}.tgz"
         regmv '\.tar\.gz$' "-${FILE_SUFFIX}.tar.gz"
       popd >> /dev/null
-      mv "$hashtmp"/* "$hashout/"
+      mv "$hashtmp" "$hashout"
     else
       echo "[$DATE $REF] Build failed for hash $hash" 1>&2
-    fi
-
-    if [ -d "$hashtmp" ]; then
-      rm -rf "$hashtmp"
+      [ -d "$hashtmp" ] && rm -rf "$hashtmp"
     fi
   popd >> /dev/null
 }
@@ -188,6 +190,19 @@ function download_url() {
     curl -L -o "$2" "$1"
   else
     echo "error: failed to locate curl or wget"
+  fi
+}
+
+###############################################################################
+## usage: if is_empty_dir "$dir"; then ...; fi
+function is_empty_dir() {
+  pushd "$1" >> /dev/null
+    files=$(shopt -s nullglob;shopt -s dotglob;echo *)
+  popd >> /dev/null
+  if [ ${#files} -gt 0 ]; then
+    return 1
+  else
+    return 0
   fi
 }
 
