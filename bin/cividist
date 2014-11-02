@@ -19,7 +19,7 @@ L10N_URL=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-dai
 L10N_EXAMPLE=fr_FR
 
 ## If we make substantive changes to build process, then increment HASH_SUFFIX
-HASH_SUFFIX=-0001
+HASH_SUFFIX=-0002
 
 ###############################################################################
 ## Fetch the latest code
