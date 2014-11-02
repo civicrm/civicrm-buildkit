@@ -89,6 +89,8 @@ function cividist_build() {
 }
 
 ###############################################################################
+## Create tarballs and move the resulting files under $BY_HASH/$hash
+##
 ## usage: _cividist_build_hash <hash>
 ## depends: BY_HASH, DATE, REF, FILE_SUFFIX
 function _cividist_build_hash() {
