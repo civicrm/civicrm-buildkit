@@ -79,6 +79,7 @@ function cividist_build() {
         echo "[$DATE $REF] Initialize $DATE/$refname from $hash" 1>&2
         mkdir -p "$BY_DATE/$DATE/$refname"
         ln -s "$BY_HASH/$hash"/* "$BY_DATE/$DATE/$refname/"
+        [ -f "$BY_HASH/$hash/.htaccess" ] && ln -s "$BY_HASH/$hash"/.htaccess "$BY_DATE/$DATE/$refname/"
       fi
     else
       echo "[$DATE $REF] Checkout failed" 1>&2
@@ -112,6 +113,8 @@ function _cividist_build_hash() {
         regmv '\.zip$' "-${FILE_SUFFIX}.zip"
         regmv '\.tgz$' "-${FILE_SUFFIX}.tgz"
         regmv '\.tar\.gz$' "-${FILE_SUFFIX}.tar.gz"
+        echo "ReadmeName README.html" > .htaccess
+        _cividist_build_readme > README.html
       popd >> /dev/null
       mv "$hashtmp" "$hashout"
     else
@@ -119,6 +122,46 @@ function _cividist_build_hash() {
       [ -d "$hashtmp" ] && rm -rf "$hashtmp"
     fi
   popd >> /dev/null
+}
+
+function _cividist_build_readme() {
+  local timestamp=$(date)
+  cat <<EOHTML
+  <html>
+    <head>
+      <title>About dist.civicrm.org</title>
+    </head>
+    <body>
+      <h1>About dist.civicrm.org</h1>
+
+      <p>dist.civicrm.org automatically publishes tarballs <strong>for testing purposes</strong> on a nightly
+      basis.  Important notes:</p>
+
+      <ul>
+        <li>These files are generated from the latest, bleeding-edge code in the CiviCRM git repositories
+          (<a href="https://github.com/civicrm/civicrm-core/">civicrm-core.git</a>,
+          <a href="https://github.com/civicrm/civicrm-drupal/">civicrm-drupal.git</a>,
+          <a href="https://github.com/civicrm/civicrm-joomla/">civicrm-joomla.git</a>,
+          <a href="https://github.com/civicrm/civicrm-packages/">civicrm-packages.git</a>,
+          <a href="https://github.com/civicrm/civicrm-wordpress/">civicrm-wordpress.git</a>).</li>
+        <li><strong>These files should only be installed on experimental/testing/staging servers.</strong> Do
+           <strong>not</strong> install on live/production servers.</li>
+        <li><strong>There may be no upgrade path for sites running these tarballs.</strong> For example, if you install
+           the bleeding-edge code for 4.5.x on Tuesday and then upgrade to the next bleeding-edge code for 4.5.x on Wednesday,
+           the upgrade process may or may not work -- leaving the system in an undefined, subtly broken state.</li>
+        <li>When using these tarballs, please install a clean site <strong>or</strong> upgrade a (copied) dataset from a stable release.</li>
+
+        <li>If the code has not changed since the previous day, then the previous tarballs
+           will be reused.</li>
+        <li>An archive of past tarballs is maintained for two weeks.</li>
+        <li>Each filename includes a date (YYYYMMDD) to indicate the true date of generation.</li>
+      </ul>
+
+      <p><small><em>(This README.html was generated at ${timestamp}</em></small></p>
+    </body>
+  </html>
+
+EOHTML
 }
 
 ###############################################################################
