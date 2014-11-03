@@ -15,7 +15,7 @@ function git_scan_diff($from, $to) {
   return json_decode(implode('', $output), TRUE);
 }
 
-$time = date('Y-m-d H:i:s');
+$time = date('Y-m-d H:i:s T');
 ?>
 <html>
   <head>
