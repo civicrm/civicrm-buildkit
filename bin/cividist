@@ -129,10 +129,10 @@ function _cividist_build_readme() {
   cat <<EOHTML
   <html>
     <head>
-      <title>About dist.civicrm.org</title>
+      <title>Nightly testing tarballs</title>
     </head>
     <body>
-      <h1>About dist.civicrm.org</h1>
+      <h1>Nightly testing tarballs</h1>
 
       <p>dist.civicrm.org automatically publishes tarballs <strong>for testing purposes</strong> on a nightly
       basis.  Important notes:</p>
