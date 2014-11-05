@@ -448,7 +448,7 @@ function civicrm_install() {
   pushd "$CIVI_CORE" >> /dev/null
     ## Does this build include development support (eg git or tarball-based)?
     if [ -e "xml" -a -e "bin/setup.sh" ]; then
-      ./bin/setup.sh
+      env SITE_ID="$SITE_ID" ./bin/setup.sh
     elif [ -e "sql/civicrm.mysql" -a -e "sql/civicrm_generated.mysql" ]; then
       cat sql/civicrm.mysql sql/civicrm_generated.mysql | mysql $CIVI_DB_ARGS
     else
@@ -526,7 +526,10 @@ function civicrm_make_setup_conf() {
     ## INFRA-114
     PRJDIR="$PRJDIR"
     CMS_ROOT="$CMS_ROOT"
-    eval \`\$PRJDIR/bin/amp export --root="\$CMS_ROOT" -Ncivi\`
+    SITE_ID="\${SITE_ID:-$SITE_ID}"
+    AMP_NAME=civi\${SITE_ID}
+    [ "\$SITE_ID" == "default" ] && AMP_NAME=civi
+    eval \`\$PRJDIR/bin/amp export --root="\$CMS_ROOT" -N\${AMP_NAME}\`
     DBNAME="\$AMP_DB_NAME"
     DBUSER="\$AMP_DB_USER"
     DBPASS="\$AMP_DB_PASS"
