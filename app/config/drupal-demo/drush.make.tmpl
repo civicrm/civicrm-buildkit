@@ -43,12 +43,12 @@ libraries[civicrmpackages][overwrite] = TRUE
 ; libraries[civicrm_l10n][download][url] = "https://raw.github.com/civicrm/l10n/master/po/fr_CA/civicrm.mo"
 ; libraries[civicrm_l10n][overwrite] = TRUE
 
-; Overwrite .mo files with latest version from SVN
-; libraries[civicrm_l10n_latest][destination] = modules
-; libraries[civicrm_l10n_latest][directory_name] = civicrm/l10n
-; libraries[civicrm_l10n_latest][download][type] = svn
-; libraries[civicrm_l10n_latest][download][url] = http://svn.civicrm.org/l10n/trunk/
-; libraries[civicrm_l10n_latest][overwrite] = TRUE
+; Overwrite .mo files with latest versions
+libraries[civicrm_l10n_latest][destination] = modules
+libraries[civicrm_l10n_latest][directory_name] = civicrm/l10n
+libraries[civicrm_l10n_latest][download][type] = get
+libraries[civicrm_l10n_latest][download][url] = http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
+libraries[civicrm_l10n_latest][overwrite] = TRUE
 
 libraries[civicrm][destination] = modules
 libraries[civicrm][directory_name] = civicrm
@@ -72,14 +72,16 @@ projects[redirect][subdir] = contrib
 projects[redirect][version] = 1.0-rc1
 
 projects[webform][subdir] = contrib
-projects[webform][version] = 3.19
+projects[webform][version] = 4.1
+
+projects[options_element][subdir] = contrib
+projects[options_element][version] = 1.12
 
 projects[webform_civicrm][subdir] = contrib
-projects[webform_civicrm][version] = 3.6
+projects[webform_civicrm][version] = 4.9
 
 projects[views][subdir] = contrib
-projects[views][version] = 3.7
-
+projects[views][version] = 3.8
 
 projects[login_destination][subdir] = contrib
 projects[login_destination][version] = "1.1"
@@ -107,3 +109,17 @@ libraries[civivolunteer][download][type] = git
 libraries[civivolunteer][download][url] = %%CACHE_DIR%%/civicrm/civivolunteer.git
 libraries[civivolunteer][download][branch] = %%VOL_VERSION%%
 libraries[civivolunteer][overwrite] = TRUE
+
+libraries[civisualize][destination] = modules
+libraries[civisualize][directory_name] = civicrm/tools/extensions/civisualize
+libraries[civisualize][download][type] = git
+libraries[civisualize][download][url] = %%CACHE_DIR%%/TechToThePeople/civisualize.git
+libraries[civisualize][download][branch] = master
+libraries[civisualize][overwrite] = TRUE
+
+libraries[cividiscount][destination] = modules
+libraries[cividiscount][directory_name] = civicrm/tools/extensions/cividiscount
+libraries[cividiscount][download][type] = git
+libraries[cividiscount][download][url] = %%CACHE_DIR%%/dlobo/org.civicrm.module.cividiscount.git
+libraries[cividiscount][download][branch] = %%CIVI_VERSION%%
+libraries[cividiscount][overwrite] = TRUE

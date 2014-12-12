@@ -1,5 +1,6 @@
-#!/usr/bin/env php -d display_errors=1
+#!/usr/bin/env php
 <?php
+ini_set('display_errors', 1);
 
 // Claim a lock on behalf of a given PID.  The lock is considered released
 // when either (a) the lock file is deleted or (b) the PID becomes invalid.

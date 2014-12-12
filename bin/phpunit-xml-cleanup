@@ -1,0 +1,17 @@
+#!/usr/bin/env php
+<?php
+## When outputting JUnit XML files with backtraces, phpunit sometimes
+## generates invalid markup.  This is an ugly work-around to fix the
+## scenario wherein Civi's value-separator (\0001) is part of the backtrace.
+
+$sep = "";
+
+$files = $argv;
+array_shift($files);
+
+foreach ($files as $file) {
+  $content = file_get_contents($file);
+  #$content = str_replace($sep, '&#x0001;', $content);
+  $content = str_replace($sep, '', $content);
+  file_put_contents($file, $content);
+}

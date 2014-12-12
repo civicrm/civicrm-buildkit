@@ -1,0 +1,294 @@
+#!/bin/bash
+set -e
+
+###############################################################################
+## Variables and constants
+MAX_AGE=${MAX_AGE:-14}
+MAX_REFS=${MAX_REFS:-10000}
+GIT_REMOTE=${GIT_REMOTE:-origin}
+PRJ=${PRJ:-.}
+SRC=${SRC:-$PRJ/src}
+TARS=${TARS:-$PRJ/out/tar}
+BY_DATE=${BY_DATE:-$PRJ/web/by-date}
+BY_HASH=${BY_HASH:-$PRJ/web/by-hash}
+DATE=$( date '+%Y-%m-%d' )
+FILE_SUFFIX=$( date '+%Y%m%d' )
+## #minutes before redownloading L10n (12*60=720 min)
+L10N_TTL=720
+L10N_URL=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
+L10N_EXAMPLE=fr_FR
+
+## If we make substantive changes to build process, then increment HASH_SUFFIX
+HASH_SUFFIX=-0002
+
+###############################################################################
+## Fetch the latest code
+function cividist_update() {
+  git scan foreach -c "pwd; git fetch $GIT_REMOTE"
+  if cividist_l10n_is_current ; then
+    echo "[l10n] Appears recent (less than $L10N_TTL minutes old)" 1>&2
+  else
+    echo "[l10n] Appears stale (more than $L10N_TTL minutes old). Updating." 1>&2
+
+    L10N_TMP=$(mktemp.php)
+    rm -f "$L10N_TMP"
+    download_url "$L10N_URL" "$L10N_TMP"
+
+    rm -rf l10n
+    tar xzf "$L10N_TMP"
+    touch l10n
+    rm -f "$L10N_TMP"
+  fi
+}
+
+###############################################################################
+## Make sure the build looks normal
+function cividist_validate() {
+  if [ ! -d "l10n/$L10N_EXAMPLE" ]; then
+    echo "[l10n] Appears invalid. Missing common language ($L10N_EXAMPLE)." 1>&2
+    exit 1
+  fi
+}
+
+###############################################################################
+## Prepare any tarballs
+##
+## Find refs ("4.4", "4.4.7", "master", etc) in the main civicrm repository.
+## Checkout the corresponding refs across all repos and run distmaker.
+## Put the output files in $BY_HASH and $BY_DATE.
+function cividist_build() {
+  for REF in "$@" ; do
+    git scan foreach -c "pwd; git checkout . ; git clean -f -d"
+    if givi checkout $REF; then
+      ## FIXME: Should compute separate hashes for each combo of (civi-ver,cms,cms-major-ver)
+      local hash=$(git scan hash)${HASH_SUFFIX}
+      local refname=$(basename $REF)
+
+      if [ -d "$BY_HASH/$hash" ]; then
+        echo "[$DATE $REF] Found hash $hash" 1>&2
+      else
+        echo "[$DATE $REF] Building hash $hash]" 1>&2
+        _cividist_build_hash "$hash"
+      fi
+
+      if [ -d "$BY_DATE/$DATE/$refname" ]; then
+        echo "[$DATE $REF] Found $DATE/$refname" 1>&2
+      elif is_empty_dir "$BY_HASH/$hash" ; then
+        echo "[$DATE $REF] Cannot initialize $DATE/$refname; $hash is empty" 1>&2
+      else
+        echo "[$DATE $REF] Initialize $DATE/$refname from $hash" 1>&2
+        mkdir -p "$BY_DATE/$DATE/$refname"
+        ln -s "$BY_HASH/$hash"/* "$BY_DATE/$DATE/$refname/"
+        [ -f "$BY_HASH/$hash/.htaccess" ] && ln -s "$BY_HASH/$hash"/.htaccess "$BY_DATE/$DATE/$refname/"
+      fi
+    else
+      echo "[$DATE $REF] Checkout failed" 1>&2
+    fi
+  done
+
+  ## Update "latest" symlink
+  [ -L "$BY_DATE/latest" ] && rm -f "$BY_DATE/latest"
+  [ ! -e "$BY_DATE/latest" ] && ln -s "$BY_DATE/$DATE" "$BY_DATE/latest"
+}
+
+###############################################################################
+## Create tarballs and move the resulting files under $BY_HASH/$hash
+##
+## usage: _cividist_build_hash <hash>
+## depends: BY_HASH, DATE, REF, FILE_SUFFIX
+function _cividist_build_hash() {
+  local hash="$1"
+  local hashtmp="$BY_HASH/$hash.tmp"
+  local hashout="$BY_HASH/$hash"
+
+  [ -d "$hashtmp" ] && rm -rf "$hashtmp"
+  [ -d "$hashout" ] && rm -rf "$hashout"
+
+  mkdir -p "$hashtmp"
+
+  pushd distmaker >> /dev/null
+    if env DM_TARGETDIR="$hashtmp" DM_REF_CORE="$REF" DM_VERSION_SUFFIX= ./distmaker.sh all ; then
+      echo "[$DATE $REF] Built hash $hash" 1>&2
+      pushd "$hashtmp" >> /dev/null
+        regmv '\.zip$' "-${FILE_SUFFIX}.zip"
+        regmv '\.tgz$' "-${FILE_SUFFIX}.tgz"
+        regmv '\.tar\.gz$' "-${FILE_SUFFIX}.tar.gz"
+        echo "ReadmeName README.html" > .htaccess
+        _cividist_build_readme > README.html
+      popd >> /dev/null
+      mv "$hashtmp" "$hashout"
+    else
+      echo "[$DATE $REF] Build failed for hash $hash" 1>&2
+      [ -d "$hashtmp" ] && rm -rf "$hashtmp"
+    fi
+  popd >> /dev/null
+}
+
+function _cividist_build_readme() {
+  local timestamp=$(date)
+  cat <<EOHTML
+  <html>
+    <head>
+      <title>Nightly testing tarballs</title>
+    </head>
+    <body>
+      <h1>Nightly testing tarballs</h1>
+
+      <p>dist.civicrm.org automatically publishes tarballs <strong>for testing purposes</strong> on a nightly
+      basis.  Important notes:</p>
+
+      <ul>
+        <li>These files are generated from the latest, bleeding-edge code in the CiviCRM git repositories
+          (<a href="https://github.com/civicrm/civicrm-core/">civicrm-core.git</a>,
+          <a href="https://github.com/civicrm/civicrm-drupal/">civicrm-drupal.git</a>,
+          <a href="https://github.com/civicrm/civicrm-joomla/">civicrm-joomla.git</a>,
+          <a href="https://github.com/civicrm/civicrm-packages/">civicrm-packages.git</a>,
+          <a href="https://github.com/civicrm/civicrm-wordpress/">civicrm-wordpress.git</a>).</li>
+        <li><strong>These files should only be installed on experimental/testing/staging servers.</strong> Do
+           <strong>not</strong> install on live/production servers.</li>
+        <li><strong>There may be no upgrade path for sites running these tarballs.</strong> For example, if you install
+           the bleeding-edge code for 4.5.x on Tuesday and then upgrade to the next bleeding-edge code for 4.5.x on Wednesday,
+           the upgrade process may or may not work -- leaving the system in an undefined, subtly broken state.</li>
+        <li>When using these tarballs, please install a clean site <strong>or</strong> upgrade a (copied) dataset from a stable release.</li>
+
+        <li>If the code has not changed since the previous day, then the previous tarballs
+           will be reused.</li>
+        <li>An archive of past tarballs is maintained for two weeks.</li>
+        <li>Each filename includes a date (YYYYMMDD) to indicate the true date of generation.</li>
+      </ul>
+
+      <p><small><em>(This README.html was generated at ${timestamp}</em></small></p>
+    </body>
+  </html>
+
+EOHTML
+}
+
+###############################################################################
+## Delete old tarballs and symlinks
+
+function cividist_prune() {
+  echo "[Prune old symlinks]"
+  find "$BY_DATE" -mtime +$MAX_AGE -type l | while read FILE ; do
+    echo " - $FILE"
+    rm -f "$FILE"
+  done
+
+  echo "[Prune orphans]"
+  find-symlink-tree-orphans "$BY_HASH" "$BY_DATE" | while read ORPHAN ; do
+    echo " - $ORPHAN"
+    rm -f $ORPHAN
+  done
+
+  echo "[Prune empty directories]"
+  find "$BY_DATE" "$BY_HASH" -type d -empty | while read DIR ; do
+    echo " - $DIR"
+    rmdir $DIR
+  done
+}
+
+###############################################################################
+function cividist_help() {
+  echo "Maintain a rotating list of nightly tarballs"
+  echo
+  echo "Fetch latest code from git"
+  echo "usage: $(basename $0) update"
+  echo
+  echo "Generate tarballs for any inputted branches/tags"
+  echo "usage: $(basename $0) build [refspec1 [refspec2...]]"
+  echo "example: $(basename $0) build 4.4.0 4.4.1 origin/4.4"
+  echo "example:"
+  echo "    git show-ref | grep refs/tags | while read COMMIT REF; do"
+  echo "      $(basename $0) build \$REF"
+  echo "    done"
+  echo
+  echo "Remove any old/orphaned tarballs"
+  echo "usage: $(basename $0) prune"
+}
+
+###############################################################################
+function cividist_realpath() {
+  env RP="$1" php -r "echo realpath(getenv('RP'));"
+}
+
+###############################################################################
+## usage: if cividist_l10n_is_current ; then echo "All good" ; else "Oh noes!" ; fi
+function cividist_l10n_is_current() {
+  if [ ! -d l10n ]; then
+    return 2
+  fi
+  if test `find -mindepth 1 -maxdepth 1 -type d -name l10n -mmin +$L10N_TTL` ; then
+    return 1
+  fi
+  return 0
+}
+
+###############################################################################
+## usage: download_url <url> <out-file>
+function download_url() {
+  #php -r "echo file_get_contents('$1');" > $2
+  if which wget >> /dev/null ; then
+    wget -O "$2" "$1"
+  elif which curl >> /dev/null ; then
+    curl -L -o "$2" "$1"
+  else
+    echo "error: failed to locate curl or wget"
+  fi
+}
+
+###############################################################################
+## usage: if is_empty_dir "$dir"; then ...; fi
+function is_empty_dir() {
+  pushd "$1" >> /dev/null
+    files=$(shopt -s nullglob;shopt -s dotglob;echo *)
+  popd >> /dev/null
+  if [ ${#files} -gt 0 ]; then
+    return 1
+  else
+    return 0
+  fi
+}
+
+###############################################################################
+## Main
+
+if [ -z "$1" ]; then
+  cividist_help
+  exit 0
+fi
+
+if [ ! -d "$SRC/distmaker" -o ! -d "$TARS" ]; then
+  echo "Please prepare a 'dist' folder using buildkit and run the command within that folder."
+  exit
+fi
+
+## Finesse the path variables
+PRJ=$(cividist_realpath "$PRJ")
+SRC=$(cividist_realpath "$SRC")
+TARS=$(cividist_realpath "$TARS")
+[ ! -d "$BY_DATE" ] && mkdir -p "$BY_DATE"
+BY_DATE=$(cividist_realpath "$BY_DATE")
+[ ! -d "$BY_HASH" ] && mkdir -p "$BY_HASH"
+BY_HASH=$(cividist_realpath "$BY_HASH")
+
+## Main loop
+pushd $SRC >> /dev/null
+  case "$1" in
+    update)
+      cividist_update
+      cividist_validate
+      ;;
+    build)
+      cividist_validate
+      shift
+      cividist_build "$@"
+      ;;
+    prune)
+      cividist_prune
+      ;;
+    *)
+      cividist_help
+      exit 1
+      ;;
+  esac
+popd >> /dev/null

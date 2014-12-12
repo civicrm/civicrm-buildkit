@@ -17,7 +17,9 @@ BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
 WEBDIR="$PRJDIR/web"
 TMPDIR="$PRJDIR/app/tmp"
-CIVIXVER=14.01.0
+LOCKFILE="$TMPDIR/civi-download-tools.lock"
+LOCKTIMEOUT=90
+CIVIXVER=14.09.1
 CIVIXURL="http://downloads.sourceforge.net/project/civix/civix-${CIVIXVER}.tar.bz2?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fcivix%2Ffiles%2F&use_mirror=master"
 HUBTAG="v1.12.1"
 HUBURL="https://github.com/github/hub"
@@ -104,20 +106,33 @@ while [ -n "$1" ] ; do
   esac
 done
 
-
 ##################################################
 ## Validation
 check_command php
 check_command mysql
 check_command mysqldump
 check_command git
-check_command svn
 check_command tar
 check_command bzip2
 check_command gzip
 
 if [ ! -d "$TMPDIR" ]; then
   mkdir -p "$TMPDIR"
+fi
+
+##################################################
+## Only allow one concurrent process
+if php $BINDIR/pidlockfile.php "$LOCKFILE" $$ 5 ; then
+  ## we acquired lock quickly; no need to bug user with output
+  true
+else
+  OLDPID=$(cat "$LOCKFILE")
+  echo "[[civi-download-tools: Already locked by PID $OLDPID; waiting up $LOCKTIMEOUT seconds]]"
+  if php $BINDIR/pidlockfile.php "$LOCKFILE" $$ $LOCKTIMEOUT ; then
+    echo "[[civi-download-tools: Lock acquired]]"
+  else
+    exit 1
+  fi
 fi
 
 ##################################################
@@ -210,3 +225,7 @@ pushd $PRJDIR >> /dev/null
   fi
 
 popd >> /dev/null
+
+##################################################
+## Cleanup
+rm -f "$LOCKFILE"

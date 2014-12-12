@@ -25,29 +25,24 @@ $node->body[$node->language][0]['value']   = '
 <p><strong>Any data you enter on this demo site is "publicly available" due to the open login. Please do not enter real email addresses or other personal information.</strong> The demo database is reset periodically.</p>
 
 <h3>New to CiviHR?</h3>
- CiviHR will be developed in multiple phases. Phase 1 includes the following functionality:
+ CiviHR will be developed in multiple phases. So far it comprises of the following functionality:
 <ul>
-<li>People (Paid & Unpaid) - a directory listing of the people who work for an organisation - showing names and photographs
- <li>Personal Contact Details</li>
- <li>Work Contact Details</li>
+<li>Directory - a listing of the people who work for an organisation (paid and unpaid)
+ <li>Staff Contact Details</li>
  <li>Identification</li>
  <li>Medical & Disability</li>
  <li>Visas & Work Permits</li>
  <li>Emergency Contacts</li>
  <li>Job Positions & Job Roles</li>
  <li>Skills & Qualifications</li>
- <li>Education & Employment</li>
+ <li>Education & Employment History</li>
  <li>Simple Remuneration Recording</li>
+ <li>Recording of Leave and Absences</li>
+ <li>Workflows to manage Joining, Probation and Exiting</li>
+ <li>Recruitment with an online job application process</li>
 </ul>
 
-Some features to check out as you start exploring:
-<ul>
-<li>Click <strong>Directory</strong> in the top menu bar to view the searchable staff directory</li>
-<li>Use <strong>Quick Search</strong> in the upper left corner to find a staff person and click their name or email to see how a staff person is displayed with their job information, career history, medical information and more.</li>
-<li>Review HR Reports from the <strong>Contact Reports</strong> menu.</li>
-</ul>
-
-Learn more and stay up to date about CiviHR by <strong><a href="https://civicrm.org/civicrm-blog-categories/civihr" target="_blank" title="CiviHR Blog - opens in a new window">reading or subscribing to the CiviHR blog</a></strong>. You can use the <strong><a href="http://forum.civicrm.org/index.php/board,87.0.html">CiviHR forum board</a></strong> to discuss CiviHR with other folks in the community.
+For more information, please post your queries on the <strong><a href="http://forum.civicrm.org/index.php/board,87.0.html" target="_blank">CiviHR forum board</a></strong>. To stay updated about new developments in CiviHR, please subscribe to the <strong><a href="https://civicrm.org/civicrm-blog-categories/civihr" target="_blank" title="CiviHR Blog - opens in a new window">CiviHR blog</a></strong>.
 
 Want to install your own copy of CiviHR? <a href="https://civicrm.org/extensions/civihr" target="_blank">Information about downloading and installation can be found here</a>.
 ';

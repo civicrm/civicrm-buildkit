@@ -34,6 +34,10 @@ SITE_CONFIG_DIR=
 ## (default: default)
 SITE_ID=default
 
+## A unique token for this site used to secure any distributed civibuild tasks
+## (default: random)
+SITE_TOKEN=
+
 ## Root directory where the site's code will be installed
 ## (default: BLDDIR/SITE_NAME)
 WEB_ROOT=
@@ -51,6 +55,9 @@ CACHE_TTL=60
 
 ## When updating a cache record, first attempt to lock it. Wait up to X seconds to acquire lock.
 CACHE_LOCK_WAIT=120
+
+## When checking out or updating git/svn, wait up to X seconds for process to complete
+SCM_TIMEOUT=3600
 
 ###############################################################################
 ## "create" variables defined by civibuild
@@ -155,6 +162,7 @@ TEST_DB_USER=
 
 ###############################################################################
 ## snapshot-related variables
+## (also used for cloning)
 
 ## Path to the directory which stores snapshots (default: PRJDIR/app/snapshot) [non-persistent]
 SNAPSHOT_DIR=
@@ -178,6 +186,20 @@ CMS_SQL_SKIP=
 TEST_SQL_SKIP=
 
 ###############################################################################
+## Clone-related variables
+
+## Unique name of a particular clone
+CLONE_ID=
+
+## Base directory in whch we store clones metadata
+## [default: app/clone/$SITE_NAME/$SITE_ID ]
+CLONE_ROOT=
+
+## Directory storing the activty clone's metadata
+## [default: $CLONE_ROOT/$CLONE_ID]
+CLONE_DIR=
+
+###############################################################################
 ## Upgrade-testing variables
 
 ## Directory which stores the normal snapshots for upgrade-testing
@@ -185,6 +207,20 @@ UPGRADE_DATA_DIR="$PRJDIR/vendor/civicrm/upgrade-test/databases"
 
 ## Directory where the civibuid can put debug output about this site
 UPGRADE_LOG_DIR=
+
+###############################################################################
+## "show" variables
+
+## Path the HTML output directory
+SHOW_HTML=
+
+## Path to the last git summary file (from "git scan export")
+## (Default: TMPDIR/git-scan-$SITE_NAME-last.json)
+SHOW_LAST_SCAN=
+
+## Path to which we will write a new git summary file (using "git scan export")
+## (Default: TMPDIR/git-scan-$SITE_NAME-new.json)
+SHOW_NEW_SCAN=
 
 ###############################################################################
 ## List of variables to save in the site's data file for use in future
@@ -199,6 +235,6 @@ PERSISTENT_VARS="
   TEST_DB_DSN TEST_DB_USER TEST_DB_PASS TEST_DB_HOST TEST_DB_PORT TEST_DB_NAME TEST_DB_ARGS
   CIVI_SETTINGS CIVI_FILES CIVI_TEMPLATEC CIVI_UF
   IS_INSTALLED
-  SITE_TYPE
+  SITE_TOKEN SITE_TYPE
 "
 # ignore: runtime options like CIVI_SQL_SKIP and FORCE_DOWNLOAD
