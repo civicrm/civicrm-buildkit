@@ -53,6 +53,8 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
     twigext_l10n_tests \
     syslog \
     thank_you \
+    wmf_audit \
+    wmf_campaigns \
     wmf_civicrm \
     wmf_common \
     wmf_communication \
@@ -64,7 +66,9 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
     wmf_reports \
     wmf_test_settings \
     wmf_unsubscribe \
-    wmf_unsubscribe_qc
+    wmf_unsubscribe_qc \
+    wmf_zendesk_reports \
+    worldpay_audit
 
   drush -y updatedb
 
