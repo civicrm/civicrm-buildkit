@@ -41,6 +41,7 @@ wp search-replace 'http://civicrm-wordpress.ex' "$SITE_URL"
 wp eval '$home = get_page_by_title("Welcome to CiviCRM with WordPress"); update_option("page_on_front", $home->ID); update_option("show_on_front", "page");'
 
 wp plugin activate civicrm
+wp plugin activate civicrm-demo-wp
 
 wp role create civicrm_admin 'CiviCRM Administrator'
 wp cap add civicrm_admin \

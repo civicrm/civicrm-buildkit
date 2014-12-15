@@ -21,6 +21,7 @@ git_cache_setup "https://github.com/civicrm/civicrm-drupal.git"              "$C
 git_cache_setup "https://github.com/civicrm/civicrm-packages.git"            "$CACHE_DIR/civicrm/civicrm-packages.git"
 git_cache_setup "https://github.com/civicrm/civicrm-joomla.git"              "$CACHE_DIR/civicrm/civicrm-joomla.git"
 git_cache_setup "https://github.com/civicrm/civicrm-wordpress.git"           "$CACHE_DIR/civicrm/civicrm-wordpress.git"
+git_cache_setup "https://github.com/civicrm/civicrm-demo-wp.git"             "$CACHE_DIR/civicrm/civicrm-demo-wp.git"
 git_cache_setup "https://github.com/eileenmcnaughton/civicrm_developer.git"  "$CACHE_DIR/eileenmcnaughton/civicrm_developer.git"
 
 ## SVN data is stale (last updated Apr 2014). Use daily tarballs instead.
