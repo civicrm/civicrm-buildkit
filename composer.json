@@ -20,7 +20,8 @@
     "phpunit/phpunit": "3.7.27",
     "phpunit/dbunit": "1.3.x",
     "phpunit/phpunit-selenium": "1.2.x",
-    "joomlatools/joomla-console": "dev-master-buildkit as 1.1.0"
+    "joomlatools/joomla-console": "dev-master-buildkit as 1.1.0",
+    "squizlabs/PHP_CodeSniffer": ">=2"
   },
   "repositories": [
     {

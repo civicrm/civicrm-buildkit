@@ -26,6 +26,8 @@ bin/joomla
 bin/karma
 bin/hub
 bin/paratest
+bin/phpcs
+bin/phpcbf
 bin/phpunit
 bin/wp
 bin/wp.bat
