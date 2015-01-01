@@ -8,6 +8,7 @@ A collection of tools and scripts for creating one or more CiviCRM development/d
  * Git/SVN
  * PHP
  * MySQL (client/server)
+ * NodeJS (for development with CiviCRM v4.6+)
  * Recommended: Apache (TODO: nginx)
  * Recommended: Ruby/Rake
 

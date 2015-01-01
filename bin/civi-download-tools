@@ -50,13 +50,16 @@ function echo_comment() {
 
 ## Ensure that a command is on the PATH. If missing, then give
 ## advice on possible resolutions and exit.
-## usage: check_command <command-name>
+## usage: check_command <command-name> <required|recommended> [<msg>]
 function check_command() {
   local cmd="$1"
+  local requirement="$2"
+  local msg="$3"
+  [ -z "$msg" ] && msg="Failed to locate command \"$cmd\". Please install it (and set the PATH appropriately)."
 
   cmdpath=$(which $cmd)
   if [ -z "$cmdpath" ]; then
-    echo "Failed to locate command \"$cmd\". Please install it (and set the PATH appropriately)."
+    echo "$msg"
     local is_first=1
     for altdir in \
       /Applications/MAMP/Library/bin \
@@ -75,7 +78,9 @@ function check_command() {
         echo " * $altdir"
       fi
     done
-    exit 3
+    if [ "$requirement" = "required" ]; then
+      exit 3
+    fi
   fi
 }
 
@@ -108,13 +113,13 @@ done
 
 ##################################################
 ## Validation
-check_command php
-check_command mysql
-check_command mysqldump
-check_command git
-check_command tar
-check_command bzip2
-check_command gzip
+check_command php required
+check_command mysql required
+check_command mysqldump required
+check_command git required
+check_command tar required
+check_command bzip2 required
+check_command gzip required
 
 if [ ! -d "$TMPDIR" ]; then
   mkdir -p "$TMPDIR"
@@ -225,6 +230,16 @@ pushd $PRJDIR >> /dev/null
   fi
 
 popd >> /dev/null
+set +e
+
+##################################################
+## Recommendations
+##
+## Note: Non-fatal recommendations come at the end so that they appear as
+## the last output (which is most likely to be read).
+
+check_command node recommended "WARNING: Failed to locate command \"node\". NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
+check_command npm recommended "WARNING: Failed to locate command \"npm\". NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
 
 ##################################################
 ## Cleanup
