@@ -23,6 +23,7 @@ bin/drush.complete.sh
 bin/drush.php
 bin/git-scan
 bin/joomla
+bin/jshint
 bin/karma
 bin/hub
 bin/paratest
