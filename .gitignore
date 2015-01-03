@@ -12,6 +12,7 @@ app/snapshot/
 app/tmp/
 bin/amp
 bin/boris
+bin/bower
 bin/civicrm-upgrade-test
 bin/civix
 bin/composer
@@ -22,6 +23,7 @@ bin/drush.complete.sh
 bin/drush.php
 bin/git-scan
 bin/joomla
+bin/karma
 bin/hub
 bin/paratest
 bin/phpunit
@@ -29,6 +31,7 @@ bin/wp
 bin/wp.bat
 build/
 extern/
+node_modules/
 vagrant/*/.vagrant
 vendor/
 web/
