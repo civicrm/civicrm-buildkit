@@ -164,6 +164,26 @@ pushd $PRJDIR >> /dev/null
     cat composer.json composer.lock | php -r 'echo md5(file_get_contents("php://stdin"));' > "$TMPDIR/composer-data.md5"
   fi
 
+  ## Download dependencies (via npm)
+  if which npm > /dev/null ; then
+    PACKAGE_MD5=$(cat package.json | php -r 'echo md5(file_get_contents("php://stdin"));')
+    touch "$TMPDIR/package-data.md5"
+    if [ -z "$IS_FORCE" -a "$(cat $TMPDIR/package-data.md5)" == "$PACKAGE_MD5" -a -d "$PRJDIR/node_modules" ]; then
+      echo_comment "[[npm dependencies already installed. Skipping.]]"
+    else
+      npm install
+      cat package.json | php -r 'echo md5(file_get_contents("php://stdin"));' > "$TMPDIR/package-data.md5"
+    fi
+    for f in node_modules/bower/bin/bower node_modules/karma/bin/karma ; do
+      pushd "$PRJDIR/bin" >> /dev/null
+        toolname=$(basename $f)
+        if [ ! -e "$toolname" ]; then
+          ln -s ../$f $toolname
+        fi
+      popd >> /dev/null
+    done
+  fi
+
   [ ! -d "$PRJDIR/extern" ] && mkdir "$PRJDIR/extern"
 
   ## Download "civix"

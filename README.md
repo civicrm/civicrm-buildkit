@@ -34,15 +34,25 @@ website.
 civicrm-buildkit includes several utilities which are useful in developing
 CiviCRM:
 
- * [amp](https://github.com/totten/amp) - Abstracted interface for local httpd/sql service (Apache/nginx/MySQL)
- * **civibuild** - CLI tool which builds a complete source tree (with CMS+Civi+addons), provisions httpd/sql, etc.
- * [civicrm-upgrade-test](https://github.com/civicrm/civicrm-upgrade-test) - Scripts and data files for testing upgrades
- * [composer](http://getcomposer.org/) - Dependency manager for PHP packages
- * [civix](https://github.com/totten/civix) - Code-generator for CiviCRM extensions
- * [git-scan](https://github.com/totten/git-scan/) - Git extension for working with many git repositories
- * [hub](http://hub.github.com/) - Git extension for easily working with GitHub (Note: Requires Ruby/Rake)
- * [drush](http://drush.ws/) - CLI administration tool for Drupal
- * [wp](http://wp-cli.org/) - CLI administration tool for WordPress
+ * CiviCRM
+   * [civix](https://github.com/totten/civix) - Code-generator for CiviCRM extensions
+ * Dependency management
+   * [composer](http://getcomposer.org/) - Dependency manager for PHP packages
+   * [bower](http://bower.io/) - Dependency manager for frontend Javascript packages (Note: Requires NodeJS)
+ * Source code management
+   * [git-scan](https://github.com/totten/git-scan/) - Git extension for working with many git repositories
+   * [hub](http://hub.github.com/) - Git extension for easily working with GitHub (Note: Requires Ruby/Rake)
+ * Site management
+   * [amp](https://github.com/totten/amp) - Abstracted interface for local httpd/sql service (Apache/nginx/MySQL)
+   * **civibuild** - CLI tool which builds a complete source tree (with CMS+Civi+addons), provisions httpd/sql, etc.
+   * [drush](http://drush.ws/) - CLI administration tool for Drupal
+   * [joomla](https://github.com/joomlatools/joomla-console) (joomla-console) - CLI administration for Joomla
+   * [wp](http://wp-cli.org/) (wp-cli) - CLI administration tool for WordPress
+ * Testing
+   * [civicrm-upgrade-test](https://github.com/civicrm/civicrm-upgrade-test) - Scripts and data files for testing upgrades
+   * [karma](http://karma-runner.github.io) (w/[jasmine](http://jasmine.github.io/)) - Unit testing for Javascript (Note: Requires NodeJS)
+   * [paratest](https://github.com/brianium/paratest) - Parallelized version of PHPUnit
+   * [phpunit](http://phpunit.de/) - Unit testing for PHP (with Selenium and DB add-ons)
 
 It will be handy to add these to your PATH:
 
