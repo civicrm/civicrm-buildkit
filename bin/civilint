@@ -1,0 +1,96 @@
+#!/bin/bash
+
+###############################################################################
+## Bootstrap
+
+## Determine the absolute path of the directory with the file
+## usage: absdirname <file-path>
+function absdirname() {
+  pushd $(dirname $0) >> /dev/null
+    pwd
+  popd >> /dev/null
+}
+
+BINDIR=$(absdirname "$0")
+PRJDIR=$(dirname "$BINDIR")
+PHPCS_STD="$PRJDIR/vendor/drupal/coder//coder_sniffer/Drupal"
+
+###############################################################################
+## Function library
+
+function show_help() {
+  echo "usage: civilint [files...]"
+  echo
+  echo "If \"files\" is omitted, scan any uncommitted changes from git."
+  echo "If \"files\" is \"-\", scan any files listed on STDIN"
+}
+
+## output a list of files which have been changed (according to git)
+function git_default_files() {
+  git diff --name-only
+  git diff --name-only --cached
+}
+
+## usage: check_file <filename>
+function check_file() {
+  local file="$1"
+  local result=0
+
+  if [ ! -e "$file" ]; then
+
+    echo "Missing file: $file"
+    result=1
+
+  elif [[ "$file" =~ \.php$ ]]; then
+
+    echo "Check PHP: $file"
+    if ! php -l "$file" ; then
+      result=1
+    fi | grep -v 'No syntax errors detected in'
+
+    if ! phpcs --standard="$PHPCS_STD" "$file" ; then
+      result=1
+    fi
+
+  elif [[ "$file" =~ \.js$ ]]; then
+
+    echo "Check JS: $file"
+    if ! jshint "$file" ; then
+      result=1
+    fi
+
+  fi
+
+  return $result
+}
+
+## usage: echo <filename> | check_stdin_files_and_exit
+function check_stdin_files_and_exit() {
+  TOTAL=0
+  INVALID=0
+  while read f ; do
+    ((TOTAL++))
+    if ! check_file "$f" ; then
+      ((INVALID++))
+    fi
+  done
+  echo
+  echo "Summary: $INVALID out of $TOTAL file(s) have problems"
+  exit $INVALID
+}
+
+
+###############################################################################
+## Main
+
+if [ -z "$1" ]; then
+  git_default_files | check_stdin_files_and_exit
+elif [ "$1" == "-" ]; then
+  check_stdin_files_and_exit
+elif [ "$1" == "-h" ]; then
+  show_help
+else
+  for f in "$@" ; do
+    echo $f
+  done | check_stdin_files_and_exit
+fi
