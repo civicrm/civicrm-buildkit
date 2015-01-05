@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1e478f483df20689537d755971bce79b",
+    "hash": "ce1317b8abcfa3a5c27a81f6a3a3678e",
     "packages": [
         {
             "name": "brianium/habitat",
@@ -130,7 +130,7 @@
             ],
             "description": "Collection of scripts and data-files for testing CiviCRM upgrades",
             "homepage": "https://github.com/civicrm/civicrm-upgrade-test",
-            "time": "2014-08-20 09:26:06"
+            "time": "2014-08-20 08:31:34"
         },
         {
             "name": "d11wtq/boris",
@@ -954,8 +954,7 @@
             "authors": [
                 {
                     "name": "Ben Ramsey",
-                    "homepage": "http://benramsey.com",
-                    "role": "Developer"
+                    "homepage": "http://benramsey.com"
                 }
             ],
             "description": "Provides functionality for array_column() to projects using PHP earlier than version 5.5.",
@@ -1494,12 +1493,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/totten/amp.git",
-                "reference": "8dc281d654514c7bd27f115ceb294b30603671fb"
+                "reference": "fefc49e4db80e1296a0e75e79c0c2ff468de18f7"
             },
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/totten/amp/zipball/3262d51f8a2caed65acea7fbdedb0a80bf9ee970",
-                "reference": "8dc281d654514c7bd27f115ceb294b30603671fb",
+                "reference": "fefc49e4db80e1296a0e75e79c0c2ff468de18f7",
                 "shasum": ""
             },
             "require": {
@@ -1534,7 +1533,7 @@
             ],
             "description": "CLI Interface to *AMP-style stacks",
             "homepage": "https://github.com/totten/amp",
-            "time": "2014-10-12 18:49:36"
+            "time": "2015-01-05 17:45:13"
         },
         {
             "name": "totten/git-scan",
