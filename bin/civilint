@@ -13,7 +13,7 @@ function absdirname() {
 
 BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
-PHPCS_STD="$PRJDIR/vendor/drupal/coder//coder_sniffer/Drupal"
+PHPCS_STD="$PRJDIR/vendor/drupal/coder/coder_sniffer/Drupal"
 
 ###############################################################################
 ## Function library
@@ -32,6 +32,7 @@ function git_default_files() {
 }
 
 ## usage: check_file <filename>
+## Return code indicates success (0) or failure (1)
 function check_file() {
   local file="$1"
   local result=0
@@ -59,6 +60,10 @@ function check_file() {
       result=1
     fi
 
+  else
+
+    echo "Skip: $file"
+
   fi
 
   return $result
@@ -75,7 +80,13 @@ function check_stdin_files_and_exit() {
     fi
   done
   echo
-  echo "Summary: $INVALID out of $TOTAL file(s) have problems"
+  if [ 0 == "$TOTAL" ]; then
+    echo "Summary: No files to check"
+  elif [ 0 == "$INVALID" ]; then
+    echo "Summary: No problems found in $TOTAL file(s)"
+  else
+    echo "Summary: $INVALID out of $TOTAL file(s) have problems"
+  fi
   exit $INVALID
 }
 
