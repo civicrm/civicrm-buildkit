@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0cc199ddab3c7320d6e4d1a2a86acda0",
+    "hash": "266eb2d948cf6dcd9ed9c56a682de56a",
     "packages": [
         {
             "name": "brianium/habitat",
@@ -106,12 +106,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/civicrm/civicrm-upgrade-test.git",
-                "reference": "0b4975d9812fe0e46c3b3c912a7caaa47b1e9594"
+                "reference": "11bd7affcf26c98ca1d8616cf0b8ff561192f872"
             },
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/0b4975d9812fe0e46c3b3c912a7caaa47b1e9594",
-                "reference": "0b4975d9812fe0e46c3b3c912a7caaa47b1e9594",
+                "reference": "11bd7affcf26c98ca1d8616cf0b8ff561192f872",
                 "shasum": ""
             },
             "bin": [
@@ -130,7 +130,7 @@
             ],
             "description": "Collection of scripts and data-files for testing CiviCRM upgrades",
             "homepage": "https://github.com/civicrm/civicrm-upgrade-test",
-            "time": "2015-01-07 23:14:39"
+            "time": "2015-01-07 23:28:01"
         },
         {
             "name": "d11wtq/boris",
