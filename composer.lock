@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ce1317b8abcfa3a5c27a81f6a3a3678e",
+    "hash": "0cc199ddab3c7320d6e4d1a2a86acda0",
     "packages": [
         {
             "name": "brianium/habitat",
@@ -102,16 +102,16 @@
         },
         {
             "name": "civicrm/upgrade-test",
-            "version": "0.3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/civicrm/civicrm-upgrade-test.git",
-                "reference": "76bcca6d771083a6fd2ff972156ad70be6f8d601"
+                "reference": "0b4975d9812fe0e46c3b3c912a7caaa47b1e9594"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/76bcca6d771083a6fd2ff972156ad70be6f8d601",
-                "reference": "76bcca6d771083a6fd2ff972156ad70be6f8d601",
+                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/0b4975d9812fe0e46c3b3c912a7caaa47b1e9594",
+                "reference": "0b4975d9812fe0e46c3b3c912a7caaa47b1e9594",
                 "shasum": ""
             },
             "bin": [
@@ -130,7 +130,7 @@
             ],
             "description": "Collection of scripts and data-files for testing CiviCRM upgrades",
             "homepage": "https://github.com/civicrm/civicrm-upgrade-test",
-            "time": "2014-08-20 08:31:34"
+            "time": "2015-01-07 23:14:39"
         },
         {
             "name": "d11wtq/boris",
@@ -954,7 +954,8 @@
             "authors": [
                 {
                     "name": "Ben Ramsey",
-                    "homepage": "http://benramsey.com"
+                    "homepage": "http://benramsey.com",
+                    "role": "Developer"
                 }
             ],
             "description": "Provides functionality for array_column() to projects using PHP earlier than version 5.5.",
@@ -1710,6 +1711,7 @@
         "drush/drush": 20,
         "totten/amp": 20,
         "totten/git-scan": 20,
+        "civicrm/upgrade-test": 20,
         "drupal/coder": 20,
         "brianium/paratest": 20,
         "joomlatools/joomla-console": 20
