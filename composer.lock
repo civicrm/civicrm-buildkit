@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "bfb19e6e68e436acfbd6d87b9e34f8ae",
+    "hash": "5bacb8bd905f6c6709c81251384c1ef8",
     "packages": [
         {
             "name": "brianium/habitat",
@@ -172,7 +172,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/civicrm/coder.git",
-                "reference": "ffcb84f4dd875d9e65e0ef47e08dbc2095677ec8"
+                "reference": "1d35bfd4842cbc13f62fba63298e9ad2ddb1f103"
             },
             "require": {
                 "php": ">=5.2.0",
@@ -196,7 +196,7 @@
                 "issues": "https://drupal.org/project/issues/coder",
                 "source": "https://drupal.org/project/coder"
             },
-            "time": "2015-01-09 05:01:26"
+            "time": "2015-01-13 02:26:14"
         },
         {
             "name": "drush/drush",
