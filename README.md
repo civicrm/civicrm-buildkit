@@ -42,6 +42,11 @@ CiviCRM:
  * Source code management
    * [git-scan](https://github.com/totten/git-scan/) - Git extension for working with many git repositories
    * [hub](http://hub.github.com/) - Git extension for easily working with GitHub (Note: Requires Ruby/Rake)
+ * Quality control
+   * **civilint** - Wrapper script which calls all syntax checks (phpcs, jshint, etc) on uncommitted files.
+   * [jshint](http://jshint.com/) - Javascript syntax checker
+   * [phpcs](https://github.com/squizlabs/PHP_CodeSniffer) - PHP syntax checker
+   * [coder 2.x (Civi)](https://github.com/civicrm/coder) - phpcs configuration derived from [coder 2.x](https://www.drupal.org/project/coder). (The [Civi coding standard](http://wiki.civicrm.org/confluence/display/CRMDOC/PHP+Code+and+Inline+Documentation) derives from the [Drupal coding standard](https://www.drupal.org/coding-standards) with variations for class/function/variable naming.)
  * Site management
    * [amp](https://github.com/totten/amp) - Abstracted interface for local httpd/sql service (Apache/nginx/MySQL)
    * **civibuild** - CLI tool which builds a complete source tree (with CMS+Civi+addons), provisions httpd/sql, etc.
