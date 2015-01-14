@@ -1,0 +1,21 @@
+#!/bin/bash
+
+###############################################################################
+## Bootstrap
+
+## Determine the absolute path of the directory with the file
+## usage: absdirname <file-path>
+function absdirname() {
+  pushd $(dirname $0) >> /dev/null
+    pwd
+  popd >> /dev/null
+}
+
+BINDIR=$(absdirname "$0")
+PRJDIR=$(dirname "$BINDIR")
+PHPCS_STD="$PRJDIR/vendor/drupal/coder/coder_sniffer/Drupal"
+
+###############################################################################
+## Function library
+
+eval "$BINDIR/phpcs" --standard="$PHPCS_STD" "$@"
