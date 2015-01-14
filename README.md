@@ -38,11 +38,11 @@ CiviCRM:
    * [civix](https://github.com/totten/civix) - Code-generator for CiviCRM extensions
  * Dependency management
    * [composer](http://getcomposer.org/) - Dependency manager for PHP packages
-   * [bower](http://bower.io/) - Dependency manager for frontend Javascript packages (Note: Requires NodeJS)
+   * [bower](http://bower.io/) - Dependency manager for frontend Javascript packages
  * Source code management
    * [git-scan](https://github.com/totten/git-scan/) - Git extension for working with many git repositories
    * [hub](http://hub.github.com/) - Git extension for easily working with GitHub (Note: Requires Ruby/Rake)
- * Quality control
+ * Source code quality
    * **civilint** - Wrapper script which calls all syntax checks (phpcs, jshint, etc) on uncommitted files.
    * [jshint](http://jshint.com/) - Javascript syntax checker
    * [phpcs](https://github.com/squizlabs/PHP_CodeSniffer) - PHP syntax checker
