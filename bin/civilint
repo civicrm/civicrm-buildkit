@@ -119,7 +119,7 @@ elif [ "$1" == "-h" ]; then
   show_help
 else
   for f in "$@" ; do
-    echo $f >> "$FILELIST"
+    echo $f
   done | split_files "$TMP/php.txt" "$TMP/js.txt" "$TMP/skip.txt"
 fi
 
