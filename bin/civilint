@@ -6,7 +6,7 @@
 ## Determine the absolute path of the directory with the file
 ## usage: absdirname <file-path>
 function absdirname() {
-  pushd $(dirname $0) >> /dev/null
+  pushd $(dirname $1) >> /dev/null
     pwd
   popd >> /dev/null
 }
@@ -14,12 +14,17 @@ function absdirname() {
 BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
 PHPCS_STD="$PRJDIR/vendor/drupal/coder/coder_sniffer/Drupal"
+CHECKSTYLE_OUT=
+CHECKSTYLE_TMPDIR=
+FILELIST=
+EXITCODE=
+TMP=
 
 ###############################################################################
 ## Function library
 
 function show_help() {
-  echo "usage: civilint [files...]"
+  echo "usage: civilint [--checkstyle <output-dir>] [file1 file2...]"
   echo
   echo "If \"files\" is omitted, scan any uncommitted changes from git."
   echo "If \"files\" is \"-\", scan any files listed on STDIN"
@@ -31,77 +36,141 @@ function git_default_files() {
   git diff --name-only --cached
 }
 
-## usage: check_file <filename>
-## Return code indicates success (0) or failure (1)
-function check_file() {
-  local file="$1"
-  local result=0
+## Split files into categories (PHP-files, JS-files, skip-files).
+## usage: cat file-list.txt | split_files phpfiles.txt jsfiles.txt skipfiles.txt
+function split_files() {
+  local phpfiles="$1"
+  local jsfiles="$2"
+  local skipfiles="$3"
 
-  if [ ! -e "$file" ]; then
+  touch "$phpfiles" "$jsfiles" "$skipfiles"
 
-    echo "Missing file: $file"
-    result=1
-
-  elif [[ "$file" =~ \.php$ ]]; then
-
-    echo "Check PHP: $file"
-    if ! php -l "$file" ; then
-      result=1
-    fi | grep -v 'No syntax errors detected in'
-
-    if ! phpcs --standard="$PHPCS_STD" "$file" ; then
-      result=1
+  while read file; do
+    if [[ "$absfile" =~ (/DAO/|/examples/) ]]; then
+      echo "$file" >> "$skipfiles"
+    elif [[ "$file" =~ \.php$ ]]; then
+      echo "$file" >> "$phpfiles"
+    elif [[ "$file" =~ \.js$ ]]; then
+      echo "$file" >> "$jsfiles"
+    else
+      echo "$file" >> "$skipfiles"
     fi
-
-  elif [[ "$file" =~ \.js$ ]]; then
-
-    echo "Check JS: $file"
-    if ! jshint "$file" ; then
-      result=1
-    fi
-
-  else
-
-    echo "Skip: $file"
-
-  fi
-
-  return $result
+  done
 }
 
-## usage: echo <filename> | check_stdin_files_and_exit
-function check_stdin_files_and_exit() {
+## Check all files in a set
+## cat filelist.txt| php_check_files
+function php_check_files() {
   TOTAL=0
   INVALID=0
   while read f ; do
     ((TOTAL++))
-    if ! check_file "$f" ; then
+    if ! php -l "$f" ; then
       ((INVALID++))
-    fi
+    fi | grep -v 'No syntax errors detected in'
   done
-  echo
-  if [ 0 == "$TOTAL" ]; then
-    echo "Summary: No files to check"
-  elif [ 0 == "$INVALID" ]; then
-    echo "Summary: No problems found in $TOTAL file(s)"
-  else
-    echo "Summary: $INVALID out of $TOTAL file(s) have problems"
-  fi
-  exit $INVALID
 }
 
+## usage: mydir=$(mktempdir)
+function mktempdir() {
+  php -r '$f = tempnam(sys_get_temp_dir(), "civilint.tmp.d"); unlink($f); mkdir($f); chmod($f, 0700); echo "$f\n"; '
+}
+
+function cleanup() {
+  if [ -n "$TMP" -a -d "$TMP" ]; then
+    rm -rf "$TMP"
+  fi
+}
+
+## usage: show_files "Prefix: " <file-list.txt>
+function show_files() {
+  if grep -q . "$2" ; then
+    echo "$1"
+    cat "$2" | while read f ; do
+      echo " * $f"
+    done
+  fi
+}
 
 ###############################################################################
 ## Main
 
+trap cleanup 0
+
+## Determine output mode
+if [ "$1" == "--checkstyle" ]; then
+  CHECKSTYLE_OUT="$2"
+  shift 2
+fi
+
+## Capture the list of files
+TMP=$(mktempdir)
 if [ -z "$1" ]; then
-  git_default_files | check_stdin_files_and_exit
+  if [ ! -d .git ]; then
+    echo "ERROR: Cannot check for uncommitted changes in git. Please change to the git root."
+    echo
+    show_help
+    exit 2
+  fi
+  git_default_files | split_files "$TMP/php.txt" "$TMP/js.txt" "$TMP/skip.txt"
 elif [ "$1" == "-" ]; then
-  check_stdin_files_and_exit
+  split_files "$TMP/php.txt" "$TMP/js.txt" "$TMP/skip.txt"
 elif [ "$1" == "-h" ]; then
   show_help
 else
   for f in "$@" ; do
-    echo $f
-  done | check_stdin_files_and_exit
+    echo $f >> "$FILELIST"
+  done | split_files "$TMP/php.txt" "$TMP/js.txt" "$TMP/skip.txt"
+fi
+
+if cat "$TMP/php.txt" "$TMP/js.txt" "$TMP/skip.txt" | grep -q  . ;then
+  echo "===========================[ Identify Files ]==========================="
+  show_files "PHP Files:" "$TMP/php.txt"
+  show_files "Javascript Files:" "$TMP/js.txt"
+  show_files "Skip Files:" "$TMP/skip.txt"
+fi
+
+## Run PHPCS
+PHPCS_EXIT=0
+PHPL_EXIT=0
+if grep -q . "$TMP/php.txt" ; then
+  echo "===============================[ php -l ]==============================="
+  php_check_files < "$TMP/php.txt" > "$TMP/php-check.log"
+  if grep -q . "$TMP/php-check.log" ; then
+    PHPL_EXIT=1
+    cat "$TMP/php-check.log"
+  fi
+
+  echo "===============================[ phpcs  ]==============================="
+  if [ -n "$CHECKSTYLE_OUT" ]; then
+    xargs phpcs --standard="$PHPCS_STD" --report=checkstyle < "$TMP/php.txt" > "$CHECKSTYLE_OUT/checkstyle-phpcs.xml"
+    PHPCS_EXIT=$?
+  else
+    xargs phpcs --standard="$PHPCS_STD" < "$TMP/php.txt"
+    PHPCS_EXIT=$?
+  fi
+fi
+
+## Run jshint
+JSHINT_EXIT=0
+if grep -q . "$TMP/js.txt" ; then
+  echo "===============================[ jshint ]==============================="
+  if [ -n "$CHECKSTYLE_OUT" ]; then
+    xargs jshint --reporter=checkstyle < "$TMP/js.txt" > "$CHECKSTYLE_OUT/checkstyle-jshint.xml"
+    JSHINT_EXIT=$?
+  else
+    xargs jshint < "$TMP/js.txt"
+    JSHINT_EXIT=$?
+  fi
+fi
+
+## Finish up
+if [ "$PHPCS_EXIT" -gt 0 -o "$PHPL_EXIT" -gt 0 ]; then
+  echo "Found PHP errors" >> /dev/stderr
+fi
+if [ "$JSHINT_EXIT" -gt 0 ]; then
+  echo "Found JS errors" >> /dev/stderr
+fi
+if [ "$PHPCS_EXIT" -gt 0 -o "$PHPL_EXIT" -gt 0 -o "$JSHINT_EXIT" -gt 0 ]; then
+  exit 1
 fi
