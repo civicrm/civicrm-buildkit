@@ -550,7 +550,7 @@ EOF
 ###############################################################################
 ## Generate civicrm.settings.php and CiviSeleniumSettings.php for testing
 function civicrm_make_test_settings_php() {
-  cvutil_assertvars civicrm_make_test_settings_php CIVI_CORE CIVI_DB_NAME CIVI_DB_USER CIVI_DB_PASS CIVI_DB_HOST CMS_URL ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS CIVI_SITE_KEY
+  cvutil_assertvars civicrm_make_test_settings_php CIVI_CORE CIVI_DB_NAME CIVI_DB_USER CIVI_DB_PASS CIVI_DB_HOST CMS_URL CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS CIVI_SITE_KEY
 
   ## Does this build include development support (eg git or tarball-based)?
   if [ -d "$CIVI_CORE/tests/phpunit/CiviTest" ]; then
@@ -561,6 +561,7 @@ function civicrm_make_test_settings_php() {
     if (defined('CIVICRM_WEBTEST')) {
       // For Selenium tests, use normal DB
       define('CIVICRM_DSN', "mysql://${CIVI_DB_USER}:${CIVI_DB_PASS}@${CIVI_DB_HOST}:${CIVI_DB_PORT}/${CIVI_DB_NAME}");
+      define('CIVICRM_UF_DSN', "mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOST}:${CMS_DB_PORT}/${CMS_DB_NAME}");
     } else {
       // For unit tests, use headless test DB
       define('CIVICRM_DSN', "mysql://${TEST_DB_USER}:${TEST_DB_PASS}@${TEST_DB_HOST}:${TEST_DB_PORT}/${TEST_DB_NAME}");
