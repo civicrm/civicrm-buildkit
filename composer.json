@@ -16,7 +16,7 @@
     "totten/amp": "dev-master#fefc49e4db80e1296a0e75e79c0c2ff468de18f7",
     "totten/git-scan": "dev-master#495f9ee8db337b3903929a6bf713f6b427e99d8e",
     "civicrm/upgrade-test": "dev-master#11bd7affcf26c98ca1d8616cf0b8ff561192f872",
-    "drupal/coder": "dev-8.x-2.x-civi#1d35bfd4842cbc13f62fba63298e9ad2ddb1f103",
+    "drupal/coder": "dev-8.x-2.x-civi#a801890a82d52e23a83c5d820270b6e228843d79",
     "brianium/paratest": "dev-batching as 0.7",
     "phpunit/phpunit": "3.7.27",
     "phpunit/dbunit": "1.3.x",
