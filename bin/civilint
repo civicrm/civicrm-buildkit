@@ -48,10 +48,17 @@ function split_files() {
   while read file; do
     if [[ "$absfile" =~ (/DAO/|/examples/) ]]; then
       echo "$file" >> "$skipfiles"
+
     elif [[ "$file" =~ \.php$ ]]; then
       echo "$file" >> "$phpfiles"
+
     elif [[ "$file" =~ \.js$ ]]; then
       echo "$file" >> "$jsfiles"
+
+    ## e.g. <?php or #!/usr/bin/php or #!/usr/bin/env php
+    elif head -n1 "$file" | grep '\(\?php\|#!.*bin/php\|#!.*env php\)' -q ; then
+      echo "$file" >> "$phpfiles"
+
     else
       echo "$file" >> "$skipfiles"
     fi
