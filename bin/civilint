@@ -124,6 +124,7 @@ elif [ "$1" == "-" ]; then
   split_files "$TMP/php.txt" "$TMP/js.txt" "$TMP/skip.txt"
 elif [ "$1" == "-h" ]; then
   show_help
+  exit 0
 else
   for f in "$@" ; do
     echo $f
