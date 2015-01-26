@@ -46,7 +46,10 @@ function split_files() {
   touch "$phpfiles" "$jsfiles" "$skipfiles"
 
   while read file; do
-    if [[ "$absfile" =~ (/DAO/|/examples/) ]]; then
+    if [ ! -e "$file" ]; then
+      echo "$file" >> "$skipfiles"
+
+    elif [[ "$absfile" =~ (/DAO/|/examples/) ]]; then
       echo "$file" >> "$skipfiles"
 
     elif [[ "$file" =~ \.php$ ]]; then
