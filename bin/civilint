@@ -46,6 +46,7 @@ function split_files() {
   touch "$phpfiles" "$jsfiles" "$skipfiles"
 
   while read file; do
+    absfile=$(absdirname "$file")/$(basename "$file")
     if [ ! -e "$file" ]; then
       echo "$file" >> "$skipfiles"
 
