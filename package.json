@@ -14,6 +14,8 @@
     "jshint": "^2.5.11",
     "karma": "^0.12.16",
     "karma-chrome-launcher": "^0.1.4",
-    "karma-jasmine": "~0.3.2"
+    "karma-jasmine": "~0.3.2",
+    "karma-junit-reporter": "^0.2.2",
+    "karma-phantomjs-launcher": "^0.1.4"
   }
 }
