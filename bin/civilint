@@ -171,7 +171,7 @@ if grep -q . "$TMP/js.txt" ; then
     xargs jshint --reporter=checkstyle < "$TMP/js.txt" > "$CHECKSTYLE_OUT/checkstyle-jshint.xml"
     JSHINT_EXIT=$?
   else
-    xargs jshint < "$TMP/js.txt"
+    xargs jshint --verbose < "$TMP/js.txt"
     JSHINT_EXIT=$?
   fi
 fi
