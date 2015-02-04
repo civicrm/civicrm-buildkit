@@ -83,6 +83,7 @@ For example, at time of writing, it includes:
  * *symfony*: An experimental hybrid site running Drupal 7, Symfony 2, and CiviCRM
  * *extdir*: A mock website akin to civicrm.org/extdir/ . Useful testing the extension download process.
  * *dist*: A website containing nightly builds akin to dist.civicrm.org. Useful for preparing CiviCRM tarballs.
+ * *l10n*: WIP - A build environment for creating translation files.
  * *joomla-demo*: WIP/incomplete/broken
 
 For a list of available build-types as well as documentation on writing build scripts,
