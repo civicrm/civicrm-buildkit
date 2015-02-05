@@ -14,6 +14,7 @@ bin/amp
 bin/boris
 bin/bower
 bin/civicrm-upgrade-test
+bin/civistrings
 bin/civix
 bin/composer
 bin/dbunit

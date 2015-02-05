@@ -36,6 +36,7 @@ CiviCRM:
 
  * CiviCRM
    * [civix](https://github.com/totten/civix) - Code-generator for CiviCRM extensions
+   * [civistrings](https://github.com/civicrm/civistrings) - String extractor
  * Dependency management
    * [composer](http://getcomposer.org/) - Dependency manager for PHP packages
    * [bower](http://bower.io/) - Dependency manager for frontend Javascript packages
@@ -83,6 +84,7 @@ For example, at time of writing, it includes:
  * *symfony*: An experimental hybrid site running Drupal 7, Symfony 2, and CiviCRM
  * *extdir*: A mock website akin to civicrm.org/extdir/ . Useful testing the extension download process.
  * *dist*: A website containing nightly builds akin to dist.civicrm.org. Useful for preparing CiviCRM tarballs.
+ * *l10n*: WIP - A build environment for creating translation files.
  * *joomla-demo*: WIP/incomplete/broken
 
 For a list of available build-types as well as documentation on writing build scripts,
