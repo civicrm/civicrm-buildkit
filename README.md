@@ -36,6 +36,7 @@ CiviCRM:
 
  * CiviCRM
    * [civix](https://github.com/totten/civix) - Code-generator for CiviCRM extensions
+   * [civistrings](https://github.com/civicrm/civistrings) - String extractor
  * Dependency management
    * [composer](http://getcomposer.org/) - Dependency manager for PHP packages
    * [bower](http://bower.io/) - Dependency manager for frontend Javascript packages
