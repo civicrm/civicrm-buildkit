@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b15065e8fddb69eebf2037fe842d6880",
+    "hash": "a689e9739c3f6e223c9c8b2a93b0f7a9",
     "packages": [
         {
             "name": "brianium/habitat",
@@ -106,12 +106,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/civicrm/civistrings.git",
-                "reference": "039aa255f5017f369ed73599bda79e17752b40f7"
+                "reference": "fd9627abe581385675b35638cda4e8fab71d2ee3"
             },
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/civicrm/civistrings/zipball/2fea65b18b3c1443873323d630d2b59994c962cf",
-                "reference": "039aa255f5017f369ed73599bda79e17752b40f7",
+                "reference": "fd9627abe581385675b35638cda4e8fab71d2ee3",
                 "shasum": ""
             },
             "require": {
@@ -140,7 +140,7 @@
                 }
             ],
             "description": "String extractor for CiviCRM",
-            "time": "2015-02-05 16:13:59"
+            "time": "2015-02-06 12:25:01"
         },
         {
             "name": "civicrm/upgrade-test",

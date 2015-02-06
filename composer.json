@@ -15,7 +15,7 @@
     "wp-cli/wp-cli": "0.17",
     "totten/amp": "dev-master#fefc49e4db80e1296a0e75e79c0c2ff468de18f7",
     "totten/git-scan": "dev-master#495f9ee8db337b3903929a6bf713f6b427e99d8e",
-    "civicrm/strings": "dev-master#039aa255f5017f369ed73599bda79e17752b40f7",
+    "civicrm/strings": "dev-master#fd9627abe581385675b35638cda4e8fab71d2ee3",
     "civicrm/upgrade-test": "dev-master#11bd7affcf26c98ca1d8616cf0b8ff561192f872",
     "drupal/coder": "dev-8.x-2.x-civi#a801890a82d52e23a83c5d820270b6e228843d79",
     "brianium/paratest": "dev-batching as 0.7",
