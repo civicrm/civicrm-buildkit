@@ -33,6 +33,7 @@ fi
 ## usage: do_gitify <repo-url> <existing-dir> [git-checkout-options]
 function do_gitify() {
   REPO="$1"
+  REPO_BASE=$(basename "$REPO")
   TGT="$2"
   TMP="${TGT}.tmp"
   shift 2
@@ -43,8 +44,8 @@ function do_gitify() {
   fi
   [ -d $TGT ] || mkdir -p "$TGT"
   [ -d $TMP ] && rm -rf "$TMP"
-  echo "[[Checkout $REPO ($TMP)]]"
-  echo "[git clone "$@" "$REPO" "$TMP"]"
+  echo "[[Checkout ${REPO_BASE}]]"
+  echo "git clone "$@" "$REPO" "$TMP""
   git clone "$@" "$REPO" "$TMP"
 
   echo "[[Swap metadata]]"
@@ -81,20 +82,6 @@ TMPL
   else
     echo "[[Skip hook installation ($TGT) -- use \"--hooks\" to enable]]"
   fi
-}
-
-###########################################
-## Create or update the URL of a git remote
-## usage: git_set_remote <local-repo-path> <remote-name> <remote-url>
-function git_set_remote() {
-  REPODIR="$1"
-  REMOTE_NAME="$2"
-  REMOTE_URL="$3"
-  echo "[[Set remote ($REMOTE_NAME => $REMOTE_URL within $REPODIR)]]"
-
-  pushd "$REPODIR" >> /dev/null
-    git remote set-url "$REMOTE_NAME"  "$REMOTE_URL" >/dev/null 2>&1 || git remote add "$REMOTE_NAME"  "$REMOTE_URL"
-  popd >> /dev/null
 }
 
 ###########################################
@@ -173,7 +160,6 @@ function do_setupconf() {
 function config_repo() {
   do_gitify "$CACHE_DIR/civicrm/${1}.git" "$2" -b "$3"
   do_hookify "$1" "$2" "$4"
-  git_set_remote "$2" origin "$CACHE_DIR/civicrm/${1}.git"
 }
 
 function check_dep() {
@@ -194,7 +180,7 @@ source "$PRJDIR/src/civibuild.defaults.sh"
 source "$PRJDIR/src/civibuild.compute-defaults.sh"
 
 CIVICRM_CMS=""
-CIVICRM_ROOT=""
+CIVICRM_ROOT="$PWD"
 CIVICRM_L10N=""
 CIVICRM_GIT_HOOKS=""
 CIVICRM_BRANCH="master"
@@ -213,9 +199,6 @@ while [ -n "$1" ]; do
   elif [ -z "$CIVICRM_CMS" ]; then
     ## First arg
     CIVICRM_CMS="$1"
-  elif [ -z "$CIVICRM_ROOT" ]; then
-    ## Third arg
-    CIVICRM_ROOT="$1"
   else
     echo "unrecognized argument: $1"
     exit 2
@@ -225,11 +208,12 @@ done
 
 source "$PRJDIR/src/civibuild.compute-defaults.sh"
 
-if [ -z "$CIVICRM_ROOT" -o ! -d "$CIVICRM_ROOT" -o -z "$CIVICRM_CMS" ]; then
-  echo "Convert a directory into a set of CiviCRM git clones"
-  echo "usage: $0 <Drupal|Drupal6|Joomla|WordPress|all> <existing-civicrm-root> [--l10n] [--hooks] [--branch <branch>]"
+if [ ! -d "$CIVICRM_ROOT" -o -z "$CIVICRM_CMS" ]; then
+  PROG=$(basename "$0")
+  echo "Convert the current directory into a set of CiviCRM git clones."
+  echo ""
+  echo "usage: $PROG <Drupal|Drupal6|Joomla|WordPress|all> [--l10n] [--hooks] [--branch <branch>]"
   echo "  <cms-name>: one of: Drupal|Drupal6|Joomla|WordPress|all"
-  echo "  <existing-civicrm-root>: the main directory containing CiviCRM"
   echo "  --l10n: optionally fetch localization data"
   echo "  --hooks: optionally install recommended git hooks; the hooks are mostly"
   echo "           tested with git CLI under Linux and OSX; they haven't been"
@@ -241,14 +225,20 @@ if [ -z "$CIVICRM_ROOT" -o ! -d "$CIVICRM_ROOT" -o -z "$CIVICRM_CMS" ]; then
   echo "Note: If pointing to a pre-existing directory, your local changes may be replaced by"
   echo "the pristine code from git. If you've made changes, then make sure there's a backup!"
   echo ""
-  echo "example: $0 Drupal /var/www/drupal7/sites/all/modules/civicrm"
-  echo "  (checkout core code plus Drupal 7.x integration code)"
+  echo "Example: In an existing site with Drupal 7 + CiviCRM, checkout latest code."
+  echo "       $ cd /var/www/drupal7/sites/all/modules/civicrm"
+  echo "       $ $PROG Drupal"
   echo ""
-  echo "example: $0 Drupal6 /var/www/drupal6/sites/all/modules/civicrm"
-  echo "  (checkout core code plus Drupal 6.x integration code)"
+  echo "Example: In an existing site with Drupal 6 + CiviCRM, checkout Civi v4.4."
+  echo "       $ cd /var/www/drupal6/sites/all/modules/civicrm"
+  echo "       $ $PROG Drupal6 --branch 4.4"
   echo ""
-  echo "example: $0 all ~/src/civicrm --l10n"
-  echo "  (checkout core code plus Drupal 7.x, Joomla, and WordPress integration code and l10n)"
+  echo "Example: Checkout core code plus Drupal 7.x, Joomla, and WordPress"
+  echo "       $ mkdir ~/src/civicrm"
+  echo "       $ cd ~/src/civicrm"
+  echo "       $ $PROG all --l10n"
+  echo ""
+  echo "FIXME: Joomla and WordPress options are misleading"
   exit 1
 fi
 
