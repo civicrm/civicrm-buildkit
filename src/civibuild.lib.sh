@@ -909,3 +909,15 @@ function svn_cache_clone() {
   fi
   rsync -va "$cachedir/./" "$workdir/./"
 }
+
+###############################################################################
+## Update core/default caches
+function default_cache_setup() {
+  if [ -z "$OFFLINE" ]; then
+    echo "[[Update caches]]"
+    cvutil_assertvars civibuild_download PRJDIR
+    if [ -f "$PRJDIR/app/config/caches.sh" ]; then
+      source "$PRJDIR/app/config/caches.sh"
+    fi
+  fi
+}

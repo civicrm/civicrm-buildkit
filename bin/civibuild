@@ -145,9 +145,7 @@ function civibuild_download() {
   if [ ! -d "$WEB_ROOT" ]; then
     IS_INSTALLED=
     pushd "$PRJDIR" > /dev/null
-      if [ -f "$PRJDIR/app/config/caches.sh" ]; then
-        source "$PRJDIR/app/config/caches.sh"
-      fi
+      default_cache_setup
       civibuild_run download
       git_cache_deref_remotes "$CACHE_DIR" "$WEB_ROOT"
     popd > /dev/null
