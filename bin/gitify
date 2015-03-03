@@ -173,6 +173,41 @@ function check_dep() {
 }
 
 ###########################################
+## do_help
+function do_help() {
+  PROG=$(basename "$0")
+  echo "Convert the current directory into a set of CiviCRM git clones."
+  echo ""
+  echo "usage: $PROG <Drupal|Drupal6|Joomla|WordPress|all> [--l10n] [--hooks] [--branch <branch>]"
+  echo "  <cms-name>: one of: Drupal|Drupal6|Joomla|WordPress|all"
+  echo "  --l10n: optionally fetch localization data"
+  echo "  --hooks: optionally install recommended git hooks; the hooks are mostly"
+  echo "           tested with git CLI under Linux and OSX; they haven't been"
+  echo "           tested with git GUIs or Windows"
+  echo "  --branch <branch>: specy the base branch name to checkout (ex: 'master', '4.4')"
+  echo "           For some repos, this name is adapted (ex: Drupal's '7.x-master' or '6.x-master'"
+  echo "  --skip-gencode: optionally disable gencode execution"
+  echo ""
+  echo "Note: If pointing to a pre-existing directory, your local changes may be replaced by"
+  echo "the pristine code from git. If you've made changes, then make sure there's a backup!"
+  echo ""
+  echo "Example: In an existing site with Drupal 7 + CiviCRM, checkout latest code."
+  echo "       $ cd /var/www/drupal7/sites/all/modules/civicrm"
+  echo "       $ $PROG Drupal"
+  echo ""
+  echo "Example: In an existing site with Drupal 6 + CiviCRM, checkout Civi v4.4."
+  echo "       $ cd /var/www/drupal6/sites/all/modules/civicrm"
+  echo "       $ $PROG Drupal6 --branch 4.4"
+  echo ""
+  echo "Example: Checkout core code plus Drupal 7.x, Joomla, and WordPress"
+  echo "       $ mkdir ~/src/civicrm"
+  echo "       $ cd ~/src/civicrm"
+  echo "       $ $PROG all --l10n"
+  echo ""
+  echo "FIXME: Joomla and WordPress options are misleading"
+}
+
+###########################################
 #### Main: Parse arguments
 
 set -e
@@ -209,36 +244,7 @@ done
 source "$PRJDIR/src/civibuild.compute-defaults.sh"
 
 if [ ! -d "$CIVICRM_ROOT" -o -z "$CIVICRM_CMS" ]; then
-  PROG=$(basename "$0")
-  echo "Convert the current directory into a set of CiviCRM git clones."
-  echo ""
-  echo "usage: $PROG <Drupal|Drupal6|Joomla|WordPress|all> [--l10n] [--hooks] [--branch <branch>]"
-  echo "  <cms-name>: one of: Drupal|Drupal6|Joomla|WordPress|all"
-  echo "  --l10n: optionally fetch localization data"
-  echo "  --hooks: optionally install recommended git hooks; the hooks are mostly"
-  echo "           tested with git CLI under Linux and OSX; they haven't been"
-  echo "           tested with git GUIs or Windows"
-  echo "  --branch <branch>: specy the base branch name to checkout (ex: 'master', '4.4')"
-  echo "           For some repos, this name is adapted (ex: Drupal's '7.x-master' or '6.x-master'"
-  echo "  --skip-gencode: optionally disable gencode execution"
-  echo ""
-  echo "Note: If pointing to a pre-existing directory, your local changes may be replaced by"
-  echo "the pristine code from git. If you've made changes, then make sure there's a backup!"
-  echo ""
-  echo "Example: In an existing site with Drupal 7 + CiviCRM, checkout latest code."
-  echo "       $ cd /var/www/drupal7/sites/all/modules/civicrm"
-  echo "       $ $PROG Drupal"
-  echo ""
-  echo "Example: In an existing site with Drupal 6 + CiviCRM, checkout Civi v4.4."
-  echo "       $ cd /var/www/drupal6/sites/all/modules/civicrm"
-  echo "       $ $PROG Drupal6 --branch 4.4"
-  echo ""
-  echo "Example: Checkout core code plus Drupal 7.x, Joomla, and WordPress"
-  echo "       $ mkdir ~/src/civicrm"
-  echo "       $ cd ~/src/civicrm"
-  echo "       $ $PROG all --l10n"
-  echo ""
-  echo "FIXME: Joomla and WordPress options are misleading"
+  do_help
   exit 1
 fi
 
