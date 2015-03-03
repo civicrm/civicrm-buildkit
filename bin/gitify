@@ -144,11 +144,11 @@ function do_setupconf() {
     chmod 600 bin/setup.conf
     echo ""
     echo "====================[ Next steps (for Civi v4.6+) ]===================="
-    echo "  * Edit the following file and fill in credentials for the CiviCRM DB and CMS."
-    echo "    $1/bin/setup.conf"
+    echo "  * Run 'cd $1/bin'"
+    echo "  * Edit the file 'setup.conf' and fill in details for the CMS and CiviCRM DB."
     echo "  * Perform one of these steps:"
-    echo "    + Run 'bin/setup.sh -Dg' to download and generate missing code."
-    echo "    + Run 'bin/setup.sh' to download code and reset the CiviCRM DB"
+    echo "    + Run './setup.sh -Dg' to download and generate missing code."
+    echo "    + Run './setup.sh' to download code and reset the CiviCRM DB"
     echo "      with the latest schema."
     echo "  * If this is a network-accessible server (eg staging/production), then"
     echo "    setup.conf may present a security issue. The permissions have been"
@@ -255,6 +255,7 @@ while [ -n "$1" ]; do
 done
 
 source "$PRJDIR/src/civibuild.compute-defaults.sh"
+CIVICRM_GENCODE_DIGEST=
 
 if [ ! -d "$CIVICRM_ROOT" -o -z "$CIVICRM_CMS" ]; then
   do_help
