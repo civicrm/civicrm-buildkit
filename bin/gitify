@@ -148,13 +148,7 @@ function do_setupconf() {
 function config_repo() {
   do_gitify "${UPSTREAM_GIT_BASE_URL}/${1}.git" "$2" -b "$3"
   do_hookify "$1" "$2" "$4"
-  ## doesn't work with http -- git ls-remote "git://github.com/civicrm/civicrm-drupalz.git" HEAD --exit-code &>- ; echo $?
-  if [ -n "$FORK_GIT_BASE_URL" ]; then
-    git_set_remote "$2" upstream "${UPSTREAM_GIT_BASE_URL}/${1}.git"
-    git_set_remote "$2" origin "${FORK_GIT_BASE_URL}/${1}.git"
-  else
-    git_set_remote "$2" origin "${UPSTREAM_GIT_BASE_URL}/${1}.git"
-  fi
+  git_set_remote "$2" origin "${UPSTREAM_GIT_BASE_URL}/${1}.git"
 }
 
 function check_dep() {
@@ -177,7 +171,6 @@ CIVICRM_ROOT=""
 CIVICRM_L10N=""
 CIVICRM_GIT_HOOKS=""
 CIVICRM_BRANCH="master"
-FORK_GIT_BASE_URL=""
 UPSTREAM_GIT_BASE_URL="https://github.com/civicrm"
 SKIP_GENCODE=
 
@@ -189,9 +182,6 @@ while [ -n "$1" ]; do
   elif [ "$1" == "--upstream" ]; then
     shift
     UPSTREAM_GIT_BASE_URL="$1"
-  elif [ "$1" == "--fork" ]; then
-    shift
-    FORK_GIT_BASE_URL="$1"
   elif [ "$1" == "--skip-gencode" ]; then
     SKIP_GENCODE=1
   elif [ "$1" == "--branch" ]; then
@@ -212,12 +202,11 @@ done
 
 if [ -z "$CIVICRM_ROOT" -o ! -d "$CIVICRM_ROOT" -o -z "$UPSTREAM_GIT_BASE_URL" -o -z "$CIVICRM_CMS" ]; then
   echo "Convert a directory into a set of CiviCRM git clones"
-  echo "usage: $0 <Drupal|Drupal6|Joomla|WordPress|all> <existing-civicrm-root> [--fork <base-url>] [--upstream <base-url>] [--l10n] [--hooks] [--branch <branch>]"
+  echo "usage: $0 <Drupal|Drupal6|Joomla|WordPress|all> <existing-civicrm-root> [--upstream <base-url>] [--l10n] [--hooks] [--branch <branch>]"
   echo "  <cms-name>: one of: Drupal|Drupal6|Joomla|WordPress|all"
   echo "  <git-base-url>: a base URL shared by the desiried git repos (e.g. git://github.com/civicrm)"
   echo "  <existing-civicrm-root>: the main directory containing CiviCRM"
   echo "  --upstream <base-url>: specify the base URL for upstream repositories"
-  echo "  --fork <base-url>: specify the base URL for your personal fork repositories"
   echo "  --l10n: optionally fetch localization data"
   echo "  --hooks: optionally install recommended git hooks; the hooks are mostly"
   echo "           tested with git CLI under Linux and OSX; they haven't been"
