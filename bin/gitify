@@ -2,7 +2,32 @@
 
 ## Take an existing, tar-based CiviCRM directory and convert it to a git working directory
 
-#### Helpers ####
+###############################################################################
+## Bootstrap
+
+## Determine the absolute path of the directory with the file
+## usage: absdirname <file-path>
+function absdirname() {
+  pushd $(dirname $0) >> /dev/null
+    pwd
+  popd >> /dev/null
+}
+
+BINDIR=$(absdirname "$0")
+PRJDIR=$(dirname "$BINDIR")
+TMPDIR="$PRJDIR/app/tmp"
+BLDDIR="$PRJDIR/build"
+
+source "$PRJDIR/src/civibuild.lib.sh"
+source "$PRJDIR/src/civibuild.aliases.sh"
+cvutil_mkdir "$TMPDIR" "$BLDDIR" "$PRJDIR/app/private"
+
+## Make sure bundled utilities are available, regardless of local config
+export PATH="$BINDIR:$PATH"
+
+if [ -z "$OFFLINE" ]; then
+  civi-download-tools --quiet
+fi
 
 ###########################################
 ## usage: do_gitify <repo-url> <existing-dir> [git-checkout-options]
@@ -146,9 +171,9 @@ function do_setupconf() {
 ## config_repo <repo-name> <local-path> <default-branch> <git-scripts-path>
 ##                  1            2              3               4
 function config_repo() {
-  do_gitify "${UPSTREAM_GIT_BASE_URL}/${1}.git" "$2" -b "$3"
+  do_gitify "$CACHE_DIR/civicrm/${1}.git" "$2" -b "$3"
   do_hookify "$1" "$2" "$4"
-  git_set_remote "$2" origin "${UPSTREAM_GIT_BASE_URL}/${1}.git"
+  git_set_remote "$2" origin "$CACHE_DIR/civicrm/${1}.git"
 }
 
 function check_dep() {
@@ -165,13 +190,14 @@ function check_dep() {
 #### Main: Parse arguments
 
 set -e
+source "$PRJDIR/src/civibuild.defaults.sh"
+source "$PRJDIR/src/civibuild.compute-defaults.sh"
 
 CIVICRM_CMS=""
 CIVICRM_ROOT=""
 CIVICRM_L10N=""
 CIVICRM_GIT_HOOKS=""
 CIVICRM_BRANCH="master"
-UPSTREAM_GIT_BASE_URL="https://github.com/civicrm"
 SKIP_GENCODE=
 
 while [ -n "$1" ]; do
@@ -179,9 +205,6 @@ while [ -n "$1" ]; do
     CIVICRM_L10N="$1"
   elif [ "$1" == "--hooks" ]; then
     CIVICRM_GIT_HOOKS="$1"
-  elif [ "$1" == "--upstream" ]; then
-    shift
-    UPSTREAM_GIT_BASE_URL="$1"
   elif [ "$1" == "--skip-gencode" ]; then
     SKIP_GENCODE=1
   elif [ "$1" == "--branch" ]; then
@@ -200,13 +223,13 @@ while [ -n "$1" ]; do
   shift
 done
 
-if [ -z "$CIVICRM_ROOT" -o ! -d "$CIVICRM_ROOT" -o -z "$UPSTREAM_GIT_BASE_URL" -o -z "$CIVICRM_CMS" ]; then
+source "$PRJDIR/src/civibuild.compute-defaults.sh"
+
+if [ -z "$CIVICRM_ROOT" -o ! -d "$CIVICRM_ROOT" -o -z "$CIVICRM_CMS" ]; then
   echo "Convert a directory into a set of CiviCRM git clones"
-  echo "usage: $0 <Drupal|Drupal6|Joomla|WordPress|all> <existing-civicrm-root> [--upstream <base-url>] [--l10n] [--hooks] [--branch <branch>]"
+  echo "usage: $0 <Drupal|Drupal6|Joomla|WordPress|all> <existing-civicrm-root> [--l10n] [--hooks] [--branch <branch>]"
   echo "  <cms-name>: one of: Drupal|Drupal6|Joomla|WordPress|all"
-  echo "  <git-base-url>: a base URL shared by the desiried git repos (e.g. git://github.com/civicrm)"
   echo "  <existing-civicrm-root>: the main directory containing CiviCRM"
-  echo "  --upstream <base-url>: specify the base URL for upstream repositories"
   echo "  --l10n: optionally fetch localization data"
   echo "  --hooks: optionally install recommended git hooks; the hooks are mostly"
   echo "           tested with git CLI under Linux and OSX; they haven't been"
@@ -224,14 +247,15 @@ if [ -z "$CIVICRM_ROOT" -o ! -d "$CIVICRM_ROOT" -o -z "$UPSTREAM_GIT_BASE_URL" -
   echo "example: $0 Drupal6 /var/www/drupal6/sites/all/modules/civicrm"
   echo "  (checkout core code plus Drupal 6.x integration code)"
   echo ""
-  echo "example: $0 all ~/src/civicrm --upstream git@github.com:civicrm --l10n"
-  echo "  (checkout core code plus Drupal 7.x, Joomla, and WordPress integration code and l10n using SSH)"
+  echo "example: $0 all ~/src/civicrm --l10n"
+  echo "  (checkout core code plus Drupal 7.x, Joomla, and WordPress integration code and l10n)"
   exit 1
 fi
 
 ###########################################
 #### Main: Update git repo metadata ####
 check_dep
+default_cache_setup
 
 ## config_repo <repo-name>         <local-path>                <default-branch>      <git-scripts-path>
 config_repo     civicrm-core       "$CIVICRM_ROOT"            "$CIVICRM_BRANCH"      "../tools/scripts/git"
@@ -263,6 +287,8 @@ esac
 if [ "$CIVICRM_L10N" == "--l10n" ]; then
   do_targzify "https://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz" "civicrm-l10n-daily.tar.gz" "$CIVICRM_ROOT/l10n"
 fi
+
+git_cache_deref_remotes "$CACHE_DIR" "$CIVICRM_ROOT"
 
 if [ -f "$CIVICRM_ROOT/composer.json" ]; then
   ## Civi v4.6+
