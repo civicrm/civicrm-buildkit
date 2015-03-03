@@ -257,6 +257,14 @@ fi
 
 ###########################################
 #### Main: Update git repo metadata ####
+
+echo "Converting \"$WEB_ROOT\" into a set of CiviCRM git clones." 1>&2
+echo "This may overwrite or destroy existing files." 1>&2
+if ! cvutil_confirm "Continue? [y/N] " n y ; then
+  echo "Aborted" 1>&2
+  exit 1
+fi
+
 check_dep
 default_cache_setup
 
