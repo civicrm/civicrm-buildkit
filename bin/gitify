@@ -276,22 +276,22 @@ default_cache_setup
 
 ## config_repo  <repo-name>        <local-path>               <default-branch>       <git-scripts-path>
 case "$CIVICRM_CMS" in
-  Drupal)
+  Drupal|drupal)
     config_repo civicrm-core       "$CIVICRM_ROOT"            "$CIVICRM_BRANCH"      "../tools/scripts/git"
     config_repo civicrm-packages   "$CIVICRM_ROOT/packages"   "$CIVICRM_BRANCH"      "../../tools/scripts/git"
     config_repo civicrm-drupal     "$CIVICRM_ROOT/drupal"     "7.x-$CIVICRM_BRANCH"  "../../tools/scripts/git"
     ;;
-  Drupal6)
+  Drupal6|drupal6)
     config_repo civicrm-core       "$CIVICRM_ROOT"            "$CIVICRM_BRANCH"      "../tools/scripts/git"
     config_repo civicrm-packages   "$CIVICRM_ROOT/packages"   "$CIVICRM_BRANCH"      "../../tools/scripts/git"
     config_repo civicrm-drupal     "$CIVICRM_ROOT/drupal"     "6.x-$CIVICRM_BRANCH"  "../../tools/scripts/git"
     ;;
-  Joomla)
+  Joomla|joomla)
     config_repo civicrm-core       "$CIVICRM_ROOT"            "$CIVICRM_BRANCH"      "../tools/scripts/git"
     config_repo civicrm-packages   "$CIVICRM_ROOT/packages"   "$CIVICRM_BRANCH"      "../../tools/scripts/git"
     config_repo civicrm-joomla     "$CIVICRM_ROOT/joomla"     "$CIVICRM_BRANCH"      "../../tools/scripts/git"
     ;;
-  WordPress)
+  WordPress|wordpress)
     CIVICRM_ROOT="$WEB_ROOT/civicrm"
     config_repo civicrm-core       "$CIVICRM_ROOT"            "$CIVICRM_BRANCH"      "../tools/scripts/git"
     config_repo civicrm-packages   "$CIVICRM_ROOT/packages"   "$CIVICRM_BRANCH"      "../../tools/scripts/git"
@@ -322,11 +322,11 @@ if [ -f "$CIVICRM_ROOT/composer.json" ]; then
   do_setupconf "$CIVICRM_ROOT"
 elif [ -z "$SKIP_GENCODE" ]; then
   case "$CIVICRM_CMS" in
-    Drupal|Drupal6)
+    Drupal|Drupal6|drupal|drupal6)
       do_gencode "$CIVICRM_ROOT" "Drupal"
       ;;
-    WordPress)
-      do_gencode "$CIVICRM_ROOT" "$CIVICRM_CMS"
+    WordPress|wordpress)
+      do_gencode "$CIVICRM_ROOT" "WordPress"
       ;;
     none)
       ;;
