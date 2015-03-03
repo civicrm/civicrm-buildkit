@@ -50,7 +50,7 @@ function split_files() {
     if [ ! -e "$file" ]; then
       echo "$file" >> "$skipfiles"
 
-    elif [[ "$absfile" =~ (/DAO/|/examples/) ]]; then
+    elif [[ "$absfile" =~ (/DAO/|/examples/|/tools/) ]]; then
       echo "$file" >> "$skipfiles"
 
     elif [[ "$file" =~ \.php$ ]]; then
