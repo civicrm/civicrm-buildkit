@@ -71,10 +71,16 @@ function do_hookify() {
     for HOOK in commit-msg post-checkout post-merge pre-commit prepare-commit-msg post-commit pre-rebase post-rewrite ;do
           cat << TMPL > "$TGT/.git/hooks/$HOOK"
 #!/bin/bash
+PRJDIR="$PRJDIR"
+BINDIR="$BINDIR"
+if [ -d "$BINDIR" ]; then
+  export PATH="\$BINDIR:\$PATH"
+fi
 if [ -f "\$GIT_DIR/${HOOK_DIR}/${HOOK}" ]; then
   ## Note: GIT_CANONICAL_REPO_NAME was not provided by early hook-stubs
   export GIT_CANONICAL_REPO_NAME="$GIT_CANONICAL_REPO_NAME"
-  source "\$GIT_DIR/${HOOK_DIR}/${HOOK}"
+  export GIT_HOOK_DELEGATE="\$GIT_DIR/${HOOK_DIR}/${HOOK}"
+  source "\$GIT_HOOK_DELEGATE"
 fi
 TMPL
       chmod +x "$TGT/.git/hooks/$HOOK"
