@@ -1,0 +1,338 @@
+#!/bin/bash
+
+## Take an existing, tar-based CiviCRM directory and convert it to a git working directory
+
+###############################################################################
+## Bootstrap
+
+## Determine the absolute path of the directory with the file
+## usage: absdirname <file-path>
+function absdirname() {
+  pushd $(dirname $0) >> /dev/null
+    pwd
+  popd >> /dev/null
+}
+
+BINDIR=$(absdirname "$0")
+PRJDIR=$(dirname "$BINDIR")
+TMPDIR="$PRJDIR/app/tmp"
+BLDDIR="$PRJDIR/build"
+
+source "$PRJDIR/src/civibuild.lib.sh"
+source "$PRJDIR/src/civibuild.aliases.sh"
+cvutil_mkdir "$TMPDIR" "$BLDDIR" "$PRJDIR/app/private"
+
+## Make sure bundled utilities are available, regardless of local config
+export PATH="$BINDIR:$PATH"
+
+if [ -z "$OFFLINE" ]; then
+  civi-download-tools --quiet
+fi
+
+###########################################
+## usage: do_gitify <repo-url> <existing-dir> [git-checkout-options]
+function do_gitify() {
+  REPO="$1"
+  REPO_BASE=$(basename "$REPO")
+  TGT="$2"
+  TMP="${TGT}.tmp"
+  shift 2
+
+  if [ -d "$TGT/.git" ]; then
+    echo "[[Already checked out git repo ($TGT) -- skip $REPO]]"
+    return
+  fi
+  [ -d $TGT ] || mkdir -p "$TGT"
+  [ -d $TMP ] && rm -rf "$TMP"
+  echo "[[Checkout ${REPO_BASE}]]"
+  echo "git clone "$@" "$REPO" "$TMP""
+  git clone "$@" "$REPO" "$TMP"
+
+  echo "[[Swap metadata]]"
+  mv "$TMP/.git" "$TGT/.git"
+
+  echo "[[Remove local modifications]]"
+  pushd "$TGT" > /dev/null
+  git checkout -- .
+  popd > /dev/null
+
+  rm -rf "$TMP"
+}
+
+###########################################
+## add hook shims to a repo
+## usage: do_hookify <canonical-repo-name> <repo-path> <relative-hook-path>
+function do_hookify() {
+  GIT_CANONICAL_REPO_NAME="$1"
+  TGT="$2"
+  HOOK_DIR="$3"
+  if [ -n "$CIVICRM_GIT_HOOKS" ]; then
+    echo "[[Install recommended hooks ($TGT)]]"
+    for HOOK in commit-msg post-checkout post-merge pre-commit prepare-commit-msg post-commit pre-rebase post-rewrite ;do
+          cat << TMPL > "$TGT/.git/hooks/$HOOK"
+#!/bin/bash
+PRJDIR="$PRJDIR"
+BINDIR="$BINDIR"
+if [ -d "$BINDIR" ]; then
+  export PATH="\$BINDIR:\$PATH"
+fi
+if [ -f "\$GIT_DIR/${HOOK_DIR}/${HOOK}" ]; then
+  ## Note: GIT_CANONICAL_REPO_NAME was not provided by early hook-stubs
+  export GIT_CANONICAL_REPO_NAME="$GIT_CANONICAL_REPO_NAME"
+  export GIT_HOOK_DELEGATE="\$GIT_DIR/${HOOK_DIR}/${HOOK}"
+  source "\$GIT_HOOK_DELEGATE"
+fi
+TMPL
+      chmod +x "$TGT/.git/hooks/$HOOK"
+    done
+  else
+    echo "[[Skip hook installation ($TGT) -- use \"--hooks\" to enable]]"
+  fi
+}
+
+###########################################
+## usage: do_targzify <targz-url> <file-name> <existing-dir>
+## Fetches a tar.gz archive and unpacks it in the current directory
+function do_targzify() {
+  TARGZURL="$1"
+  TARFILE="$2"
+  TGT="$3"
+  shift 3
+
+  if [ -d "$TGT" ]; then
+    echo "[[Already have a copy of the archive ($TGT) -- skip $TARGZURL]]"
+    return
+  fi
+
+  TMP=`mktemp -d`
+
+  echo "[[Downloading $TARGZURL ($TMP)]]"
+  echo "[wget \"$TARGZURL\" -O \"$TMP/$TARFILE\"]"
+
+  pushd "$CIVICRM_ROOT" > /dev/null
+  wget -q "$TARGZURL" -O "$TMP/$TARFILE"
+  tar zxfv "$TMP/$TARFILE"
+  popd
+
+  rm "$TMP/$TARFILE"
+  rmdir "$TMP"
+}
+
+###########################################
+## usage: do_gencode <civicrm-path> <cms>
+function do_gencode() {
+  pushd "$1/xml" > /dev/null
+    if [ -f "GenCode.php" ]; then
+      echo "[[Generate files]]"
+      php GenCode.php schema/Schema.xml '' "$2"
+    else
+      echo "[[Skip \"Generate files\"]]"
+    fi
+  popd > /dev/null
+}
+
+## usage: do_setupconf <civicrm-path>
+function do_setupconf() {
+  pushd "$1" >> /dev/null
+    echo "[[Initialize bin/setup.conf]]"
+    if [ ! -f "bin/setup.conf" ]; then
+      pwd
+      echo       cp "bin/setup.conf.txt" "bin/setup.conf"
+      cp "bin/setup.conf.txt" "bin/setup.conf"
+    fi
+    echo "[[chmod 600 bin/setup.conf]]"
+    chmod 600 bin/setup.conf
+    echo ""
+    echo "====================[ Next steps (for Civi v4.6+) ]===================="
+    echo "  * Run 'cd $1/bin'"
+    echo "  * Edit the file 'setup.conf' and fill in details for the CMS and CiviCRM DB."
+    echo "  * Perform one of these steps:"
+    echo "    + Run './setup.sh -Dg' to download and generate missing code."
+    echo "    + Run './setup.sh' to download code and reset the CiviCRM DB"
+    echo "      with the latest schema."
+    echo "  * If this is a network-accessible server (eg staging/production), then"
+    echo "    setup.conf may present a security issue. The permissions have been"
+    echo "    preset to restrict access in most servers - but this may not work"
+    echo "    in all environments. Please:"
+    echo "    + Check whether the file is web-accessible."
+    echo "    + Optionally, change the permissions."
+    echo "    + Optionally, delete the file."
+  popd > /dev/null
+}
+
+###########################################
+## config_repo <repo-name> <local-path> <default-branch> <git-scripts-path>
+##                  1            2              3               4
+function config_repo() {
+  do_gitify "$CACHE_DIR/civicrm/${1}.git" "$2" -b "$3"
+  do_hookify "$1" "$2" "$4"
+}
+
+function check_dep() {
+  if [ -z "`which git`" ]; then
+    echo "command not found: git"
+    exit 3
+  fi
+  if [ -z `which php` ]; then
+    echo "command not found: php"
+  fi
+}
+
+###########################################
+## do_help
+function do_help() {
+  PROG=$(basename "$0")
+  echo "Convert the current directory into a set of CiviCRM git clones."
+  echo ""
+  echo "usage: $PROG <cms-name> [--l10n] [--hooks] [--branch <branch>]"
+  echo "  <cms-name>: one of: Drupal|Drupal6|Joomla|WordPress|all"
+  echo "  --l10n: optionally fetch localization data"
+  echo "  --hooks: optionally install recommended git hooks; the hooks are mostly"
+  echo "           tested with git CLI under Linux and OSX; they haven't been"
+  echo "           tested with git GUIs or Windows"
+  echo "  --branch <branch>: specify the branch to checkout (ex: 'master', '4.4')"
+  echo "           For some repos, this name is adapted (ex: Drupal's '7.x-master' or '6.x-master'"
+  echo "  --skip-gencode: optionally disable gencode execution"
+  echo ""
+  echo "Note: If pointing to a pre-existing directory, your local changes may be replaced by"
+  echo "the pristine code from git. If you've made changes, then make sure there's a backup!"
+  echo ""
+  echo "Example: In an existing site with Drupal 7 + CiviCRM, checkout latest code."
+  echo "       $ cd /var/www/drupal7/sites/all/modules/civicrm"
+  echo "       $ $PROG Drupal"
+  echo ""
+  echo "Example: In an existing site with Drupal 6 + CiviCRM, checkout Civi v4.4."
+  echo "       $ cd /var/www/drupal6/sites/all/modules/civicrm"
+  echo "       $ $PROG Drupal6 --branch 4.4"
+  echo ""
+  echo "Example: In an existing site with WordPress + CiviCRM, checkout Civi v4.5."
+  echo "       $ cd /var/www/wordpress/wp-content/plugins/civicrm"
+  echo "       $ $PROG WordPress --branch 4.5"
+  echo ""
+  echo "Example: Checkout core code plus Drupal 7.x, Joomla, and WordPress"
+  echo "       $ mkdir ~/src/civicrm"
+  echo "       $ cd ~/src/civicrm"
+  echo "       $ $PROG all --l10n"
+  echo ""
+  echo "FIXME: Joomla not tested"
+}
+
+###########################################
+#### Main: Parse arguments
+
+set -e
+source "$PRJDIR/src/civibuild.defaults.sh"
+source "$PRJDIR/src/civibuild.compute-defaults.sh"
+
+## FIXME: Use the same variable naming conventions as civibuild
+
+WEB_ROOT="$PWD"
+CIVICRM_CMS=""
+CIVICRM_ROOT="$WEB_ROOT"
+CIVICRM_L10N=""
+CIVICRM_GIT_HOOKS=""
+CIVICRM_BRANCH="master"
+SKIP_GENCODE=
+
+while [ -n "$1" ]; do
+  if [ "$1" == "--l10n" ]; then
+    CIVICRM_L10N="$1"
+  elif [ "$1" == "--hooks" ]; then
+    CIVICRM_GIT_HOOKS="$1"
+  elif [ "$1" == "--skip-gencode" ]; then
+    SKIP_GENCODE=1
+  elif [ "$1" == "--branch" ]; then
+    shift
+    CIVICRM_BRANCH="$1"
+  elif [ -z "$CIVICRM_CMS" ]; then
+    ## First arg
+    CIVICRM_CMS="$1"
+  else
+    echo "unrecognized argument: $1"
+    exit 2
+  fi
+  shift
+done
+
+source "$PRJDIR/src/civibuild.compute-defaults.sh"
+CIVICRM_GENCODE_DIGEST=
+
+if [ ! -d "$CIVICRM_ROOT" -o -z "$CIVICRM_CMS" ]; then
+  do_help
+  exit 1
+fi
+
+###########################################
+#### Main: Update git repo metadata ####
+
+echo "Converting \"$WEB_ROOT\" into a set of CiviCRM git clones." 1>&2
+echo "This may overwrite or destroy existing files." 1>&2
+if ! cvutil_confirm "Continue? [y/N] " n y ; then
+  echo "Aborted" 1>&2
+  exit 1
+fi
+
+check_dep
+default_cache_setup
+
+## config_repo  <repo-name>        <local-path>               <default-branch>       <git-scripts-path>
+case "$CIVICRM_CMS" in
+  Drupal|drupal)
+    config_repo civicrm-core       "$CIVICRM_ROOT"            "$CIVICRM_BRANCH"      "../tools/scripts/git"
+    config_repo civicrm-packages   "$CIVICRM_ROOT/packages"   "$CIVICRM_BRANCH"      "../../tools/scripts/git"
+    config_repo civicrm-drupal     "$CIVICRM_ROOT/drupal"     "7.x-$CIVICRM_BRANCH"  "../../tools/scripts/git"
+    ;;
+  Drupal6|drupal6)
+    config_repo civicrm-core       "$CIVICRM_ROOT"            "$CIVICRM_BRANCH"      "../tools/scripts/git"
+    config_repo civicrm-packages   "$CIVICRM_ROOT/packages"   "$CIVICRM_BRANCH"      "../../tools/scripts/git"
+    config_repo civicrm-drupal     "$CIVICRM_ROOT/drupal"     "6.x-$CIVICRM_BRANCH"  "../../tools/scripts/git"
+    ;;
+  Joomla|joomla)
+    config_repo civicrm-core       "$CIVICRM_ROOT"            "$CIVICRM_BRANCH"      "../tools/scripts/git"
+    config_repo civicrm-packages   "$CIVICRM_ROOT/packages"   "$CIVICRM_BRANCH"      "../../tools/scripts/git"
+    config_repo civicrm-joomla     "$CIVICRM_ROOT/joomla"     "$CIVICRM_BRANCH"      "../../tools/scripts/git"
+    ;;
+  WordPress|wordpress)
+    CIVICRM_ROOT="$WEB_ROOT/civicrm"
+    config_repo civicrm-core       "$CIVICRM_ROOT"            "$CIVICRM_BRANCH"      "../tools/scripts/git"
+    config_repo civicrm-packages   "$CIVICRM_ROOT/packages"   "$CIVICRM_BRANCH"      "../../tools/scripts/git"
+    config_repo civicrm-wordpress  "$WEB_ROOT"                "$CIVICRM_BRANCH"      "../civicrm/tools/scripts/git"
+    ;;
+  all)
+    config_repo civicrm-core       "$CIVICRM_ROOT"            "$CIVICRM_BRANCH"      "../tools/scripts/git"
+    config_repo civicrm-packages   "$CIVICRM_ROOT/packages"   "$CIVICRM_BRANCH"      "../../tools/scripts/git"
+    config_repo civicrm-drupal     "$CIVICRM_ROOT/drupal"     "7.x-$CIVICRM_BRANCH"  "../../tools/scripts/git"
+    config_repo civicrm-joomla     "$CIVICRM_ROOT/joomla"     "$CIVICRM_BRANCH"      "../../tools/scripts/git"
+    config_repo civicrm-wordpress  "$CIVICRM_ROOT/WordPress"  "$CIVICRM_BRANCH"      "../../tools/scripts/git"
+    ;;
+  none)
+    ;;
+  *)
+    echo "Unrecognized CMS: $CIVICRM_CMS"
+    exit 2
+esac
+
+if [ "$CIVICRM_L10N" == "--l10n" ]; then
+  do_targzify "https://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz" "civicrm-l10n-daily.tar.gz" "$CIVICRM_ROOT/l10n"
+fi
+
+git_cache_deref_remotes "$CACHE_DIR" "$CIVICRM_ROOT"
+
+if [ -f "$CIVICRM_ROOT/composer.json" ]; then
+  ## Civi v4.6+
+  do_setupconf "$CIVICRM_ROOT"
+elif [ -z "$SKIP_GENCODE" ]; then
+  case "$CIVICRM_CMS" in
+    Drupal|Drupal6|drupal|drupal6)
+      do_gencode "$CIVICRM_ROOT" "Drupal"
+      ;;
+    WordPress|wordpress)
+      do_gencode "$CIVICRM_ROOT" "WordPress"
+      ;;
+    none)
+      ;;
+    *)
+      echo "Unrecognized CMS: $CIVICRM_CMS"
+      exit 2
+  esac
+fi
