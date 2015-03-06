@@ -146,7 +146,7 @@ function cvutil_build_hostport() {
 ## example: $(cvutil_parse_site_name_id "drupal-demo/2") ==> SITE_NAME=drupal-demo SITE_ID=2
 ## example: $(cvutil_parse_site_name_id "drupal-demo") ==> SITE_NAME=drupal-demo
 function cvutil_parse_site_name_id() {
-  php -r '$parts=explode("/", $argv[1]);echo "SITE_NAME=" . $parts[0]."\n"; if (isset($parts[1])) echo "SITE_ID=" . $parts[1] . "\n";' "$1"
+  php -r '$parts=explode("/", $argv[1]);echo "SITE_NAME=" . $parts[0]."\n"; if (isset($parts[1])) echo "SITE_ID=" . $parts[1] . "\n";' -- "$1"
 }
 
 ###############################################################################
@@ -222,7 +222,7 @@ function http_cache_setup() {
   local ttl=${3:-$CACHE_TTL}
 
   if [ -f "$cachefile" -a -f "$lastrun" ]; then
-    if php -r 'exit($argv[1] + file_get_contents($argv[2]) < time() ? 1 : 0);' "$ttl" "$lastrun" ; then
+    if php -r 'exit($argv[1] + file_get_contents($argv[2]) < time() ? 1 : 0);' -- "$ttl" "$lastrun" ; then
       echo "SKIP: http_cache_setup '$url' $cachefile' (recently updated; ttl=$ttl)"
       return
     fi
@@ -741,7 +741,7 @@ function _drupal_multisite_dir() {
   if [ "$2" == "default" ]; then
     echo "default"
   else
-    php -r '$p = parse_url($argv[1]); if (!empty($p["port"])) echo $p["port"] . "."; echo $p["host"];' "$1"
+    php -r '$p = parse_url($argv[1]); if (!empty($p["port"])) echo $p["port"] . "."; echo $p["host"];' -- "$1"
   fi
 }
 
@@ -793,7 +793,7 @@ function git_cache_setup() {
   ## TODO: defensive programming: $cachedir should not end in "/"
 
   if [ -d "$cachedir" -a -f "$lastrun" -a -z "$FORCE_DOWNLOAD" ]; then
-    if php -r 'exit($argv[1] + file_get_contents($argv[2]) < time() ? 1 : 0);' $CACHE_TTL "$lastrun" ; then
+    if php -r 'exit($argv[1] + file_get_contents($argv[2]) < time() ? 1 : 0);' -- $CACHE_TTL "$lastrun" ; then
       echo "SKIP: git_cache_setup '$url' $cachedir' (recently updated; ttl=$CACHE_TTL)"
       return
     fi
@@ -866,7 +866,7 @@ function svn_cache_setup() {
   ## TODO: defensive programming: $cachedir should not end in "/"
 
   if [ -d "$cachedir" -a -f "$lastrun" -a -z "$FORCE_DOWNLOAD" ]; then
-    if php -r 'exit($argv[1] + file_get_contents($argv[2]) < time() ? 1 : 0);' $CACHE_TTL "$lastrun" ; then
+    if php -r 'exit($argv[1] + file_get_contents($argv[2]) < time() ? 1 : 0);' -- $CACHE_TTL "$lastrun" ; then
       echo "SKIP: svn_cache_setup '$url' $cachedir' (recently updated; ttl=$CACHE_TTL)"
       return
     fi
