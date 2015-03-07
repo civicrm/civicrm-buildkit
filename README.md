@@ -1,6 +1,6 @@
 # civicrm-buildkit
 
-Buildkit is a collection of ~20 tools for developing and testing CiviCRM. 
+Buildkit is a collection of ~20 tools for developing and testing CiviCRM.
 These tools are referenced in the CiviCRM developer documentation.
 
 Many of these tools are commonly used by web developers, so you may have
@@ -19,7 +19,7 @@ infrastructure for civicrm.org.
  * MySQL 5.1+ (client and server)
  * [NodeJS](http://nodejs.org/)
  * Recommended: Apache (for [civibuild](doc/civibuild.md))
- * Recommended: Ruby/Rake (for [hub](http://hub.github.com/)
+ * Recommended: Ruby/Rake (for [hub](http://hub.github.com/))
 
 ## Download
 
@@ -38,8 +38,9 @@ git pull
 
 ### CLI Setup
 
-While developing, it is useful to have buildkit in the PATH. This enables
-you to run commands easily.
+It is useful register buildkit in the PATH. This enables you to run commands
+by entering a name (e.g.  "civix") rather than a full path (e.g.
+"/home/user/src/buildkit/bin/civix").
 
 ```bash
 export PATH=/path/to/buildkit/bin:$PATH
