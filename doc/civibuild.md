@@ -87,10 +87,10 @@ There are four variations on rebuilding. In order of fastest (least thorough) to
   <tr>
     <th>Command</th>
     <th>Description</th>
-    <th>Metadata</th>
-    <th>Code</th>
-    <th>Config Files</th>
-    <th>DB</th>
+    <th>Civibuild Metadata</th>
+    <th>Civi+CMS Code</th>
+    <th>Civi+CMS Config</th>
+    <th>Civi+CMS DB</th>
   </tr>
   </thead>
   <tbody>
