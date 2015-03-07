@@ -16,10 +16,10 @@ Internally, civibuild uses commands like [drush](http://drush.ws/) and
 
 ## Quickstart
 
-```
+```bash
 ## Configure "amp" with details of your Apache/MySQL environment.  Pay close
 ## attention to the instructions.  They may involve adding a line to your
-## Apache configuration file
+## Apache configuration file.
 
 $ amp config
 
@@ -58,7 +58,7 @@ see [app/config](app/config).
 The build-types can be mixed/matched with different versions of Civi and of
 the CMS. For example, one might say:
 
-```
+```bash
 $ civibuild drupal-civi44 --type drupal-demo --civi-ver 4.4 --url http://drupal-civi44.localhost
 $ civibuild drupal-civi45 --type drupal-demo --civi-ver 4.5 --url http://drupal-civi45.localhost
 $ civibuild wp-civi45--type wp-demo --civi-ver 4.5 --url http://wp-civi45.localhost
@@ -67,7 +67,7 @@ $ civibuild wp-civi45--type wp-demo --civi-ver 4.5 --url http://wp-civi45.localh
 However, this is a bit cumbersome. Civibuild includes
 [aliases](../src/civibuild.aliases.sh) to make this shorter:
 
-```
+```bash
 $ civibuild d44 --url http://d44.localhost
 $ civibuild d45 --url http://d45.localhost
 $ civibuild wp45 --url http://wp45.localhost

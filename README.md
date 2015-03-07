@@ -15,7 +15,7 @@ infrastructure for civicrm.org.
 
  * Bash (Unix shell)
  * Git
- * PHP 5.3+
+ * PHP 5.3+ (For MAMP/XAMPP/etc, see [Setup Command-Line PHP](http://wiki.civicrm.org/confluence/display/CRMDOC/Setup+Command-Line+PHP))
  * MySQL 5.1+ (client and server)
  * [NodeJS](http://nodejs.org/)
  * Recommended: Apache (for [civibuild](doc/civibuild.md))
@@ -35,6 +35,29 @@ cd buildkit
 git pull
 ./bin/civi-download-tools
 ```
+
+### CLI Setup
+
+While developing, it is useful to have buildkit in the PATH. This enables
+you to run commands easily.
+
+```bash
+export PATH=/path/to/buildkit/bin:$PATH
+```
+
+If you want to ensure that these CLI tools are always available, then edit
+~/.bashrc or ~/.profile, add buildkit to your PATH, and restart the
+terminal.
+
+Alternatively, if you're just getting started, or if you worry about
+conflicts between buildkit and your existing tools, then don't edit
+~/.bashrc or ~/.profile.  Instead, enter the ***export*** command directly
+in your terminal.  This will temporarily register buildkit in the PATH.  You
+can restore the normal environment by closing the terminal and opening a new
+one.
+
+All other documentation will assume that you have added buildkit to the
+PATH.
 
 ## CLI Tools
 
@@ -64,29 +87,6 @@ git pull
    * [karma](http://karma-runner.github.io) (w/[jasmine](http://jasmine.github.io/)) - Unit testing for Javascript.
    * [paratest](https://github.com/brianium/paratest) - Parallelized version of PHPUnit.
    * [phpunit](http://phpunit.de/) - Unit testing for PHP (with Selenium and DB add-ons).
-
-### CLI Setup
-
-While developing, it is useful to have buildkit in the PATH. This enables
-you to run commands easily.
-
-```bash
-export PATH=/path/to/buildkit/bin:$PATH
-```
-
-If you want to ensure that these CLI tools are always available, then edit
-~/.bashrc or ~/.profile, add buildkit to your PATH, and restart the
-terminal.
-
-Alternatively, if you're just getting started, or if you worry about
-conflicts between buildkit and your existing tools, then don't edit
-~/.bashrc or ~/.profile.  Instead, enter the ***export*** command directly
-in your terminal.  This will temporarily register buildkit in the PATH.  You
-can restore the normal environment by closing the terminal and opening a new
-one.
-
-All other documentation will assume that you have added buildkit to the
-PATH.
 
 ## Documentation
 
