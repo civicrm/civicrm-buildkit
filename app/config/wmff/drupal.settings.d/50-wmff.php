@@ -8,3 +8,5 @@ $conf['wmf_common_twig_location'] = $civibuild['WEB_ROOT'] . "/twig/current";
 
 $databases['donations']['default'] = $databases['default']['default'];
 $databases['fredge']['default'] = $databases['default']['default'];
+
+define( 'WMF_SOURCE_REVISION', 'integration' );
