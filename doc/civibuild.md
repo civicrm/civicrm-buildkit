@@ -59,18 +59,18 @@ The build-types can be mixed/matched with different versions of Civi and of
 the CMS. For example, one might say:
 
 ```bash
-$ civibuild drupal-civi44 --type drupal-demo --civi-ver 4.4 --url http://drupal-civi44.localhost
-$ civibuild drupal-civi45 --type drupal-demo --civi-ver 4.5 --url http://drupal-civi45.localhost
-$ civibuild wp-civi45--type wp-demo --civi-ver 4.5 --url http://wp-civi45.localhost
+$ civibuild create drupal-civi44 --type drupal-demo --civi-ver 4.4 --url http://drupal-civi44.localhost
+$ civibuild create drupal-civi45 --type drupal-demo --civi-ver 4.5 --url http://drupal-civi45.localhost
+$ civibuild create wp-civi45--type wp-demo --civi-ver 4.5 --url http://wp-civi45.localhost
 ```
 
 However, this is a bit cumbersome. Civibuild includes
 [aliases](../src/civibuild.aliases.sh) to make this shorter:
 
 ```bash
-$ civibuild d44 --url http://d44.localhost
-$ civibuild d45 --url http://d45.localhost
-$ civibuild wp45 --url http://wp45.localhost
+$ civibuild create d44 --url http://d44.localhost
+$ civibuild create d45 --url http://d45.localhost
+$ civibuild create wp45 --url http://wp45.localhost
 ```
 
 These aliases exactly match the demo sites deployed under civicrm.org (e.g.
@@ -83,6 +83,7 @@ If you're interested in working on the build types or build process, then the wo
 There are four variations on rebuilding. In order of fastest (least thorough) to slowest (most thorough):
 
 <table>
+  <thead>
   <tr>
     <th>Command</th>
     <th>Description</th>
@@ -91,6 +92,8 @@ There are four variations on rebuilding. In order of fastest (least thorough) to
     <th>Config Files</th>
     <th>DB</th>
   </tr>
+  </thead>
+  <tbody>
   <tr>
     <td><b>civibuild restore &lt;name&gt;</b></td>
     <td>Restore DB from pristine SQL snapshot</td>
@@ -123,6 +126,7 @@ There are four variations on rebuilding. In order of fastest (least thorough) to
     <td>Recreate</td>
     <td>Recreate</td>
   </tr>
+  </tbody>
 </table>
 
 ## civicrm.settings.php; settings.php; wp-config.php
