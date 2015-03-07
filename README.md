@@ -1,80 +1,95 @@
 # civicrm-buildkit
 
-A collection of tools and scripts for creating one or more CiviCRM development/demo/testing environments.
+Buildkit is a collection of ~20 tools for developing and testing CiviCRM. 
+These tools are referenced in the CiviCRM developer documentation.
+
+Many of these tools are commonly used by web developers, so you may have
+already installed a few.  However, installing them individually can be a
+significant amount of work -- it is generally easier to download the full
+collection.
+
+This is the same collection of tools which manages the test/demo/release
+infrastructure for civicrm.org.
 
 ## Requirements
 
- * Shell (bash)
- * Git/SVN
- * PHP
- * MySQL (client/server)
- * NodeJS (for development with CiviCRM v4.6+)
- * Recommended: Apache (TODO: nginx)
- * Recommended: Ruby/Rake
+ * Bash (Unix shell)
+ * Git
+ * PHP 5.3+
+ * MySQL 5.1+ (client and server)
+ * [NodeJS](http://nodejs.org/)
+ * Recommended: Apache (for [civibuild](doc/civibuild.md))
+ * Recommended: Ruby/Rake (for [hub](http://hub.github.com/)
 
-## Installation
+## Download
 
 ```bash
-git clone https://github.com/civicrm/civicrm-buildkit.git
-cd civicrm-buildkit/bin
-./civi-download-tools
-./amp config
-## At this point, check to make sure you follow the instructions output by amp config,
-## which involve adding a line to your Apache configuration file
-./amp test
-./civibuild create drupal-demo --civi-ver 4.5 --url http://localhost:8001
-## FIXME: ./civibuild launch drupal-demo
+git clone https://github.com/civicrm/civicrm-buildkit.git buildkit
+./buildkit/bin/civi-download-tools
 ```
 
-The final command will print out URLs and credentials for accessing the
-website.
+## Upgrade
+
+```bash
+cd buildkit
+git pull
+./bin/civi-download-tools
+```
 
 ## CLI Tools
 
-civicrm-buildkit includes several utilities which are useful in developing
-CiviCRM:
-
  * CiviCRM
-   * [civix](https://github.com/totten/civix) - Code-generator for CiviCRM extensions
-   * [civistrings](https://github.com/civicrm/civistrings) - String extractor
+   * [civix](https://github.com/totten/civix) - Generate skeletal code for CiviCRM extensions.
+   * [civistrings](https://github.com/civicrm/civistrings) - Scan code for translatable strings (*.pot).
  * Dependency management
-   * [composer](http://getcomposer.org/) - Dependency manager for PHP packages
-   * [bower](http://bower.io/) - Dependency manager for frontend Javascript packages
+   * [composer](http://getcomposer.org/) - Manage dependencies for PHP code.
+   * [bower](http://bower.io/) - Manage dependencies for Javascript code.
  * Source code management
-   * [git-scan](https://github.com/totten/git-scan/) - Git extension for working with many git repositories
-   * [hub](http://hub.github.com/) - Git extension for easily working with GitHub (Note: Requires Ruby/Rake)
+   * [git-scan](https://github.com/totten/git-scan/) - Manage a large number of git repositories.
+   * [gitify](doc/gitify.md) - Convert a CiviCRM installation to a git repo.
+   * [hub](http://hub.github.com/) - Send commands to github.com (Note: Requires Ruby/Rake).
  * Source code quality
-   * **civilint** - Wrapper script which calls all syntax checks (phpcs, jshint, etc) on uncommitted files.
-   * [jshint](http://jshint.com/) - Javascript syntax checker
-   * [phpcs](https://github.com/squizlabs/PHP_CodeSniffer) - PHP syntax checker
-   * [coder 2.x (Civi)](https://github.com/civicrm/coder) - phpcs configuration derived from [coder 2.x](https://www.drupal.org/project/coder). (The [Civi coding standard](http://wiki.civicrm.org/confluence/display/CRMDOC/PHP+Code+and+Inline+Documentation) derives from the [Drupal coding standard](https://www.drupal.org/coding-standards) with variations for class/function/variable naming.)
+   * **civilint** - Check the syntax of uncommitted files using **phpcs**, **jshint**, etc.
+   * [jshint](http://jshint.com/) - Check the syntax of Javascript files.
+   * [phpcs](https://github.com/squizlabs/PHP_CodeSniffer) - Check the syntax of PHP files.
+   * [coder 2.x (Civi)](https://github.com/civicrm/coder) - Configure phpcs for Civi code style. Derived from [coder 2.x](https://www.drupal.org/project/coder). (The [Civi coding standard](http://wiki.civicrm.org/confluence/display/CRMDOC/PHP+Code+and+Inline+Documentation) derives from the [Drupal coding standard](https://www.drupal.org/coding-standards) with variations for class/function/variable naming.)
  * Site management
-   * [amp](https://github.com/totten/amp) - Abstracted interface for local httpd/sql service (Apache/nginx/MySQL)
-   * **civibuild** - CLI tool which builds a complete source tree (with CMS+Civi+addons), provisions httpd/sql, etc.
-   * [drush](http://drush.ws/) - CLI administration tool for Drupal
-   * [joomla](https://github.com/joomlatools/joomla-console) (joomla-console) - CLI administration for Joomla
-   * [wp](http://wp-cli.org/) (wp-cli) - CLI administration tool for WordPress
+   * [amp](https://github.com/totten/amp) - Abstracted interface for local httpd/sql service (Apache/nginx/MySQL).
+   * [civibuild](doc/civibuild.md) - Build a complete source tree (with CMS+Civi+addons), provision httpd/sql, etc.
+   * [drush](http://drush.ws/) - Administer a Drupal site.
+   * [joomla](https://github.com/joomlatools/joomla-console) (joomla-console) - Administer a Joomla site.
+   * [wp](http://wp-cli.org/) (wp-cli) - Administer a WordPress site.
  * Testing
-   * [civicrm-upgrade-test](https://github.com/civicrm/civicrm-upgrade-test) - Scripts and data files for testing upgrades
-   * [karma](http://karma-runner.github.io) (w/[jasmine](http://jasmine.github.io/)) - Unit testing for Javascript (Note: Requires NodeJS)
-   * [paratest](https://github.com/brianium/paratest) - Parallelized version of PHPUnit
-   * [phpunit](http://phpunit.de/) - Unit testing for PHP (with Selenium and DB add-ons)
+   * [civicrm-upgrade-test](https://github.com/civicrm/civicrm-upgrade-test) - Scripts and data files for testing upgrades.
+   * [karma](http://karma-runner.github.io) (w/[jasmine](http://jasmine.github.io/)) - Unit testing for Javascript.
+   * [paratest](https://github.com/brianium/paratest) - Parallelized version of PHPUnit.
+   * [phpunit](http://phpunit.de/) - Unit testing for PHP (with Selenium and DB add-ons).
 
-It will be handy to add these to your PATH:
+### CLI Setup
+
+While developing, it is useful to have buildkit in the PATH. This enables
+you to run commands easily.
 
 ```bash
-export PATH=/path/to/civicrm-buildkit/bin:$PATH
+export PATH=/path/to/buildkit/bin:$PATH
 ```
 
-(Note: Adjust as needed for your filesystem.) To automatically set this up
-again each time you login, add the statement to ~/.bashrc or ~/.profile .
+If you want to ensure that these CLI tools are always available, then edit
+~/.bashrc or ~/.profile, add buildkit to your PATH, and restart the
+terminal.
 
-If you have already installed these tools or don't want them, then
-simply skip this step.
+Alternatively, if you're just getting started, or if you worry about
+conflicts between buildkit and your existing tools, then don't edit
+~/.bashrc or ~/.profile.  Instead, enter the ***export*** command directly
+in your terminal.  This will temporarily register buildkit in the PATH.  You
+can restore the normal environment by closing the terminal and opening a new
+one.
 
+All other documentation will assume that you have added buildkit to the
+PATH.
 
 ## Documentation
 
- * [Civibuild: Creating standard builds](doc/civibuild.md)
+ * [Civibuild: Create a full dev/demo build](doc/civibuild.md)
  * [Daily Coding: First Pull-Request, Housekeeping, etc](doc/first-pr.md)
  * [Experimental: Multiple demo/training sites](doc/demo-sites.md)
