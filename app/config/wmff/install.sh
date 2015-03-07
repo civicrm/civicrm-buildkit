@@ -37,7 +37,6 @@ drush -y en \
   garland \
   contribution_audit \
   contribution_tracking \
-  devel \
   environment_indicator \
   exchange_rates \
   ganglia_reporter \
