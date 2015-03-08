@@ -112,34 +112,34 @@ There are four variations on rebuilding. In order of fastest (least thorough) to
   <tr>
     <td><b>civibuild restore &lt;name&gt;</b></td>
     <td>Restore DB from pristine SQL snapshot</td>
-    <td>Keep</td>
-    <td>Keep</td>
-    <td>Keep</td>
-    <td>Recreate</td>
+    <td>Preserve</td>
+    <td>Preserve</td>
+    <td>Preserve</td>
+    <td>Destroy / Recreate</td>
   </tr>
   <tr>
     <td><b>civibuild reinstall &lt;name&gt;</b></td>
     <td>Rerun CMS+Civi "install" process</td>
-    <td>Keep</td>
-    <td>Keep</td>
-    <td>Recreate</td>
-    <td>Recreate</td>
+    <td>Preserve</td>
+    <td>Preserve</td>
+    <td>Destroy / Recreate</td>
+    <td>Destroy / Recreate</td>
   </tr>
   <tr>
     <td><b>civibuild create &lt;name&gt; --force</b></td>
     <td>Create site, overwriting any files or DBs</td>
-    <td>Keep</td>
-    <td>Recreate</td>
-    <td>Recreate</td>
-    <td>Recreate</td>
+    <td>Preserve</td>
+    <td>Destroy / Recreate</td>
+    <td>Destroy / Recreate</td>
+    <td>Destroy / Recreate</td>
   </tr>
   <tr>
     <td><b>civibuild destroy &lt;name&gt; ; civibuild create &lt;name&gt;</b></td>
     <td>Thoroughly destroy and recreate everything</td>
-    <td>Recreate</td>
-    <td>Recreate</td>
-    <td>Recreate</td>
-    <td>Recreate</td>
+    <td>Destroy / Recreate</td>
+    <td>Destroy / Recreate</td>
+    <td>Destroy / Recreate</td>
+    <td>Destroy / Recreate</td>
   </tr>
   </tbody>
 </table>
