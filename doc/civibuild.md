@@ -1,18 +1,25 @@
 # civibuild
 
-Creating a full development environment for CiviCRM can be a lot of work, including:
+Creating a full development environment for CiviCRM requires a lot of work, e.g.
 
  * Downloading / installing / configuring a CMS (Drupal, Joomla, WordPress)
  * Downloading / installing / configuring CiviCRM
  * Configuring Apache and MySQL
- * Configuring phpunit and selenium to connect to Civi
+ * Configuring file permissions on data folders
+ * Configuring a headless test database for phpunit
+ * Configuring Selenium to connect to Civi
 
 The *civibuild* command automates this process. It includes different
-build-types, such as *drupal-clean* (a barebones Drupal+Civi site) and
-*wp-demo* (a WordPress+Civi site with some example content).
+build-types that are useful for core development, such as *drupal-clean* (a
+barebones Drupal+Civi site) and *wp-demo* (a WordPress+Civi site with some
+example content).
 
-Internally, civibuild uses commands like [drush](http://drush.ws/) and
-[wp-cli](http://wp-cli.org/).
+Note: There are a number of build tools on the market which can, e.g.,
+create a Drupal web site (like [drush](http://drush.ws/)) or WordPress web
+site (like [wp-cli](http://wp-cli.org/)).  Civibuild does not aim to replace
+these.  Unfortunately, such tools generally require extra work for a Civi
+developer environment.  Civibuild works with these tools and and fills
+in missing parts.
 
 ## Quickstart
 
@@ -23,16 +30,16 @@ Internally, civibuild uses commands like [drush](http://drush.ws/) and
 
 $ amp config
 
-## Test that "amp" has full and correct information about Apache/MySQL.
-## Depending on the httpd confiuration, you may need to restart httpd
-## and re-run "amp test" a few times.
+## Test that "amp" has full and correct information about Apache/MySQL.  You
+## may need to alternately restart httpd, re-run "amp test", and/or re-run
+## "amp config" a few times.
 
 $ amp test
 
 ## Create a new build using Drupal and Civi v4.5.  The command will
 ## print out URLs and credentials for accessing the website.
 
-$ civibuild create drupal-demo --civi-ver 4.5 --url http://localhost:8001 --admin-pass s3cr3t
+$ civibuild create d45 --url http://localhost:8001 --admin-pass s3cr3t
 ```
 
 ## Build Types
@@ -45,7 +52,7 @@ configurations.  For example, at time of writing, it includes:
  * *wp-demo*: A demo site running WordPress and CiviCRM
  * *hrdemo* A demo site running Drupal, CiviCRM, and CiviHR
  * *symfony*: An experimental hybrid site running Drupal 7, Symfony 2, and CiviCRM
- * *extdir*: A mock website akin to civicrm.org/extdir/ . Useful testing the extension download process.
+ * *extdir*: A mock website akin to civicrm.org/extdir/ . Useful for testing the extension download process.
  * *dist*: A website containing nightly builds akin to dist.civicrm.org. Useful for preparing CiviCRM tarballs.
  * *l10n*: WIP - A build environment for creating translation files.
  * *joomla-demo*: WIP/incomplete/broken
@@ -53,24 +60,32 @@ configurations.  For example, at time of writing, it includes:
 For a list of available build-types as well as documentation on writing build scripts,
 see [app/config](app/config).
 
-## Build Aliases
-
-The build-types can be mixed/matched with different versions of Civi and of
-the CMS. For example, one might say:
+Build types can be mixed/matched with different versions of Civi, e.g.
 
 ```bash
-$ civibuild create drupal-civi44 --type drupal-demo --civi-ver 4.4 --url http://drupal-civi44.localhost
-$ civibuild create drupal-civi45 --type drupal-demo --civi-ver 4.5 --url http://drupal-civi45.localhost
-$ civibuild create wp-civi45--type wp-demo --civi-ver 4.5 --url http://wp-civi45.localhost
+$ civibuild create my-drupal-civi44 --type drupal-demo --civi-ver 4.4 --url http://my-drupal-civi44.localhost
+$ civibuild create my-drupal-civi45 --type drupal-demo --civi-ver 4.5 --url http://my-drupal-civi45.localhost
+$ civibuild create my-wp-civi45--type wp-demo --civi-ver 4.5 --cms-ver 4.0 --url http://my-wp-civi45.localhost
 ```
 
-However, this is a bit cumbersome. Civibuild includes
-[aliases](../src/civibuild.aliases.sh) to make this shorter:
+## Build Aliases
+
+For developers who work with several CMSs and several versions of Civi, it's
+useful to have a naming convention and shorthand for the most common
+configurations.  Civibuild includes [aliases](../src/civibuild.aliases.sh):
 
 ```bash
+## Create a build "d44" using build-type "drupal-demo" with Civi "4.4"
 $ civibuild create d44 --url http://d44.localhost
+
+## Create a build "d45" using build-type "drupal-demo" with Civi "4.5"
 $ civibuild create d45 --url http://d45.localhost
+
+## Create a build "wp45" using build-type "wp-demo" with Civi "4.5"
 $ civibuild create wp45 --url http://wp45.localhost
+
+## Create a build "wpmaster" using build-type "wp-demo" with Civi's "master" branch
+$ civibuild create wpmaster --url http://wpmaster.localhost
 ```
 
 These aliases exactly match the demo sites deployed under civicrm.org (e.g.
