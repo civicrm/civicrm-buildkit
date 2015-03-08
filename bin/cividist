@@ -189,21 +189,24 @@ function cividist_prune() {
 
 ###############################################################################
 function cividist_help() {
-  echo "Maintain a rotating list of nightly tarballs"
+  echo "Maintain a rotating list of nightly tarballs."
+  echo
+  echo "Build skeletal tree"
+  echo "  example: civibuild create dist --url http://dist.localhost ; cd build/dist"
   echo
   echo "Fetch latest code from git"
-  echo "usage: $(basename $0) update"
+  echo "  usage: $(basename $0) update"
   echo
   echo "Generate tarballs for any inputted branches/tags"
-  echo "usage: $(basename $0) build [refspec1 [refspec2...]]"
-  echo "example: $(basename $0) build 4.4.0 4.4.1 origin/4.4"
-  echo "example:"
+  echo "  usage: $(basename $0) build [refspec1 [refspec2...]]"
+  echo "  example: $(basename $0) build 4.4.0 4.4.1 origin/4.4"
+  echo "  example:"
   echo "    git show-ref | grep refs/tags | while read COMMIT REF; do"
   echo "      $(basename $0) build \$REF"
   echo "    done"
   echo
   echo "Remove any old/orphaned tarballs"
-  echo "usage: $(basename $0) prune"
+  echo "  usage: $(basename $0) prune"
 }
 
 ###############################################################################
