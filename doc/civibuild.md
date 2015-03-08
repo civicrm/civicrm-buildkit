@@ -36,10 +36,10 @@ $ amp config
 
 $ amp test
 
-## Create a new build using Drupal and Civi v4.5.  The command will
-## print out URLs and credentials for accessing the website.
+## Create a new build using Drupal and the CiviCRM "master" branch.
+## The command will print out URLs and credentials for accessing the website.
 
-$ civibuild create d45 --url http://localhost:8001 --admin-pass s3cr3t
+$ civibuild create dmaster --url http://localhost:8001 --admin-pass s3cr3t
 ```
 
 ## Build Types
@@ -63,16 +63,27 @@ see [app/config](/app/config).
 Build types can be mixed/matched with different versions of Civi, e.g.
 
 ```bash
-$ civibuild create my-drupal-civi44 --type drupal-demo --civi-ver 4.4 --url http://my-drupal-civi44.localhost
-$ civibuild create my-drupal-civi45 --type drupal-demo --civi-ver 4.5 --url http://my-drupal-civi45.localhost
-$ civibuild create my-wp-civi45--type wp-demo --civi-ver 4.5 --cms-ver 4.0 --url http://my-wp-civi45.localhost
+$ civibuild create my-drupal-civi44 \
+  --type drupal-demo \
+  --civi-ver 4.4 \
+  --url http://my-drupal-civi44.localhost
+$ civibuild create my-drupal-civi45 \
+  --type drupal-demo \
+  --civi-ver 4.5 \
+  --url http://my-drupal-civi45.localhost
+$ civibuild create my-wordpress-civi45 \
+  --type wp-demo \
+  --civi-ver 4.5 \
+  --cms-ver 4.0 \
+  --url http://my-wp-civi45.localhost
 ```
 
 ## Build Aliases
 
 For developers who work with several CMSs and several versions of Civi, it's
 useful to have a naming convention and shorthand for the most common
-configurations.  Civibuild includes [aliases](../src/civibuild.aliases.sh):
+configurations.  Civibuild includes [aliases](../src/civibuild.aliases.sh)
+like "d44" and "wpmaster":
 
 ```bash
 ## Create a build "d44" using build-type "drupal-demo" with Civi "4.4"
