@@ -58,7 +58,7 @@ configurations.  For example, at time of writing, it includes:
  * *joomla-demo*: WIP/incomplete/broken
 
 For a list of available build-types as well as documentation on writing build scripts,
-see [app/config](app/config).
+see [app/config](/app/config).
 
 Build types can be mixed/matched with different versions of Civi, e.g.
 
@@ -162,8 +162,8 @@ extra *.php files in /etc/civicrm.settings.d -- these files will be loaded
 on every site that runs on this server (regardless of how many sites you
 create or how many times you rebuild them).
 
-For more details on how civicrm.settings.d works, see [app/civicrm.settings.d/README.txt](app/civicrm.settings.d/README.txt).
+For more details on how civicrm.settings.d works, see [app/civicrm.settings.d/README.txt](/app/civicrm.settings.d/README.txt).
 
 A parallel structure exists for the CMS settings files. See also:
- * [app/drupal.settings.d/README.txt](app/drupal.settings.d/README.txt)
- * [app/wp-config.d/README.txt](app/wp-config.d/README.txt)
+ * [app/drupal.settings.d/README.txt](/app/drupal.settings.d/README.txt)
+ * [app/wp-config.d/README.txt](/app/wp-config.d/README.txt)
