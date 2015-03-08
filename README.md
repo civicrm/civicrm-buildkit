@@ -35,11 +35,11 @@ git pull
 ./bin/civi-download-tools
 ```
 
-### CLI Setup
+### CLI Setup: Permanent
 
 It is useful to register buildkit in the PATH. This enables you to run commands
 by entering a name (e.g.  "civix") rather than a full path (e.g.
-"/home/user/src/buildkit/bin/civix").
+"/path/to/buildkit/bin/civix").
 
 ```bash
 export PATH=/path/to/buildkit/bin:$PATH
@@ -49,15 +49,18 @@ If you want to ensure that these CLI tools are always available, then edit
 ~/.bashrc or ~/.profile, add buildkit to your PATH, and restart the
 terminal.
 
+### CLI Setup: Temporary
+
 Alternatively, if you're just getting started, or if you worry about
 conflicts between buildkit and your existing tools, then don't edit
 ~/.bashrc or ~/.profile.  Instead, enter the ***export*** command directly
-in your terminal.  This will temporarily register buildkit in the PATH.  You
-can restore the normal environment by closing the terminal and opening a new
-one.
+in your terminal.  This will temporarily register buildkit in the PATH.
 
-All other documentation will assume that you have added buildkit to the
-PATH.
+You can restore the normal environment by closing the terminal and opening
+a new one.
+
+Each time you open a new terminal while working on Civi development, you
+would need to re-run ***export***.
 
 ## CLI Tools
 
