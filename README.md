@@ -36,7 +36,7 @@ git pull
 
 ### CLI Setup
 
-It is useful register buildkit in the PATH. This enables you to run commands
+It is useful to register buildkit in the PATH. This enables you to run commands
 by entering a name (e.g.  "civix") rather than a full path (e.g.
 "/home/user/src/buildkit/bin/civix").
 
