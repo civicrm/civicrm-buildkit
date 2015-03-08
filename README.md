@@ -23,7 +23,8 @@ infrastructure for civicrm.org.
 
 ```bash
 git clone https://github.com/civicrm/civicrm-buildkit.git buildkit
-./buildkit/bin/civi-download-tools
+cd buildkit
+./bin/civi-download-tools
 ```
 
 ## Upgrade
