@@ -95,5 +95,5 @@ would need to re-run ***export***.
 ## Documentation
 
  * [Civibuild: Create a full dev/demo build](doc/civibuild.md)
- * [Daily Coding: First Pull-Request, Housekeeping, etc](doc/first-pr.md)
+ * [Daily Coding: First Pull-Request, Housekeeping, etc](doc/daily-coding.md)
  * [Experimental: Multiple demo/training sites](doc/demo-sites.md)

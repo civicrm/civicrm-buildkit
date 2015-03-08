@@ -1,4 +1,6 @@
-## Daily Coding: Your First Pull-Request
+# Daily Coding
+
+## Your First Pull-Request
 
 (TODO: Write a real tutorial!)
 
@@ -31,7 +33,7 @@ civicrm-core, civicrm-joomla, and civicrm-wordpress repositories have
 branches named "4.5", but the civicrm-drupal repository has a branch named
 "7.x-4.5").
 
-## Daily Coding: Housekeeping
+## Housekeeping
 
 (TODO: Write a real tutorial!)
 
@@ -52,7 +54,7 @@ drupal-demo$ git scan update
 drupal-demo$ civibuild reinstall drupal-demo
 ```
 
-## Daily Coding: Unit Tests
+## Unit Tests
 
 ```bash
 civicrm-buildkit$ cd build/drupal-demo/sites/all/modules/civicrm/tools
@@ -67,7 +69,7 @@ tools$ ./scripts/phpunit api_v3_ContactTest
 tools$ ./scripts/phpunit --filter testCreateNameOrganization api_v3_ContactTest
 ```
 
-## Daily Coding: Upgrade Tests
+## Upgrade Tests
 
 When one makes a schema change, one must also prepare and test an upgrade
 script. The basic cycle is:
