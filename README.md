@@ -4,9 +4,8 @@ Buildkit is a collection of ~20 tools for developing and testing CiviCRM.
 These tools are referenced in the CiviCRM developer documentation.
 
 Many of these tools are commonly used by web developers, so you may have
-already installed a few.  However, installing them individually can be a
-significant amount of work -- it is generally easier to download the full
-collection.
+already installed a few.  Even so, it's generally easier to download the
+full collection -- installing each individually takes a lot of work.
 
 This is the same collection of tools which manages the test/demo/release
 infrastructure for civicrm.org.
@@ -16,9 +15,8 @@ infrastructure for civicrm.org.
  * Bash (Unix shell)
  * Git
  * PHP 5.3+ (For MAMP/XAMPP/etc, see [Setup Command-Line PHP](http://wiki.civicrm.org/confluence/display/CRMDOC/Setup+Command-Line+PHP))
- * MySQL 5.1+ (client and server)
  * [NodeJS](http://nodejs.org/)
- * Recommended: Apache (for [civibuild](doc/civibuild.md))
+ * Recommended: Apache 2.2+ and MySQL 5.1+ (client and server) (for [amp](https://github.com/totten/amp) and [civibuild](doc/civibuild.md))
  * Recommended: Ruby/Rake (for [hub](http://hub.github.com/))
 
 ## Download
