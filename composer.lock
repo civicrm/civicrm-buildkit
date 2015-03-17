@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "15600963bb3dad945fba25442b910e04",
+    "hash": "fcea043c6d022a95059d4a597b59cdd2",
     "packages": [
         {
             "name": "brianium/habitat",
@@ -996,7 +996,8 @@
             "authors": [
                 {
                     "name": "Ben Ramsey",
-                    "homepage": "http://benramsey.com"
+                    "homepage": "http://benramsey.com",
+                    "role": "Developer"
                 }
             ],
             "description": "Provides functionality for array_column() to projects using PHP earlier than version 5.5.",
@@ -1535,12 +1536,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/totten/amp.git",
-                "reference": "fefc49e4db80e1296a0e75e79c0c2ff468de18f7"
+                "reference": "37edb4a62198c606d51dc4ca384a0faa741bac8e"
             },
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/totten/amp/zipball/3262d51f8a2caed65acea7fbdedb0a80bf9ee970",
-                "reference": "fefc49e4db80e1296a0e75e79c0c2ff468de18f7",
+                "reference": "37edb4a62198c606d51dc4ca384a0faa741bac8e",
                 "shasum": ""
             },
             "require": {
@@ -1575,7 +1576,7 @@
             ],
             "description": "CLI Interface to *AMP-style stacks",
             "homepage": "https://github.com/totten/amp",
-            "time": "2015-01-05 17:45:13"
+            "time": "2015-03-10 20:34:38"
         },
         {
             "name": "totten/git-scan",

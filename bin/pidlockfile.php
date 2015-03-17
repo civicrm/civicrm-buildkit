@@ -15,6 +15,10 @@ ini_set('display_errors', 1);
 //    echo "Failed to acquire /path/to/my.lock"
 //  fi
 
+if (!function_exists('posix_getpid') || !function_exists('posix_getpgid')) {
+  fwrite(STDERR, "WARNING: pidlockfile.php: POSIX API is unavailable. Cannot lock resources. Concurrent operations may be problematic.\n");
+  exit(0);
+}
 if (count($argv) != 4) {
   echo "Usage: pidlockfile.php <lock-file> <pid> <wait>\n";
   exit(2);
