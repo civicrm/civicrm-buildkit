@@ -19,11 +19,19 @@ civicrm$ hub fork
 ## Create some changes locally
 civicrm$ git checkout origin/4.5 -b 4.5-mypatch
 civicrm$ vi CRM/Utils/Array.php
+civicrm$ civilint CRM/Utils/Array.php
+## Repeat vi/civilint until clean
 civicrm$ git commit CRM/Utils/Array.php
 
 ## Publish our changes on github.com
 civicrm$ git push mygithubuser 4.5-mypatch
 civicrm$ hub pull-request -b 4.5
+
+## Make further changes based on feedback
+civicrm$ vi CRM/Utils/Array.php
+civicrm$ civilint CRM/Utils/Array.php
+civicrm$ git commit CRM/Utils/Array.php
+civicrm$ git push mygithubuser
 ```
 
 Please note: A build may include several different git repositories. The
