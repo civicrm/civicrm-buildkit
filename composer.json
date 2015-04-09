@@ -11,7 +11,7 @@
   },
   "require": {
     "php": ">=5.3.3",
-    "drush/drush": "~7.0.0-alpha2",
+    "drush/drush": "~7.0",
     "wp-cli/wp-cli": "0.17",
     "totten/amp": "dev-master#37edb4a62198c606d51dc4ca384a0faa741bac8e",
     "totten/git-scan": "dev-master#495f9ee8db337b3903929a6bf713f6b427e99d8e",
