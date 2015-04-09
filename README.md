@@ -67,6 +67,7 @@ would need to re-run ***export***.
 If you want to set up buildkit using composer, do the following...
 
 * Add the following to ~/.composer/composer.json
+  
   ```
   {
     "minimum-stability": "dev",
@@ -94,6 +95,7 @@ If you want to set up buildkit using composer, do the following...
     }
   }
   ```
+  
 * Run `composer global update`
 * Add `~/.composer/vendor/bin` to your PATH varariable like so:
   `export PATH=$HOME/.composer/vendor/bin:$PATH`
