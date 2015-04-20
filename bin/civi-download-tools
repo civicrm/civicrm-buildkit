@@ -19,7 +19,7 @@ WEBDIR="$PRJDIR/web"
 TMPDIR="$PRJDIR/app/tmp"
 LOCKFILE="$TMPDIR/civi-download-tools.lock"
 LOCKTIMEOUT=90
-CIVIXVER=14.09.1
+CIVIXVER=15.04.1
 CIVIXURL="http://downloads.sourceforge.net/project/civix/civix-${CIVIXVER}.tar.bz2?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fcivix%2Ffiles%2F&use_mirror=master"
 HUBTAG="v1.12.1"
 HUBURL="https://github.com/github/hub"
