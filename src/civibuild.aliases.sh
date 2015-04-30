@@ -22,10 +22,10 @@
 ## example: civibuild_alias_resolve d45
 function civibuild_alias_resolve() {
   case "$1" in
-    d43)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.3       ; CMS_TITLE="CiviCRM 4.3 Demo on Drupal"        ; VOL_VERSION=v1.3.2	; DISC_VERSION=4.4	;;
-    d44)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.4       ; CMS_TITLE="CiviCRM 4.4 Demo on Drupal"        ; VOL_VERSION=v1.3.2	; DISC_VERSION=4.4	;;
-    d45)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviCRM 4.5 Demo on Drupal"        ; VOL_VERSION=v4.5-1.3.2	; DISC_VERSION=4.5	;;
-    d46)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.6       ; CMS_TITLE="CiviCRM 4.6 Demo on Drupal"        ; VOL_VERSION=master	; DISC_VERSION=master	;;
+    d43)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.3       ; CMS_TITLE="CiviCRM 4.3 Demo on Drupal"        ; DISC_VERSION=4.4	;;
+    d44)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.4       ; CMS_TITLE="CiviCRM 4.4 Demo on Drupal"        ; VOL_VERSION=v1.3.3	; DISC_VERSION=4.4	;;
+    d45)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviCRM 4.5 Demo on Drupal"        ; VOL_VERSION=v4.5-1.4.0	; DISC_VERSION=4.5	;;
+    d46)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.6       ; CMS_TITLE="CiviCRM 4.6 Demo on Drupal"        ; VOL_VERSION=v4.5-1.4.0	; DISC_VERSION=master	;;
     d47)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.7       ; CMS_TITLE="CiviCRM 4.7 Demo on Drupal"        ; VOL_VERSION=master	; DISC_VERSION=master	;;
     dmaster)     SITE_TYPE=drupal-demo      ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal"         ; VOL_VERSION=master	; DISC_VERSION=master	;;
 
