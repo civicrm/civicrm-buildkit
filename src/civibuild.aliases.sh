@@ -45,8 +45,8 @@ function civibuild_alias_resolve() {
 
     hr13)        SITE_TYPE=hrdemo           ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviHR 1.3 Demo"                   ; HR_VERSION=1.3        ;;
     hr14)        SITE_TYPE=hrdemo           ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviHR 1.4 Demo"                   ; HR_VERSION=1.4        ;;
-    hr15)        SITE_TYPE=hrdemo           ; CIVI_VERSION=master    ; CMS_TITLE="CiviHR 1.5 Demo"                   ; HR_VERSION=1.5        ;;
-    hrmaster)    SITE_TYPE=hrdemo           ; CIVI_VERSION=master    ; CMS_TITLE="CiviHR Sandbox"                    ; HR_VERSION=master     ;;
+    hr15)        SITE_TYPE=hr15             ; CIVI_VERSION=4.6       ; CMS_TITLE="CiviHR 1.5 Demo"                   ; HR_VERSION=master     ;;
+    hrmaster)    SITE_TYPE=hr15             ; CIVI_VERSION=master    ; CMS_TITLE="CiviHR Sandbox"                    ; HR_VERSION=master     ;;
 
     *) ;;
   esac
