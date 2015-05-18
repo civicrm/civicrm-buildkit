@@ -15,7 +15,8 @@ function timeout_main($origArgs) {
   $args = $origArgs;
   array_shift($args); // program name
   $timeout = array_shift($args);
-  $cmd = (implode(' ', array_map('escapeshellarg', $args)));
+  $cmd = escapeshellcmd(array_shift($args));
+  $cmd .= ' ' . (implode(' ', array_map('escapeshellarg', $args)));
 
   if (!is_numeric($timeout)) {
     fwrite(STDERR, "usage: timeout.php <seconds> <command>\n");
