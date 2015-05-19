@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "fcea043c6d022a95059d4a597b59cdd2",
+    "hash": "c7af11826f7131868945363a71077104",
     "packages": [
         {
             "name": "brianium/habitat",
@@ -110,7 +110,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/civicrm/civistrings/zipball/2fea65b18b3c1443873323d630d2b59994c962cf",
+                "url": "https://api.github.com/repos/civicrm/civistrings/zipball/16003e400086e252d261aa5f95e6ea0d2908d92f",
                 "reference": "f886f33880027639d2aa0eeef79240ae1b7b531c",
                 "shasum": ""
             },
@@ -152,7 +152,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/0b4975d9812fe0e46c3b3c912a7caaa47b1e9594",
+                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/11bd7affcf26c98ca1d8616cf0b8ff561192f872",
                 "reference": "11bd7affcf26c98ca1d8616cf0b8ff561192f872",
                 "shasum": ""
             },
@@ -179,12 +179,12 @@
             "version": "v1.0.8",
             "source": {
                 "type": "git",
-                "url": "https://github.com/d11wtq/boris.git",
+                "url": "https://github.com/borisrepl/boris.git",
                 "reference": "125dd4e5752639af7678a22ea597115646d89c6e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/d11wtq/boris/zipball/125dd4e5752639af7678a22ea597115646d89c6e",
+                "url": "https://api.github.com/repos/borisrepl/boris/zipball/125dd4e5752639af7678a22ea597115646d89c6e",
                 "reference": "125dd4e5752639af7678a22ea597115646d89c6e",
                 "shasum": ""
             },
@@ -250,7 +250,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drush-ops/drush/zipball/46fb060b4984445faa5852b675f21206f2cbc983",
+                "url": "https://api.github.com/repos/drush-ops/drush/zipball/271dd8367f18ebf55b8c7cf1c1e80c4b01466802",
                 "reference": "d1d13676f5beacaa9f8619088fe3ae45ea28a6cf",
                 "shasum": ""
             },
@@ -1536,12 +1536,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/totten/amp.git",
-                "reference": "37edb4a62198c606d51dc4ca384a0faa741bac8e"
+                "reference": "9dc6e111bf4fcb4cbc89fa4d4370821a3645adbe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/totten/amp/zipball/3262d51f8a2caed65acea7fbdedb0a80bf9ee970",
-                "reference": "37edb4a62198c606d51dc4ca384a0faa741bac8e",
+                "url": "https://api.github.com/repos/totten/amp/zipball/9dc6e111bf4fcb4cbc89fa4d4370821a3645adbe",
+                "reference": "9dc6e111bf4fcb4cbc89fa4d4370821a3645adbe",
                 "shasum": ""
             },
             "require": {
@@ -1576,7 +1576,7 @@
             ],
             "description": "CLI Interface to *AMP-style stacks",
             "homepage": "https://github.com/totten/amp",
-            "time": "2015-03-10 20:34:38"
+            "time": "2015-05-19 01:07:53"
         },
         {
             "name": "totten/git-scan",
@@ -1588,7 +1588,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/totten/git-scan/zipball/83b7269637a183c696238988de3ff10fcf52086a",
+                "url": "https://api.github.com/repos/totten/git-scan/zipball/495f9ee8db337b3903929a6bf713f6b427e99d8e",
                 "reference": "495f9ee8db337b3903929a6bf713f6b427e99d8e",
                 "shasum": ""
             },
