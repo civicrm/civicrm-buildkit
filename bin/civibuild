@@ -4,7 +4,8 @@ set -e
 ###############################################################################
 ## Bootstrap
 
-## Determine the absolute path of the directory with the file
+## Determine the absolute path of the directory with the file.
+## The output should be generally POSIX-y.
 ## usage: absdirname <file-path>
 function absdirname() {
   pushd $(dirname $0) >> /dev/null
@@ -12,7 +13,20 @@ function absdirname() {
   popd >> /dev/null
 }
 
-BINDIR=$(absdirname "$0")
+## Determine the absolute path of the directory with the file.
+## On non-POSIX systems (Windows), this may be non-POSIXy.
+## usage: absdirname_native <file-path>
+function absdirname_native() {
+  pushd $(dirname $0) >> /dev/null
+    if [ "$MSYSTEM" == "MINGW32" ]; then
+      pwd -W
+    else
+      pwd
+    fi
+  popd >> /dev/null
+}
+
+BINDIR=$(absdirname_native "$0")
 PRJDIR=$(dirname "$BINDIR")
 TMPDIR="$PRJDIR/app/tmp"
 BLDDIR="$PRJDIR/build"
@@ -22,7 +36,8 @@ source "$PRJDIR/src/civibuild.aliases.sh"
 cvutil_mkdir "$TMPDIR" "$BLDDIR" "$PRJDIR/app/private"
 
 ## Make sure bundled utilities are available, regardless of local config
-export PATH="$BINDIR:$PATH"
+## PATH must by POSIX-y
+export PATH=$(absdirname "$0")":$PATH"
 
 if [ -z "$OFFLINE" ]; then
   civi-download-tools --quiet
