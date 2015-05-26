@@ -60,14 +60,22 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   ## Install CiviHR
   bash ${CIVI_CORE}/tools/extensions/civihr/bin/drush-install.sh --with-sample-data
+  
+  ## Disable / Uninstall old extensions (temporary should be removed when we don't need the old HRjob anymore)
+  drush cvapi extension.disable keys=org.civicrm.hrjob
 
   drush en front_page -y
   drush en civicrmtheme -y
   drush en civihr_employee_portal_features -y
 
-  ## Setup theme
-  #above# drush -y en seven
-  drush -y vset theme_default seven
+  ## Setup drupal theme
+  drush -y en civihr_default_theme
+  drush -y vset theme_default civihr_default_theme
+  
+  ## Setup Civicrm and admin theme
+  drush -y vset admin_theme seven
+  drush -y vset civicrmtheme_theme_admin seven
+  drush -y vset civicrmtheme_theme_public seven
 
   ## Setup demo user
   # drush -y en civicrm_webtest

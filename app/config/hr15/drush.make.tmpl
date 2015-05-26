@@ -29,6 +29,9 @@ libraries[civicrmdrupal][download][url] = %%CACHE_DIR%%/civicrm/civicrm-drupal.g
 libraries[civicrmdrupal][download][branch] = 7.x-%%CIVI_VERSION%%
 libraries[civicrmdrupal][overwrite] = TRUE
 
+; Backport patch from https://issues.civicrm.org/jira/browse/CRM-16461 (add bash check only if CIVI_VERSION = 4.5)
+libraries[civicrmdrupal][patch][] = "https://raw.githubusercontent.com/compucorp/civihr-employee-portal/master/patches/CRM-16461.patch"
+
 libraries[civicrmpackages][destination] = modules
 libraries[civicrmpackages][directory_name] = civicrm/packages
 libraries[civicrmpackages][download][type] = git
@@ -85,8 +88,9 @@ projects[webform_civicrm][subdir] = contrib
 projects[webform_civicrm][version] = 4.10
 
 projects[views][subdir] = contrib
-projects[views][version] = 3.8
-
+projects[views][version] = 3.11
+projects[views][patch][] = "https://www.drupal.org/files/issues/views-exposed_forms_ajax_support-1183418-73.patch"
+projects[views][patch][] = "https://www.drupal.org/files/issues/views-exposed-ajax-not-working-2425099-52.patch"
 
 projects[login_destination][subdir] = contrib
 projects[login_destination][version] = "1.1"
@@ -120,6 +124,9 @@ projects[date][version] = "2.8"
 
 projects[entity][subdir] = civihr-contrib-required
 projects[entity][version] = "1.6"
+
+projects[civicrm_entity][subdir] = civihr-contrib-required
+projects[civicrm_entity][version] = "2.x-dev"
 
 projects[features][subdir] = civihr-contrib-required
 projects[features][version] = "2.3"
@@ -209,14 +216,14 @@ libraries[civihr_employee_portal_theme][download][branch] = master
 libraries[civihr_employee_portal_theme][overwrite] = TRUE
 
 ; ****************************************
-; Compucorp custom civicrm modules
+; Compucorp custom civicrm modules (not required anymore as the extensions are moved to civihr repo)
 ; ****************************************
 
-libraries[civihr_compucorp][destination] = modules/civicrm/tools/extensions
-libraries[civihr_compucorp][download][type] = git
-libraries[civihr_compucorp][download][url] = https://github.com/compucorp/civihr-custom-civi-extensions
-libraries[civihr_compucorp][download][branch] = master
-libraries[civihr_compucorp][overwrite] = TRUE
+; libraries[civihr_compucorp][destination] = modules/civicrm/tools/extensions
+; libraries[civihr_compucorp][download][type] = git
+; libraries[civihr_compucorp][download][url] = https://github.com/compucorp/civihr-custom-civi-extensions
+; libraries[civihr_compucorp][download][branch] = master
+; libraries[civihr_compucorp][overwrite] = TRUE
 
 libraries[civihr_tasks][destination] = modules/civicrm/tools/extensions
 libraries[civihr_tasks][download][type] = git
