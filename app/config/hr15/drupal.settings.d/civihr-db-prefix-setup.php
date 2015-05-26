@@ -21,6 +21,8 @@ if (isset($civi_settings) && !empty($civi_settings)) {
         'civicrm_activity_contact' => trim($civi_settings['path'], '/') . '.',
         'civicrm_hrabsence_entitlement' => trim($civi_settings['path'], '/') . '.',
         'civicrm_uf_match' => trim($civi_settings['path'], '/') . '.',
+        'civicrm_phone' => trim($civi_settings['path'], '/') . '.',
+        'civicrm_email' => trim($civi_settings['path'], '/') . '.',
         'civicrm_value_emergency_contacts_21' => trim($civi_settings['path'], '/') . '.',
     );
     
