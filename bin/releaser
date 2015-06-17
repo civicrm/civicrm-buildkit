@@ -1,6 +1,36 @@
 #!/bin/bash
 set -e
 
+## Prepare a new release.
+
+###############################################################################
+## Bootstrap
+
+## Determine the absolute path of the directory with the file
+## usage: absdirname <file-path>
+function absdirname() {
+  pushd $(dirname $0) >> /dev/null
+    pwd
+  popd >> /dev/null
+}
+
+BINDIR=$(absdirname "$0")
+PRJDIR=$(dirname "$BINDIR")
+TMPDIR="$PRJDIR/app/tmp"
+BLDDIR="$PRJDIR/build"
+
+source "$PRJDIR/src/civibuild.lib.sh"
+source "$PRJDIR/src/civibuild.aliases.sh"
+cvutil_mkdir "$TMPDIR" "$BLDDIR" "$PRJDIR/app/private"
+
+## Make sure bundled utilities are available, regardless of local config
+export PATH="$BINDIR:$PATH"
+
+if [ -z "$OFFLINE" ]; then
+  civi-download-tools --quiet
+fi
+
+###############################################################################
 confdir=$(dirname $0)
 start_point="$1"
 version="$2"
