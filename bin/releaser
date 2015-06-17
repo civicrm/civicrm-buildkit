@@ -263,42 +263,42 @@ function do_publish_versions() {
   if [[ "$status" == "lts" ]]; then
     # If it's LTS, ask what status to use for the current LTS, if any.
     older_lts_version=$(php -r "
-      require 'releaser_json.php';
+      require '$PRJDIR/src/releaser_json.php';
       print_previous_status_version('$json', 'lts', '$major_version');
     ")
     if [[ -n "$older_lts_version" ]]; then
       prompt new_status_for_older_lts "Since this release is lts, what should be the new status for the current lts version ($older_lts_version)?" lts eol
       # Assign the selected status to the current LTS version.
       json=$(php -r "
-        require 'releaser_json.php';
+        require '$PRJDIR/src/releaser_json.php';
         update_version_status('$json', '$older_lts_version', '$new_status_for_older_lts');
       ")
     fi
   elif [[ "$status" == "stable" ]]; then
     # If it's stable, ask what status to use for the current stable, if any.
     older_stable_version=$(php -r "
-      require 'releaser_json.php';
+      require '$PRJDIR/src/releaser_json.php';
       print_previous_status_version('$json', 'stable', '$major_version');
     ")
     if [[ -n "$older_stable_version" ]]; then
       prompt new_status_for_older_stable "Since this release is stable, what should be the new status for the current stable version ($older_stable_version)?" stable lts eol
       # Assign the selected status to the current stable version.
       json=$(php -r "
-        require 'releaser_json.php';
+        require '$PRJDIR/src/releaser_json.php';
         update_version_status('$json', '$older_stable_version', '$new_status_for_older_stable');
       ")
       if [[ "$new_status_for_older_stable" == "lts" ]]; then
         # But now, if we've bumped 'stable' to 'lts', we have to ask what status
         # to use for an older existing LTS release, if any.
         older_lts_version=$(php -r "
-          require 'releaser_json.php';
+          require '$PRJDIR/src/releaser_json.php';
           print_previous_status_version('$json', 'lts', '$older_stable_version');
         ")
         if [[ -n "$older_lts_version" ]]; then
           prompt new_status_for_older_lts "Since $older_stable_version is now lts, what should be the new status for the current lts version ($older_lts_version)?" lts eol
           # Assign the selected status to the older existing LTS release.
           json=$(php -r "
-            require 'releaser_json.php';
+            require '$PRJDIR/src/releaser_json.php';
             update_version_status('$json', '$older_lts_version', '$new_status_for_older_lts');
           ")
         fi
@@ -316,7 +316,7 @@ function do_publish_versions() {
 
   # Update status for this release's major version.
   json=$(php -r "
-    require 'releaser_json.php';
+    require '$PRJDIR/src/releaser_json.php';
     update_version_status('$json', '$major_version', '$status');
   ")
 
@@ -326,7 +326,7 @@ function do_publish_versions() {
   # (json-invalid) single quotes, which are easier to read in bash.
   release_json=$(echo "{'version':'$version','date':'$release_date','security':'$is_security'}" | tr \' \")
   json=$(php -r"
-    require 'releaser_json.php';
+    require '$PRJDIR/src/releaser_json.php';
     add_release('$json', '$major_version', '$release_json');
   ")
 
