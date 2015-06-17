@@ -49,13 +49,14 @@ fi
 source "$confdir/releaser.conf"
 
 if [ -z "$start_point" -o -z "$version" -o -z "$first_act" ]; then
+  PROG=$(basename "$0")
   echo
   echo "Usage:"
-  echo "  $0 <start_point> <version> --build"
-  echo "  $0 <start_point> <version> --publish"
-  echo "  $0 <start_point> <version> --update"
-  echo "  $0 <start_point> <version> --clean"
-  echo "  $0 <start_point> <version> --build --publish --update --clean [[ORDER SIGNIFICANT]]"
+  echo "  $PROG <start_point> <version> --build"
+  echo "  $PROG <start_point> <version> --publish"
+  echo "  $PROG <start_point> <version> --update"
+  echo "  $PROG <start_point> <version> --clean"
+  echo "  $PROG <start_point> <version> --build --publish --update --clean [[ORDER SIGNIFICANT]]"
   echo "Arguments:"
   echo "  <start_point> is a branch name (e.g. \"master\")"
   echo "  <version> is Civi release (e.g. \"4.3.beta2\"); it will become a tag name"
