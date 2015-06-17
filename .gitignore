@@ -7,6 +7,7 @@ app/config/civix.ini
 app/config/starterkit/civicrm_starterkit/
 app/debug/
 app/private
+app/releaser.conf
 app/run/
 app/snapshot/
 app/tmp/
