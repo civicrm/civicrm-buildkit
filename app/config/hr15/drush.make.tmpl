@@ -67,6 +67,9 @@ libraries[civicrm][download][url] = %%CACHE_DIR%%/civicrm/civicrm-core.git
 libraries[civicrm][download][branch] = %%CIVI_VERSION%%
 libraries[civicrm][overwrite] = TRUE
 
+; patch civicrm 4.5 (includee civi components from the extensions directory)
+libraries[civicrm][patch][] = "https://raw.githubusercontent.com/compucorp/civihr-employee-portal/master/patches/extensions_include_path.patch"
+
 ; ****************************************
 ; Runtime Modules
 ; ****************************************
@@ -181,6 +184,18 @@ projects[download][version] = "2.5"
 
 projects[views_fieldsets][subdir] = civihr-contrib-required
 projects[views_fieldsets][version] = "1.2"
+
+projects[options_element][subdir] = civihr-contrib-required
+projects[options_element][version] = "1.12"
+
+projects[views_datasource][subdir] = civihr-contrib-required
+projects[views_datasource][version] = "1.0-alpha2"
+
+projects[mimemail][subdir] = civihr-contrib-required
+projects[mimemail][version] = "1.0-beta3"
+
+projects[mailsystem][subdir] = civihr-contrib-required
+projects[mailsystem][version] = "2.34"
 
 projects[views_json_query][subdir] = civihr-contrib-required
 projects[views_json_query][version] = 1.x-dev

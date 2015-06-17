@@ -71,6 +71,9 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   ## Setup drupal theme
   drush -y en civihr_default_theme
   drush -y vset theme_default civihr_default_theme
+
+  # Enable views_json for reports
+  drush -y en views_json
   
   ## Setup Civicrm and admin theme
   drush -y vset admin_theme seven
