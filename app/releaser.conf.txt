@@ -17,7 +17,8 @@ build_dest='/tmp/www/download.civicrm.org/public'
 latest='/tmp/www/latest.civicrm.org/public'
 
 ## Local directory for build operations
-workdir='/tmp/www/download.civicrm.org/workdir'
+#workdir='/tmp/www/download.civicrm.org/workdir'
+workdir="$PRJDIR/app/tmp/releaser"
 
 ## Passphrase for gpg signing key
 gpg_pass="top-secret"

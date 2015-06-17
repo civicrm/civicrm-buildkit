@@ -31,7 +31,7 @@ if [ -z "$OFFLINE" ]; then
 fi
 
 ###############################################################################
-confdir=$(dirname $0)
+confdir="$PRJDIR/app"
 start_point="$1"
 version="$2"
 first_act="$3"
