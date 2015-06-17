@@ -140,7 +140,7 @@ function do_mk_project() {
 #################################################
 ## Tag all repos
 function do_git_tag() {
-  cd $workdir/$version
+  cd "$workdir/$version"
   for dir in export export/joomla export/WordPress export/packages ; do
     pushd $dir
       git checkout "$start_point"
@@ -159,7 +159,7 @@ function do_git_tag() {
 #################################################
 ## Publish tags via git
 function do_git_tag_push() {
-  cd $workdir/$version
+  cd "$workdir/$version"
   for dir in export export/joomla export/WordPress export/packages ; do
     pushd $dir
       git push -f origin "$version"
@@ -176,7 +176,7 @@ function do_git_tag_push() {
 #################################################
 ## Build
 function do_distmaker() {
-  cd $workdir/$version
+  cd "$workdir/$version"
 
   ## Determine SCM revision of main codebase
   pushd "export"
@@ -200,25 +200,25 @@ function do_distmaker() {
   DM_REF_JOOMLA=${start_point}
   DM_REF_WORDPRESS=${start_point}
   DM_REF_PACKAGES=${start_point}
-  " > $workdir/$version/export/distmaker/distmaker.conf
+  " > "$workdir/$version/export/distmaker/distmaker.conf"
 
   # create a minimal civicrm.settings.php file
-  mkdir -p $workdir/$version/export/default
+  mkdir -p "$workdir/$version/export/default"
   echo "<?php define('CIVICRM_GETTEXT_RESOURCEDIR', '$workdir/$version/export/l10n/'); define('CIVICRM_UF', 'Drupal'); global \$civicrm_root; \$civicrm_root = '$workdir/$version/export'; ?>" > $workdir/$version/export/default/civicrm.settings.php
 
   # create a minimal settings_location.php file
   echo "<?php define('CIVICRM_CONFDIR', '$workdir/$version/export'); ?>" > $workdir/$version/export/settings_location.php
 
   # run the exported distmaker
-  cd $workdir/$version/export/distmaker
-  ./distmaker.sh $distmaker_tgt > $workdir/$version/build.log
+  cd "$workdir/$version/export/distmaker"
+  ./distmaker.sh $distmaker_tgt > "$workdir/$version/build.log"
 }
 
 #################################################
 ## Publish files
 function do_publish() {
   # publish to sf.net
-  pushd $workdir/$version/tarballs
+  pushd "$workdir/$version/tarballs"
 
     md5sum *.tar.gz *.tgz *.zip > civicrm-$version.MD5SUMS
     echo $gpg_pass | gpg --armor --batch --passphrase-fd 0 --sign civicrm-$version.MD5SUMS
@@ -335,7 +335,7 @@ function do_update() {
   echo "VERSION UPDATE: Enter the version that comes after $version (or enter nothing to abort)"
   read new_ver
   if [ -n "$new_ver" ]; then
-    cd $workdir/$version/export
+    cd "$workdir/$version/export"
     # create sql upgrade file
     tpl="CRM/Upgrade/Incremental/sql/$new_ver.mysql.tpl"
     if [ ! -f $tpl ]; then
@@ -371,7 +371,7 @@ function do_update() {
 #################################################
 ## Cleanup
 function do_cleanup() {
-  cd $workdir/$version
+  cd "$workdir/$version"
   rm -rf export gen tmp tarballs tmp
 }
 
