@@ -102,7 +102,9 @@ function do_mk_project() {
     fi
   done
 
-  $cmd_gitify all "$git_base_url" "$workdir/$version/export" --l10n --branch "$start_point" --skip-gencode
+  pushd "$workdir/$version/export"
+    gitify all --l10n --branch "$start_point" --skip-gencode
+  popd
 }
 
 #################################################
@@ -157,11 +159,11 @@ function do_distmaker() {
   DM_GENFILESDIR=$workdir/$version/gen
   DM_TMPDIR=$workdir/$version/tmp
   DM_TARGETDIR=$workdir/$version/tarballs
-  DM_PHP=$cmd_php
-  DM_RSYNC=$cmd_rsync
+  DM_PHP=php
+  DM_RSYNC=rsync
   DM_VERSION=$version
   DM_REVISION=$rev
-  DM_ZIP=$cmd_zip
+  DM_ZIP=zip
   DM_REF_CORE=${start_point}
   DM_REF_DRUPAL=7.x-${start_point}
   DM_REF_DRUPAL6=6.x-${start_point}
@@ -188,15 +190,15 @@ function do_publish() {
   # publish to sf.net
   pushd $workdir/$version/tarballs
 
-    $cmd_md5sum *.tar.gz *.tgz *.zip > civicrm-$version.MD5SUMS
-    echo $gpg_pass | $cmd_gpg --armor --batch --passphrase-fd 0 --sign civicrm-$version.MD5SUMS
+    md5sum *.tar.gz *.tgz *.zip > civicrm-$version.MD5SUMS
+    echo $gpg_pass | gpg --armor --batch --passphrase-fd 0 --sign civicrm-$version.MD5SUMS
 
     if [ "$is_stable" ]; then
-      echo mkdir ${publish_stable_dir}/$version | $cmd_sftp ${publish_ssh}
-      $cmd_rsync -aP --exclude='*starterkit.tgz' *.tar.gz *.zip *MD5SUMS* ${publish_ssh}:${publish_stable_dir}/$version
+      echo mkdir ${publish_stable_dir}/$version | sftp ${publish_ssh}
+      rsync -aP --exclude='*starterkit.tgz' *.tar.gz *.zip *MD5SUMS* ${publish_ssh}:${publish_stable_dir}/$version
     else
-      echo mkdir ${publish_latest_dir}/$version | $cmd_sftp ${publish_ssh}
-      $cmd_rsync -aP --exclude='*starterkit.tgz' *.tar.gz *.zip *MD5SUMS* ${publish_ssh}:${publish_latest_dir}/$version
+      echo mkdir ${publish_latest_dir}/$version | sftp ${publish_ssh}
+      rsync -aP --exclude='*starterkit.tgz' *.tar.gz *.zip *MD5SUMS* ${publish_ssh}:${publish_latest_dir}/$version
     fi
 
     mv *.tar.gz *.tgz *.zip *MD5SUMS* $build_dest

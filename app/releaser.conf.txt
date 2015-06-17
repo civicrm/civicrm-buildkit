@@ -26,12 +26,3 @@ gpg_pass="top-secret"
 publish_ssh="localhost"
 publish_stable_dir=/tmp/www/publish/stable
 publish_latest_dir=/tmp/www/publish/latest
-
-## Paths to miscellaneous executables
-cmd_gitify=/Applications/MAMP/htdocs/sites/all/modules/civicrm/bin/gitify
-cmd_gpg=gpg
-cmd_md5sum=md5sum
-cmd_php=php
-cmd_rsync=rsync
-cmd_sftp=sftp
-cmd_zip=zip
