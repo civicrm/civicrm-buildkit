@@ -2,6 +2,10 @@
 set -e
 
 ## Prepare a new release.
+##
+## WARNING: Releaser has traditionally been pretty tied to the
+## needs of civicrm.org. If you're not using it to manage the
+## official releases on civicrm.org, then... eh... good luck...
 
 ###############################################################################
 ## Bootstrap
