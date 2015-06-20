@@ -2,6 +2,7 @@
 .idea
 app/cache/
 app/clone/
+app/civibuild.conf
 app/civicrm.settings.d/*.local.php
 app/config/civix.ini
 app/config/starterkit/civicrm_starterkit/

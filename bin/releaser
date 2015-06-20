@@ -25,7 +25,7 @@ BLDDIR="$PRJDIR/build"
 
 source "$PRJDIR/src/civibuild.lib.sh"
 source "$PRJDIR/src/civibuild.aliases.sh"
-cvutil_mkdir "$TMPDIR" "$BLDDIR" "$PRJDIR/app/private"
+cvutil_mkdir "$TMPDIR" "$PRJDIR/app/private"
 
 ## Make sure bundled utilities are available, regardless of local config
 export PATH="$BINDIR:$PATH"
