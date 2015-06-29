@@ -5,6 +5,11 @@
 ## Drupal is actually in a subdir of the main source tree
 CMS_ROOT="$WEB_ROOT/drupal"
 
+# Update vendor libraries.
+pushd "$WEB_ROOT"
+composer install
+popd
+
 ###############################################################################
 ## Create virtual-host and databases
 
