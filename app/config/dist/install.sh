@@ -29,7 +29,7 @@ DM_ZIP=zip
 
 # DM_VERSION= <Set this to whatever the version number should be>
 
-## Git banch/tag name
+## Git branch/tag name
 [ -z "\$DM_REF_CORE" ] && DM_REF_CORE=$CIVI_VERSION
 
 DM_REF_DIRNAME=\$(dirname \$DM_REF_CORE)/
