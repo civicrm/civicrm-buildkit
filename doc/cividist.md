@@ -17,23 +17,30 @@ civibuild create dist --url http://dist.localhost ;
 ```
 cd build/dist/src
 git remote add myfork https://github.com/myfork/civicrm-core.git
-git config core.filemode false
 
 cd build/dist/src/drupal
 git remote add myfork https://github.com/myfork/civicrm-drupal.git
-git config core.filemode false
 
 cd build/dist/src/packages
 git remote add myfork https://github.com/myfork/civicrm-packages.git
-git config core.filemode false
 
 cd build/dist/src/joomla
 git remote add myfork https://github.com/myfork/civicrm-joomla.git
-git config core.filemode false
 
 cd build/dist/src/Wordpress
 git remote add myfork https://github.com/myfork/civicrm-wordpress.git
-git config core.filemode false
+```
+
+## Setup:: (optional) declare git repos to be permission agnostic. If you don't use CiviCRM standard
+permissions you might want this (eg if you allocate Write permission to the group)
+
+For the user
+```
+git config --global core.filemode false
+```
+Or for server wide
+```
+git config --system core.filemode false
 ```
 
 ## Periodic: Update code - this will retrieve from the remote alias - ie. myfork in the text below
