@@ -1,18 +1,22 @@
 ## CiviDist
-Cividist generates tarballs from the git repos. If you wish to run it with your own repos you will need to do the 2
-setup steps first and then the last 3 when you want to build new tarballs (e.g nightly).
 
-CiviDist works by checking out the matching branch in each repo - so if you want to use a non-standard name it must 
-exist in all repos.
+`cividist` generates a website with tarballs built from the official git repos ([civicrm-core.git](https://github.com/civicrm/civicrm-core.git), [civicrm-packages.git](https://github.com/civicrm/civicrm-packages.git), etc). It manages the CiviCRM nightly builds (http://dist.civicrm.org).
+
+If you wish to run `cividist` with your own repos, you will need to do the some initial setup and then periodically build new tarballs.
+
+`cividist` expects that branch names match across all repos (e.g. the `4.6` branch in `civicrm-core.git` must match the `4.6` branch in `civicrm-packages.git`). If you use a non-standard branch name, it must exist in all repos.
 
 ## Setup: Make the web root
+
 ```
-civibuild create dist --url http://dist.localhost ; 
+civibuild create dist --url http://dist.localhost
 ```
 
 ## Setup: Register your forks
- Note that if you don't fork one of these repos then you should still add a fork,
- but point it to the main civicrm repo so you have a consistent remote alias for all relevant repos.
+
+Note: If you use forks, you should do so consistently across all repos (even if you don't
+have any customizations on one repo or another). The goal is to consistently name the `remote`s
+and `branch`es across all repos.
 
 ```
 cd build/dist/src
@@ -31,31 +35,34 @@ cd build/dist/src/Wordpress
 git remote add myfork https://github.com/myfork/civicrm-wordpress.git
 ```
 
-## Setup:: (optional) declare git repos to be permission agnostic. If you don't use CiviCRM standard
-permissions you might want this (eg if you allocate Write permission to the group)
+## Setup: Permissions
 
-For the user
+If your system has specific permission requirements, then apply the permissions as you normally would. For example, if you use chgrp and and set all files as group-writable:
+
 ```
-git config --global core.filemode false
-```
-Or for server wide
-```
-git config --system core.filemode false
+sudo git config --system core.filemode false
+sudo chgrp -R mygroup build/dist
+sudo chmod -R g+w build/dist
 ```
 
-## Periodic: Update code - this will retrieve from the remote alias - ie. myfork in the text below
+## Periodic: Update tarballs
+
+This will retrieve the latest code from the remote alias (eg `myfork`) and build new build tarballs:
+
 ```
 cd build/dist
 env GIT_REMOTE=myfork cividist update 
-```
-
-## Periodic: Build tarballs
-```
-cd build/dist
 cividist build myfork/4.6
 ```
 
+You can also build multiple tarballs with one command, e.g.
+
+```
+cividist build myfork/4.5 myfork/4.6 myfork/master
+```
+
 ## Periodic: Cleanup old/orphaned tarballs
+
 ```
 cd build/dist
 cividist prune
