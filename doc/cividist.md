@@ -6,12 +6,15 @@ CiviDist works by checking out the matching branch in each repo - so if you want
 exist in all repos.
 
 ## Setup: Make the web root
+```
 civibuild create dist --url http://dist.localhost ; 
+```
 
 ## Setup: Register your forks
  Note that if you don't fork one of these repos then you should still add a fork,
  but point it to the main civicrm repo so you have a consistent remote alias for all relevant repos.
 
+```
 cd build/dist/src
 git remote add myfork https://github.com/myfork/civicrm-core.git
 git config core.filemode false
@@ -31,15 +34,22 @@ git config core.filemode false
 cd build/dist/src/Wordpress
 git remote add myfork https://github.com/myfork/civicrm-wordpress.git
 git config core.filemode false
+```
 
 ## Periodic: Update code - this will retrieve from the remote alias - ie. myfork in the text below
+```
 cd build/dist
 env GIT_REMOTE=myfork cividist update 
+```
 
 ## Periodic: Build tarballs
+```
 cd build/dist
 cividist build myfork/4.6
+```
 
 ## Periodic: Cleanup old/orphaned tarballs
+```
 cd build/dist
 cividist prune
+```
