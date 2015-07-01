@@ -12,7 +12,10 @@ TARS=${TARS:-$PRJ/out/tar}
 BY_DATE=${BY_DATE:-$PRJ/web/by-date}
 BY_HASH=${BY_HASH:-$PRJ/web/by-hash}
 DATE=$( date '+%Y-%m-%d' )
-FILE_SUFFIX=$( date '+%Y%m%d' )
+if [ -z $FILE_SUFFIX ]; then
+  FILE_SUFFIX=$( date '+%Y%m%d' )
+fi
+
 ## #minutes before redownloading L10n (12*60=720 min)
 L10N_TTL=720
 L10N_URL=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
