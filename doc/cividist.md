@@ -55,6 +55,13 @@ env GIT_REMOTE=myfork cividist update
 cividist build myfork/4.6
 ```
 
+By default the tarballs will have the date in the name. If you don't want this you can add a FILE_SUFFIX
+e.g to this command is used by Fuzion to a) use a remote called 'fuzion', b) use the branch 4.6.4rc1 from those repos & c) output using filenames like civicrm-4.6.5-drupal-nightly.tar.gz
+
+```
+env FILE_SUFFIX=nightly cividist build fuzion/4.6.4rc1
+```
+
 You can also build multiple tarballs with one command, e.g.
 
 ```
