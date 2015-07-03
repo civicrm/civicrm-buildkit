@@ -40,6 +40,7 @@ drush -y en \
   civicrm \
   toolbar \
   garland \
+  astropay_audit \
   contribution_audit \
   contribution_tracking \
   environment_indicator \
