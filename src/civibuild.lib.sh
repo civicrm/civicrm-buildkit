@@ -448,7 +448,7 @@ function civicrm_install() {
   pushd "$CIVI_CORE" >> /dev/null
     ## Does this build include development support (eg git or tarball-based)?
     if [ -e "xml" -a -e "bin/setup.sh" ]; then
-      env SITE_ID="$SITE_ID" ./bin/setup.sh
+      env SITE_ID="$SITE_ID" bash bin/setup.sh
     elif [ -e "sql/civicrm.mysql" -a -e "sql/civicrm_generated.mysql" ]; then
       cat sql/civicrm.mysql sql/civicrm_generated.mysql | mysql $CIVI_DB_ARGS
     else
