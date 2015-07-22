@@ -40,7 +40,7 @@ fi
 
 cd "${WEB_ROOT}/modules/"
 if [[ ! -e 'civicrm-drupal' ]]; then
-  git clone https://github.com/civicrm/civicrm-drupal.git
+  git clone https://github.com/civicrm/civicrm-drupal.git civicrm
 fi
 
 civicrm_install
