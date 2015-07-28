@@ -39,8 +39,8 @@ if [[ ! -e 'packages' ]]; then
 fi
 
 cd "${WEB_ROOT}/modules/"
-if [[ ! -e 'civicrm-drupal' ]]; then
-  git clone https://github.com/civicrm/civicrm-drupal.git civicrm
+if [[ ! -e 'civicrm' ]]; then
+  git clone https://github.com/civicrm/civicrm-drupal.git -b 8.x-${CIVI_VERSION} civicrm
 fi
 
 civicrm_install
@@ -50,9 +50,11 @@ civicrm_install
 pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   drush -y updatedb
-  drush -y en civicrm toolbar locale garland login_destination userprotect
+  drush -y en civicrm
+  ## make sure drush functions are loaded
+  drush cc drush -y
   ## disable annoying/unneeded modules
-  drush -y dis overlay
+  #drush -y dis overlay
 
   ## Setup CiviCRM
   echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign"]}' \
@@ -63,64 +65,67 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   ## Setup theme
   #above# drush -y en garland
   export SITE_CONFIG_DIR
-  drush -y -u "$ADMIN_USER" scr "$SITE_CONFIG_DIR/install-theme.php"
+  # (not d8 ready) drush -y -u "$ADMIN_USER" scr "$SITE_CONFIG_DIR/install-theme.php"
 
   ## Based on the block info, CRM_Core_Block::CREATE_NEW and CRM_Core_Block::ADD should be enabled by default, but they aren't.
   ## "drush -y cc all" and "drush -y cc block" do *NOT* solve the problem. But this does:
-  drush php-eval -u "$ADMIN_USER" 'module_load_include("inc","block","block.admin"); block_admin_display();'
+  ## doesn't work on d8
+  ## drush php-eval -u "$ADMIN_USER" 'module_load_include("inc","block","block.admin"); block_admin_display();'
 
   ## Setup welcome page
   drush -y scr "$SITE_CONFIG_DIR/install-welcome.php"
-  drush -y vset site_frontpage "welcome"
+  # vset doesn't work in d8 drush -y vset site_frontpage "welcome"
 
   ## Setup login_destination
   #above# drush -y en login_destination
-  drush -y scr "$SITE_CONFIG_DIR/install-login-destination.php"
+  # doesn't work in d8 drush -y scr "$SITE_CONFIG_DIR/install-login-destination.php"
 
   ## Setup userprotect
+  #d8 can't find role authenticated user
   #above# drush -y en userprotect
-  drush scr "$PRJDIR/src/drush/perm.php" <<EOPERM
-    role "authenticated user"
-    remove "change own e-mail"
-    remove "change own openid"
-    remove "change own password"
-EOPERM
+  #drush scr "$PRJDIR/src/drush/perm.php" <<EOPERM
+  #  role "authenticated user"
+  #  remove "change own e-mail"
+  #  remove "change own openid"
+  #  remove "change own password"
+#EOPERM
 
   ## Setup demo user
-  drush -y en civicrm_webtest
-  drush -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
-  drush -y user-add-role civicrm_webtest_user "$DEMO_USER"
+  # drush -y en civicrm_webtest
+  # drush -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
+  #drush -y user-add-role civicrm_webtest_user "$DEMO_USER"
   # In Garland, CiviCRM's toolbar looks messy unless you also activate Drupal's "toolbar", so grant "access toolbar"
   # We've activated more components than typical web-test baseline, so grant rights to those components.
-  drush scr "$PRJDIR/src/drush/perm.php" <<EOPERM
-    role 'civicrm_webtest_user'
-    add 'access toolbar'
-    add 'administer CiviCase'
-    add 'access all cases and activities'
-    add 'access my cases and activities'
-    add 'add cases'
-    add 'delete in CiviCase'
-    add 'administer CiviCampaign'
-    add 'manage campaign'
-    add 'reserve campaign contacts'
-    add 'release campaign contacts'
-    add 'interview campaign contacts'
-    add 'gotv campaign contacts'
-    add 'sign CiviCRM Petition'
-EOPERM
+  #drush scr "$PRJDIR/src/drush/perm.php" <<EOPERM
+  #  role 'civicrm_webtest_user'
+  #  add 'access toolbar'
+  #  add 'administer CiviCase'
+  #  add 'access all cases and activities'
+  #  add 'access my cases and activities'
+  #  add 'add cases'
+  #  add 'delete in CiviCase'
+  #  add 'administer CiviCampaign'
+  #  add 'manage campaign'
+  #  add 'reserve campaign contacts'
+  #  add 'release campaign contacts'
+  #  add 'interview campaign contacts'
+  #  add 'gotv campaign contacts'
+  #  add 'sign CiviCRM Petition'
+#EOPERM
 
   ## Setup CiviVolunteer
   drush -y cvapi extension.install key=org.civicrm.volunteer debug=1
-  drush scr "$PRJDIR/src/drush/perm.php" <<EOPERM
-    role 'anonymous user'
-    role 'authenticated user'
-    add 'register to volunteer'
-EOPERM
+  # drush scr "$PRJDIR/src/drush/perm.php" <<EOPERM
+  #  role 'anonymous user'
+    #d8 can't find role authenticated user
+    #role 'authenticated user'
+  #  add 'register to volunteer'
+#EOPERM
 
-  drush -y -u "$ADMIN_USER" cvapi extension.install key=eu.tttp.civisualize debug=1
-  drush -y -u "$ADMIN_USER" cvapi extension.install key=org.civicrm.module.cividiscount debug=1
+ # drush -y -u "$ADMIN_USER" cvapi extension.install key=eu.tttp.civisualize debug=1
+ # drush -y -u "$ADMIN_USER" cvapi extension.install key=org.civicrm.module.cividiscount debug=1
 
   ## Setup CiviCRM dashboards
-  INSTALL_DASHBOARD_USERS="$ADMIN_USER;$DEMO_USER" drush scr "$SITE_CONFIG_DIR/install-dashboard.php"
+ # INSTALL_DASHBOARD_USERS="$ADMIN_USER;$DEMO_USER" drush scr "$SITE_CONFIG_DIR/install-dashboard.php"
 
 popd >> /dev/null

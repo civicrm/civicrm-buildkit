@@ -22,7 +22,8 @@ function _install_theme_applyColorScheme($theme, $scheme) {
   color_scheme_form_submit($fform, $fform_state);
 }
 
-// Set Garland options
+/* Set Garland options
+VGET & VSET don't work in d8
 file_put_contents('public://logo.png', file_get_contents(SITE_CONFIG_DIR . '/civicrm-logo-fat.png'));
 $settings_old = variable_get('theme_garland_settings', array());
 $settings_new = array (
@@ -46,7 +47,7 @@ $settings_new = array (
 );
 variable_set('theme_garland_settings', array_merge($settings_old, $settings_new));
 variable_set('theme_default', 'garland');
-
+*/
 _install_theme_applyColorScheme('garland', 'ash');
 
 // Enable blocks in Garland

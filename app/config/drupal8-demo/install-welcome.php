@@ -13,7 +13,8 @@ if ($node === FALSE) {
   node_object_prepare($node);
 }
 
-$node->title    = 'Welcome to ' . variable_get('site_name');
+// variable_get is not d8 $node->title    = 'Welcome to ' . variable_get('site_name');
+$node->title    = 'Welcome to your new CiviCRM site';
 $node->language = LANGUAGE_NONE;
 $node->body[$node->language][0]['value']   = '
 <p><strong><a href="http://civicrm.org" target="_blank" title="Opens CiviCRM.org site in a new window.">CiviCRM</a> is a community-based open source project to build constituent relationship management functionality for the nonprofit, advocacy and nongovernmental sectors.
@@ -37,5 +38,5 @@ $node->body[$node->language][0]['summary'] = text_summary($node->body[$node->lan
 $node->body[$node->language][0]['format']  = 'filtered_html';
 
 $node->path = array('alias' => 'welcome');
-
-node_save($node);
+// @todo no good in d8
+//node_save($node);
