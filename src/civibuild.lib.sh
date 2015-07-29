@@ -674,9 +674,17 @@ function wp_uninstall() {
 
 ###############################################################################
 ## Drupal -- Generate config files and setup database
+## currently just a wrapper for drupal7 install - but may add crazy logic ... like an if.
 ## usage: drupal_install <extra-drush-args>
 ## To use an "install profile", simply pass it as part of <extra-drush-args>
 function drupal_install() {
+  drupal7_install
+}
+###############################################################################
+## Drupal -- Generate config files and setup database
+## usage: drupal_install <extra-drush-args>
+## To use an "install profile", simply pass it as part of <extra-drush-args>
+function drupal7_install() {
   cvutil_assertvars drupal_install CMS_ROOT SITE_ID CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS CMS_URL
   DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
   CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
@@ -701,6 +709,36 @@ function drupal_install() {
     drush vset --yes file_private_path "${PRIVATE_ROOT}/${DRUPAL_SITE_DIR}"
   popd >> /dev/null
 }
+
+###############################################################################
+## Drupal -- Generate config files and setup database
+## usage: drupal_install <extra-drush-args>
+## To use an "install profile", simply pass it as part of <extra-drush-args>
+function drupal8_install() {
+  cvutil_assertvars drupal_install CMS_ROOT SITE_ID CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS CMS_URL
+  DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
+  CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
+  pushd "$CMS_ROOT" >> /dev/null
+    [ -f "sites/$DRUPAL_SITE_DIR/settings.php" ] && rm -f "sites/$DRUPAL_SITE_DIR/settings.php"
+
+    drush site-install -y "$@" \
+      --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOSTPORT}/${CMS_DB_NAME}" \
+      --account-name="$ADMIN_USER" \
+      --account-pass="$ADMIN_PASS" \
+      --account-mail="$ADMIN_EMAIL" \
+      --site-name="$CMS_TITLE" \
+      --sites-subdir="$DRUPAL_SITE_DIR"
+    chmod u+w "sites/$DRUPAL_SITE_DIR"
+    chmod u+w "sites/$DRUPAL_SITE_DIR/settings.php"
+    cvutil_inject_settings "$CMS_ROOT/sites/$DRUPAL_SITE_DIR/settings.php" "drupal.settings.d"
+    chmod u-w "sites/$DRUPAL_SITE_DIR/settings.php"
+
+    ## Setup extra directories
+    amp datadir "sites/${DRUPAL_SITE_DIR}/files" "${PRIVATE_ROOT}/${DRUPAL_SITE_DIR}"
+    cvutil_mkdir "sites/${DRUPAL_SITE_DIR}/modules"
+  popd >> /dev/null
+}
+
 
 ###############################################################################
 ## Drupal -- Destroy config files and database tables
