@@ -739,10 +739,46 @@ function drupal8_install() {
   popd >> /dev/null
 }
 
-
 ###############################################################################
 ## Drupal -- Destroy config files and database tables
 function drupal_uninstall() {
+  drupal7_uninstall
+}
+
+###############################################################################
+## Drupal -- Destroy config files and database tables
+function drupal7_uninstall() {
+  cvutil_assertvars drupal_uninstall CMS_ROOT SITE_ID CMS_URL
+  DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
+
+  if [ -n "$DRUPAL_SITE_DIR" -a -d "$CMS_ROOT/sites/$DRUPAL_SITE_DIR" ]; then
+    if [ "$SITE_ID" == "default" ]; then
+      ## For default site, carfully pick files to delete.
+      ## Need to keep default.settings.php.
+      pushd "$CMS_ROOT" >> /dev/null
+        chmod u+w "sites/default"
+        if [ -f "sites/default/settings.php" ]; then
+          chmod u+w "sites/default/settings.php"
+          rm -f "sites/default/settings.php"
+        fi
+        if [ -f "sites/default/files" ]; then
+          chmod u+w "sites/default/files"
+          rm -f "sites/default/files"
+        fi
+      popd >> /dev/null
+    else
+      rm -rf "$CMS_ROOT/sites/$DRUPAL_SITE_DIR"
+    fi
+  fi
+
+  if [ -n "$DRUPAL_SITE_DIR" -a -d "$PRIVATE_ROOT/$DRUPAL_SITE_DIR" ]; then
+    rm -rf "$PRIVATE_ROOT/$DRUPAL_SITE_DIR"
+  fi
+}
+
+###############################################################################
+## Drupal -- Destroy config files and database tables
+function drupal8_uninstall() {
   cvutil_assertvars drupal_uninstall CMS_ROOT SITE_ID CMS_URL
   DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
 

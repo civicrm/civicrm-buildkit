@@ -9,5 +9,5 @@ if [ -f "$CIVI_SETTINGS" ]; then
   rm -f "$CIVI_SETTINGS"
 fi
 
-drupal_uninstall
+drupal8_uninstall
 amp_uninstall
