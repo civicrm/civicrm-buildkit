@@ -674,9 +674,17 @@ function wp_uninstall() {
 
 ###############################################################################
 ## Drupal -- Generate config files and setup database
+## currently just a wrapper for drupal7 install - but may add crazy logic ... like an if.
 ## usage: drupal_install <extra-drush-args>
 ## To use an "install profile", simply pass it as part of <extra-drush-args>
 function drupal_install() {
+  drupal7_install
+}
+###############################################################################
+## Drupal -- Generate config files and setup database
+## usage: drupal_install <extra-drush-args>
+## To use an "install profile", simply pass it as part of <extra-drush-args>
+function drupal7_install() {
   cvutil_assertvars drupal_install CMS_ROOT SITE_ID CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS CMS_URL
   DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
   CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
@@ -703,8 +711,74 @@ function drupal_install() {
 }
 
 ###############################################################################
+## Drupal -- Generate config files and setup database
+## usage: drupal_install <extra-drush-args>
+## To use an "install profile", simply pass it as part of <extra-drush-args>
+function drupal8_install() {
+  cvutil_assertvars drupal_install CMS_ROOT SITE_ID CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS CMS_URL
+  DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
+  CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
+  pushd "$CMS_ROOT" >> /dev/null
+    [ -f "sites/$DRUPAL_SITE_DIR/settings.php" ] && rm -f "sites/$DRUPAL_SITE_DIR/settings.php"
+
+    drush site-install -y "$@" \
+      --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOSTPORT}/${CMS_DB_NAME}" \
+      --account-name="$ADMIN_USER" \
+      --account-pass="$ADMIN_PASS" \
+      --account-mail="$ADMIN_EMAIL" \
+      --site-name="$CMS_TITLE" \
+      --sites-subdir="$DRUPAL_SITE_DIR"
+    chmod u+w "sites/$DRUPAL_SITE_DIR"
+    chmod u+w "sites/$DRUPAL_SITE_DIR/settings.php"
+    cvutil_inject_settings "$CMS_ROOT/sites/$DRUPAL_SITE_DIR/settings.php" "drupal.settings.d"
+    chmod u-w "sites/$DRUPAL_SITE_DIR/settings.php"
+
+    ## Setup extra directories
+    amp datadir "sites/${DRUPAL_SITE_DIR}/files" "${PRIVATE_ROOT}/${DRUPAL_SITE_DIR}"
+    cvutil_mkdir "sites/${DRUPAL_SITE_DIR}/modules"
+  popd >> /dev/null
+}
+
+###############################################################################
 ## Drupal -- Destroy config files and database tables
 function drupal_uninstall() {
+  drupal7_uninstall
+}
+
+###############################################################################
+## Drupal -- Destroy config files and database tables
+function drupal7_uninstall() {
+  cvutil_assertvars drupal_uninstall CMS_ROOT SITE_ID CMS_URL
+  DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
+
+  if [ -n "$DRUPAL_SITE_DIR" -a -d "$CMS_ROOT/sites/$DRUPAL_SITE_DIR" ]; then
+    if [ "$SITE_ID" == "default" ]; then
+      ## For default site, carfully pick files to delete.
+      ## Need to keep default.settings.php.
+      pushd "$CMS_ROOT" >> /dev/null
+        chmod u+w "sites/default"
+        if [ -f "sites/default/settings.php" ]; then
+          chmod u+w "sites/default/settings.php"
+          rm -f "sites/default/settings.php"
+        fi
+        if [ -f "sites/default/files" ]; then
+          chmod u+w "sites/default/files"
+          rm -f "sites/default/files"
+        fi
+      popd >> /dev/null
+    else
+      rm -rf "$CMS_ROOT/sites/$DRUPAL_SITE_DIR"
+    fi
+  fi
+
+  if [ -n "$DRUPAL_SITE_DIR" -a -d "$PRIVATE_ROOT/$DRUPAL_SITE_DIR" ]; then
+    rm -rf "$PRIVATE_ROOT/$DRUPAL_SITE_DIR"
+  fi
+}
+
+###############################################################################
+## Drupal -- Destroy config files and database tables
+function drupal8_uninstall() {
   cvutil_assertvars drupal_uninstall CMS_ROOT SITE_ID CMS_URL
   DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
 
