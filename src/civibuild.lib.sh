@@ -698,6 +698,7 @@ function drupal_install() {
     ## Setup extra directories
     amp datadir "sites/${DRUPAL_SITE_DIR}/files" "${PRIVATE_ROOT}/${DRUPAL_SITE_DIR}"
     cvutil_mkdir "sites/${DRUPAL_SITE_DIR}/modules"
+    drush vset --yes file_private_path "${PRIVATE_ROOT}/${DRUPAL_SITE_DIR}"
   popd >> /dev/null
 }
 
