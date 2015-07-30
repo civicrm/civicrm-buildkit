@@ -53,6 +53,7 @@ configurations.  For example, at time of writing, it includes:
  * *hrdemo* A demo site running Drupal, CiviCRM, and CiviHR
  * *symfony*: An experimental hybrid site running Drupal 7, Symfony 2, and CiviCRM
  * *cxnapp*: A self-signed CiviConnect app based on the reference implementation.
+ * *messages*: A backend service for delivering in-app messages (eg "Getting Started").
  * *extdir*: A mock website akin to civicrm.org/extdir/ . Useful for testing the extension download process.
  * *dist*: A website containing nightly builds akin to dist.civicrm.org. Useful for preparing CiviCRM tarballs.
  * *l10n*: WIP - A build environment for creating translation files.
