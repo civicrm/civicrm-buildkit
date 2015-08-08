@@ -1,0 +1,26 @@
+#!/bin/bash
+
+## Execute pdepend in parallel, using small batches of Civi code. Aggregate
+## the results.
+
+set -e
+OUTDIR=pdepend.out
+SRCDIRS="Civi api bin extern tests $(find CRM -mindepth 1 -maxdepth 1 -type d)"
+#SRCDIRS="Civi api bin"
+
+#################################################
+if [ ! -d "$OUTDIR" ]; then
+  mkdir "$OUTDIR"
+fi
+
+rm -f "$OUTDIR/*-summary.xml"
+for d in $SRCDIRS ; do
+  name=$( echo $d | sed 's:/:-:g' )
+  pdepend --summary-xml="$OUTDIR"/${name}-summary.xml ${d} &
+done
+
+for job in `jobs -p` ; do
+    wait $job
+done
+
+pdepend-to-csv "$OUTDIR"/*-summary.xml | grep -v _DAO_ > "$OUTDIR/report.csv"

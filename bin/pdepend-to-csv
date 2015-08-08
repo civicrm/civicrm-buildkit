@@ -1,0 +1,43 @@
+#!/usr/bin/env php
+<?php
+## Combine a series of pdepend summary XML files, and output one
+## CSV file with stats for the functions/methods.
+
+$cols = NULL;
+$files = $argv;
+array_shift($files);
+
+foreach ($files as $file) {
+  $xml = simplexml_load_file($file);
+  foreach ($xml->package as $package) {
+    foreach ($package->class as $class) {
+      foreach ($class->method as $method) {
+        if ('+global' == ''.$package['name']) {
+          $name = sprintf("%s::%s()", $class['name'], $method['name']);
+        } elseif (strpos((string)$class['name'], '_') !== FALSE) {
+          $name = sprintf("%s::%s()", $class['name'], $method['name']);
+        }
+        else {
+          $name = sprintf("%s\%s::%s()", $package['name'], $class['name'], $method['name']);
+        }
+
+        $row = toArray($method);
+        if ($cols === NULL) {
+          $cols = array_keys($row);
+          fputcsv(STDOUT, $cols);
+        }
+        $row['name'] = $name;
+        fputcsv(STDOUT, $row);
+      }
+    }
+  }
+}
+
+function toArray($elem) {
+  $arr = array();
+  foreach ($elem->attributes() as $k => $v) {
+    $arr[$k] = $v;
+  }
+  return $arr;
+}
+
