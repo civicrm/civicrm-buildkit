@@ -178,7 +178,15 @@ pushd $PRJDIR >> /dev/null
       pushd "$PRJDIR/bin" >> /dev/null
         toolname=$(basename $f)
         if [ ! -e "$toolname" ]; then
-          ln -s ../$f $toolname
+          #ln -s ../$f $toolname
+          echo '#!/bin/env sh' > "$toolname"
+          echo 'function absdirname() {' >> "$toolname"
+          echo '  pushd $(dirname $0) >> /dev/null' >> "$toolname"
+          echo '    pwd' >> "$toolname"
+          echo '  popd >> /dev/null' >> "$toolname"
+          echo '}' >> "$toolname"
+          echo 'BINDIR=$(absdirname "$0")' >> "$toolname"
+          echo 'eval "$BINDIR/../'$f'" "$@"' >> "$toolname"
         fi
       popd >> /dev/null
     done
