@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "fcea043c6d022a95059d4a597b59cdd2",
+    "hash": "25388ccaf3e93b120d6bc90ea13734e3",
     "packages": [
         {
             "name": "brianium/habitat",
@@ -110,7 +110,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/civicrm/civistrings/zipball/2fea65b18b3c1443873323d630d2b59994c962cf",
+                "url": "https://api.github.com/repos/civicrm/civistrings/zipball/16003e400086e252d261aa5f95e6ea0d2908d92f",
                 "reference": "f886f33880027639d2aa0eeef79240ae1b7b531c",
                 "shasum": ""
             },
@@ -152,7 +152,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/0b4975d9812fe0e46c3b3c912a7caaa47b1e9594",
+                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/11bd7affcf26c98ca1d8616cf0b8ff561192f872",
                 "reference": "11bd7affcf26c98ca1d8616cf0b8ff561192f872",
                 "shasum": ""
             },
@@ -179,12 +179,12 @@
             "version": "v1.0.8",
             "source": {
                 "type": "git",
-                "url": "https://github.com/d11wtq/boris.git",
+                "url": "https://github.com/borisrepl/boris.git",
                 "reference": "125dd4e5752639af7678a22ea597115646d89c6e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/d11wtq/boris/zipball/125dd4e5752639af7678a22ea597115646d89c6e",
+                "url": "https://api.github.com/repos/borisrepl/boris/zipball/125dd4e5752639af7678a22ea597115646d89c6e",
                 "reference": "125dd4e5752639af7678a22ea597115646d89c6e",
                 "shasum": ""
             },
@@ -250,7 +250,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drush-ops/drush/zipball/46fb060b4984445faa5852b675f21206f2cbc983",
+                "url": "https://api.github.com/repos/drush-ops/drush/zipball/34f26ff96134f2fdff1972301803c3e8ceea1bec",
                 "reference": "d1d13676f5beacaa9f8619088fe3ae45ea28a6cf",
                 "shasum": ""
             },
@@ -438,6 +438,51 @@
                 "xml"
             ],
             "time": "2013-02-24 15:01:54"
+        },
+        {
+            "name": "nikic/php-parser",
+            "version": "v1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nikic/PHP-Parser.git",
+                "reference": "196f177cfefa0f1f7166c0a05d8255889be12418"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/196f177cfefa0f1f7166c0a05d8255889be12418",
+                "reference": "196f177cfefa0f1f7166c0a05d8255889be12418",
+                "shasum": ""
+            },
+            "require": {
+                "ext-tokenizer": "*",
+                "php": ">=5.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.4-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "lib/bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Nikita Popov"
+                }
+            ],
+            "description": "A PHP parser written in PHP",
+            "keywords": [
+                "parser",
+                "php"
+            ],
+            "time": "2015-07-14 17:31:05"
         },
         {
             "name": "pear/console_table",
@@ -925,12 +970,12 @@
             "version": "1.2.12",
             "source": {
                 "type": "git",
-                "url": "https://github.com/sebastianbergmann/phpunit-selenium.git",
+                "url": "https://github.com/giorgiosironi/phpunit-selenium.git",
                 "reference": "433ed50153623b28d196ab16c87aa3b01dc44022"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-selenium/zipball/433ed50153623b28d196ab16c87aa3b01dc44022",
+                "url": "https://api.github.com/repos/giorgiosironi/phpunit-selenium/zipball/433ed50153623b28d196ab16c87aa3b01dc44022",
                 "reference": "433ed50153623b28d196ab16c87aa3b01dc44022",
                 "shasum": ""
             },
@@ -1540,7 +1585,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/totten/amp/zipball/3262d51f8a2caed65acea7fbdedb0a80bf9ee970",
+                "url": "https://api.github.com/repos/totten/amp/zipball/9aeeda497e30bb8880c9aff2a1a7987e1f0375fe",
                 "reference": "37edb4a62198c606d51dc4ca384a0faa741bac8e",
                 "shasum": ""
             },
@@ -1588,7 +1633,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/totten/git-scan/zipball/83b7269637a183c696238988de3ff10fcf52086a",
+                "url": "https://api.github.com/repos/totten/git-scan/zipball/495f9ee8db337b3903929a6bf713f6b427e99d8e",
                 "reference": "495f9ee8db337b3903929a6bf713f6b427e99d8e",
                 "shasum": ""
             },
@@ -1623,6 +1668,49 @@
             ],
             "description": "CLI tool for scanning/updating git repos",
             "time": "2014-10-17 22:15:37"
+        },
+        {
+            "name": "totten/php-symbol-diff",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/totten/php-symbol-diff.git",
+                "reference": "54f869ca68a3cd75f3386f8490870369733d2c23"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/totten/php-symbol-diff/zipball/54f869ca68a3cd75f3386f8490870369733d2c23",
+                "reference": "54f869ca68a3cd75f3386f8490870369733d2c23",
+                "shasum": ""
+            },
+            "require": {
+                "nikic/php-parser": "^1.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "3.7.*"
+            },
+            "bin": [
+                "bin/php-symbol-diff",
+                "bin/git-php-symbol-diff"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "PhpSymbolDiff\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tim Otten",
+                    "email": "to-git@think.hm"
+                }
+            ],
+            "description": "Identify changes in PHP code by symbol (class/method)",
+            "time": "2015-08-06 08:23:13"
         },
         {
             "name": "wp-cli/php-cli-tools",
@@ -1753,6 +1841,7 @@
         "drush/drush": 20,
         "totten/amp": 20,
         "totten/git-scan": 20,
+        "totten/php-symbol-diff": 20,
         "civicrm/strings": 20,
         "civicrm/upgrade-test": 20,
         "drupal/coder": 20,

@@ -15,6 +15,7 @@
     "wp-cli/wp-cli": "0.17",
     "totten/amp": "dev-master#37edb4a62198c606d51dc4ca384a0faa741bac8e",
     "totten/git-scan": "dev-master#495f9ee8db337b3903929a6bf713f6b427e99d8e",
+    "totten/php-symbol-diff": "dev-master#54f869ca68a3cd75f3386f8490870369733d2c23",
     "civicrm/strings": "dev-master#f886f33880027639d2aa0eeef79240ae1b7b531c",
     "civicrm/upgrade-test": "dev-master#11bd7affcf26c98ca1d8616cf0b8ff561192f872",
     "drupal/coder": "dev-8.x-2.x-civi#a801890a82d52e23a83c5d820270b6e228843d79",
