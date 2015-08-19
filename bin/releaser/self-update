@@ -1,0 +1,18 @@
+#!/bin/bash
+set -e
+
+git_user="$1"
+git_branch="$2"
+
+if [ -z "$git_user" -o -z "$git_branch" ]; then
+  echo "Download the releaser"
+  echo "usage: $0 <github-user-or-company> <branch>"
+  echo "example: $0 civicrm master"
+  exit 1
+fi
+
+wget --no-check-certificate -O gitify            "https://raw.github.com/${git_user}/civicrm-core/${git_branch}/bin/gitify"
+wget --no-check-certificate -O releaser          "https://raw.github.com/${git_user}/civicrm-buildkit/master/bin/releaser/releaser"
+wget --no-check-certificate -O releaser.conf.txt "https://raw.github.com/${git_user}/civicrm-buildkit/master/bin/releaser/releaser.conf.txt"
+wget --no-check-certificate -O releaser_json.php "https://raw.github.com/${git_user}/civicrm-buildkit/master/bin/releaser/releaser_json.php"
+wget --no-check-certificate -O self-update       "https://raw.github.com/${git_user}/civicrm-buildkit/master/bin/releaser/self-update"
