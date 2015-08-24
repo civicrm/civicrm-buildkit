@@ -84,6 +84,17 @@ function check_command() {
   fi
 }
 
+## Debian.org's NodeJS package uses a non-standard name for the node binary.
+## If necessary, setup an alias for the standard name.
+function nodejs_debian_workaround() {
+  if which nodejs >> /dev/null ; then
+    if ! which node >> /dev/null ; then
+      echo "[[NodeJS binary appears to be misnamed. Creating 'node' alias.]]"
+      ln -s "$(which nodejs)" "$BINDIR/node"
+    fi
+  fi
+}
+
 ##################################################
 ## Parse arguments
 while [ -n "$1" ] ; do
@@ -258,6 +269,7 @@ set +e
 ## Note: Non-fatal recommendations come at the end so that they appear as
 ## the last output (which is most likely to be read).
 
+nodejs_debian_workaround
 check_command node recommended "WARNING: Failed to locate command \"node\". NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
 check_command npm recommended "WARNING: Failed to locate command \"npm\". NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
 
