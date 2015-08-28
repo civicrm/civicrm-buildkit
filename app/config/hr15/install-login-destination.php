@@ -9,7 +9,7 @@
 $rules = array();
 $rules[] = array(
   'triggers' => serialize(array('login' => 'login')),
-  'roles' => serialize(array(4 => 4)),
+  'roles' => serialize(array(55120974 => 55120974)),
   'pages_type' => 0,
   'pages' => '',
   'destination_type' => 0,
@@ -27,7 +27,7 @@ $rules[] = array(
 );
 $rules[] = array(
   'triggers' => serialize(array('login' => 'login')),
-  'roles' => serialize(array(5 => 5, 6 => 6)),
+  'roles' => serialize(array(17087012 => 17087012, 57573969 => 57573969)),
   'pages_type' => 0,
   'pages' => '',
   'destination_type' => 0,
