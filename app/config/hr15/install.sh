@@ -58,8 +58,11 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
     drush role-remove-perm "authenticated user" "$perm"
   done
 
-  ## Install CiviHR
-  bash ${CIVI_CORE}/tools/extensions/civihr/bin/drush-install.sh --with-sample-data
+  ## Install CiviHR (no sample data as default)
+  bash ${CIVI_CORE}/tools/extensions/civihr/bin/drush-install.sh
+  
+  ## Install CiviHR (with sample data - if required)
+  # bash ${CIVI_CORE}/tools/extensions/civihr/bin/drush-install.sh --with-sample-data
   
   ## Disable / Uninstall old extensions (temporary should be removed when we don't need the old HRjob anymore)
   drush cvapi extension.disable keys=org.civicrm.hrjob
