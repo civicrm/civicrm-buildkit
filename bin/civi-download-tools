@@ -95,6 +95,31 @@ function nodejs_debian_workaround() {
   fi
 }
 
+## Check if a PHP extension is enabled
+## usage: check_php_ext <command-name> <required|recommended> [<msg>]
+##
+## Note: There's not much harm in calling check_php_ext for more requirements,
+## but bear in mind that this only handles requirements for buildkit CLI.
+## For civicrm-core runtime, the app should have its own checks.
+function check_php_ext() {
+  local ext="$1"
+  local requirement="$2"
+  local msg="$3"
+
+  if [ -z "$msg" -a "$requirement" = "required" ]; then
+    msg="ERROR: Failed to find required PHP extension \"$ext\". Please install it for PHP (CLI and web)."
+  elif [ -z "$msg" -a "$requirement" = "recommended" ]; then
+    msg="WARNING: Failed to find recommended PHP extension \"$ext\". Please install it for PHP (CLI and web)."
+  fi
+
+  if php -r 'exit((int)in_array("'$ext'", get_loaded_extensions()));' ; then
+    echo "$msg"
+    if [ "$requirement" = "required" ]; then
+      exit 4
+    fi
+  fi
+}
+
 ##################################################
 ## Parse arguments
 while [ -n "$1" ] ; do
@@ -131,6 +156,18 @@ check_command git required
 check_command tar required
 check_command bzip2 required
 check_command gzip required
+
+check_php_ext Phar required
+check_php_ext SimpleXML required
+check_php_ext SPL required
+check_php_ext curl required
+check_php_ext date required
+check_php_ext json required
+check_php_ext libxml required
+check_php_ext mcrypt required
+check_php_ext pcre required
+check_php_ext pdo_mysql required
+check_php_ext xml required
 
 nodejs_debian_workaround
 
@@ -270,6 +307,18 @@ set +e
 ##
 ## Note: Non-fatal recommendations come at the end so that they appear as
 ## the last output (which is most likely to be read).
+
+check_php_ext bcmath recommended
+check_php_ext gd recommended
+check_php_ext gettext recommended
+check_php_ext hash recommended
+check_php_ext imap recommended
+check_php_ext intl recommended
+check_php_ext mbstring recommended
+check_php_ext mysql recommended
+check_php_ext openssl recommended
+check_php_ext session recommended
+check_php_ext zip recommended
 
 check_command node recommended "WARNING: Failed to locate command \"node\". NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
 check_command npm recommended "WARNING: Failed to locate command \"npm\". NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
