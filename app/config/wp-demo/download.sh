@@ -4,7 +4,7 @@
 
 ###############################################################################
 
-[ -z "$CMS_VERSION" ] && CMS_VERSION=4.1
+[ -z "$CMS_VERSION" ] && CMS_VERSION=4.3
 
 echo "[[Download WordPress]]"
 mkdir "$WEB_ROOT"
