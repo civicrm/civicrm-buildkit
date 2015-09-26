@@ -21,9 +21,9 @@ infrastructure for civicrm.org.
 
 ## Download (New System)
 
-If you have a brand new installation of Ubuntu 12.04 or 14.04, then
-you can download pre-requisites (git, php, etc) and download
-the buildkit to `~/buildkit` with the command:
+If you have a brand new installation of Ubuntu 12.04 or 14.04, then you can
+download everything -- buildkit and the system requirements (`git`, `php`, etc) -- with
+one command. This command will install buildkit to `~/buildkit`:
 
 ```bash
 curl -Ls https://civicrm.org/get-buildkit.sh | bash -s -- --full --dir ~/buildkit
@@ -31,7 +31,7 @@ curl -Ls https://civicrm.org/get-buildkit.sh | bash -s -- --full --dir ~/buildki
 
 ## Download (Existing System)
 
-If you have already download git, PHP, and other pre-requisites, then you can
+If you already have the requirements (`git`, `php`, etc), then you can
 download buildkit to `~/buildkit` with the command:
 
 ```bash
