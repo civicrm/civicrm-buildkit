@@ -201,7 +201,7 @@ function get_system_installer() {
   if [ -f "/etc/lsb-release" ]; then
     source /etc/lsb-release
     case "$DISTRIB_CODENAME" in
-      trusty)
+      precise|trusty)
         echo "do_system_$DISTRIB_CODENAME"
         return
     esac
@@ -210,15 +210,36 @@ function get_system_installer() {
 }
 
 ###############################################################################
-function do_system_trusty() {
+function do_system_precise() {
   set -e
-    PACKAGES="acl git wget unzip mysql-server mysql-client php5-cli php5-imap php5-ldap php5-curl php5-mysql php5-intl php5-gd php5-mcrypt php-apc apache2 libapache2-mod-php5 nodejs-legacy npm ruby rake"
-    echo "Detected \"Ubuntu Trusty\"."
+    PACKAGES="acl git wget unzip mysql-server mysql-client php5-cli php5-imap php5-ldap php5-curl php5-mysql php5-intl php5-gd php5-mcrypt php-apc apache2 libapache2-mod-php5 nodejs ruby rake"
+    echo "Detected \"Ubuntu Precise 12.04\"."
     echo ""
     echo "Recommended packages: $PACKAGES"
     echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
-      sudo apt-get install $PACKAGES
+      curl -sL https://deb.nodesource.com/setup_0.12 | sudo -E bash -
+      sudo apt-get -y install $PACKAGES
+      sudo a2enmod rewrite
+      sudo apache2ctl restart
+    else
+      echo "Aborted" 1>&2
+      exit 1
+    fi
+  set +e
+}
+
+###############################################################################
+function do_system_trusty() {
+  set -e
+    PACKAGES="acl git wget unzip mysql-server mysql-client php5-cli php5-imap php5-ldap php5-curl php5-mysql php5-intl php5-gd php5-mcrypt php-apc apache2 libapache2-mod-php5 nodejs-legacy npm ruby rake"
+    echo "Detected \"Ubuntu Trusty 14.04\"."
+    echo ""
+    echo "Recommended packages: $PACKAGES"
+    echo ""
+    if cvutil_confirm "Run automated installation? [Y/n] " y y; then
+      sudo apt-get update
+      sudo apt-get -y install $PACKAGES
       sudo php5enmod mcrypt
       sudo php5enmod imap
       sudo a2enmod rewrite
