@@ -19,15 +19,30 @@ infrastructure for civicrm.org.
  * Recommended: Apache 2.2+ and MySQL 5.1+ (client and server) (for [amp](https://github.com/totten/amp) and [civibuild](doc/civibuild.md))
  * Recommended: Ruby/Rake (for [hub](http://hub.github.com/))
 
-## Download
+## Download (New System)
+
+If you have a brand new installation of Ubuntu 12.04 or 14.04, then
+you can download pre-requisites (git, php, etc) and download
+the buildkit to `~/buildkit` with the command:
 
 ```bash
-git clone https://github.com/civicrm/civicrm-buildkit.git buildkit
+curl -Ls https://civicrm.org/get-buildkit.sh | bash -s -- --full --dir ~/buildkit
+```
+
+## Download (Existing System)
+
+If you have already download git, PHP, and other pre-requisites, then you can
+download buildkit to `~/buildkit` with the command:
+
+```bash
+git clone https://github.com/civicrm/civicrm-buildkit.git ~/buildkit
 cd buildkit
 ./bin/civi-download-tools
 ```
 
 ## Upgrade
+
+If you have previously downloaded buildkit and want to update it, run:
 
 ```bash
 cd buildkit
