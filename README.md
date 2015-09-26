@@ -29,6 +29,9 @@ one command. This command will install buildkit to `~/buildkit`:
 curl -Ls https://civicrm.org/get-buildkit.sh | bash -s -- --full --dir ~/buildkit
 ```
 
+Note: When executing the above command, you should *not* run as root. However, you *should*
+have `sudo` permissions.
+
 ## Download (Existing System)
 
 If you already have the requirements (`git`, `php`, etc), then you can
