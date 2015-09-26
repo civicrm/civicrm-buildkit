@@ -19,23 +19,25 @@ infrastructure for civicrm.org.
  * Recommended: Apache 2.2+ and MySQL 5.1+ (client and server) (for [amp](https://github.com/totten/amp) and [civibuild](doc/civibuild.md))
  * Recommended: Ruby/Rake (for [hub](http://hub.github.com/))
 
-## Download (New Ubuntu Systems)
+## Download: Option #1: Full Stack Ubuntu
 
-If you have a brand new installation of Ubuntu 12.04 or 14.04, then you can
-download everything -- buildkit and the system requirements (`git`, `php`, `apache`, etc) -- with
+If you have a new installation of Ubuntu 12.04 or 14.04, then you can download
+everything -- buildkit and the system requirements (`git`, `php`, `apache`, `mysql`, etc) -- with
 one command. This command will install buildkit to `~/buildkit`:
 
 ```bash
 curl -Ls https://civicrm.org/get-buildkit.sh | bash -s -- --full --dir ~/buildkit
 ```
 
-Note: When executing the above command, you should *not* run as root. However, you *should*
+Note:
+ * When executing the above command, you should *not* run as root. However, you *should*
 have `sudo` permissions.
+ * The `--full` option is *opinionated*; it specifically installs `php`, `apache`, and `mysql` (rather than `hvm`, `nginx`, `lighttpd`, or `percona`). If you try to mix `--full` with alternative systems, then expect conflicts.
 
-## Download (Other Systems)
+## Download: Option #2: Other Systems
 
-If you already have the requirements (`git`, `php`, etc), then you can
-download buildkit to `~/buildkit` with the command:
+If you already installed the requirements (`git`, `php` etc), then you can
+download buildkit to `~/buildkit` with these commands:
 
 ```bash
 git clone https://github.com/civicrm/civicrm-buildkit.git ~/buildkit
@@ -43,7 +45,7 @@ cd buildkit
 ./bin/civi-download-tools
 ```
 
-## Upgrade
+## Download: Option #3: Upgrade
 
 If you have previously downloaded buildkit and want to update it, run:
 
@@ -53,32 +55,35 @@ git pull
 ./bin/civi-download-tools
 ```
 
-### CLI Setup: Persistent
+### CLI Setup: Option #1: Persistent
 
-It is useful to register buildkit in the PATH. This enables you to run commands
-by entering a name (e.g.  "civix") rather than a full path (e.g.
-"/path/to/buildkit/bin/civix").
+It is useful to register buildkit in the `PATH`. This enables you to run commands
+by entering a name (e.g.  `civix`) rather than a full path (e.g.
+`/path/to/buildkit/bin/civix`).
+
+If you want to ensure that these CLI tools are always available, then:
+ 
+ 1. Determine the location of your shell configuration file. This is usually `~/.bashrc`, `~/.bash_profile`, or `~/.profile`.
+ 2. At the end of the file, add `export PATH="/path/to/buildkit/bin:$PATH"` (*with proper adjustments to match your local system*).
+ 3. Close and reopen the terminal.
+ 4. Enter the command `which civibuild`. This should display a full-path. If nothing appears, then retry the steps.
+
+### CLI Setup: Option #2: Temporary
+
+Alternatively, if you're just getting started, or if you worry about
+conflicts between buildkit and your existing tools, then you can
+register buildkit in the PATH temporarily. Simply adapt and run the `export`
+command directly in the terminal:
 
 ```bash
 export PATH=/path/to/buildkit/bin:$PATH
 ```
 
-If you want to ensure that these CLI tools are always available, then edit
-~/.bashrc or ~/.profile, add buildkit to your PATH, and restart the
-terminal.
-
-### CLI Setup: Temporary
-
-Alternatively, if you're just getting started, or if you worry about
-conflicts between buildkit and your existing tools, then you can
-register buildkit in the PATH temporarily. Simply run the ***export***
-command directly in the terminal -- do not edit ~/.bashrc or ~/.profile.
-
 You can restore the normal environment by closing the terminal and opening
 a new one.
 
 Each time you open a new terminal while working on Civi development, you
-would need to re-run ***export***.
+would need to re-run the `export` command.
 
 ## CLI Tools
 
