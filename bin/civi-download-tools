@@ -198,21 +198,23 @@ function cvutil_confirm() {
 ###############################################################################
 ## Determine the function to handle system package installation
 function get_system_installer() {
-  if [ -f "/etc/lsb-release" ]; then
-    source /etc/lsb-release
-  else
+  if [ -n "$DISTRIB_CODENAME" ]; then
+    true
+  elif which lsb_release >/dev/null; then
     # Debian doesn't ship with /etc/lsb-release. See
     # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=444678
-    if which lsb_release >/dev/null; then
-      DISTRIB_CODENAME=$(lsb_release -cs)
-    fi
-    case "$DISTRIB_CODENAME" in
-      precise|trusty|jessie)
-        echo "do_system_$DISTRIB_CODENAME"
-        return
-    esac
+    DISTRIB_CODENAME=$(lsb_release -cs)
+  elif [ -f "/etc/lsb-release" ]; then
+    source /etc/lsb-release
   fi
-  echo do_system_unknown
+  case "$DISTRIB_CODENAME" in
+    precise|trusty|jessie)
+      echo "do_system_$DISTRIB_CODENAME"
+      ;;
+    *)
+      echo do_system_unknown
+      ;;
+  esac
 }
 
 ###############################################################################
@@ -289,8 +291,6 @@ function do_system_unknown() {
   echo "If you are running Debian, install lsb-release package."
   exit 1
 }
-
-
 
 ##################################################
 ## Perform system installation (if requested)
