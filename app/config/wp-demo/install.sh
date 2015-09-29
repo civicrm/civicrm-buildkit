@@ -19,20 +19,20 @@ wp_install
 CIVI_DOMAIN_NAME="Demonstrators Anonymous"
 CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
 CIVI_CORE="${WEB_ROOT}/wp-content/plugins/civicrm/civicrm"
-if [ "$CIVI_VERSION" = "master" ] || [ "$CIVI_VERSION" \> "4.6" ]
-then
-CIVI_SETTINGS="${WEB_ROOT}/wp-content/uploads/civicrm/civicrm.settings.php"
-CIVI_FILES="${WEB_ROOT}/wp-content/uploads/civicrm"
-CIVI_EXT_DIR="${WEB_ROOT}/wp-content/uploads/civicrm/ext"
-CIVI_EXT_URL="${CMS_URL}/wp-content/uploads/civicrm/ext"
+
+if [[ "$CIVI_VERSION" =~ ^4.[0123456](\.([0-9]|alpha|beta)+)?$ ]] ; then
+  CIVI_SETTINGS="${WEB_ROOT}/wp-content/plugins/civicrm/civicrm.settings.php"
+  CIVI_FILES="${WEB_ROOT}/wp-content/plugins/files/civicrm"
+  CIVI_EXT_DIR="${WEB_ROOT}/wp-content/plugins/files/civicrm/ext"
+  CIVI_EXT_URL="${CMS_URL}/wp-content/plugins/files/civicrm/ext"
 else
-CIVI_SETTINGS="${WEB_ROOT}/wp-content/plugins/civicrm/civicrm.settings.php"
-CIVI_FILES="${WEB_ROOT}/wp-content/plugins/files/civicrm"
-CIVI_EXT_DIR="${WEB_ROOT}/wp-content/plugins/files/civicrm/ext"
-CIVI_EXT_URL="${CMS_URL}/wp-content/plugins/files/civicrm/ext"
+  CIVI_SETTINGS="${WEB_ROOT}/wp-content/uploads/civicrm/civicrm.settings.php"
+  CIVI_FILES="${WEB_ROOT}/wp-content/uploads/civicrm"
+  ## civicrm-core v4.7+ sets default ext dir; for older versions, we'll set our own.
 fi
 CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
 CIVI_UF="WordPress"
+
 civicrm_install
 
 ###############################################################################
