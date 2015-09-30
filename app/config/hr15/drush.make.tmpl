@@ -161,9 +161,6 @@ projects[radix_layouts][version] = "3.3"
 projects[front][subdir] = civihr-contrib-required
 projects[front][version] = "2.4"
 
-; projects[quicktabs][subdir] = civihr-contrib-required
-; projects[quicktabs][version] = "3.6"
-
 projects[uuid][subdir] = civihr-contrib-required
 projects[uuid][version] = "1.0-alpha6"
 
@@ -218,10 +215,13 @@ projects[role_delegation][version] = "1.1"
 projects[views_json_query][subdir] = civihr-contrib-required
 projects[views_json_query][version] = 1.x-dev
 projects[views_json_query][download][type] = "git"
-projects[views_json_query][patch][1] = "https://raw.githubusercontent.com/compucorp/civihr-employee-portal/master/patches/views_json_query_civihr.patch"
-; projects[views_json_query][patch][2246731] = "http://drupal.org/files/issues/views_json_query-filter-causes-general-error-2246731-1.patch"
-; projects[views_json_query][patch][2250031] = "http://drupal.org/files/issues/better_pagination_support-2250031-3.patch"
-; projects[views_json_query][patch][2250191] = "http://drupal.org/files/issues/views_json_query-filter-in-query-string-2250191-5.patch"
+projects[views_json_query][patch][] = "https://raw.githubusercontent.com/compucorp/civihr-employee-portal/master/patches/views_json_query_civihr.patch"
+
+projects[views_data_export][subdir] = civihr-contrib-required
+projects[views_data_export][version] = 3.0-beta8
+
+projects[views_bulk_operations][subdir] = civihr-contrib-required 
+projects[views_bulk_operations][version] = 3.3
 
 ; ****************************************
 ; Compucorp custom drupal modules
