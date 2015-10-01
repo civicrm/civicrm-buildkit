@@ -58,8 +58,11 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
     drush role-remove-perm "authenticated user" "$perm"
   done
 
-  ## Install CiviHR
-  bash ${CIVI_CORE}/tools/extensions/civihr/bin/drush-install.sh --with-sample-data
+  ## Install CiviHR (no sample data as default)
+  bash ${CIVI_CORE}/tools/extensions/civihr/bin/drush-install.sh
+  
+  ## Install CiviHR (with sample data - if required)
+  # bash ${CIVI_CORE}/tools/extensions/civihr/bin/drush-install.sh --with-sample-data
   
   ## Disable / Uninstall old extensions (temporary should be removed when we don't need the old HRjob anymore)
   drush cvapi extension.disable keys=org.civicrm.hrjob
@@ -71,17 +74,13 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   ## Setup drupal theme
   drush -y en civihr_default_theme
   drush -y vset theme_default civihr_default_theme
-  
+
   ## Setup Civicrm and admin theme
   drush -y vset admin_theme seven
   drush -y vset civicrmtheme_theme_admin seven
   drush -y vset civicrmtheme_theme_public seven
 
-  ## Setup demo user
-  # drush -y en civicrm_webtest
-  # drush -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
-  # drush -y user-add-role civicrm_webtest_user "$DEMO_USER"
-
+  ## Create default users
   drush -y user-create --password="civihr_staff" --mail="civihr_staff@compucorp.co.uk" "civihr_staff"
   drush -y user-add-role civihr_staff "civihr_staff"
 
