@@ -20,7 +20,6 @@ BLDDIR="$PRJDIR/build"
 
 source "$PRJDIR/src/civibuild.lib.sh"
 source "$PRJDIR/src/civibuild.aliases.sh"
-cvutil_mkdir "$TMPDIR" "$BLDDIR" "$PRJDIR/app/private"
 
 ## Make sure bundled utilities are available, regardless of local config
 export PATH="$BINDIR:$PATH"
@@ -221,7 +220,11 @@ function do_help() {
 #### Main: Parse arguments
 
 set -e
+
 source "$PRJDIR/src/civibuild.defaults.sh"
+[ -f "$PRJDIR/app/civibuild.conf" ] && source "$PRJDIR/app/civibuild.conf"
+cvutil_mkdir "$TMPDIR" "$BLDDIR" "$PRJDIR/app/private"
+
 source "$PRJDIR/src/civibuild.compute-defaults.sh"
 
 ## FIXME: Use the same variable naming conventions as civibuild

@@ -15,7 +15,6 @@ function absdirname() {
 
 BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
-WEBDIR="$PRJDIR/web"
 TMPDIR="$PRJDIR/app/tmp"
 LOCKFILE="$TMPDIR/civi-download-tools.lock"
 LOCKTIMEOUT=90
@@ -25,10 +24,52 @@ HUBTAG="v1.12.4"
 HUBURL="https://github.com/github/hub"
 IS_QUIET=
 IS_FORCE=
+IS_FULL=
 
 ##################################################
-## Helpers
+## Parse arguments
+while [ -n "$1" ] ; do
+  OPTION="$1"
+  shift
 
+  case "$OPTION" in
+    -q|--quiet)
+      ## Don't display advisory comments
+      ## Only display messages if we're actually making changes
+      IS_QUIET=1
+      ;;
+
+    -f|--force)
+      ## (Re)-download everything
+      IS_FORCE=1
+      ;;
+
+    --full)
+      ## Heuristically identify/download system packages.
+      IS_FULL=1
+      ;;
+
+    --dir)
+      set -e
+        [ ! -d "$1" ] && mkdir "$1"
+        pushd "$1" >> /dev/null
+          PRJDIR=$(pwd)
+        popd >> /dev/null
+        BINDIR="$PRJDIR/bin"
+        TMPDIR="$PRJDIR/app/tmp"
+        LOCKFILE="$TMPDIR/civi-download-tools.lock"
+      set +e
+      shift
+      ;;
+
+    *)
+      echo "Unrecognized option: $OPTION"
+      echo "Usage: $0 [-q|--quiet] [-f|--force] [--full] [--dir <path>]"
+      ;;
+  esac
+done
+
+###############################################################################
 ## usage: download_url <url> <out-file>
 function download_url() {
   #php -r "echo file_get_contents('$1');" > $2
@@ -41,6 +82,7 @@ function download_url() {
   fi
 }
 
+###############################################################################
 ## usage: echo_comment <message>
 function echo_comment() {
   if [ -z "$IS_QUIET" ]; then
@@ -48,6 +90,7 @@ function echo_comment() {
   fi
 }
 
+###############################################################################
 ## Ensure that a command is on the PATH. If missing, then give
 ## advice on possible resolutions and exit.
 ## usage: check_command <command-name> <required|recommended> [<msg>]
@@ -84,32 +127,189 @@ function check_command() {
   fi
 }
 
-##################################################
-## Parse arguments
-while [ -n "$1" ] ; do
-  OPTION="$1"
-  shift
+###############################################################################
+## Debian.org's NodeJS package uses a non-standard name for the node binary.
+## If necessary, setup an alias for the standard name.
+function nodejs_debian_workaround() {
+  if which nodejs >> /dev/null ; then
+    if ! which node >> /dev/null ; then
+      echo "[[NodeJS binary appears to be misnamed. Creating 'node' alias.]]"
+      ln -s "$(which nodejs)" "$BINDIR/node"
+    fi
+  fi
+}
 
-  case "$OPTION" in
-    -q|--quiet)
-      ## Don't display advisory comments
-      ## Only display messages if we're actually making changes
-      IS_QUIET=1
-      shift
+###############################################################################
+## Check if a PHP extension is enabled
+## usage: check_php_ext <command-name> <required|recommended> [<msg>]
+##
+## Note: There's not much harm in calling check_php_ext for more requirements,
+## but bear in mind that this only handles requirements for buildkit CLI.
+## For civicrm-core runtime, the app should have its own checks.
+function check_php_ext() {
+  local ext="$1"
+  local requirement="$2"
+  local msg="$3"
+
+  if [ -z "$msg" -a "$requirement" = "required" ]; then
+    msg="ERROR: Failed to find required PHP extension \"$ext\". Please install it for PHP (CLI and web)."
+  elif [ -z "$msg" -a "$requirement" = "recommended" ]; then
+    msg="WARNING: Failed to find recommended PHP extension \"$ext\". Please install it for PHP (CLI and web)."
+  fi
+
+  if php -r 'exit((int)in_array("'$ext'", get_loaded_extensions()));' ; then
+    echo "$msg"
+    if [ "$requirement" = "required" ]; then
+      exit 4
+    fi
+  fi
+}
+
+###############################################################################
+## Prompt user for confirmation
+## (In automated scripts or blank response, use default)
+##
+## usage: cvutil_confirm <message> <interactive-default> <script-default>
+## example: cvutil_confirm "Are you sure? [Y/n] " y y
+function cvutil_confirm() {
+  local msg="$1"
+  local i_default="$2"
+  local s_default="$3"
+  if tty -s ; then
+    echo -n "$msg"
+    read _cvutil_confirm
+    if [ "x$_cvutil_confirm" == "x" ]; then
+      _cvutil_confirm="$i_default"
+    fi
+  else
+    echo "${msg}${s_default}"
+    _cvutil_confirm="$s_default"
+  fi
+  case "$_cvutil_confirm" in
+    y|Y|1)
+      return 0
       ;;
-
-    -f|--force)
-      ## (Re)-download everything
-      IS_FORCE=1
-      shift
-      ;;
-
     *)
-      echo "Unrecognized option: $OPTION"
-      civibuild_usage
+      return 1
       ;;
   esac
-done
+}
+
+###############################################################################
+## Determine the function to handle system package installation
+function get_system_installer() {
+  if [ -n "$DISTRIB_CODENAME" ]; then
+    true
+  elif which lsb_release >/dev/null; then
+    # Debian doesn't ship with /etc/lsb-release. See
+    # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=444678
+    DISTRIB_CODENAME=$(lsb_release -cs)
+  elif [ -f "/etc/lsb-release" ]; then
+    source /etc/lsb-release
+  fi
+  case "$DISTRIB_CODENAME" in
+    precise|trusty|jessie)
+      echo "do_system_$DISTRIB_CODENAME"
+      ;;
+    *)
+      echo do_system_unknown
+      ;;
+  esac
+}
+
+###############################################################################
+function do_system_precise() {
+  set -e
+    PACKAGES="acl git wget unzip mysql-server mysql-client php5-cli php5-imap php5-ldap php5-curl php5-mysql php5-intl php5-gd php5-mcrypt php-apc apache2 libapache2-mod-php5 nodejs ruby rake"
+    echo "Detected \"Ubuntu Precise 12.04\"."
+    echo ""
+    echo "Recommended packages: $PACKAGES"
+    echo ""
+    if cvutil_confirm "Run automated installation? [Y/n] " y y; then
+      curl -sL https://deb.nodesource.com/setup_0.12 | sudo -E bash -
+      sudo apt-get -y install $PACKAGES
+      sudo a2enmod rewrite
+      sudo apache2ctl restart
+    else
+      echo "Aborted" 1>&2
+      exit 1
+    fi
+  set +e
+}
+
+###############################################################################
+function do_system_trusty() {
+  set -e
+    PACKAGES="acl git wget unzip mysql-server mysql-client php5-cli php5-imap php5-ldap php5-curl php5-mysql php5-intl php5-gd php5-mcrypt php-apc apache2 libapache2-mod-php5 nodejs-legacy npm ruby rake"
+    echo "Detected \"Ubuntu Trusty 14.04\"."
+    echo ""
+    echo "Recommended packages: $PACKAGES"
+    echo ""
+    if cvutil_confirm "Run automated installation? [Y/n] " y y; then
+      sudo apt-get update
+      sudo apt-get -y install $PACKAGES
+      sudo php5enmod mcrypt
+      sudo php5enmod imap
+      sudo a2enmod rewrite
+      sudo apache2ctl restart
+    else
+      echo "Aborted" 1>&2
+      exit 1
+    fi
+  set +e
+}
+
+###############################################################################
+function do_system_jessie() {
+  set -e
+    PACKAGES="acl git wget unzip mysql-server mysql-client php5-cli php5-imap php5-ldap php5-curl php5-mysql php5-intl php5-gd php5-mcrypt php-apc apache2 libapache2-mod-php5 nodejs-legacy npm ruby rake"
+    echo "Detected \"Debian Jessie\"."
+    echo ""
+    echo "Recommended packages: $PACKAGES"
+    echo ""
+    if cvutil_confirm "Run automated installation? [Y/n] " y y; then
+      sudo apt-get update
+      sudo apt-get -y install $PACKAGES
+      sudo php5enmod mcrypt
+      sudo php5enmod imap
+      sudo a2enmod rewrite
+      sudo apache2ctl restart
+    else
+      echo "Aborted" 1>&2
+      exit 1
+    fi
+  set +e
+}
+
+###############################################################################
+function do_system_unknown() {
+  echo "ERROR: Could not identify the required system packages."
+  echo ""
+  echo "If you want to add support for a new system, update 'get_system_installer()'"
+  echo "and add a new 'do_system_*()' function."
+  echo ""
+  echo "If you are running Debian, install lsb-release package."
+  exit 1
+}
+
+##################################################
+## Perform system installation (if requested)
+if [ -n "$IS_FULL" ]; then
+  SYSTEM_FUNC=$(get_system_installer)
+  if [[ $SYSTEM_FUNC =~ ^[a-zA-Z0-9_]+$ ]]; then
+    $SYSTEM_FUNC
+  else
+    echo "ERROR: Malformed system function: $SYSTEM_FUNC"
+    exit 2
+  fi
+
+  if [ ! -f "$PRJDIR/composer.json" ]; then
+    set -e
+      echo "[[ Clone civicrm-buildkit to $PRJDIR ]]"
+      git clone "https://github.com/civicrm/civicrm-buildkit.git" "$PRJDIR"
+    set +e
+  fi
+fi
 
 ##################################################
 ## Validation
@@ -120,6 +320,20 @@ check_command git required
 check_command tar required
 check_command bzip2 required
 check_command gzip required
+
+check_php_ext Phar required
+check_php_ext SimpleXML required
+check_php_ext SPL required
+check_php_ext curl required
+check_php_ext date required
+check_php_ext json required
+check_php_ext libxml required
+check_php_ext mcrypt required
+check_php_ext pcre required
+check_php_ext pdo_mysql required
+check_php_ext xml required
+
+nodejs_debian_workaround
 
 if [ ! -d "$TMPDIR" ]; then
   mkdir -p "$TMPDIR"
@@ -257,6 +471,18 @@ set +e
 ##
 ## Note: Non-fatal recommendations come at the end so that they appear as
 ## the last output (which is most likely to be read).
+
+check_php_ext bcmath recommended
+check_php_ext gd recommended
+check_php_ext gettext recommended
+check_php_ext hash recommended
+check_php_ext imap recommended
+check_php_ext intl recommended
+check_php_ext mbstring recommended
+check_php_ext mysql recommended
+check_php_ext openssl recommended
+check_php_ext session recommended
+check_php_ext zip recommended
 
 check_command node recommended "WARNING: Failed to locate command \"node\". NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
 check_command npm recommended "WARNING: Failed to locate command \"npm\". NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."

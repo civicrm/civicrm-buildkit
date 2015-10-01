@@ -12,14 +12,17 @@ TARS=${TARS:-$PRJ/out/tar}
 BY_DATE=${BY_DATE:-$PRJ/web/by-date}
 BY_HASH=${BY_HASH:-$PRJ/web/by-hash}
 DATE=$( date '+%Y-%m-%d' )
-FILE_SUFFIX=$( date '+%Y%m%d' )
+if [ -z $FILE_SUFFIX ]; then
+  FILE_SUFFIX=$( date '+%Y%m%d' )
+fi
+
 ## #minutes before redownloading L10n (12*60=720 min)
 L10N_TTL=720
 L10N_URL=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
 L10N_EXAMPLE=fr_FR
 
 ## If we make substantive changes to build process, then increment HASH_SUFFIX
-HASH_SUFFIX=-0002
+HASH_SUFFIX=-0003
 
 ###############################################################################
 ## Fetch the latest code
@@ -103,6 +106,10 @@ function _cividist_build_hash() {
 
   [ -d "$hashtmp" ] && rm -rf "$hashtmp"
   [ -d "$hashout" ] && rm -rf "$hashout"
+
+  mkdir -p "default"
+  echo "<?php define('CIVICRM_GETTEXT_RESOURCEDIR', '$PWD/l10n/'); define('CIVICRM_UF', 'Drupal'); global \$civicrm_root; \$civicrm_root = '$PWD'; ?>" > default/civicrm.settings.php
+  echo "<?php define('CIVICRM_CONFDIR', '$PWD'); ?>" > settings_location.php
 
   mkdir -p "$hashtmp"
 
