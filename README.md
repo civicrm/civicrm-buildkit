@@ -41,7 +41,7 @@ download buildkit to `~/buildkit` with these commands:
 
 ```bash
 git clone https://github.com/civicrm/civicrm-buildkit.git ~/buildkit
-cd buildkit
+cd ~/buildkit
 ./bin/civi-download-tools
 ```
 
@@ -50,7 +50,7 @@ cd buildkit
 If you have previously downloaded buildkit and want to update it, run:
 
 ```bash
-cd buildkit
+cd ~/buildkit
 git pull
 ./bin/civi-download-tools
 ```
