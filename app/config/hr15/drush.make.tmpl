@@ -117,7 +117,7 @@ libraries[civicrmdeveloper][overwrite] = TRUE
 ; ****************************************
 
 projects[ctools][subdir] = civihr-contrib-required
-projects[ctools][version] = "1.6"
+projects[ctools][version] = "1.9"
 
 projects[date][subdir] = civihr-contrib-required
 projects[date][version] = "2.8"
@@ -161,9 +161,6 @@ projects[radix_layouts][version] = "3.3"
 projects[front][subdir] = civihr-contrib-required
 projects[front][version] = "2.4"
 
-; projects[quicktabs][subdir] = civihr-contrib-required
-; projects[quicktabs][version] = "3.6"
-
 projects[uuid][subdir] = civihr-contrib-required
 projects[uuid][version] = "1.0-alpha6"
 
@@ -182,13 +179,49 @@ projects[download][version] = "2.5"
 projects[views_fieldsets][subdir] = civihr-contrib-required
 projects[views_fieldsets][version] = "1.2"
 
+projects[options_element][subdir] = civihr-contrib-required
+projects[options_element][version] = "1.12"
+
+projects[views_datasource][subdir] = civihr-contrib-required
+projects[views_datasource][version] = "1.0-alpha2"
+
+projects[mimemail][subdir] = civihr-contrib-required
+projects[mimemail][version] = "1.0-beta3"
+
+projects[mailsystem][subdir] = civihr-contrib-required
+projects[mailsystem][version] = "2.34"
+
+projects[views_autocomplete_filters][subdir] = civihr-contrib-required
+projects[views_autocomplete_filters][version] = "1.2"
+
+projects[views_merge_rows][subdir] = civihr-contrib-required
+projects[views_merge_rows][version] = "1.0-rc1"
+
+projects[role_export][subdir] = civihr-contrib-required
+projects[role_export][version] = "1.0"
+
+projects[administerusersbyrole][subdir] = civihr-contrib-required
+projects[administerusersbyrole][version] = "2.0-rc1"
+
+projects[taxonomy_access_fix][subdir] = civihr-contrib-required
+projects[taxonomy_access_fix][version] = "2.2"
+
+projects[chain_menu_access][subdir] = civihr-contrib-required
+projects[chain_menu_access][version] = "2.0"
+
+projects[role_delegation][subdir] = civihr-contrib-required
+projects[role_delegation][version] = "1.1"
+
 projects[views_json_query][subdir] = civihr-contrib-required
 projects[views_json_query][version] = 1.x-dev
 projects[views_json_query][download][type] = "git"
-projects[views_json_query][patch][1] = "https://raw.githubusercontent.com/compucorp/civihr-employee-portal/master/patches/views_json_query_civihr.patch"
-; projects[views_json_query][patch][2246731] = "http://drupal.org/files/issues/views_json_query-filter-causes-general-error-2246731-1.patch"
-; projects[views_json_query][patch][2250031] = "http://drupal.org/files/issues/better_pagination_support-2250031-3.patch"
-; projects[views_json_query][patch][2250191] = "http://drupal.org/files/issues/views_json_query-filter-in-query-string-2250191-5.patch"
+projects[views_json_query][patch][] = "https://raw.githubusercontent.com/compucorp/civihr-employee-portal/master/patches/views_json_query_civihr-v1.patch"
+
+projects[views_data_export][subdir] = civihr-contrib-required
+projects[views_data_export][version] = 3.0-beta8
+
+projects[views_bulk_operations][subdir] = civihr-contrib-required 
+projects[views_bulk_operations][version] = 3.3
 
 ; ****************************************
 ; Compucorp custom drupal modules
