@@ -3,7 +3,7 @@ civicrm_initialize();
 
 // -----------------------------
 // Get a list of users to update
-if (! getenv('INSTALL_DASHBOARD_USERS')) {
+if (!getenv('INSTALL_DASHBOARD_USERS')) {
   throw new RuntimeException('Missing environment variable: INSTALL_DASHBOARD_USERS');
 }
 $users = explode(';', getenv('INSTALL_DASHBOARD_USERS'));
@@ -11,8 +11,12 @@ CRM_Core_BAO_CMSUser::synchronize(FALSE);
 
 // ------------------------------
 // Get list of available dashlets
+$reportInstanceResult = civicrm_api3('ReportInstance', 'get', array(
+  'option.limit' => 0,
+));
+$reportInstanceNames = CRM_Utils_Array::index(array('report_id'), $reportInstanceResult['values']);
 $dashletTypeResult = civicrm_api3('Dashboard', 'get', array(
-  'domain_id' => CRM_Core_Config::domainID()
+  'domain_id' => CRM_Core_Config::domainID(),
 ));
 $dashletTypes = CRM_Utils_Array::index(array('name'), $dashletTypeResult['values']);
 
@@ -23,21 +27,24 @@ $dashlets = array(
   // Left column
   // -----------
   array(
-    'dashboard_id' => $dashletTypes['report/25']['id'], // Event Income Summary
+    // Event Income Summary
+    'dashboard_id' => $dashletTypes['report/' . $reportInstanceNames['event/summary']['id']]['id'],
     'column_no' => 0,
     'is_minimized' => 0,
     'is_fullscreen' => 1,
     'weight' => 1,
   ),
   array(
-    'dashboard_id' => $dashletTypes['report/13']['id'], // Top Donors
+    // Top Donors
+    'dashboard_id' => $dashletTypes['report/' . $reportInstanceNames['contribute/topDonor']['id']]['id'],
     'column_no' => 0,
     'is_minimized' => 0,
     'is_fullscreen' => 1,
     'weight' => 3,
   ),
   array(
-    'dashboard_id' => $dashletTypes['report/6']['id'], // Donor Summary
+    // Donor Summary
+    'dashboard_id' => $dashletTypes['report/' . $reportInstanceNames['contribute/summary']['id']]['id'],
     'column_no' => 0,
     'is_minimized' => 0,
     'is_fullscreen' => 1,
@@ -61,7 +68,8 @@ $dashlets = array(
     'weight' => 11,
   ),
   array(
-    'dashboard_id' => $dashletTypes['report/20']['id'], // Membership Summary
+    // Membership Summary
+    'dashboard_id' => $dashletTypes['report/' . $reportInstanceNames['member/summary']['id']]['id'],
     'column_no' => 1,
     'is_minimized' => 0,
     'is_fullscreen' => 1,
@@ -81,7 +89,8 @@ try {
       civicrm_api3('dashboard_contact', 'create', $dashlet);
     }
   }
-} catch (CiviCRM_API3_Exception $e) {
+}
+catch (CiviCRM_API3_Exception $e) {
   $tx->rollback();
   echo get_class($e) . ' -- ' . $e->getMessage() . "\n";
   echo $e->getTraceAsString() . "\n";
