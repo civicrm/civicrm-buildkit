@@ -15,22 +15,32 @@ wp_install
 ###############################################################################
 ## Setup CiviCRM (config files, database tables)
 
+
 CIVI_DOMAIN_NAME="Demonstrators Anonymous"
 CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
 CIVI_CORE="${WEB_ROOT}/wp-content/plugins/civicrm/civicrm"
+if [ "$CIVI_VERSION" = "master" ] || [ "$CIVI_VERSION" \> "4.6" ]
+then
+CIVI_SETTINGS="${WEB_ROOT}/wp-content/uploads/civicrm/civicrm.settings.php"
+CIVI_FILES="${WEB_ROOT}/wp-content/uploads/civicrm"
+CIVI_EXT_DIR="${WEB_ROOT}/wp-content/uploads/civicrm/ext"
+CIVI_EXT_URL="${CMS_URL}/wp-content/uploads/civicrm/ext"
+else
 CIVI_SETTINGS="${WEB_ROOT}/wp-content/plugins/civicrm/civicrm.settings.php"
 CIVI_FILES="${WEB_ROOT}/wp-content/plugins/files/civicrm"
 CIVI_EXT_DIR="${WEB_ROOT}/wp-content/plugins/files/civicrm/ext"
 CIVI_EXT_URL="${CMS_URL}/wp-content/plugins/files/civicrm/ext"
+fi
 CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
 CIVI_UF="WordPress"
-
 civicrm_install
 
 ###############################################################################
 ## Extra configuration
 
 ## Clear out default content. Load real content.
+TZ=$(php --info |grep 'Default timezone' |sed s/' => '/:/ |cut -d':' -f2)
+wp option set timezone_string $TZ
 wp post delete 1
 wp post delete 2
 wp rewrite structure '/%postname%/'
