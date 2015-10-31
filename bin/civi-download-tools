@@ -103,6 +103,19 @@ function check_command() {
   cmdpath=$(which $cmd)
   if [ -z "$cmdpath" ]; then
     echo "$msg"
+    show_command "$cmd" "It is possible that you have already installed \"$cmd\" in a non-standard location. If so, please update the PATH appropriately. Possible matches were found in:"
+    if [ "$requirement" = "required" ]; then
+      exit 3
+    fi
+  fi
+}
+
+###############################################################################
+## Show a list of possible locations where the command can be found
+## usage: show_command <command-name> [<msg>]
+function show_command() {
+    local cmd="$1"
+    local msg="$2"
     local is_first=1
     for altdir in \
       /Applications/MAMP/Library/bin \
@@ -113,18 +126,12 @@ function check_command() {
     do
       if [ -f "$altdir/$cmd" ]; then
         if [ -n "$is_first" ]; then
-          echo ""
-          echo "It is possible that you have already installed \"$cmd\" in a non-standard location."
-          echo "If so, please update the PATH appropriately. Possible matches were found in:"
+          echo $msg
           is_first=
         fi
         echo " * $altdir"
       fi
     done
-    if [ "$requirement" = "required" ]; then
-      exit 3
-    fi
-  fi
 }
 
 ###############################################################################
@@ -152,14 +159,23 @@ function check_php_ext() {
   local msg="$3"
 
   if [ -z "$msg" -a "$requirement" = "required" ]; then
-    msg="ERROR: Failed to find required PHP extension \"$ext\". Please install it for PHP (CLI and web)."
+    msg="ERROR: Failed to find required PHP extension \"$ext\"."
   elif [ -z "$msg" -a "$requirement" = "recommended" ]; then
-    msg="WARNING: Failed to find recommended PHP extension \"$ext\". Please install it for PHP (CLI and web)."
+    msg="WARNING: Failed to find recommended PHP extension \"$ext\"."
   fi
 
   if php -r 'exit((int)in_array("'$ext'", get_loaded_extensions()));' ; then
     echo "$msg"
+
     if [ "$requirement" = "required" ]; then
+      echo ""
+      if [ `uname` = "Darwin" ]; then
+        echo "TIP: In OS X, it is common to install an alternative PHP bundle, such as MAMP or XAMPP, which provides more extensions by default."
+        show_command php "TIP: You may wish to configure a PATH to choose a different version of PHP. The following versions were found automatically:"
+      fi
+      if [ `uname` = "Linux" ]; then
+        echo "TIP: In some systems, the PHP version used in CLI and web are different. Extensions should be active in both."
+      fi
       exit 4
     fi
   fi
