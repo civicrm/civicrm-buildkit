@@ -90,6 +90,9 @@ EOPERM
     add 'interview campaign contacts'
     add 'gotv campaign contacts'
     add 'sign CiviCRM Petition'
+    add 'access CiviGrant'
+    add 'edit grants'
+    add 'delete in CiviGrant'
 EOPERM
 
   ## Setup CiviVolunteer
