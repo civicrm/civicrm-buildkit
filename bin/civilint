@@ -62,6 +62,9 @@ function split_files() {
     elif [[ "$file" =~ \.tpl$ ]]; then
       echo "$file" >> "$skipfiles"
 
+    elif [[ "$file" =~ \.template$ ]]; then
+      echo "$file" >> "$skipfiles"
+
     ## e.g. <?php or #!/usr/bin/php or #!/usr/bin/env php
     elif head -n1 "$file" | grep '\(\?php\|#!.*bin/php\|#!.*env php\)' -q ; then
       echo "$file" >> "$phpfiles"
