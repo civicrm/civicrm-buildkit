@@ -13,7 +13,7 @@ if (is_callable(array('CRM_Core_BAO_CMSUser', 'synchronize'))) {
   CRM_Core_BAO_CMSUser::synchronize(FALSE); // 4.6 and earlier
 }
 else {
-  CRM_Core_Config::singleton()->userSystem->synchronizeUsers(); // v4.7+
+  CRM_Utils_System::synchronizeUsers(); // v4.7+
 }
 
 // ------------------------------
