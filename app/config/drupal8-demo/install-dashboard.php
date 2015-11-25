@@ -7,7 +7,7 @@ if (!getenv('INSTALL_DASHBOARD_USERS')) {
   throw new RuntimeException('Missing environment variable: INSTALL_DASHBOARD_USERS');
 }
 $users = explode(';', getenv('INSTALL_DASHBOARD_USERS'));
-CRM_Core_Config::singleton()->userSystem->synchronizeUsers(); // v4.7+
+CRM_Utils_System::synchronizeUsers(); // v4.7+
 
 // ------------------------------
 // Get list of available dashlets
