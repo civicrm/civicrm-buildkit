@@ -10,7 +10,7 @@ full collection -- installing each individually takes a lot of work.
 This is the same collection of tools which manages the test/demo/release
 infrastructure for civicrm.org.
 
-## Requirements
+## System Requirements
 
  * Bash (Unix shell)
  * Git
@@ -36,7 +36,7 @@ have `sudo` permissions.
 
 ## Download: Option #2: Other Systems
 
-If you already installed the requirements (`git`, `php` etc), then you can
+If you already installed the system requirements (`git`, `php`, etc or equivalents), then you can
 download buildkit to `~/buildkit` with these commands:
 
 ```bash
