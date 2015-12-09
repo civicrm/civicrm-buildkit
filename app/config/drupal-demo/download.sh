@@ -5,11 +5,13 @@
 ###############################################################################
 
 git_cache_setup "https://github.com/civicrm/civivolunteer.git" "$CACHE_DIR/civicrm/civivolunteer.git"
+git_cache_setup "https://github.com/civicoop/org.civicoop.civirules.git" "$CACHE_DIR/civicrm/org.civicoop.civirules.git"
 git_cache_setup "https://github.com/TechToThePeople/civisualize.git" "$CACHE_DIR/TechToThePeople/civisualize.git"
 git_cache_setup "https://github.com/dlobo/org.civicrm.module.cividiscount.git" "$CACHE_DIR/dlobo/org.civicrm.module.cividiscount.git"
 
 [ -z "$CMS_VERSION" ] && CMS_VERSION=7.x
 [ -z "$VOL_VERSION" ] && VOL_VERSION='4.4-1.x'
+[ -z "$RULES_VERSION" ] && RULES_VERSION='master'
 [ -z "$DISC_VERSION" ] && DISC_VERSION=master
 
 MAKEFILE="${TMPDIR}/${SITE_TYPE}/${SITE_NAME}/${SITE_ID}.make"
@@ -19,6 +21,7 @@ cat "$SITE_CONFIG_DIR/drush.make.tmpl" \
   | sed "s;%%CIVI_VERSION%%;${CIVI_VERSION};" \
   | sed "s;%%CMS_VERSION%%;${CMS_VERSION};" \
   | sed "s;%%DISC_VERSION%%;${DISC_VERSION};" \
+  | sed "s;%%RULES_VERSION%%;${RULES_VERSION};" \
   | sed "s;%%VOL_VERSION%%;${VOL_VERSION};" \
   > "$MAKEFILE"
 
