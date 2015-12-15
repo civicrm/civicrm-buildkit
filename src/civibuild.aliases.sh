@@ -43,6 +43,12 @@ function civibuild_alias_resolve() {
     wp47)        SITE_TYPE=wp-demo          ; CIVI_VERSION=4.7       ; CMS_TITLE="CiviCRM 4.7 Demo on WordPress"     ;;
     wpmaster)    SITE_TYPE=wp-demo          ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on WordPress"      ;;
 
+    bc47)        SITE_TYPE=backdrop-clean   ; CIVI_VERSION=4.7       ; CMS_TITLE="CiviCRM 4.7 Clean on Backdrop"     ;;
+    bcmaster)    SITE_TYPE=backdrop-clean   ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Clean Sandbox on Backdrop" ;;
+
+    b47)         SITE_TYPE=backdrop-demo    ; CIVI_VERSION=4.7       ; CMS_TITLE="CiviCRM 4.7 on Backdrop"           ;;
+    bmaster)     SITE_TYPE=backdrop-demo    ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Backdrop"       ;;
+
     hr13)        SITE_TYPE=hrdemo           ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviHR 1.3 Demo"                   ; HR_VERSION=1.3        ;;
     hr14)        SITE_TYPE=hrdemo           ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviHR 1.4 Demo"                   ; HR_VERSION=1.4        ;;
     hr15)        SITE_TYPE=hr15             ; CIVI_VERSION=4.6       ; CMS_TITLE="CiviHR 1.5 Demo"                   ; HR_VERSION=master     ;;
