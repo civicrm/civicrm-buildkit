@@ -5,9 +5,9 @@ a CiviHR demo site based on Drupal.
 
 Each directory includes the following required files:
 
- * download.sh -- Get the source code
- * install.sh -- Create config files and database tables
- * uninstall.sh -- Destroy config files and database tables
+ * `download.sh` -- Get the source code
+ * `install.sh` -- Create config files and database tables
+ * `uninstall.sh` -- Destroy config files and database tables
 
 To make a new build, simply copy an existing one and edit the files
 to-taste.
@@ -21,8 +21,8 @@ and (b) expected as outputs from the script.
 
 ## Available Commands ##
 
-All the commands in civicrm-buildkit's "bin" directory are included in the
-PATH. This specifically includes:
+All the commands in civicrm-buildkit's `bin` directory are included in the
+`PATH`. This specifically includes:
 
  * [amp](https://github.com/totten/amp)
  * [composer](http://getcomposer.org/)
@@ -30,7 +30,7 @@ PATH. This specifically includes:
  * [drush](http://drush.ws/)
  * [wp](http://wp-cli.org/)
 
-Additionally, note that standard POSIX commands (cp, mv, etc) will be
+Additionally, note that standard POSIX commands (`cp`, `mv`, etc) will be
 available, but they may use different implementations (GNU or BSD).
 
 ## Helper Functions ##
@@ -38,6 +38,7 @@ available, but they may use different implementations (GNU or BSD).
 Several helper functions are automatically loaded from [src/civibuild.lib.sh](../../src/civibuild.lib.sh),
 including:
 
- * drupal_install - Create Drupal config files, tables, and data dirs (using "drush site-install" and "sites/default")
- * wp_install - Create WordPress config files, tables, and data dirs (using wp-cli)
- * civicrm_install - Create CiviCRM config files, tables, and data dirs
+ * `backdrop_install` - Create Backdrop config files, tables, and data dirs (using `core/scripts/install.sh`)
+ * `drupal_install` - Create Drupal config files, tables, and data dirs (using `drush site-install` and `sites/default`)
+ * `wp_install` - Create WordPress config files, tables, and data dirs (using wp-cli)
+ * `civicrm_install` - Create CiviCRM config files, tables, and data dirs

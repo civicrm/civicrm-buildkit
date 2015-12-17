@@ -673,6 +673,44 @@ function wp_uninstall() {
 }
 
 ###############################################################################
+## Backdrop -- Generate config files and setup database
+function backdrop_install() {
+  cvutil_assertvars backdrop_install CMS_ROOT SITE_ID CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS CMS_URL
+  pushd "$CMS_ROOT" >> /dev/null
+    CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
+    ./core/scripts/install.sh \
+      --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOSTPORT}/${CMS_DB_NAME}" \
+      --account-name="$ADMIN_USER" \
+      --account-pass="$ADMIN_PASS" \
+      --account-mail="$ADMIN_EMAIL" \
+      --site-name "$CMS_TITLE"
+
+    cvutil_inject_settings "$CMS_ROOT/settings.php" "backdrop.settings.d"
+
+    ## Setup extra directories
+    amp datadir "files" "${PRIVATE_ROOT}/"
+    ## FIXME: no drush for backdrop: drush vset --yes file_private_path "${PRIVATE_ROOT}/${DRUPAL_SITE_DIR}"
+  popd >> /dev/null
+}
+
+###############################################################################
+## Backdrop -- Destroy config files and database tables
+function backdrop_uninstall() {
+  cvutil_assertvars backdrop_uninstall CMS_ROOT SITE_ID CMS_URL
+
+  pushd "$CMS_ROOT" >> /dev/null
+    git checkout -- settings.php
+    rm -rf files
+    git checkout -- files/
+  popd >> /dev/null
+
+  if [ -n "$DRUPAL_SITE_DIR" -a -d "$PRIVATE_ROOT/$DRUPAL_SITE_DIR" ]; then
+    rm -rf "$PRIVATE_ROOT/$DRUPAL_SITE_DIR"
+  fi
+}
+
+
+###############################################################################
 ## Drupal -- Generate config files and setup database
 ## currently just a wrapper for drupal7 install - but may add crazy logic ... like an if.
 ## usage: drupal_install <extra-drush-args>
