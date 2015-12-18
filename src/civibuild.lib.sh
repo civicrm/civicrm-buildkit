@@ -674,11 +674,15 @@ function wp_uninstall() {
 
 ###############################################################################
 ## Backdrop -- Generate config files and setup database
+## usage: backdrop_install <extra-drush-args>
+## To use an "install profile", simply pass it as part of <extra-drush-args>
 function backdrop_install() {
   cvutil_assertvars backdrop_install CMS_ROOT SITE_ID CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS CMS_URL
   pushd "$CMS_ROOT" >> /dev/null
+    amp datadir "files" "${PRIVATE_ROOT}/"
+
     CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
-    ./core/scripts/install.sh \
+    ./core/scripts/install.sh "$@" \
       --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOSTPORT}/${CMS_DB_NAME}" \
       --account-name="$ADMIN_USER" \
       --account-pass="$ADMIN_PASS" \
@@ -687,8 +691,6 @@ function backdrop_install() {
 
     cvutil_inject_settings "$CMS_ROOT/settings.php" "backdrop.settings.d"
 
-    ## Setup extra directories
-    amp datadir "files" "${PRIVATE_ROOT}/"
     ## FIXME: no drush for backdrop: drush vset --yes file_private_path "${PRIVATE_ROOT}/${DRUPAL_SITE_DIR}"
   popd >> /dev/null
 }
