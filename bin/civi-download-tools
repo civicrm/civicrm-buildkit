@@ -22,6 +22,7 @@ CIVIXVER=15.04.1
 CIVIXURL="http://downloads.sourceforge.net/project/civix/civix-${CIVIXVER}.tar.bz2?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fcivix%2Ffiles%2F&use_mirror=master"
 HUBTAG="v1.12.4"
 HUBURL="https://github.com/github/hub"
+DRUSH8URL=http://files.drush.org/drush.phar
 IS_QUIET=
 IS_FORCE=
 IS_FULL=
@@ -442,6 +443,17 @@ pushd $PRJDIR >> /dev/null
 
     ## Mark as downloaded
     echo "$CIVIXURL" > "$PRJDIR/extern/civix.txt"
+  fi
+
+  ## Download "drush8"
+  mkdir -p "$PRJDIR/extern" && touch "$PRJDIR/extern/drush8.txt"
+  if [ -z "$IS_FORCE" -a -e "$PRJDIR/bin/drush8" -a "$(cat $PRJDIR/extern/drush8.txt)" == "$DRUSH8URL" ]; then
+    echo_comment "[[drush8 binary ($PRJDIR/bin/drush8) already exists. Skipping.]]"
+  else
+    echo "[[Install drush8]]"
+    download_url "$DRUSH8URL" "bin/drush8"
+    chmod +x bin/drush8
+    echo "$DRUSH8URL" > "$PRJDIR/extern/drush8.txt"
   fi
 
   ## Download "hub"
