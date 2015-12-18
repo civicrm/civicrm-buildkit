@@ -85,6 +85,46 @@ a new one.
 Each time you open a new terminal while working on Civi development, you
 would need to re-run the `export` command.
 
+### CLI Setup: Composer
+
+If you want to set up buildkit using composer, do the following...
+
+* Add the following to ~/.composer/composer.json
+  
+  ```
+  {
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "repositories": [
+      {
+        "type": "git",
+        "url": "https://github.com/civicrm/civicrm-buildkit.git"
+      },
+    {
+        "type": "git",
+        "url": "https://github.com/civicrm/coder.git"
+      },
+      {
+        "type": "git",
+        "url": "https://github.com/totten/paratest.git"
+      },
+      {
+        "type": "git",
+        "url": "https://github.com/totten/joomla-console.git"
+      }
+    ],
+    "require": {
+      "civicrm/civicrm-buildkit": "dev-master"
+    }
+  }
+  ```
+  
+* Run `composer global update`
+* Add `~/.composer/vendor/bin` to your PATH varariable like so:
+  `export PATH=$HOME/.composer/vendor/bin:$PATH`
+
+You will now have the ability to run civibuild, civilint, etc, globally.
+
 ## CLI Tools
 
  * CiviCRM
