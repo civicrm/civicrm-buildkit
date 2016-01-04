@@ -22,9 +22,13 @@ CIVI_CORE="${WEB_ROOT}/libraries/civicrm"
 CIVI_SETTINGS="${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}/civicrm.settings.php"
 CIVI_FILES="${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}/files/civicrm"
 CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
-CIVI_EXT_DIR="${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}/ext"
-CIVI_EXT_URL="${CMS_URL}/sites/${DRUPAL_SITE_DIR}/ext"
 CIVI_UF="Drupal8"
+
+## civicrm-core v4.7+ sets default ext dir; for older versions, we'll set our own.
+if [[ "$CIVI_VERSION" =~ ^4.[0123456](\.([0-9]|alpha|beta)+)?$ ]] ; then
+  CIVI_EXT_DIR="${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}/ext"
+  CIVI_EXT_URL="${CMS_URL}/sites/${DRUPAL_SITE_DIR}/ext"
+fi
 
 # these steps should be happening because of the make file but....
 # perhaps because they are not on https://www.drupal.org/project/drupalorg_whitelist ?
