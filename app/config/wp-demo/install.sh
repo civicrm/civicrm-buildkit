@@ -48,7 +48,7 @@ wp rewrite flush --hard
 wp plugin install wordpress-importer --activate
 wp import "$SITE_CONFIG_DIR/civicrm-wordpress.xml" --authors=create
 wp search-replace 'http://civicrm-wordpress.ex' "$SITE_URL"
-wp theme activate twentythirteen
+wp theme install twentythirteen --activate
 wp eval '$home = get_page_by_title("Welcome to CiviCRM with WordPress"); update_option("page_on_front", $home->ID); update_option("show_on_front", "page");'
 
 wp plugin activate civicrm
