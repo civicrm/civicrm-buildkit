@@ -43,7 +43,7 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   drush -y dis overlay
 
   ## Setup CiviCRM
-  echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign"]}' \
+  echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign","CiviGrant"]}' \
     | drush cvapi setting.create --in=json
   ## Note: CiviGrant disabled by default. If you enable, update the permissions as well.
   drush cvapi setting.create versionCheck=0 debug=1
@@ -96,6 +96,9 @@ EOPERM
     add 'interview campaign contacts'
     add 'gotv campaign contacts'
     add 'sign CiviCRM Petition'
+    add 'access CiviGrant'
+    add 'edit grants'
+    add 'delete in CiviGrant'
 EOPERM
   ## Note: If you enable CiviGrant, the grant 'access CiviGrant', 'edit grants', 'delete in CiviGrant'
 
