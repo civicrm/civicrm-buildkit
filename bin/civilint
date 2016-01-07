@@ -161,10 +161,10 @@ if grep -q . "$TMP/php.txt" ; then
 
   echo "===============================[ phpcs  ]==============================="
   if [ -n "$CHECKSTYLE_OUT" ]; then
-    xargs phpcs --standard="$PHPCS_STD" --report=checkstyle < "$TMP/php.txt" > "$CHECKSTYLE_OUT/checkstyle-phpcs.xml"
+    xargs $BINDIR/phpcs --standard="$PHPCS_STD" --report=checkstyle < "$TMP/php.txt" > "$CHECKSTYLE_OUT/checkstyle-phpcs.xml"
     PHPCS_EXIT=$?
   else
-    xargs phpcs --standard="$PHPCS_STD" < "$TMP/php.txt"
+    xargs $BINDIR/phpcs --standard="$PHPCS_STD" < "$TMP/php.txt"
     PHPCS_EXIT=$?
   fi
 fi
@@ -174,10 +174,10 @@ JSHINT_EXIT=0
 if grep -q . "$TMP/js.txt" ; then
   echo "===============================[ jshint ]==============================="
   if [ -n "$CHECKSTYLE_OUT" ]; then
-    xargs jshint --reporter=checkstyle < "$TMP/js.txt" > "$CHECKSTYLE_OUT/checkstyle-jshint.xml"
+    xargs $BINDIR/jshint --reporter=checkstyle < "$TMP/js.txt" > "$CHECKSTYLE_OUT/checkstyle-jshint.xml"
     JSHINT_EXIT=$?
   else
-    xargs jshint --verbose < "$TMP/js.txt"
+    xargs $BINDIR/jshint --verbose < "$TMP/js.txt"
     JSHINT_EXIT=$?
   fi
 fi
