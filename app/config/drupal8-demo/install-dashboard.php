@@ -3,16 +3,16 @@ civicrm_initialize();
 
 // -----------------------------
 // Get a list of users to update
-if (! getenv('INSTALL_DASHBOARD_USERS')) {
+if (!getenv('INSTALL_DASHBOARD_USERS')) {
   throw new RuntimeException('Missing environment variable: INSTALL_DASHBOARD_USERS');
 }
 $users = explode(';', getenv('INSTALL_DASHBOARD_USERS'));
-CRM_Core_BAO_CMSUser::synchronize(FALSE);
+CRM_Utils_System::synchronizeUsers(); // v4.7+
 
 // ------------------------------
 // Get list of available dashlets
 $dashletTypeResult = civicrm_api3('Dashboard', 'get', array(
-  'domain_id' => CRM_Core_Config::domainID()
+  'domain_id' => CRM_Core_Config::domainID(),
 ));
 $dashletTypes = CRM_Utils_Array::index(array('name'), $dashletTypeResult['values']);
 
@@ -81,7 +81,8 @@ try {
       civicrm_api3('dashboard_contact', 'create', $dashlet);
     }
   }
-} catch (CiviCRM_API3_Exception $e) {
+}
+catch (CiviCRM_API3_Exception $e) {
   $tx->rollback();
   echo get_class($e) . ' -- ' . $e->getMessage() . "\n";
   echo $e->getTraceAsString() . "\n";

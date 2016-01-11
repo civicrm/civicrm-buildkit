@@ -24,6 +24,7 @@ bin/drush
 bin/drush.bat
 bin/drush.complete.sh
 bin/drush.php
+bin/drush8
 bin/git-php-symbol-diff
 bin/git-scan
 bin/hub

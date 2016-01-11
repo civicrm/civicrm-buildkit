@@ -15,13 +15,21 @@ wp_install
 ###############################################################################
 ## Setup CiviCRM (config files, database tables)
 
+
 CIVI_DOMAIN_NAME="Demonstrators Anonymous"
 CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
 CIVI_CORE="${WEB_ROOT}/wp-content/plugins/civicrm/civicrm"
-CIVI_SETTINGS="${WEB_ROOT}/wp-content/plugins/civicrm/civicrm.settings.php"
-CIVI_FILES="${WEB_ROOT}/wp-content/plugins/files/civicrm"
-CIVI_EXT_DIR="${WEB_ROOT}/wp-content/plugins/files/civicrm/ext"
-CIVI_EXT_URL="${CMS_URL}/wp-content/plugins/files/civicrm/ext"
+
+if [[ "$CIVI_VERSION" =~ ^4.[0123456](\.([0-9]|alpha|beta)+)?$ ]] ; then
+  CIVI_SETTINGS="${WEB_ROOT}/wp-content/plugins/civicrm/civicrm.settings.php"
+  CIVI_FILES="${WEB_ROOT}/wp-content/plugins/files/civicrm"
+  CIVI_EXT_DIR="${WEB_ROOT}/wp-content/plugins/files/civicrm/ext"
+  CIVI_EXT_URL="${CMS_URL}/wp-content/plugins/files/civicrm/ext"
+else
+  CIVI_SETTINGS="${WEB_ROOT}/wp-content/uploads/civicrm/civicrm.settings.php"
+  CIVI_FILES="${WEB_ROOT}/wp-content/uploads/civicrm"
+  ## civicrm-core v4.7+ sets default ext dir; for older versions, we'll set our own.
+fi
 CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
 CIVI_UF="WordPress"
 
@@ -31,6 +39,8 @@ civicrm_install
 ## Extra configuration
 
 ## Clear out default content. Load real content.
+TZ=$(php --info |grep 'Default timezone' |sed s/' => '/:/ |cut -d':' -f2)
+wp option set timezone_string $TZ
 wp post delete 1
 wp post delete 2
 wp rewrite structure '/%postname%/'
@@ -38,7 +48,7 @@ wp rewrite flush --hard
 wp plugin install wordpress-importer --activate
 wp import "$SITE_CONFIG_DIR/civicrm-wordpress.xml" --authors=create
 wp search-replace 'http://civicrm-wordpress.ex' "$SITE_URL"
-wp theme activate twentythirteen
+wp theme install twentythirteen --activate
 wp eval '$home = get_page_by_title("Welcome to CiviCRM with WordPress"); update_option("page_on_front", $home->ID); update_option("show_on_front", "page");'
 
 wp plugin activate civicrm

@@ -47,6 +47,8 @@ $ civibuild create dmaster --url http://localhost:8001 --admin-pass s3cr3t
 civibuild includes a small library of build scripts for different
 configurations.  For example, at time of writing, it includes:
 
+ * *backdrop-clean*: A bare, "out-of-the-box" installation of Backdrop+CiviCRM
+ * *backdrop-demo*: A demo site running Backdrop and CiviCRM
  * *drupal-clean*: A bare, "out-of-the-box" installation of Drupal+CiviCRM
  * *drupal-demo*: A demo site running Drupal and CiviCRM
  * *wp-demo*: A demo site running WordPress and CiviCRM

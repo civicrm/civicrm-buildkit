@@ -22,9 +22,14 @@ CIVI_CORE="${WEB_ROOT}/sites/all/modules/civicrm"
 CIVI_SETTINGS="${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}/civicrm.settings.php"
 CIVI_FILES="${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}/files/civicrm"
 CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
-CIVI_EXT_DIR="${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}/ext"
-CIVI_EXT_URL="${CMS_URL}/sites/${DRUPAL_SITE_DIR}/ext"
+
 CIVI_UF="Drupal"
+
+## civicrm-core v4.7+ sets default ext dir; for older versions, we'll set our own.
+if [[ "$CIVI_VERSION" =~ ^4.[0123456](\.([0-9]|alpha|beta)+)?$ ]] ; then
+  CIVI_EXT_DIR="${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}/ext"
+  CIVI_EXT_URL="${CMS_URL}/sites/${DRUPAL_SITE_DIR}/ext"
+fi
 
 civicrm_install
 
@@ -38,8 +43,9 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   drush -y dis overlay
 
   ## Setup CiviCRM
-  echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign"]}' \
+  echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign","CiviGrant"]}' \
     | drush cvapi setting.create --in=json
+  ## Note: CiviGrant disabled by default. If you enable, update the permissions as well.
   drush cvapi setting.create versionCheck=0 debug=1
   drush cvapi MailSettings.create id=1 is_default=1 domain=example.org debug=1
 
@@ -90,7 +96,11 @@ EOPERM
     add 'interview campaign contacts'
     add 'gotv campaign contacts'
     add 'sign CiviCRM Petition'
+    add 'access CiviGrant'
+    add 'edit grants'
+    add 'delete in CiviGrant'
 EOPERM
+  ## Note: If you enable CiviGrant, the grant 'access CiviGrant', 'edit grants', 'delete in CiviGrant'
 
   ## Setup CiviVolunteer
   drush -y cvapi extension.install key=org.civicrm.volunteer debug=1
@@ -100,6 +110,7 @@ EOPERM
     add 'register to volunteer'
 EOPERM
 
+  drush -y -u "$ADMIN_USER" cvapi extension.install key=org.civicoop.civirules debug=1
   drush -y -u "$ADMIN_USER" cvapi extension.install key=eu.tttp.civisualize debug=1
   drush -y -u "$ADMIN_USER" cvapi extension.install key=org.civicrm.module.cividiscount debug=1
 

@@ -200,6 +200,7 @@ function do_distmaker() {
   DM_REVISION=$rev
   DM_ZIP=zip
   DM_REF_CORE=${start_point}
+  DM_REF_BACKDROP=1.x-${start_point}
   DM_REF_DRUPAL=7.x-${start_point}
   DM_REF_DRUPAL6=6.x-${start_point}
   DM_REF_JOOMLA=${start_point}

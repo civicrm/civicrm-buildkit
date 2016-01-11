@@ -7,7 +7,14 @@ if (!getenv('INSTALL_DASHBOARD_USERS')) {
   throw new RuntimeException('Missing environment variable: INSTALL_DASHBOARD_USERS');
 }
 $users = explode(';', getenv('INSTALL_DASHBOARD_USERS'));
-CRM_Core_BAO_CMSUser::synchronize(FALSE);
+
+// WISHLIST: CMSUser::synchronize probably merits an API but lacks test coverage.
+if (is_callable(array('CRM_Core_BAO_CMSUser', 'synchronize'))) {
+  CRM_Core_BAO_CMSUser::synchronize(FALSE); // 4.6 and earlier
+}
+else {
+  CRM_Utils_System::synchronizeUsers(); // v4.7+
+}
 
 // ------------------------------
 // Get list of available dashlets

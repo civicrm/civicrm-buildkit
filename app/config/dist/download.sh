@@ -9,6 +9,7 @@ echo "[[Download CiviCRM]]"
 mkdir "$WEB_ROOT"
 
 git clone ${CACHE_DIR}/civicrm/civicrm-core.git        -b "$CIVI_VERSION"     "$WEB_ROOT/src"
+git clone ${CACHE_DIR}/civicrm/civicrm-backdrop.git    -b "1.x-$CIVI_VERSION" "$WEB_ROOT/src/backdrop"
 git clone ${CACHE_DIR}/civicrm/civicrm-drupal.git      -b "7.x-$CIVI_VERSION" "$WEB_ROOT/src/drupal"
 git clone ${CACHE_DIR}/civicrm/civicrm-joomla.git      -b "$CIVI_VERSION"     "$WEB_ROOT/src/joomla"
 git clone ${CACHE_DIR}/civicrm/civicrm-wordpress.git   -b "$CIVI_VERSION"     "$WEB_ROOT/src/WordPress"
