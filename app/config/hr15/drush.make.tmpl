@@ -197,6 +197,9 @@ projects[views_autocomplete_filters][version] = "1.2"
 projects[views_merge_rows][subdir] = civihr-contrib-required
 projects[views_merge_rows][version] = "1.0-rc1"
 
+; Patch for pagination
+projects[views_merge_rows][patch][] = "https://www.drupal.org/files/issues/views_merge_rows-views_merge_rows_and_pagination-2188939-3_0.patch"
+
 projects[role_export][subdir] = civihr-contrib-required
 projects[role_export][version] = "1.0"
 
@@ -259,7 +262,7 @@ libraries[civihr_employee_portal_theme][overwrite] = TRUE
 ; ****************************************
 
 ; Download Radix base theme
-projects[bootstrap][version] = "3.0"
+projects[bootstrap][version] = "3.1"
 
 ; ****************************************
 ; Compucorp custom civicrm modules (not required anymore as the extensions are moved to civihr repo)
