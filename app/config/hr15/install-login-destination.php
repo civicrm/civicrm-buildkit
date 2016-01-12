@@ -13,7 +13,7 @@ $rules[] = array(
   'pages_type' => 0,
   'pages' => '',
   'destination_type' => 0,
-  'destination' => 'civicrm/dashboard',
+  'destination' => 'civicrm/tasksassignments/dashboard#/tasks',
   'weight' => 0,
 );
 $rules[] = array(
