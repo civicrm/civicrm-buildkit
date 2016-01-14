@@ -263,9 +263,9 @@ function _amp_install_cms() {
   [ "$SITE_ID" == "default" ] && amp_name=cms
 
   if [ -n "$CMS_URL" ]; then
-    amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=CMS_ --url="$CMS_URL" --output-file="$amp_vars_file_path"
+    amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=CMS_ --url="$CMS_URL" --output-file="$amp_vars_file_path" --perm="$CMS_DB_PERM"
   else
-    amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=CMS_ --output-file="$amp_vars_file_path"
+    amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=CMS_ --output-file="$amp_vars_file_path" --perm="$CMS_DB_PERM"
   fi
 
   source "$amp_vars_file_path"
@@ -279,7 +279,7 @@ function _amp_install_civi() {
   local amp_name="civi$SITE_ID"
   [ "$SITE_ID" == "default" ] && amp_name=civi
 
-  amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=CIVI_ --skip-url --output-file="$amp_vars_file_path" --perm=super
+  amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=CIVI_ --skip-url --output-file="$amp_vars_file_path" --perm="$CIVI_DB_PERM"
 
   source "$amp_vars_file_path"
   rm -f "$amp_vars_file_path"
@@ -292,7 +292,7 @@ function _amp_install_test() {
   local amp_name="test$SITE_ID"
   [ "$SITE_ID" == "default" ] && amp_name=test
 
-  amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=TEST_ --skip-url --output-file="$amp_vars_file_path" --perm=super
+  amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=TEST_ --skip-url --output-file="$amp_vars_file_path" --perm="$TEST_DB_PERM"
 
   source "$amp_vars_file_path"
   rm -f "$amp_vars_file_path"
@@ -306,7 +306,7 @@ function _amp_install_clone() {
   echo "[[Setup MySQL for \"$2\"]]"
   cvutil_assertvars _amp_install_cms CLONE_DIR SITE_NAME SITE_ID TMPDIR
   local amp_vars_file_path=$(mktemp.php ampvar)
-  amp create -f --root="$CLONE_DIR" --name=$1 --prefix=$2_ --skip-url --output-file="$amp_vars_file_path" --perm=super
+  amp create -f --root="$CLONE_DIR" --name=$1 --prefix=$2_ --skip-url --output-file="$amp_vars_file_path" --perm="$CIVI_DB_PERM"
   source "$amp_vars_file_path"
   rm -f "$amp_vars_file_path"
 }

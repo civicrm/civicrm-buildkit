@@ -112,6 +112,7 @@ CMS_DB_NAME=
 CMS_DB_PASS=
 CMS_DB_PORT=
 CMS_DB_USER=
+CMS_DB_PERM=admin
 
 ## Path to the civicrm-core tree
 CIVI_CORE=
@@ -125,6 +126,7 @@ CIVI_DB_NAME=
 CIVI_DB_PASS=
 CIVI_DB_PORT=
 CIVI_DB_USER=
+CIVI_DB_PERM=super
 
 ## Path to the civicrm.settings.php
 CIVI_SETTINGS=
@@ -159,6 +161,7 @@ TEST_DB_NAME=
 TEST_DB_PASS=
 TEST_DB_PORT=
 TEST_DB_USER=
+TEST_DB_PERM=super
 
 ###############################################################################
 ## snapshot-related variables
