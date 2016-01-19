@@ -19,6 +19,7 @@ bin/civicrm-upgrade-test
 bin/civistrings
 bin/civix
 bin/composer
+bin/cv
 bin/dbunit
 bin/drush
 bin/drush.bat
