@@ -32,6 +32,7 @@ bin/joomla
 bin/jshint
 bin/karma
 bin/paratest
+bin/phantomjs
 bin/php-symbol-diff
 bin/phpcbf
 bin/phpcs
