@@ -489,6 +489,7 @@ function civicrm_make_settings_php() {
 
   CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
   CIVI_DB_HOSTPORT=$(cvutil_build_hostport "$CIVI_DB_HOST" "$CIVI_DB_PORT")
+  TEST_DB_HOSTPORT=$(cvutil_build_hostport "$TEST_DB_HOST" "$TEST_DB_PORT")
   cat "$CIVI_CORE/$tpl" \
     | sed "s;%%baseURL%%;${CMS_URL};" \
     | sed "s;%%cms%%;${CIVI_UF};" \
@@ -501,6 +502,10 @@ function civicrm_make_settings_php() {
     | sed "s;%%dbName%%;${CIVI_DB_NAME};" \
     | sed "s;%%dbPass%%;${CIVI_DB_PASS};" \
     | sed "s;%%dbUser%%;${CIVI_DB_USER};" \
+    | sed "s;%%testHost%%;${TEST_DB_HOSTPORT};" \
+    | sed "s;%%testName%%;${TEST_DB_NAME};" \
+    | sed "s;%%testPass%%;${TEST_DB_PASS};" \
+    | sed "s;%%testUser%%;${TEST_DB_USER};" \
     | sed "s;%%siteKey%%;${CIVI_SITE_KEY};" \
     | sed "s;%%templateCompileDir%%;${CIVI_TEMPLATEC};" \
     > "$CIVI_SETTINGS"
@@ -570,7 +575,9 @@ function civicrm_make_test_settings_php() {
   if (!defined('CIVICRM_TEMPLATE_COMPILEDIR')) {
     define('CIVICRM_TEMPLATE_COMPILEDIR', '${CIVI_TEMPLATEC}');
   }
-  define('DONT_DOCUMENT_TEST_CONFIG', TRUE);
+  if (!defined('DONT_DOCUMENT_TEST_CONFIG')) {
+    define('DONT_DOCUMENT_TEST_CONFIG', TRUE);
+  }
 EOF
 
     cvutil_inject_settings "$CIVI_CORE/tests/phpunit/CiviTest/civicrm.settings.local.php" "civitest.settings.d"
