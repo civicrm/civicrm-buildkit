@@ -21,13 +21,27 @@
 ## usage: civibuild_alias_resolve <name>
 ## example: civibuild_alias_resolve d45
 function civibuild_alias_resolve() {
+  local known=1
   case "$1" in
     d43)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.3       ; CMS_TITLE="CiviCRM 4.3 Demo on Drupal"        ; DISC_VERSION=4.4	;;
     d44)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.4       ; CMS_TITLE="CiviCRM 4.4 Demo on Drupal"        ; VOL_VERSION=4.4-1.x	; DISC_VERSION=4.4	;;
-    d45)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviCRM 4.5 Demo on Drupal"        ; VOL_VERSION=v4.5-1.4.0	; DISC_VERSION=4.5	;;
+    d45)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviCRM 4.5 Demo on Drupal"        ; VOL_VERSION=v4.5-1.4.0	; DISC_VERSION=4.4	;;
     d46)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.6       ; CMS_TITLE="CiviCRM 4.6 Demo on Drupal"        ; VOL_VERSION=v4.5-1.4.0	; DISC_VERSION=master	; RULES_VERSION=master	;;
     d47)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.7       ; CMS_TITLE="CiviCRM 4.7 Demo on Drupal"        ; VOL_VERSION=master	; DISC_VERSION=master	;;
     dmaster)     SITE_TYPE=drupal-demo      ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal"         ; VOL_VERSION=master	; DISC_VERSION=master	;;
+
+    d7-43)       SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.3       ; CMS_TITLE="CiviCRM 4.3 Demo on Drupal 7"      ; DISC_VERSION=4.4	;;
+    d7-44)       SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.4       ; CMS_TITLE="CiviCRM 4.4 Demo on Drupal 7"      ; VOL_VERSION=4.4-1.x	; DISC_VERSION=4.4	;;
+    d7-45)       SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviCRM 4.5 Demo on Drupal 7"      ; VOL_VERSION=v4.5-1.4.0	; DISC_VERSION=4.4	;;
+    d7-46)       SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.6       ; CMS_TITLE="CiviCRM 4.6 Demo on Drupal 7"      ; VOL_VERSION=v4.5-1.4.0	; DISC_VERSION=master	; RULES_VERSION=master	;;
+    d7-47)       SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.7       ; CMS_TITLE="CiviCRM 4.7 Demo on Drupal 7"      ; VOL_VERSION=master	; DISC_VERSION=master	;;
+    d7-master)   SITE_TYPE=drupal-demo      ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal 7"       ; VOL_VERSION=master	; DISC_VERSION=master	;;
+
+#   d6-46)       SITE_TYPE=drupal6-demo     ; CIVI_VERSION=4.6       ; CMS_TITLE="CiviCRM 4.6 Demo on Drupal 6"      ; VOL_VERSION=v4.5-1.4.0	; DISC_VERSION=master	; RULES_VERSION=master	;;
+#   d6-47)       SITE_TYPE=drupal6-demo     ; CIVI_VERSION=4.7       ; CMS_TITLE="CiviCRM 4.7 Demo on Drupal 6"      ; VOL_VERSION=master	; DISC_VERSION=master	;;
+#   d6-master)   SITE_TYPE=drupal6-demo     ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal 6"       ; VOL_VERSION=master	; DISC_VERSION=master	;;
+#   d8-47)       SITE_TYPE=drupal8-demo     ; CIVI_VERSION=4.7       ; CMS_TITLE="CiviCRM 4.7 Demo on Drupal 8"      ; VOL_VERSION=master	; DISC_VERSION=master	;;
+#   d8-master)   SITE_TYPE=drupal8-demo     ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal 8"       ; VOL_VERSION=master	; DISC_VERSION=master	;;
 
     dc43)        SITE_TYPE=drupal-clean     ; CIVI_VERSION=4.3       ; CMS_TITLE="CiviCRM 4.3 Clean on Drupal"       ;;
     dc44)        SITE_TYPE=drupal-clean     ; CIVI_VERSION=4.4       ; CMS_TITLE="CiviCRM 4.4 Clean on Drupal"       ;;
@@ -43,17 +57,29 @@ function civibuild_alias_resolve() {
     wp47)        SITE_TYPE=wp-demo          ; CIVI_VERSION=4.7       ; CMS_TITLE="CiviCRM 4.7 Demo on WordPress"     ;;
     wpmaster)    SITE_TYPE=wp-demo          ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on WordPress"      ;;
 
+    wp-43)       SITE_TYPE=wp-demo          ; CIVI_VERSION=4.3       ; CMS_TITLE="CiviCRM 4.3 Demo on WordPress"     ;;
+    wp-44)       SITE_TYPE=wp-demo          ; CIVI_VERSION=4.4       ; CMS_TITLE="CiviCRM 4.4 Demo on WordPress"     ;;
+    wp-45)       SITE_TYPE=wp-demo          ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviCRM 4.5 Demo on WordPress"     ;;
+    wp-46)       SITE_TYPE=wp-demo          ; CIVI_VERSION=4.6       ; CMS_TITLE="CiviCRM 4.6 Demo on WordPress"     ;;
+    wp-47)       SITE_TYPE=wp-demo          ; CIVI_VERSION=4.7       ; CMS_TITLE="CiviCRM 4.7 Demo on WordPress"     ;;
+    wp-master)   SITE_TYPE=wp-demo          ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on WordPress"      ;;
+
     bc47)        SITE_TYPE=backdrop-clean   ; CIVI_VERSION=4.7       ; CMS_TITLE="CiviCRM 4.7 Clean on Backdrop"     ;;
     bcmaster)    SITE_TYPE=backdrop-clean   ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Clean Sandbox on Backdrop" ;;
 
     b47)         SITE_TYPE=backdrop-demo    ; CIVI_VERSION=4.7       ; CMS_TITLE="CiviCRM 4.7 on Backdrop"           ;;
     bmaster)     SITE_TYPE=backdrop-demo    ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Backdrop"       ;;
+    b-master)    SITE_TYPE=backdrop-demo    ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Backdrop"       ;;
 
     hr13)        SITE_TYPE=hrdemo           ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviHR 1.3 Demo"                   ; HR_VERSION=1.3        ;;
     hr14)        SITE_TYPE=hrdemo           ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviHR 1.4 Demo"                   ; HR_VERSION=1.4        ;;
     hr15)        SITE_TYPE=hr15             ; CIVI_VERSION=4.6       ; CMS_TITLE="CiviHR 1.5 Demo"                   ; HR_VERSION=master     ;;
     hrmaster)    SITE_TYPE=hr15             ; CIVI_VERSION=master    ; CMS_TITLE="CiviHR Sandbox"                    ; HR_VERSION=master     ;;
 
-    *) ;;
+    *) known=;;
   esac
+
+  if [ -n "$known" ]; then
+    CMS_URL="http://$1.dev"
+  fi
 }
