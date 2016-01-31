@@ -159,6 +159,13 @@ function do_git_tag() {
       git tag "${drupal_ver}-${version}"
     popd
   done
+
+  for backdrop_ver in 1.x ; do
+    pushd export/backdrop
+      git checkout "${backdrop_ver}-${start_point}"
+      git tag "${backdrop_ver}-${version}"
+    popd
+  done
 }
 
 #################################################
@@ -174,6 +181,12 @@ function do_git_tag_push() {
   for drupal_ver in 6.x 7.x ; do
     pushd export/drupal
       git push -f origin "${drupal_ver}-${version}"
+    popd
+  done
+
+  for backdrop_ver in 1.x ; do
+    pushd export/backdrop
+      git push -f origin "${backdrop_ver}-${version}"
     popd
   done
 }
