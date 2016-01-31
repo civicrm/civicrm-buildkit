@@ -768,7 +768,7 @@ function drupal8_install() {
   pushd "$CMS_ROOT" >> /dev/null
     [ -f "sites/$DRUPAL_SITE_DIR/settings.php" ] && rm -f "sites/$DRUPAL_SITE_DIR/settings.php"
 
-    drush site-install -y "$@" \
+    drush8 site-install -y "$@" \
       --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOSTPORT}/${CMS_DB_NAME}" \
       --account-name="$ADMIN_USER" \
       --account-pass="$ADMIN_PASS" \
