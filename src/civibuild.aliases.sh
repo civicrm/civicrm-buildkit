@@ -30,12 +30,12 @@ function civibuild_alias_resolve() {
     d47)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.7       ; CMS_TITLE="CiviCRM 4.7 Demo on Drupal"        ; VOL_VERSION=master	; DISC_VERSION=master	;;
     dmaster)     SITE_TYPE=drupal-demo      ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal"         ; VOL_VERSION=master	; DISC_VERSION=master	;;
 
-    d7-43)       SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.3       ; CMS_TITLE="CiviCRM 4.3 Demo on Drupal 7"      ; DISC_VERSION=4.4	;;
-    d7-44)       SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.4       ; CMS_TITLE="CiviCRM 4.4 Demo on Drupal 7"      ; VOL_VERSION=4.4-1.x	; DISC_VERSION=4.4	;;
-    d7-45)       SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviCRM 4.5 Demo on Drupal 7"      ; VOL_VERSION=v4.5-1.4.0	; DISC_VERSION=4.4	;;
-    d7-46)       SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.6       ; CMS_TITLE="CiviCRM 4.6 Demo on Drupal 7"      ; VOL_VERSION=v4.5-1.4.0	; DISC_VERSION=master	; RULES_VERSION=master	;;
-    d7-47)       SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.7       ; CMS_TITLE="CiviCRM 4.7 Demo on Drupal 7"      ; VOL_VERSION=master	; DISC_VERSION=master	;;
-    d7-master)   SITE_TYPE=drupal-demo      ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal 7"       ; VOL_VERSION=master	; DISC_VERSION=master	;;
+    d7-43)       SITE_TYPE=drupal-clean     ; CIVI_VERSION=4.3       ; CMS_TITLE="CiviCRM 4.3 Demo on Drupal 7"      ;;
+    d7-44)       SITE_TYPE=drupal-clean     ; CIVI_VERSION=4.4       ; CMS_TITLE="CiviCRM 4.4 Demo on Drupal 7"      ;;
+    d7-45)       SITE_TYPE=drupal-clean     ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviCRM 4.5 Demo on Drupal 7"      ;;
+    d7-46)       SITE_TYPE=drupal-clean     ; CIVI_VERSION=4.6       ; CMS_TITLE="CiviCRM 4.6 Demo on Drupal 7"      ;;
+    d7-47)       SITE_TYPE=drupal-clean     ; CIVI_VERSION=4.7       ; CMS_TITLE="CiviCRM 4.7 Demo on Drupal 7"      ;;
+    d7-master)   SITE_TYPE=drupal-clean     ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal 7"       ;;
 
 #   d6-46)       SITE_TYPE=drupal6-demo     ; CIVI_VERSION=4.6       ; CMS_TITLE="CiviCRM 4.6 Demo on Drupal 6"      ; VOL_VERSION=v4.5-1.4.0	; DISC_VERSION=master	; RULES_VERSION=master	;;
 #   d6-47)       SITE_TYPE=drupal6-demo     ; CIVI_VERSION=4.7       ; CMS_TITLE="CiviCRM 4.7 Demo on Drupal 6"      ; VOL_VERSION=master	; DISC_VERSION=master	;;
