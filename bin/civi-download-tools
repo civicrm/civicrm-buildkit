@@ -20,7 +20,7 @@ LOCKFILE="$TMPDIR/civi-download-tools.lock"
 LOCKTIMEOUT=90
 CIVIXVER=15.04.1
 CIVIXURL="http://downloads.sourceforge.net/project/civix/civix-${CIVIXVER}.tar.bz2?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fcivix%2Ffiles%2F&use_mirror=master"
-CVURL="https://download.civicrm.org/cv/cv.phar-909a23c"
+CVURL="https://download.civicrm.org/cv/cv.phar-b6e28d1"
 HUBTAG="v1.12.4"
 HUBURL="https://github.com/github/hub"
 DRUSH8URL=http://files.drush.org/drush.phar
