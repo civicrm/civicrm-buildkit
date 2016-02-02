@@ -94,7 +94,7 @@ function download_program_if_changed() {
   local flagfile="$3"
   local progname=$(basename $binfile)
 
-  mkdir -p $(basename "$flagfile")
+  mkdir -p $(dirname "$flagfile")
   touch "$flagfile"
   if [ -z "$IS_FORCE" -a -e "$binfile" -a "$(cat $flagfile)" == "$url" ]; then
     echo_comment "[[$progname binary ($binfile) already exists. Skipping.]]"
