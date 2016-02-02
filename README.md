@@ -91,6 +91,7 @@ would need to re-run the `export` command.
    * [civix](https://github.com/totten/civix) - Generate skeletal code for CiviCRM extensions.
    * [civistrings](https://github.com/civicrm/civistrings) - Scan code for translatable strings (*.pot).
    * **cividist** - Generate nightly tarballs from a series of git branches/tags
+   * [cv](https://github.com/civicrm/cv) - Execute custom PHP in Civi
  * Dependency management
    * [composer](http://getcomposer.org/) - Manage dependencies for PHP code.
    * [bower](http://bower.io/) - Manage dependencies for Javascript code.
