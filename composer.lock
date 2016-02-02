@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "4eb39505d327b02d7c955ebd3d067996",
-    "content-hash": "5325e3a932f3cb8ea708d70f591aab07",
+    "hash": "73013372cdba2cfa3e1c81949e4d8913",
+    "content-hash": "5b0c2c208a9f88c4f789fe0a5356ae54",
     "packages": [
         {
             "name": "brianium/habitat",
@@ -153,7 +153,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/e5fdbd464c4601a255bc095ff10c218769326188",
+                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/590e971ccf70ae7caf1a3c11fc23535e4cd6c1f8",
                 "reference": "590e971ccf70ae7caf1a3c11fc23535e4cd6c1f8",
                 "shasum": ""
             },
@@ -1868,65 +1868,6 @@
                 "console"
             ],
             "time": "2015-08-10 12:46:19"
-        },
-        {
-            "name": "wp-cli/wp-cli",
-            "version": "v0.21.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/wp-cli/wp-cli.git",
-                "reference": "21da8b4ebf7f37f9ae55b45b037214f154a1b2ab"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/wp-cli/wp-cli/zipball/21da8b4ebf7f37f9ae55b45b037214f154a1b2ab",
-                "reference": "21da8b4ebf7f37f9ae55b45b037214f154a1b2ab",
-                "shasum": ""
-            },
-            "require": {
-                "composer/semver": "1.0.0",
-                "mustache/mustache": "~2.4",
-                "nb/oxymel": "0.1.0",
-                "php": ">=5.3.2",
-                "ramsey/array_column": "~1.1",
-                "rmccue/requests": "~1.6",
-                "symfony/finder": "~2.3",
-                "wp-cli/php-cli-tools": "0.10.5"
-            },
-            "require-dev": {
-                "behat/behat": "2.5.*",
-                "phpunit/phpunit": "3.7.*"
-            },
-            "suggest": {
-                "psy/psysh": "Enhanced `wp shell` functionality"
-            },
-            "bin": [
-                "bin/wp.bat",
-                "bin/wp"
-            ],
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "WP_CLI": "php"
-                },
-                "files": [
-                    "php/Spyc.php"
-                ],
-                "classmap": [
-                    "php/export"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "A command line interface for WordPress",
-            "homepage": "http://wp-cli.org",
-            "keywords": [
-                "cli",
-                "wordpress"
-            ],
-            "time": "2015-11-23 13:50:12"
         }
     ],
     "packages-dev": [],
