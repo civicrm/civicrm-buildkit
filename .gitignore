@@ -38,6 +38,7 @@ bin/php-symbol-diff
 bin/phpcbf
 bin/phpcs
 bin/phpunit
+bin/phpunit4
 bin/wp
 bin/wp.bat
 build/

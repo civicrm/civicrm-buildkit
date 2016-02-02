@@ -24,6 +24,7 @@ CVURL="https://download.civicrm.org/cv/cv.phar-909a23c"
 HUBTAG="v1.12.4"
 HUBURL="https://github.com/github/hub"
 DRUSH8URL=http://files.drush.org/drush.phar
+PHPUNITURL=https://phar.phpunit.de/phpunit-4.8.21.phar
 IS_QUIET=
 IS_FORCE=
 IS_FULL=
@@ -81,6 +82,27 @@ function download_url() {
     curl -L -o "$2" "$1"
   else
     echo "error: failed to locate curl or wget"
+  fi
+}
+
+###############################################################################
+## usage: download_program_if_changed <url> <out-file> <flag-file>
+function download_program_if_changed() {
+  local url="$1"
+  local binfile="$2"
+  local flagfile="$3"
+  local progname=$(basename $binfile)
+
+  mkdir -p $(basename "$flagfile")
+  touch "$flagfile"
+  if [ -z "$IS_FORCE" -a -e "$binfile" -a "$(cat $flagfile)" == "$url" ]; then
+    echo_comment "[[$progname binary ($binfile) already exists. Skipping.]]"
+  else
+    echo "[[Install $progname]]"
+    echo "($url) ($binfile) $flagfile"
+    download_url "$url" "$binfile"
+    chmod +x "$binfile"
+    echo "$url" > "$flagfile"
   fi
 }
 
@@ -446,27 +468,10 @@ pushd $PRJDIR >> /dev/null
     echo "$CIVIXURL" > "$PRJDIR/extern/civix.txt"
   fi
 
-  ## Download "drush8"
-  mkdir -p "$PRJDIR/extern" && touch "$PRJDIR/extern/drush8.txt"
-  if [ -z "$IS_FORCE" -a -e "$PRJDIR/bin/drush8" -a "$(cat $PRJDIR/extern/drush8.txt)" == "$DRUSH8URL" ]; then
-    echo_comment "[[drush8 binary ($PRJDIR/bin/drush8) already exists. Skipping.]]"
-  else
-    echo "[[Install drush8]]"
-    download_url "$DRUSH8URL" "bin/drush8"
-    chmod +x bin/drush8
-    echo "$DRUSH8URL" > "$PRJDIR/extern/drush8.txt"
-  fi
-
-  ## Download "cv"
-  mkdir -p "$PRJDIR/extern" && touch "$PRJDIR/extern/cv.txt"
-  if [ -z "$IS_FORCE" -a -e "$PRJDIR/bin/cv" -a "$(cat $PRJDIR/extern/cv.txt)" == "$CVURL" ]; then
-    echo_comment "[[cv binary ($PRJDIR/bin/cv) already exists. Skipping.]]"
-  else
-    echo "[[Install cv]]"
-    download_url "$CVURL" "bin/cv"
-    chmod +x bin/cv
-    echo "$CVURL" > "$PRJDIR/extern/cv.txt"
-  fi
+  ## download_program_if_changed <url> <out-file> <flag-file>
+  download_program_if_changed "$DRUSH8URL" "$PRJDIR/bin/drush8" "$PRJDIR/extern/drush8.txt"
+  download_program_if_changed "$CVURL" "$PRJDIR/bin/cv" "$PRJDIR/extern/cv.txt"
+  download_program_if_changed "$PHPUNITURL" "$PRJDIR/bin/phpunit4" "$PRJDIR/extern/phpunit4.txt"
 
   ## Download "hub"
   touch "$PRJDIR/extern/hub.txt"
