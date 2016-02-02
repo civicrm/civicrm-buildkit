@@ -1,0 +1,66 @@
+; A drush makefile for CiviCRM.
+; Call using:
+; drush make --working-copy civicrm.make
+
+; drush make API version
+api = 2
+
+; Drupal core
+core = %%CMS_VERSION%%
+
+; ****************************************
+; Drupal core
+; ****************************************
+
+projects[] = drupal
+
+; ****************************************
+; CiviCRM core
+; ****************************************
+
+; IMPORTANT: replace "github.com/civicrm" by your own fork of CiviCRM.
+; This will make it easier to submit pull-requests for patches.
+; see: http://wiki.civicrm.org/confluence/display/CRMDOC/Github+for+CiviCRM
+
+libraries[civicrmdrupal][destination] = modules
+libraries[civicrmdrupal][directory_name] = civicrm
+libraries[civicrmdrupal][download][type] = git
+libraries[civicrmdrupal][download][url] = %%CACHE_DIR%%/civicrm/civicrm-drupal.git
+libraries[civicrmdrupal][download][branch] = 8.x-%%CIVI_VERSION%%
+libraries[civicrmdrupal][overwrite] = TRUE
+
+libraries[civicrmpackages][destination] = libraries
+libraries[civicrmpackages][directory_name] = civicrm/packages
+libraries[civicrmpackages][download][type] = git
+libraries[civicrmpackages][download][url] = %%CACHE_DIR%%/civicrm/civicrm-packages.git
+libraries[civicrmpackages][download][branch] = %%CIVI_VERSION%%
+libraries[civicrmpackages][overwrite] = TRUE
+
+; Download available l10n releases (may be outdated)
+; libraries[civicrm_l10n][destination] = libraries
+; libraries[civicrm_l10n][directory_name] = civicrm/l10n/fr_CA/LC_MESSAGES/
+; libraries[civicrm_l10n][download][type] = get
+; libraries[civicrm_l10n][download][url] = "https://raw.github.com/civicrm/l10n/master/po/fr_CA/civicrm.mo"
+; libraries[civicrm_l10n][overwrite] = TRUE
+
+; Overwrite .mo files with latest versions
+libraries[civicrm_l10n_latest][directory_name] = civicrm/l10n
+libraries[civicrm_l10n_latest][download][type] = get
+libraries[civicrm_l10n_latest][download][url] = http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
+libraries[civicrm_l10n_latest][overwrite] = TRUE
+
+libraries[civicrm][destination] = libraries
+libraries[civicrm][directory_name] = civicrm
+libraries[civicrm][download][type] = git
+libraries[civicrm][download][url] = %%CACHE_DIR%%/civicrm/civicrm-core.git
+libraries[civicrm][download][branch] = %%CIVI_VERSION%%
+libraries[civicrm][overwrite] = TRUE
+
+; ****************************************
+; Runtime Modules
+; ****************************************
+
+; ****************************************
+; Developer modules
+; ****************************************
+
