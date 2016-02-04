@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "73013372cdba2cfa3e1c81949e4d8913",
-    "content-hash": "5b0c2c208a9f88c4f789fe0a5356ae54",
+    "hash": "a6710f9238c0e1191db7b8bd7ae74509",
+    "content-hash": "f522b7656bf4b7dccae7b605b8706684",
     "packages": [
         {
             "name": "brianium/habitat",
@@ -312,7 +312,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drush-ops/drush/zipball/b2339723002721e604fac29c468d22638d534cf4",
+                "url": "https://api.github.com/repos/drush-ops/drush/zipball/becd448cc5caa768e104aa7ddce39643fbc3da85",
                 "reference": "d1d13676f5beacaa9f8619088fe3ae45ea28a6cf",
                 "shasum": ""
             },
@@ -1731,52 +1731,6 @@
             "time": "2015-03-10 20:34:38"
         },
         {
-            "name": "totten/git-scan",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/totten/git-scan.git",
-                "reference": "495f9ee8db337b3903929a6bf713f6b427e99d8e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/totten/git-scan/zipball/495f9ee8db337b3903929a6bf713f6b427e99d8e",
-                "reference": "495f9ee8db337b3903929a6bf713f6b427e99d8e",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.3",
-                "symfony/console": "~2.3",
-                "symfony/filesystem": "~2.3",
-                "symfony/finder": "~2.3",
-                "symfony/process": "~2.3"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "3.7.*"
-            },
-            "bin": [
-                "bin/git-scan"
-            ],
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "GitScan\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "AGPL-3.0"
-            ],
-            "authors": [
-                {
-                    "name": "Tim Otten",
-                    "email": "totten@civicrm.org"
-                }
-            ],
-            "description": "CLI tool for scanning/updating git repos",
-            "time": "2014-10-17 22:15:37"
-        },
-        {
             "name": "totten/php-symbol-diff",
             "version": "dev-master",
             "source": {
@@ -1889,7 +1843,6 @@
     "stability-flags": {
         "drush/drush": 20,
         "totten/amp": 20,
-        "totten/git-scan": 20,
         "totten/php-symbol-diff": 20,
         "civicrm/strings": 20,
         "civicrm/upgrade-test": 20,

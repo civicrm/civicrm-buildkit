@@ -26,6 +26,7 @@ HUBURL="https://github.com/github/hub"
 DRUSH8URL=http://files.drush.org/drush.phar
 PHPUNITURL=https://phar.phpunit.de/phpunit-4.8.21.phar
 WPCLIURL=https://github.com/wp-cli/wp-cli/releases/download/v0.22.0/wp-cli-0.22.0.phar
+GITSCANURL="https://download.civicrm.org/git-scan/git-scan.phar-14d03c3b"
 IS_QUIET=
 IS_FORCE=
 IS_FULL=
@@ -474,6 +475,7 @@ pushd $PRJDIR >> /dev/null
   download_program_if_changed "$CVURL" "$PRJDIR/bin/cv" "$PRJDIR/extern/cv.txt"
   download_program_if_changed "$PHPUNITURL" "$PRJDIR/bin/phpunit4" "$PRJDIR/extern/phpunit4.txt"
   download_program_if_changed "$WPCLIURL" "$PRJDIR/bin/wp" "$PRJDIR/extern/wp-cli.txt"
+  download_program_if_changed "$GITSCANURL" "$PRJDIR/bin/git-scan" "$PRJDIR/extern/git-scan.txt"
 
   ## Download "hub"
   touch "$PRJDIR/extern/hub.txt"
