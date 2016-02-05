@@ -19,7 +19,8 @@ TMPDIR="$PRJDIR/app/tmp"
 LOCKFILE="$TMPDIR/civi-download-tools.lock"
 LOCKTIMEOUT=90
 CIVIXVER=15.04.1
-CIVIXURL="http://downloads.sourceforge.net/project/civix/civix-${CIVIXVER}.tar.bz2?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fcivix%2Ffiles%2F&use_mirror=master"
+CIVIXRELEASE="https://raw.githubusercontent.com/totten/civix/master/release"
+CIVIXURL="https://github.com/totten/civix.git"
 CVURL="https://download.civicrm.org/cv/cv.phar-b6e28d1"
 HUBTAG="v1.12.4"
 HUBURL="https://github.com/github/hub"
@@ -445,7 +446,7 @@ pushd $PRJDIR >> /dev/null
   ## Download "civix"
   ## FIXME: Update civix so that it can be installed via composer as a dependency
   mkdir -p "$PRJDIR/extern" && touch "$PRJDIR/extern/civix.txt"
-  if [ -z "$IS_FORCE" -a -e "$PRJDIR/bin/civix" -a -d "extern/civix" -a "$(cat $PRJDIR/extern/civix.txt)" == "$CIVIXURL" ]; then
+  if [ -z "$IS_FORCE" -a -e "$PRJDIR/bin/civix" -a -d "extern/civix" -a "$(cat $PRJDIR/extern/civix.txt)" == "$CIVIXURL-$CIVIXVER" ]; then
     echo_comment "[[civix binary ($PRJDIR/bin/civix) already exists. Skipping.]]"
   else
     echo "[[Install civix]]"
@@ -453,12 +454,17 @@ pushd $PRJDIR >> /dev/null
     ## Cleanup
     [ -e app/tmp/civix ] && rm -rf app/tmp/civix
     [ -e extern/civix ] && rm -rf extern/civix
-    [ -e "$TMPDIR/civix.tar.bz2" ] && rm -rf "$TMPDIR/civix.tar.bz2"
+    [ -e "$TMPDIR/civix-$CIVIXVER.tar.bz2" ] && rm -rf "$TMPDIR/civix-$CIVIXVER.tar.bz2"
+    [ -e "$TMPDIR/civixrelease" ] && rm -f "$TMPDIR/civixrelease"
     mkdir -p extern/civix
 
     ## Download
-    download_url "$CIVIXURL" "$TMPDIR/civix.tar.bz2"
-    tar xj  --strip-components 1 -C extern/civix -f "$TMPDIR/civix.tar.bz2"
+    pushd "$TMPDIR" >> /dev/null
+      download_url "$CIVIXRELEASE" civixrelease
+      chmod u+x civixrelease
+      bash -c "./civixrelease \"$CIVIXURL\" \"$CIVIXVER\""
+    popd >> /dev/null
+    tar xj  --strip-components 1 -C extern/civix -f "$TMPDIR/build/civix-$CIVIXVER.tar.bz2"
 
     ## Setup a relative symlink
     pushd bin >> /dev/null
@@ -467,7 +473,7 @@ pushd $PRJDIR >> /dev/null
     popd >> /dev/null
 
     ## Mark as downloaded
-    echo "$CIVIXURL" > "$PRJDIR/extern/civix.txt"
+    echo "$CIVIXURL-$CIVIXVER" > "$PRJDIR/extern/civix.txt"
   fi
 
   ## download_program_if_changed <url> <out-file> <flag-file>
