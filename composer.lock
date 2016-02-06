@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a6710f9238c0e1191db7b8bd7ae74509",
-    "content-hash": "f522b7656bf4b7dccae7b605b8706684",
+    "hash": "4b05cd249d3fb49dd7f8d173a3eef41b",
+    "content-hash": "4dcc3eda8fc50e26209afe45348190ba",
     "packages": [
         {
             "name": "brianium/habitat",
@@ -312,7 +312,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drush-ops/drush/zipball/becd448cc5caa768e104aa7ddce39643fbc3da85",
+                "url": "https://api.github.com/repos/drush-ops/drush/zipball/c0212b2ea665ca8add4b0e337f6055a8572cf4f2",
                 "reference": "d1d13676f5beacaa9f8619088fe3ae45ea28a6cf",
                 "shasum": ""
             },
@@ -1683,54 +1683,6 @@
             "time": "2014-12-02 20:19:20"
         },
         {
-            "name": "totten/amp",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/totten/amp.git",
-                "reference": "37edb4a62198c606d51dc4ca384a0faa741bac8e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/totten/amp/zipball/885b9c07513034e8151ef21441dfd2c68866403c",
-                "reference": "37edb4a62198c606d51dc4ca384a0faa741bac8e",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.3",
-                "symfony/config": "~2.3",
-                "symfony/console": "~2.3",
-                "symfony/dependency-injection": "~2.3",
-                "symfony/filesystem": "~2.3",
-                "symfony/process": "~2.3",
-                "symfony/templating": "~2.3",
-                "symfony/yaml": "~2.2"
-            },
-            "bin": [
-                "bin/amp"
-            ],
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Amp\\": "src/",
-                    "DB\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "AGPL-3.0"
-            ],
-            "authors": [
-                {
-                    "name": "Tim Otten",
-                    "email": "to-git@think.hm"
-                }
-            ],
-            "description": "CLI Interface to *AMP-style stacks",
-            "homepage": "https://github.com/totten/amp",
-            "time": "2015-03-10 20:34:38"
-        },
-        {
             "name": "totten/php-symbol-diff",
             "version": "dev-master",
             "source": {
@@ -1842,7 +1794,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "drush/drush": 20,
-        "totten/amp": 20,
         "totten/php-symbol-diff": 20,
         "civicrm/strings": 20,
         "civicrm/upgrade-test": 20,
