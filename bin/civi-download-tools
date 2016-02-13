@@ -18,7 +18,7 @@ PRJDIR=$(dirname "$BINDIR")
 TMPDIR="$PRJDIR/app/tmp"
 LOCKFILE="$TMPDIR/civi-download-tools.lock"
 LOCKTIMEOUT=90
-CIVIXURL="https://download.civicrm.org/civix/civix-2016-02-05-4ae3ee44.tar.bz2"
+CIVIXURL="https://download.civicrm.org/civix/civix.phar-2016-02-12-59f6ad50"
 CVURL="https://download.civicrm.org/cv/cv.phar-b6e28d1"
 HUBTAG="v1.12.4"
 HUBURL="https://github.com/github/hub"
@@ -101,7 +101,9 @@ function download_program_if_changed() {
     echo_comment "[[$progname binary ($binfile) already exists. Skipping.]]"
   else
     echo "[[Install $progname]]"
-    echo "($url) ($binfile) $flagfile"
+    if [ -L "$binfile" ]; then
+      rm -f "$binfile"
+    fi
     download_url "$url" "$binfile"
     chmod +x "$binfile"
     echo "$url" > "$flagfile"
@@ -442,33 +444,8 @@ pushd $PRJDIR >> /dev/null
 
   [ ! -d "$PRJDIR/extern" ] && mkdir "$PRJDIR/extern"
 
-  ## Download "civix"
-  ## FIXME: Update civix so that it can be installed via composer as a dependency
-  mkdir -p "$PRJDIR/extern" && touch "$PRJDIR/extern/civix.txt"
-  if [ -z "$IS_FORCE" -a -e "$PRJDIR/bin/civix" -a -d "extern/civix" -a "$(cat $PRJDIR/extern/civix.txt)" == "$CIVIXURL" ]; then
-    echo_comment "[[civix binary ($PRJDIR/bin/civix) already exists. Skipping.]]"
-  else
-    echo "[[Install civix]]"
-
-    ## Cleanup
-    [ -e app/tmp/civix ] && rm -rf app/tmp/civix
-    [ -e extern/civix ] && rm -rf extern/civix
-    [ -e "$TMPDIR/civix.tar.bz2" ] && rm -rf "$TMPDIR/civix.tar.bz2"
-    mkdir -p extern/civix
-
-    ## Download
-    download_url "$CIVIXURL" "$TMPDIR/civix.tar.bz2"
-    tar xj  --strip-components 1 -C extern/civix -f "$TMPDIR/civix.tar.bz2"
-
-    ## Setup a relative symlink
-    pushd bin >> /dev/null
-      [ -e civix ] && rm -f civix
-      ln -s ../extern/civix/civix civix
-    popd >> /dev/null
-
-    ## Mark as downloaded
-    echo "$CIVIXURL" > "$PRJDIR/extern/civix.txt"
-  fi
+  ## Cleanup old civix tarballs
+  [ -d "$PRJDIR/extern/civix" ] && rm -rf "$PRJDIR/extern/civix"
 
   ## download_program_if_changed <url> <out-file> <flag-file>
   download_program_if_changed "$DRUSH8URL" "$PRJDIR/bin/drush8" "$PRJDIR/extern/drush8.txt"
@@ -477,6 +454,7 @@ pushd $PRJDIR >> /dev/null
   download_program_if_changed "$WPCLIURL" "$PRJDIR/bin/wp" "$PRJDIR/extern/wp-cli.txt"
   download_program_if_changed "$GITSCANURL" "$PRJDIR/bin/git-scan" "$PRJDIR/extern/git-scan.txt"
   download_program_if_changed "$AMPURL" "$PRJDIR/bin/amp" "$PRJDIR/extern/amp.txt"
+  download_program_if_changed "$CIVIXURL" "$PRJDIR/bin/civix" "$PRJDIR/extern/civix.txt"
 
   ## Download "hub"
   touch "$PRJDIR/extern/hub.txt"
