@@ -43,6 +43,8 @@ function split_files() {
   local jsfiles="$2"
   local skipfiles="$3"
 
+  local check_traits=$(php -r 'echo version_compare(PHP_VERSION, "5.4.0", ">=") ? "1" : "0";')
+
   touch "$phpfiles" "$jsfiles" "$skipfiles"
 
   while read file; do
@@ -52,6 +54,14 @@ function split_files() {
 
     elif [[ "$absfile" =~ (/DAO/|/examples/|/tools/) ]]; then
       echo "$file" >> "$skipfiles"
+
+    elif [[ "$file" =~ Trait\.php$ ]]; then
+      if [ "x$check_traits" = "x1" ]; then
+        echo "$file" >> "$phpfiles"
+      else
+        echo "WARNING: Cannot check style on $file with PHP 5.3. Consider upgrading PHP."
+        echo "$file" >> "$skipfiles"
+      fi
 
     elif [[ "$file" =~ \.php$ ]]; then
       echo "$file" >> "$phpfiles"
