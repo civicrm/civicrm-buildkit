@@ -4,11 +4,6 @@
 
 ###############################################################################
 
-git_cache_setup "https://github.com/civicrm/civivolunteer.git" "$CACHE_DIR/civicrm/civivolunteer.git"
-git_cache_setup "https://github.com/civicoop/org.civicoop.civirules.git" "$CACHE_DIR/civicrm/org.civicoop.civirules.git"
-git_cache_setup "https://github.com/TechToThePeople/civisualize.git" "$CACHE_DIR/TechToThePeople/civisualize.git"
-git_cache_setup "https://github.com/dlobo/org.civicrm.module.cividiscount.git" "$CACHE_DIR/dlobo/org.civicrm.module.cividiscount.git"
-
 [ -z "$CMS_VERSION" ] && CMS_VERSION=7.x
 [ -z "$VOL_VERSION" ] && VOL_VERSION='4.4-1.x'
 [ -z "$RULES_VERSION" ] && RULES_VERSION='master'
