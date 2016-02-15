@@ -4,12 +4,9 @@
 
 ###############################################################################
 
-git_cache_setup "https://github.com/civicrm/civivolunteer.git" "$CACHE_DIR/civicrm/civivolunteer.git"
-git_cache_setup "https://github.com/TechToThePeople/civisualize.git" "$CACHE_DIR/TechToThePeople/civisualize.git"
-git_cache_setup "https://github.com/dlobo/org.civicrm.module.cividiscount.git" "$CACHE_DIR/dlobo/org.civicrm.module.cividiscount.git"
-
 [ -z "$CMS_VERSION" ] && CMS_VERSION=8.x
 [ -z "$VOL_VERSION" ] && VOL_VERSION='4.4-1.x'
+[ -z "$NG_PRFL_VERSION" ] && NG_PRFL_VERSION='v4.6-1.0.1'
 [ -z "$DISC_VERSION" ] && DISC_VERSION=master
 
 MAKEFILE="${TMPDIR}/${SITE_TYPE}/${SITE_NAME}/${SITE_ID}.make"
@@ -20,6 +17,7 @@ cat "$SITE_CONFIG_DIR/drush.make.tmpl" \
   | sed "s;%%CMS_VERSION%%;${CMS_VERSION};" \
   | sed "s;%%DISC_VERSION%%;${DISC_VERSION};" \
   | sed "s;%%VOL_VERSION%%;${VOL_VERSION};" \
+  | sed "s;%%NG_PRFL_VERSION%%;${NG_PRFL_VERSION};" \
   > "$MAKEFILE"
 
 drush -y make --working-copy "$MAKEFILE" "$WEB_ROOT"
