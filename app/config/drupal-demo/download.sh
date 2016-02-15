@@ -6,6 +6,7 @@
 
 [ -z "$CMS_VERSION" ] && CMS_VERSION=7.x
 [ -z "$VOL_VERSION" ] && VOL_VERSION='4.4-1.x'
+[ -z "$NG_PRFL_VERSION" ] && NG_PRFL_VERSION='v4.6-1.0.1'
 [ -z "$RULES_VERSION" ] && RULES_VERSION='master'
 [ -z "$DISC_VERSION" ] && DISC_VERSION=master
 
@@ -18,6 +19,7 @@ cat "$SITE_CONFIG_DIR/drush.make.tmpl" \
   | sed "s;%%DISC_VERSION%%;${DISC_VERSION};" \
   | sed "s;%%RULES_VERSION%%;${RULES_VERSION};" \
   | sed "s;%%VOL_VERSION%%;${VOL_VERSION};" \
+  | sed "s;%%NG_PRFL_VERSION%%;${NG_PRFL_VERSION};" \
   > "$MAKEFILE"
 
 drush -y make --working-copy "$MAKEFILE" "$WEB_ROOT"
