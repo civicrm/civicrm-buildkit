@@ -186,6 +186,8 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 #EOPERM
 
   ## Setup CiviVolunteer
+  drush -y cvapi extension.install key=org.civicrm.angularprofiles debug=1
+
   drush8 -y cvapi extension.install key=org.civicrm.volunteer debug=1
   # drush8 scr "$PRJDIR/src/drush/perm.php" <<EOPERM
   #  role 'anonymous user'
