@@ -40,6 +40,7 @@ drush -y en \
   civicrm \
   toolbar \
   garland \
+  adyen_audit \
   amazon_audit \
   astropay_audit \
   contribution_audit \
