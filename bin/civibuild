@@ -65,6 +65,9 @@ Syntax: $APP list
 Syntax: $APP builds
 Description: Display a list of build-names found in the build directory. 
 
+Syntax: $APP edit <build-name>[/<ms-id>]
+Description: edit the <build-dir>/<build-name>[.<ms-id>].sh config file
+
 Syntax: $APP show <build-name>[/<ms-id>] [options]
 Description: Show key details about the build
   --html <dir>        A new HTML dir which will report build status in detail
@@ -286,6 +289,27 @@ function civibuild_show_html() {
   cat "$SHOW_NEW_SCAN" > "$SHOW_HTML/git-scan.new.json"
   cat "$SHOW_LAST_SCAN" | php -r 'print_r(json_decode(file_get_contents("php://stdin"),TRUE));' > "$SHOW_HTML/git-scan.last.txt"
   cat "$SHOW_NEW_SCAN" | php -r 'print_r(json_decode(file_get_contents("php://stdin"),TRUE));' > "$SHOW_HTML/git-scan.new.txt"
+}
+
+function civibuild_edit() {
+  cvutil_assertvars civibuild_edit BLDDIR SITE_NAME SITE_ID
+
+ whoami
+
+  if [ -f "${BLDDIR}/${SITE_NAME}.sh" ]; then
+    echo "[[Edit ${BLDDIR}/${SITE_NAME}.sh]]"
+    c="${BLDDIR}/${SITE_NAME}.sh"
+  fi
+  if [ -f "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh" ]; then
+    echo "[[Edit ${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh]]"
+    c="${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh"
+  fi
+
+  if [ -n "$EDITOR" ]; then
+    $EDITOR $c
+  else
+    echo "No editor found - please configure your EDITOR env variable."
+  fi
 }
 
 function civibuild_clone_create() {
@@ -576,6 +600,10 @@ case "$ACTION" in
   download|dl)
     civibuild_download
     civibuild_save
+    ;;
+
+  edit)
+    civibuild_edit
     ;;
 
   install|reinstall)
