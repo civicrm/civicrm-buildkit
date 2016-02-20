@@ -60,6 +60,11 @@ Description: Download and/or install the application
   --force             If necessary, destroy pre-existing files/directories/DBs
                       (For "reinstall", "--force" is implicit.)
 
+Syntax: $APP ls
+Syntax: $APP list
+Syntax: $APP builds
+Description: Display a list of build-names found in the build directory. 
+
 Syntax: $APP show <build-name>[/<ms-id>] [options]
 Description: Show key details about the build
   --html <dir>        A new HTML dir which will report build status in detail
@@ -213,6 +218,14 @@ function civibuild_save() {
   fi
 }
 
+function civibuild_list() {
+  cvutil_assertvars civibuild_list BLDDIR
+
+  for b in `find $BLDDIR -maxdepth 1 -type f`; do
+    basename $b | sed 's/\.sh//'
+  done
+}
+
 function civibuild_show() {
   if [ -n "$SHOW_HTML" ]; then
     civibuild_show_html
@@ -349,10 +362,7 @@ ACTION="$1"
 shift
 
 case "$ACTION" in
-  snapshots)
-    # don't parse SITE_NAME
-    ;;
-  restore-all)
+  snapshot|restore-all|ls|list|builds)
     # don't parse SITE_NAME
     ;;
   *)
@@ -573,6 +583,10 @@ case "$ACTION" in
     civibuild_install
     civibuild_save
     civibuild_show
+    ;;
+
+  ls|list|builds)
+    civibuild_list
     ;;
 
   show)
