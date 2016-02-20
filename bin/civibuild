@@ -65,6 +65,7 @@ Description: Show key details about the build
   --html <dir>        A new HTML dir which will report build status in detail
   --new-scan <file>   A new JSON file which summarizes the git structure
   --last-scan <file>  An existing JSON file which summarizes the old git structure
+  --full              Show all build options declared
 
 Syntax: $APP snapshots
 Description: List available snapshots
@@ -217,7 +218,29 @@ function civibuild_show() {
     civibuild_show_html
   fi
 
-  cvutil_assertvars civibuild_show SITE_NAME SITE_ID
+  if [ -n "$SHOW_FULL_BUILD_CONF" ]; then
+    civibuild_show_full_config
+  else
+    civibuild_show_summary
+  fi
+}
+
+function civibuild_show_full_config() {
+  cvutil_assertvars civibuild_show_full_config BLDDIR SITE_NAME SITE_ID
+
+  echo "[[Show Full Site Declaration]]"
+  if [ -f "${BLDDIR}/${SITE_NAME}.sh" ]; then
+    echo "[[Saved options from ${BLDDIR}/${SITE_NAME}.sh]]"
+    cat "${BLDDIR}/${SITE_NAME}.sh" | tail -n +2
+  fi
+  if [ -f "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh" ]; then
+    echo "[[Saved options from ${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh]]"
+    cat "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh" | tail -n +2
+  fi
+}
+
+function civibuild_show_summary() {
+  cvutil_assertvars civibuild_show_summary SITE_NAME SITE_ID
   cvutil_summary "[[Show site summary ($SITE_NAME/$SITE_ID)]]" \
     CMS_ROOT CMS_URL CMS_DB_DSN \
     CIVI_DB_DSN \
@@ -433,6 +456,10 @@ while [ -n "$1" ] ; do
 
     --force-install)
       FORCE_INSTALL=1
+      ;;
+
+    --full)
+      SHOW_FULL_BUILD_CONF=1
       ;;
 
     --html)
