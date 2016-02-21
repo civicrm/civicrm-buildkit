@@ -235,34 +235,18 @@ function civibuild_show() {
   fi
 
   if [ -n "$SHOW_FULL_BUILD_CONF" ]; then
-    civibuild_show_full_config
+    civibuild_show_summary $PERSISTENT_VARS
   else
-    civibuild_show_summary
+    civibuild_show_summary \
+      CMS_ROOT CMS_URL CMS_DB_DSN \
+      CIVI_DB_DSN TEST_DB_DSN \
+      ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS
   fi
-}
-
-function civibuild_show_full_config() {
-  cvutil_assertvars civibuild_show_full_config BLDDIR SITE_NAME SITE_ID
-
-  echo "[[Show Full Site Declaration]]"
-  if [ -f "${BLDDIR}/${SITE_NAME}.sh" ]; then
-    echo "[[Saved options from ${BLDDIR}/${SITE_NAME}.sh]]"
-    cat "${BLDDIR}/${SITE_NAME}.sh" | tail -n +2
-  fi
-  if [ -f "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh" ]; then
-    echo "[[Saved options from ${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh]]"
-    cat "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh" | tail -n +2
-  fi
-  civibuild_run_optional show
 }
 
 function civibuild_show_summary() {
-  cvutil_assertvars civibuild_show_summary SITE_NAME SITE_ID
-  cvutil_summary "[[Show site summary ($SITE_NAME/$SITE_ID)]]" \
-    CMS_ROOT CMS_URL CMS_DB_DSN \
-    CIVI_DB_DSN \
-    TEST_DB_DSN \
-    ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS
+  cvutil_assertvars civibuild_show_summary "$@" 
+  cvutil_summary "[[Show site summary ($SITE_NAME/$SITE_ID)]]" $@
   civibuild_run_optional show
   echo "[[General notes]]"
   echo " - You may need to restart httpd."
