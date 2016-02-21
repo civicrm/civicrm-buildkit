@@ -361,29 +361,58 @@ function civibuild_clone_show() {
 ## Parse un-named params by position: <action> <sitename>[/<ms-id>]
 function civibuild_parse_unnamed_params() {
   for OPTION in $@; do
-    if [ "${OPTION::1}" == "-" ]; then
+    #skip named options
+    [ "${OPTION::1}" == "-" ] && continue
+
+    # don't overwrite SITE_NAME if already set
+    [ -n "$SITE_NAME" ] && continue
+
+    if [ -z $ACTION ]; then
+      cvutil_is_action $OPTION
+      if [ $ACTION_VALIDATED -eq 1 ]; then
+        ACTION=$OPTION
+      fi
       continue
     fi
 
-    cvutil_is_action $OPTION
-    if [ $ACTION_VALIDATED -eq 1 ]; then
-      ACTION=$OPTION
-      if [ `echo $ACTION | egrep -c 'snapshots|restore-all|ls|list|builds'` -eq 1 ]; then
-        # dont parse site-name
-        continue
-      fi
+    if [ `echo "$ACTION" | egrep -c 'snapshots|restore-all|ls|list|builds'` -eq 1 ]; then
+      # dont parse site-name
+      break
     fi
-
-    [ -z $ACTION ] && continue
 
     ## Convert "drupal-demo" or "drupal-demo/123" to vars SITE_NAME and optionally SITE_ID
     eval $(cvutil_parse_site_name_id "$OPTION")
-    [ -z "$SITE_NAME" ] && civibuild_usage
-    [ -z "$SITE_ID" ] && civibuild_usage
 
     ## Convert certain aliases like "d45" into better defaults
     civibuild_alias_resolve "$SITE_NAME"
+
+    if [ ! -f ${BLDDIR}/${SITE_NAME}.sh ]; then
+       if [ ! -f ${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh ]; then
+         SITE_NAME=
+         SITE_ID=default
+      fi
+    fi
   done
+
+  [ -z "$ACTION" ] && civibuild_usage
+
+  if [ `echo "$ACTION" | egrep -c 'snapshots|restore-all|ls|list|builds'` -eq 0 ]; then
+    [ -z "$SITE_NAME" ] && civibuild_usage
+    [ -z "$SITE_ID" ] && civibuild_usage
+
+    ## Load settings based in SITE_NAME / SITE_ID
+    if [ -f "${BLDDIR}/${SITE_NAME}.sh" ]; then
+      echo "[[Load saved options from ${BLDDIR}/${SITE_NAME}.sh]]"
+      source "${BLDDIR}/${SITE_NAME}.sh"
+      if [ "$SITE_ID" != "default" ]; then
+        IS_INSTALLED=
+      fi
+    fi
+    if [ -f "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh" ]; then
+      echo "[[Load saved options from ${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh]]"
+      source "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh"
+    fi
+  fi
 }
 
 ###############################################################################
@@ -393,19 +422,6 @@ source "$PRJDIR/src/civibuild.defaults.sh"
 cvutil_mkdir "$TMPDIR" "$BLDDIR" "$PRJDIR/app/private"
 
 civibuild_parse_unnamed_params $@
-
-## Load settings based in SITE_NAME / SITE_ID
-if [ -f "${BLDDIR}/${SITE_NAME}.sh" ]; then
-  echo "[[Load saved options from ${BLDDIR}/${SITE_NAME}.sh]]"
-  source "${BLDDIR}/${SITE_NAME}.sh"
-  if [ "$SITE_ID" != "default" ]; then
-    IS_INSTALLED=
-  fi
-fi
-if [ -f "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh" ]; then
-  echo "[[Load saved options from ${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh]]"
-  source "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh"
-fi
 
 declare -a ARGS=()
 while [ -n "$1" ] ; do
