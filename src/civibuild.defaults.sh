@@ -241,3 +241,21 @@ PERSISTENT_VARS="
   SITE_TOKEN SITE_TYPE
 "
 # ignore: runtime options like CIVI_SQL_SKIP and FORCE_DOWNLOAD
+
+###############################################################################
+## Declare Actions
+## Aliases must also be declared
+DECLARED_ACTIONS="
+  clone-create clone-destroy clone-show
+  create
+  destroy
+  download dl
+  edit
+  install reinstall
+  ls list builds
+  show
+  snapshot snapshots
+  restore restore-all
+  upgrade-test ut
+"
+
