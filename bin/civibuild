@@ -253,6 +253,7 @@ function civibuild_show_full_config() {
     echo "[[Saved options from ${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh]]"
     cat "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh" | tail -n +2
   fi
+  civibuild_run_optional show
 }
 
 function civibuild_show_summary() {
