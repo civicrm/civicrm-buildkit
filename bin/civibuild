@@ -294,8 +294,6 @@ function civibuild_show_html() {
 function civibuild_edit() {
   cvutil_assertvars civibuild_edit BLDDIR SITE_NAME SITE_ID
 
- whoami
-
   if [ -f "${BLDDIR}/${SITE_NAME}.sh" ]; then
     echo "[[Edit ${BLDDIR}/${SITE_NAME}.sh]]"
     c="${BLDDIR}/${SITE_NAME}.sh"
