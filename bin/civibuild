@@ -385,7 +385,7 @@ ACTION="$1"
 shift
 
 case "$ACTION" in
-  snapshot|restore-all|ls|list|builds)
+  snapshots|restore-all|ls|list|builds)
     # don't parse SITE_NAME
     ;;
   *)
