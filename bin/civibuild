@@ -60,9 +60,7 @@ Description: Download and/or install the application
   --force             If necessary, destroy pre-existing files/directories/DBs
                       (For "reinstall", "--force" is implicit.)
 
-Syntax: $APP ls
 Syntax: $APP list
-Syntax: $APP builds
 Description: Display a list of build-names found in the build directory. 
 
 Syntax: $APP edit <build-name>[/<ms-id>]
@@ -375,7 +373,7 @@ function civibuild_parse_unnamed_params() {
       continue
     fi
 
-    if [ `echo "$ACTION" | egrep -c 'snapshots|restore-all|ls|list|builds'` -eq 1 ]; then
+    if [ `echo "$ACTION" | egrep -c 'snapshots|restore-all|list'` -eq 1 ]; then
       # dont parse site-name
       break
     fi
@@ -385,7 +383,7 @@ function civibuild_parse_unnamed_params() {
 
   [ -z "$ACTION" ] && civibuild_usage
 
-  if [ `echo "$ACTION" | egrep -c 'snapshots|restore-all|ls|list|builds'` -eq 0 ]; then
+  if [ `echo "$ACTION" | egrep -c 'snapshots|restore-all|list'` -eq 0 ]; then
 
     if [ -z "$SITE_NAME" ]; then
       civibuild_detect_site_name
@@ -678,7 +676,7 @@ case "$ACTION" in
     civibuild_show
     ;;
 
-  ls|list|builds)
+  list)
     civibuild_list
     ;;
 

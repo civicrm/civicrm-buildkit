@@ -252,7 +252,7 @@ DECLARED_ACTIONS="
   download dl
   edit
   install reinstall
-  ls list builds
+  list
   show
   snapshot snapshots
   restore restore-all
