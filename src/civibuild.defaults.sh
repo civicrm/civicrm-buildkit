@@ -231,7 +231,7 @@ SHOW_NEW_SCAN=
 PERSISTENT_VARS="
   ADMIN_EMAIL ADMIN_PASS ADMIN_USER
   DEMO_EMAIL DEMO_PASS DEMO_USER
-  CMS_TITLE CMS_URL CMS_ROOT CMS_VERSION
+  CMS_TITLE CMS_URL CMS_ROOT WEB_ROOT CMS_VERSION
   CMS_DB_DSN CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_PORT CMS_DB_NAME CMS_DB_ARGS
   CIVI_CORE CIVI_SITE_KEY CIVI_VERSION
   CIVI_DB_DSN CIVI_DB_USER CIVI_DB_PASS CIVI_DB_HOST CIVI_DB_PORT CIVI_DB_NAME CIVI_DB_ARGS
@@ -241,3 +241,21 @@ PERSISTENT_VARS="
   SITE_TOKEN SITE_TYPE
 "
 # ignore: runtime options like CIVI_SQL_SKIP and FORCE_DOWNLOAD
+
+###############################################################################
+## Declare Actions
+## Aliases must also be declared
+DECLARED_ACTIONS="
+  clone-create clone-destroy clone-show
+  create
+  destroy
+  download dl
+  edit
+  install reinstall
+  list
+  show
+  snapshot snapshots
+  restore restore-all
+  upgrade-test ut
+"
+

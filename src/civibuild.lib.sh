@@ -3,9 +3,9 @@
 ## Bash helper functions
 
 ## Coding conventions:
-## - Function names are "{prefix}_{name}"; prefixes are "util", "civicrm", "wp", etc
+## - Function names are "{prefix}_{name}"; prefixes are "cvutil", "civicrm", "wp", etc
 ## - Options are set as (global) environment variables
-## - Functions declare dependencies on (global) environment variables (util_assertvars).
+## - Functions declare dependencies on (global) environment variables (cvutil_assertvars).
 ##   If a variable missing, the application dies.
 
 ###############################################################################
@@ -198,6 +198,18 @@ EOF
 
   ## Replace main file with temp file
   cat < "$TMPFILE" > "$FILE"
+}
+
+###############################################################################
+## usage: cvutil_is_action <string-to-test>
+function cvutil_is_action() {
+  local action=$1
+  ACTION_VALIDATED=0
+  for a in $DECLARED_ACTIONS; do
+    if [ $a == $action ]; then
+      ACTION_VALIDATED=1
+    fi
+  done
 }
 
 ###############################################################################

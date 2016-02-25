@@ -60,11 +60,18 @@ Description: Download and/or install the application
   --force             If necessary, destroy pre-existing files/directories/DBs
                       (For "reinstall", "--force" is implicit.)
 
+Syntax: $APP list
+Description: Display a list of build-names found in the build directory. 
+
+Syntax: $APP edit <build-name>[/<ms-id>]
+Description: Edit the <build-dir>/<build-name>[.<ms-id>].sh config file
+
 Syntax: $APP show <build-name>[/<ms-id>] [options]
 Description: Show key details about the build
   --html <dir>        A new HTML dir which will report build status in detail
   --new-scan <file>   A new JSON file which summarizes the git structure
   --last-scan <file>  An existing JSON file which summarizes the old git structure
+  --full              Show all build options declared
 
 Syntax: $APP snapshots
 Description: List available snapshots
@@ -212,17 +219,32 @@ function civibuild_save() {
   fi
 }
 
+function civibuild_list() {
+  cvutil_assertvars civibuild_list BLDDIR
+
+  for b in `find $BLDDIR -maxdepth 1 -type f`; do
+    basename $b | sed 's/\.sh//'
+  done
+}
+
 function civibuild_show() {
   if [ -n "$SHOW_HTML" ]; then
     civibuild_show_html
   fi
 
-  cvutil_assertvars civibuild_show SITE_NAME SITE_ID
-  cvutil_summary "[[Show site summary ($SITE_NAME/$SITE_ID)]]" \
-    CMS_ROOT CMS_URL CMS_DB_DSN \
-    CIVI_DB_DSN \
-    TEST_DB_DSN \
-    ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS
+  if [ -n "$SHOW_FULL_BUILD_CONF" ]; then
+    civibuild_show_summary $PERSISTENT_VARS
+  else
+    civibuild_show_summary \
+      CMS_ROOT CMS_URL CMS_DB_DSN \
+      CIVI_DB_DSN TEST_DB_DSN \
+      ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS
+  fi
+}
+
+function civibuild_show_summary() {
+  cvutil_assertvars civibuild_show_summary "$@" 
+  cvutil_summary "[[Show site summary ($SITE_NAME/$SITE_ID)]]" $@
   civibuild_run_optional show
   echo "[[General notes]]"
   echo " - You may need to restart httpd."
@@ -250,6 +272,25 @@ function civibuild_show_html() {
   cat "$SHOW_NEW_SCAN" > "$SHOW_HTML/git-scan.new.json"
   cat "$SHOW_LAST_SCAN" | php -r 'print_r(json_decode(file_get_contents("php://stdin"),TRUE));' > "$SHOW_HTML/git-scan.last.txt"
   cat "$SHOW_NEW_SCAN" | php -r 'print_r(json_decode(file_get_contents("php://stdin"),TRUE));' > "$SHOW_HTML/git-scan.new.txt"
+}
+
+function civibuild_edit() {
+  cvutil_assertvars civibuild_edit BLDDIR SITE_NAME SITE_ID
+
+  if [ -f "${BLDDIR}/${SITE_NAME}.sh" ]; then
+    echo "[[Edit ${BLDDIR}/${SITE_NAME}.sh]]"
+    c="${BLDDIR}/${SITE_NAME}.sh"
+  fi
+  if [ -f "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh" ]; then
+    echo "[[Edit ${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh]]"
+    c="${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh"
+  fi
+
+  if [ -n "$EDITOR" ]; then
+    $EDITOR $c
+  else
+    echo "No editor found - please configure your EDITOR env variable."
+  fi
 }
 
 function civibuild_clone_create() {
@@ -315,32 +356,42 @@ function civibuild_clone_show() {
     CLONE_CIVI_DB_DSN
 }
 
-###############################################################################
-## Parse options
-source "$PRJDIR/src/civibuild.defaults.sh"
-[ -f "$PRJDIR/app/civibuild.conf" ] && source "$PRJDIR/app/civibuild.conf"
-cvutil_mkdir "$TMPDIR" "$BLDDIR" "$PRJDIR/app/private"
+## Parse un-named params by position: <action> <sitename>[/<ms-id>]
+function civibuild_parse_unnamed_params() {
+  for OPTION in $@; do
+    #skip named options
+    [ "${OPTION::1}" == "-" ] && continue
 
-ACTION="$1"
-[ -z "$ACTION" ] && civibuild_usage
-shift
+    # don't overwrite SITE_NAME if already set
+    [ -n "$SITE_NAME" ] && continue
 
-case "$ACTION" in
-  snapshots)
-    # don't parse SITE_NAME
-    ;;
-  restore-all)
-    # don't parse SITE_NAME
-    ;;
-  *)
-    ## Convert "drupal-demo" or "drupal-demo/123" to vars SITE_NAME and optionally SITE_ID
-    eval $(cvutil_parse_site_name_id "$1")
+    if [ -z $ACTION ]; then
+      cvutil_is_action $OPTION
+      if [ $ACTION_VALIDATED -eq 1 ]; then
+        ACTION=$OPTION
+      fi
+      continue
+    fi
+
+    if [ `echo "$ACTION" | egrep -c 'snapshots|restore-all|list'` -eq 1 ]; then
+      # dont parse site-name
+      break
+    fi
+    
+    civibuild_validate_site_name "$OPTION"
+  done
+
+  [ -z "$ACTION" ] && civibuild_usage
+
+  if [ `echo "$ACTION" | egrep -c 'snapshots|restore-all|list'` -eq 0 ]; then
+
+    if [ -z "$SITE_NAME" ]; then
+      civibuild_detect_site_name
+      civibuild_validate_site_name "$SITE_NAME" 
+    fi
+
     [ -z "$SITE_NAME" ] && civibuild_usage
     [ -z "$SITE_ID" ] && civibuild_usage
-    shift
-
-    ## Convert certains aliases like "d45" into better defaults
-    civibuild_alias_resolve "$SITE_NAME"
 
     ## Load settings based in SITE_NAME / SITE_ID
     if [ -f "${BLDDIR}/${SITE_NAME}.sh" ]; then
@@ -354,8 +405,82 @@ case "$ACTION" in
       echo "[[Load saved options from ${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh]]"
       source "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh"
     fi
-    ;;
-esac
+  fi
+}
+
+## If passed name is valid, assign to SITE_NAME
+## IF INVALID, SITE_NAME is reset
+## Parses SITE_ID as well
+## calls alias_resolve
+function civibuild_validate_site_name() {
+  ## Convert "drupal-demo" or "drupal-demo/123" to vars SITE_NAME and optionally SITE_ID
+  eval $(cvutil_parse_site_name_id "$1")
+
+  ## validate SITE_NAME
+  if [ ! -f ${BLDDIR}/${SITE_NAME}.sh ]; then
+    if [ ! -f ${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh ]; then
+     SITE_NAME=
+     SITE_ID=default
+    fi
+  fi
+
+  if [ ! -z "$SITE_NAME" ]; then
+    ## Convert certain aliases like "d45" into better defaults
+    civibuild_alias_resolve "$SITE_NAME"
+  fi
+}
+
+## Search build configs for CMS_ROOT and compare with pwd
+function civibuild_detect_site_name() {
+  local CWD=`pwd`
+
+  ## Read all CMS_ROOT values
+  if [ -z `compgen -G $BLDDIR/*.sh` ]; then
+    return;
+  fi
+  local config_paths=`grep CMS_ROOT $BLDDIR/*.sh | sed s#CMS_ROOT=## | tr -d '"'`;
+  ## WEB_ROOT might be better than CMS_ROOT, but it may not be stored persistently on pre-existing systems.
+
+  local parents=()
+  local children=()
+
+  for site_path in ${config_paths[@]}; do
+    local arr_site=(${site_path//:/ })
+
+    local conf_file=${arr_site[0]}
+    local cms_root=${arr_site[1]}
+
+    if [[ "$cms_root" == $CWD* ]]; then
+  #    echo "CWD is parent, in" $conf_file
+      children=(${children[@]} $conf_file)
+    fi
+
+    if [[ "$CWD" == $cms_root* ]]; then
+  #    echo "CWD is child, in " $conf_file
+      parents=(${parents[@]} $conf_file)
+    fi
+  done
+
+  local build_file=
+  if [ "${#parents[@]}" -eq 1 ] && [ "${#children[@]}" -ne 1 ]; then
+    build_file=$parents
+  elif [ "${#children[@]}" -eq 1 ] && [ "${#parents[@]}" -ne 1 ]; then
+    build_file=$children
+  fi
+
+  if [ -n "$build_file" ]; then
+    SITE_NAME=`basename $build_file .sh`
+    echo "[[Detected SITE_NAME: $SITE_NAME]]"
+  fi
+}
+
+###############################################################################
+## Parse options
+source "$PRJDIR/src/civibuild.defaults.sh"
+[ -f "$PRJDIR/app/civibuild.conf" ] && source "$PRJDIR/app/civibuild.conf"
+cvutil_mkdir "$TMPDIR" "$BLDDIR" "$PRJDIR/app/private"
+
+civibuild_parse_unnamed_params $@
 
 declare -a ARGS=()
 while [ -n "$1" ] ; do
@@ -435,6 +560,10 @@ while [ -n "$1" ] ; do
       FORCE_INSTALL=1
       ;;
 
+    --full)
+      SHOW_FULL_BUILD_CONF=1
+      ;;
+
     --html)
       SHOW_HTML="$1"
       shift
@@ -499,6 +628,7 @@ source "$PRJDIR/src/civibuild.compute-defaults.sh"
 ###############################################################################
 ## Main
 
+## Developer Note: Declare new Actions in src/civibuild.defaults.sh DECLARED_ACTIONS
 case "$ACTION" in
   clone-create)
     civibuild_clone_create
@@ -541,11 +671,19 @@ case "$ACTION" in
     civibuild_save
     ;;
 
+  edit)
+    civibuild_edit
+    ;;
+
   install|reinstall)
     [ "$ACTION" == "reinstall" ] && FORCE_INSTALL=1
     civibuild_install
     civibuild_save
     civibuild_show
+    ;;
+
+  list)
+    civibuild_list
     ;;
 
   show)
