@@ -430,10 +430,16 @@ function civibuild_validate_site_name() {
   fi
 }
 
-## Search build conf CMS_ROOT configs and compare with pwd
+## Search build configs for CMS_ROOT and compare with pwd
 function civibuild_detect_site_name() {
   local CWD=`pwd`
-  local config_paths=`grep -r CMS_ROOT $BLDDIR | sed s#CMS_ROOT=## | tr -d '"'`;
+
+  ## Read all CMS_ROOT values
+  if [ -z `compgen -G $BLDDIR/*.sh` ]; then
+    return;
+  fi
+  local config_paths=`grep CMS_ROOT $BLDDIR/*.sh | sed s#CMS_ROOT=## | tr -d '"'`;
+  ## WEB_ROOT might be better than CMS_ROOT, but it may not be stored persistently on pre-existing systems.
 
   local parents=()
   local children=()
@@ -464,7 +470,7 @@ function civibuild_detect_site_name() {
 
   if [ -n "$build_file" ]; then
     SITE_NAME=`basename $build_file .sh`
-    echo "Detected SITE_NAME: $SITE_NAME"
+    echo "[[Detected SITE_NAME: $SITE_NAME]]"
   fi
 }
 
