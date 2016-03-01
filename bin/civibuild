@@ -378,7 +378,7 @@ function civibuild_parse_unnamed_params() {
       break
     fi
     
-    civibuild_validate_site_name "$OPTION"
+    civibuild_expand_site_name "$OPTION"
   done
 
   [ -z "$ACTION" ] && civibuild_usage
@@ -387,7 +387,7 @@ function civibuild_parse_unnamed_params() {
 
     if [ -z "$SITE_NAME" ]; then
       civibuild_detect_site_name
-      civibuild_validate_site_name "$SITE_NAME" 
+      civibuild_expand_site_name "$SITE_NAME"
     fi
 
     [ -z "$SITE_NAME" ] && civibuild_usage
@@ -409,20 +409,9 @@ function civibuild_parse_unnamed_params() {
 }
 
 ## If passed name is valid, assign to SITE_NAME
-## IF INVALID, SITE_NAME is reset
-## Parses SITE_ID as well
-## calls alias_resolve
-function civibuild_validate_site_name() {
+function civibuild_expand_site_name() {
   ## Convert "drupal-demo" or "drupal-demo/123" to vars SITE_NAME and optionally SITE_ID
   eval $(cvutil_parse_site_name_id "$1")
-
-  ## validate SITE_NAME
-  if [ ! -f ${BLDDIR}/${SITE_NAME}.sh ]; then
-    if [ ! -f ${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh ]; then
-     SITE_NAME=
-     SITE_ID=default
-    fi
-  fi
 
   if [ ! -z "$SITE_NAME" ]; then
     ## Convert certain aliases like "d45" into better defaults
