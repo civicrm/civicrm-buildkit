@@ -61,7 +61,7 @@ Description: Download and/or install the application
                       (For "reinstall", "--force" is implicit.)
 
 Syntax: $APP list
-Description: Display a list of build-names found in the build directory. 
+Description: Display a list of build-names found in the build directory.
 
 Syntax: $APP edit <build-name>[/<ms-id>]
 Description: Edit the <build-dir>/<build-name>[.<ms-id>].sh config file
@@ -243,7 +243,7 @@ function civibuild_show() {
 }
 
 function civibuild_show_summary() {
-  cvutil_assertvars civibuild_show_summary "$@" 
+  cvutil_assertvars civibuild_show_summary "$@"
   cvutil_summary "[[Show site summary ($SITE_NAME/$SITE_ID)]]" $@
   civibuild_run_optional show
   echo "[[General notes]]"
@@ -377,7 +377,7 @@ function civibuild_parse_unnamed_params() {
       # dont parse site-name
       break
     fi
-    
+
     civibuild_expand_site_name "$OPTION"
   done
 
