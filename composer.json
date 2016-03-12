@@ -13,7 +13,6 @@
     "php": ">=5.3.3",
     "drush/drush": "dev-master#d1d13676f5beacaa9f8619088fe3ae45ea28a6cf",
     "totten/php-symbol-diff": "dev-master#54f869ca68a3cd75f3386f8490870369733d2c23",
-    "civicrm/strings": "dev-master#f886f33880027639d2aa0eeef79240ae1b7b531c",
     "civicrm/upgrade-test": "dev-master#590e971ccf70ae7caf1a3c11fc23535e4cd6c1f8",
     "drupal/coder": "dev-8.x-2.x-civi#a801890a82d52e23a83c5d820270b6e228843d79",
     "brianium/paratest": "dev-batching as 0.7",
