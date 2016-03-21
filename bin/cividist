@@ -12,6 +12,7 @@ TARS=${TARS:-$PRJ/out/tar}
 BY_DATE=${BY_DATE:-$PRJ/web/by-date}
 BY_HASH=${BY_HASH:-$PRJ/web/by-hash}
 DATE=$( date '+%Y-%m-%d' )
+DOCURL='https://github.com/civicrm/civicrm-buildkit/blob/master/doc/cividist.md'
 if [ -z $FILE_SUFFIX ]; then
   FILE_SUFFIX=$( date '+%Y%m%d' )
 fi
@@ -214,6 +215,8 @@ function cividist_help() {
   echo
   echo "Remove any old/orphaned tarballs"
   echo "  usage: $(basename $0) prune"
+  echo
+  echo "See also: $DOCURL"
 }
 
 ###############################################################################
@@ -268,7 +271,9 @@ if [ -z "$1" ]; then
 fi
 
 if [ ! -d "$SRC/distmaker" -o ! -d "$TARS" ]; then
+  echo "The folders $SRC/distmaker and $TARS do not exist."
   echo "Please prepare a 'dist' folder using buildkit and run the command within that folder."
+  echo "See also: $DOCURL"
   exit
 fi
 
