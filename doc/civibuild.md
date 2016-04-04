@@ -182,3 +182,12 @@ For more details on how civicrm.settings.d works, see [app/civicrm.settings.d/RE
 A parallel structure exists for the CMS settings files. See also:
  * [app/drupal.settings.d/README.txt](/app/drupal.settings.d/README.txt)
  * [app/wp-config.d/README.txt](/app/wp-config.d/README.txt)
+
+## Development/Testing of `civibuild`
+
+The tests for `civibuild` are stored in `tests/phpunit`.  These are
+integration tests which create and destroy real builds on the local system.
+To run them:
+
+ * Configure `amp` (as above)
+ * Run `phpunit4` (no arguments needed)
