@@ -5,7 +5,7 @@
 // -Destroy created test intance after run "civibuild create ..." test
 
 
-class CivibuildTest extends PHPUnit_Framework_TestCase
+class CivibuildCreateTest extends PHPUnit_Framework_TestCase
 {
 	//Create a test instance name Civibuild-test 
 	//(assumes no one will have created such an instance)
