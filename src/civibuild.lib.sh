@@ -327,7 +327,7 @@ function _amp_install_clone() {
 ## usage: _amp_import <root> <name> <shell-prefix>
 ## example: _amp_imprt /var/www/build/myproject civi CIVI
 function _amp_import() {
-  cvutil_assertvars _amp_install_cms SITE_NAME SITE_ID TMPDIR
+  cvutil_assertvars _amp_import SITE_NAME SITE_ID TMPDIR
   local amp_vars_file_path=$(mktemp.php ampvar)
   amp export --root="$1" --name=$2 --prefix=$3_ --output-file="$amp_vars_file_path"
   source "$amp_vars_file_path"
@@ -744,7 +744,7 @@ function drupal_install() {
 ## usage: drupal_install <extra-drush-args>
 ## To use an "install profile", simply pass it as part of <extra-drush-args>
 function drupal7_install() {
-  cvutil_assertvars drupal_install CMS_ROOT SITE_ID CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS CMS_URL
+  cvutil_assertvars drupal7_install CMS_ROOT SITE_ID CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS CMS_URL
   DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
   CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
   pushd "$CMS_ROOT" >> /dev/null
@@ -774,7 +774,7 @@ function drupal7_install() {
 ## usage: drupal_install <extra-drush-args>
 ## To use an "install profile", simply pass it as part of <extra-drush-args>
 function drupal8_install() {
-  cvutil_assertvars drupal_install CMS_ROOT SITE_ID CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS CMS_URL
+  cvutil_assertvars drupal8_install CMS_ROOT SITE_ID CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS CMS_URL
   DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
   CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
   pushd "$CMS_ROOT" >> /dev/null
@@ -807,7 +807,7 @@ function drupal_uninstall() {
 ###############################################################################
 ## Drupal -- Destroy config files and database tables
 function drupal7_uninstall() {
-  cvutil_assertvars drupal_uninstall CMS_ROOT SITE_ID CMS_URL
+  cvutil_assertvars drupal7_uninstall CMS_ROOT SITE_ID CMS_URL
   DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
 
   if [ -n "$DRUPAL_SITE_DIR" -a -d "$CMS_ROOT/sites/$DRUPAL_SITE_DIR" ]; then
@@ -838,7 +838,7 @@ function drupal7_uninstall() {
 ###############################################################################
 ## Drupal -- Destroy config files and database tables
 function drupal8_uninstall() {
-  cvutil_assertvars drupal_uninstall CMS_ROOT SITE_ID CMS_URL
+  cvutil_assertvars drupal8_uninstall CMS_ROOT SITE_ID CMS_URL
   DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
 
   if [ -n "$DRUPAL_SITE_DIR" -a -d "$CMS_ROOT/sites/$DRUPAL_SITE_DIR" ]; then
@@ -1048,7 +1048,7 @@ function svn_cache_clone() {
 function default_cache_setup() {
   if [ -z "$OFFLINE" ]; then
     echo "[[Update caches]]"
-    cvutil_assertvars civibuild_download PRJDIR
+    cvutil_assertvars default_cache_setup PRJDIR
     if [ -f "$PRJDIR/app/config/caches.sh" ]; then
       source "$PRJDIR/app/config/caches.sh"
     fi
