@@ -206,15 +206,6 @@ function civibuild_app_save() {
 }
 
 ###############################################################################
-function civibuild_app_list() {
-  cvutil_assertvars civibuild_app_list BLDDIR
-
-  for b in `find $BLDDIR -maxdepth 1 -type f`; do
-    basename $b | sed 's/\.sh//'
-  done
-}
-
-###############################################################################
 function civibuild_app_show() {
   if [ -n "$SHOW_HTML" ]; then
     civibuild_app_show_html
@@ -260,26 +251,6 @@ function civibuild_app_show_html() {
   cat "$SHOW_NEW_SCAN" > "$SHOW_HTML/git-scan.new.json"
   cat "$SHOW_LAST_SCAN" | php -r 'print_r(json_decode(file_get_contents("php://stdin"),TRUE));' > "$SHOW_HTML/git-scan.last.txt"
   cat "$SHOW_NEW_SCAN" | php -r 'print_r(json_decode(file_get_contents("php://stdin"),TRUE));' > "$SHOW_HTML/git-scan.new.txt"
-}
-
-###############################################################################
-function civibuild_app_edit() {
-  cvutil_assertvars civibuild_app_edit BLDDIR SITE_NAME SITE_ID
-
-  if [ -f "${BLDDIR}/${SITE_NAME}.sh" ]; then
-    echo "[[Edit ${BLDDIR}/${SITE_NAME}.sh]]"
-    c="${BLDDIR}/${SITE_NAME}.sh"
-  fi
-  if [ -f "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh" ]; then
-    echo "[[Edit ${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh]]"
-    c="${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh"
-  fi
-
-  if [ -n "$EDITOR" ]; then
-    $EDITOR $c
-  else
-    echo "No editor found - please configure your EDITOR env variable."
-  fi
 }
 
 ###############################################################################

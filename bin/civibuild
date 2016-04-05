@@ -34,105 +34,11 @@ civibuild_parse "$@"
 ###############################################################################
 ## Main
 
-## Developer Note: Declare new Actions in src/civibuild.defaults.sh DECLARED_ACTIONS
-case "$ACTION" in
-  clone-create)
-    civibuild_app_clone_create
-    civibuild_app_clone_show
-    ;;
-
-  clone-destroy)
-    civibuild_app_clone_destroy
-    ;;
-
-  clone-show)
-    civibuild_app_clone_import
-    civibuild_app_clone_show
-    ;;
-
-  create)
-    civibuild_app_download
-    civibuild_app_install
-    civibuild_app_save
-    civibuild_app_show
-    ;;
-
-  destroy)
-    if cvutil_confirm "Are you sure you want destroy \"$WEB_ROOT\"? [y/N] " n y; then
-      [ -d "$WEB_ROOT" ] && rm -rf "$WEB_ROOT"
-      [ -d "$PRIVATE_ROOT" ] && rm -rf "$PRIVATE_ROOT"
-      [ -d "$CLONE_ROOT" ] && rm -rf "$CLONE_ROOT"
-      for f in "${BLDDIR}/${SITE_NAME}.sh" "${BLDDIR}/${SITE_NAME}".*.sh ; do
-        [ -f "$f" ] && rm -f "$f"
-      done
-      amp cleanup
-    else
-      echo "Aborted" 1>&2
-      exit 1
-    fi
-    ;;
-
-  download|dl)
-    civibuild_app_download
-    civibuild_app_save
-    ;;
-
-  edit)
-    civibuild_app_edit
-    ;;
-
-  install|reinstall)
-    [ "$ACTION" == "reinstall" ] && FORCE_INSTALL=1
-    civibuild_app_install
-    civibuild_app_save
-    civibuild_app_show
-    ;;
-
-  list)
-    civibuild_app_list
-    ;;
-
-  show)
-    civibuild_app_show
-    ;;
-
-  snapshots)
-    ls "$SNAPSHOT_DIR"
-    ;;
-
-  snapshot)
-    amp_snapshot_create
-    ;;
-
-  restore)
-    amp_snapshot_restore
-    cvutil_save "${BLDDIR}/${SITE_NAME}.sh" $PERSISTENT_VARS
-    ;;
-
-  restore-all)
-    pushd "$BLDDIR" >> /dev/null
-      find . -mindepth 1 -maxdepth 1 -type d | while read dir ; do
-        SITE_NAME=$(basename $dir)
-        civibuild restore "$SITE_NAME"
-      done
-    popd >> /dev/null
-    ;;
-
-  upgrade-test|ut)
-    ## civicrm-upgrade-test only works with drush right now
-    if grep -q drupal "$WEB_ROOT/index.php" ; then
-      cvutil_makeparent "$UPGRADE_LOG_DIR"
-      cvutil_mkdir "$UPGRADE_LOG_DIR"
-      pushd "$PRJDIR/vendor/civicrm/upgrade-test/databases" > /dev/null
-        civicrm-upgrade-test --db "$CIVI_DB_NAME" --db-args "$CIVI_DB_ARGS" --web "$WEB_ROOT" --out "$UPGRADE_LOG_DIR" --junit-xml "$UPGRADE_LOG_DIR/civicrm-upgrade-test.xml" "${ARGS[@]}"
-      popd > /dev/null
-    else
-      echo "Skipped. civicrm-upgrade-test currently requires Drupal 7 and Drush."
-    fi
-    ;;
-
-  *)
-    echo "Unrecognized action: $ACTION"
-    civibuild_app_usage
-    ;;
-esac
+## Note: Declare new Actions in src/civibuild.defaults.sh DECLARED_ACTIONS
+ACTION_FILE="$PRJDIR/src/command/$ACTION.run.sh"
+if [ -f "$ACTION_FILE" ]; then
+  source "$ACTION_FILE"
+else
+  echo "Unrecognized action: $ACTION"
+  civibuild_app_usage
+fi

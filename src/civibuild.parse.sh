@@ -263,4 +263,13 @@ function civibuild_parse() {
   done
 
   source "$PRJDIR/src/civibuild.compute-defaults.sh"
+
+  ## Note: Also declare new actions in src/civibuild.defaults.sh DECLARED_ACTIONS
+  ## Translate action aliases
+  case "$ACTION" in
+    dl) ACTION=download ;;
+    reinstall) ACTION=install ;;
+    ut) ACTION=upgrade-test ;;
+    *) ;;
+  esac
 }
