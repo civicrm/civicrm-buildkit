@@ -13,6 +13,16 @@
 [ -z "$SITE_TYPE" ]          && SITE_TYPE="$SITE_NAME"
 [ -z "$CMS_TITLE" ]          && CMS_TITLE="$SITE_NAME"
 [ -z "$SNAPSHOT_NAME" ]      && SNAPSHOT_NAME="$SITE_NAME"
+if [ -z "$CMS_URL" ]; then
+  if [ "%AUTO%" == "$URL_TEMPLATE" ]; then
+    if [ -n "$IS_ALIAS" ]; then
+      CMS_URL=$( echo "http://%SITE_NAME%.dev" | sed "s;%SITE_NAME%;$SITE_NAME;g" )
+    # else: leave CMS_URL empty
+    fi
+  else
+    CMS_URL=$( echo "$URL_TEMPLATE" | sed "s;%SITE_NAME%;$SITE_NAME;g" )
+  fi
+fi
 #[ -z "$CMS_HOSTNAME" ]       && CMS_HOSTNAME=$(php -r '$p = parse_url($argv[1]); echo $p["host"];' "$CMS_URL")
 #[ -z "$CMS_PORT" ]           && CMS_PORT=$(php -r '$p = parse_url($argv[1]); echo $p["port"];' "$CMS_URL")
 [ -z "$SNAPSHOT_DIR" ]       && SNAPSHOT_DIR="$PRJDIR/app/snapshot"

@@ -1,0 +1,2 @@
+
+ls "$SNAPSHOT_DIR"

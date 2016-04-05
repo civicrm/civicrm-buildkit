@@ -96,6 +96,14 @@ CIVI_VERSION=master
 ## Ex: ";civicrm-packages;/my/local/change-for-packages.patch"
 PATCHES=
 
+## A template for picking the default URL (using variable "SITE_NAME").
+## Ex: "http://%SITE_NAME%.dev"
+## Ex: "%AUTO%"
+##
+## In "%AUTO%", normal sites use amp default (e.g. http://localhost:7979)
+## but aliase use "http://%SITE_NAME%.dev". This is for backward compatibility.
+URL_TEMPLATE='%AUTO%'
+
 ###############################################################################
 ## "create" variables defined by */install.sh
 
