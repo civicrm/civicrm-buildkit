@@ -16,26 +16,35 @@ class CivibuildCreateTest extends \Civi\Civibuild\CivibuildTestCase {
    * Create a test instance name Civibuild-test
    * (assumes no one will have created such an instance)
    */
-  public function testWpDemo() {
+  public function testWpDemoBasic() {
     ProcessUtil::runOk($this->cmd(
       'civibuild create civibuild-test --force --type wp-demo --civi-ver master' .
       ' --url http://civibuild-test.localhost'
     ));
 
-    $this->assertTrue(is_dir($this->getAbsPath('civibuild-test', 'wp-content/plugins/civicrm/civicrm/packages')));
-    $this->assertFalse(file_exists($this->getAbsPath('civibuild-test', 'wp-content/plugins/civicrm/civicrm/packages/DUMMY-PATCH-DATA.txt')));
+    $this->assertTrue(is_dir($this->getAbsPath('civibuild-test', 'wp-content/plugins/civicrm/civicrm/packages')), 'Expect to find packages dir');
+    $this->assertFalse(file_exists($this->getAbsPath('civibuild-test', 'wp-content/plugins/civicrm/civicrm/DUMMY-PATCH-DATA.txt')), 'Expect pristine core');
+    $this->assertFalse(file_exists($this->getAbsPath('civibuild-test', 'wp-content/plugins/civicrm/civicrm/packages/FIRST-DUMMY.txt')), 'Expect pristine packages');
+    $this->assertFalse(file_exists($this->getAbsPath('civibuild-test', 'wp-content/plugins/civicrm/civicrm/packages/SECOND-DUMMY.txt')), 'Expect pristine packages');
   }
 
   public function testWpDemoWithPatch() {
-    $patchFile = __DIR__ . '/CivibuildCreateTest.dummy.patch';
+    $corePatch = __DIR__ . '/CivibuildCreateTest.core-1.patch';
+    $pkgPatch1 = __DIR__ . '/CivibuildCreateTest.pkg 1.patch';
+    $pkgPatch2 = __DIR__ . '/CivibuildCreateTest.pkg 2.patch';
 
     ProcessUtil::runOk($this->cmd(
       'civibuild create civibuild-test --force --type wp-demo --civi-ver master' .
-      ' --url http://civibuild-test.localhost --patch ' . escapeshellarg(";civicrm-packages;$patchFile")
+      ' --url http://civibuild-test.localhost' .
+      ' --patch ' . escapeshellarg(";civicrm-packages;$pkgPatch1") .
+      ' --patch ' . escapeshellarg(";civicrm-core;$corePatch") .
+      ' --patch ' . escapeshellarg(";civicrm-packages;$pkgPatch2")
     ));
 
-    $this->assertTrue(is_dir($this->getAbsPath('civibuild-test', 'wp-content/plugins/civicrm/civicrm/packages')));
-    $this->assertTrue(file_exists($this->getAbsPath('civibuild-test', 'wp-content/plugins/civicrm/civicrm/packages/DUMMY-PATCH-DATA.txt')));
+    $this->assertTrue(is_dir($this->getAbsPath('civibuild-test', 'wp-content/plugins/civicrm/civicrm/packages')), 'Expect to find packages dir');
+    $this->assertTrue(file_exists($this->getAbsPath('civibuild-test', 'wp-content/plugins/civicrm/civicrm/DUMMY-PATCH-DATA.txt')), 'Expect patched core');
+    $this->assertTrue(file_exists($this->getAbsPath('civibuild-test', 'wp-content/plugins/civicrm/civicrm/packages/FIRST-DUMMY.txt')), 'Expect patched packages');
+    $this->assertTrue(file_exists($this->getAbsPath('civibuild-test', 'wp-content/plugins/civicrm/civicrm/packages/SECOND-DUMMY.txt')), 'Expect patched packages');
   }
 
 }

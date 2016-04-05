@@ -1,0 +1,20 @@
+From b33f721b00c8aa77303325a644d5074917b10ea5 Mon Sep 17 00:00:00 2001
+From: Tim Otten <totten@civicrm.org>
+Date: Mon, 4 Apr 2016 17:48:22 -0700
+Subject: [PATCH 1/2] Add FIRST-DUMMY.txt
+
+---
+ FIRST-DUMMY.txt | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 FIRST-DUMMY.txt
+
+diff --git a/FIRST-DUMMY.txt b/FIRST-DUMMY.txt
+new file mode 100644
+index 0000000..0a5b320
+--- /dev/null
++++ b/FIRST-DUMMY.txt
+@@ -0,0 +1 @@
++This is the first dummy file.
+-- 
+2.6.4
+
