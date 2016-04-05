@@ -11,7 +11,16 @@ use \Civi\Civibuild\ProcessUtil;
  */
 class CivibuildGeneralTest extends \Civi\Civibuild\CivibuildTestCase {
 
+  /**
+   * @var string
+   * Create a build with the given type (BUILDKIT/app/config/BUILDTYPE).
+   */
   protected $buildType = 'empty';
+
+  /**
+   * @var string
+   * Create a build with the given name (e.g. BUILDKIT/build/BUILDNAME).
+   */
   protected $buildName = 'testdgtxlifi';
 
   protected function setUp() {
