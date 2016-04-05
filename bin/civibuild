@@ -37,24 +37,24 @@ civibuild_parse "$@"
 ## Developer Note: Declare new Actions in src/civibuild.defaults.sh DECLARED_ACTIONS
 case "$ACTION" in
   clone-create)
-    civibuild_clone_create
-    civibuild_clone_show
+    civibuild_app_clone_create
+    civibuild_app_clone_show
     ;;
 
   clone-destroy)
-    civibuild_clone_destroy
+    civibuild_app_clone_destroy
     ;;
 
   clone-show)
-    civibuild_clone_import
-    civibuild_clone_show
+    civibuild_app_clone_import
+    civibuild_app_clone_show
     ;;
 
   create)
-    civibuild_download
-    civibuild_install
-    civibuild_save
-    civibuild_show
+    civibuild_app_download
+    civibuild_app_install
+    civibuild_app_save
+    civibuild_app_show
     ;;
 
   destroy)
@@ -73,27 +73,27 @@ case "$ACTION" in
     ;;
 
   download|dl)
-    civibuild_download
-    civibuild_save
+    civibuild_app_download
+    civibuild_app_save
     ;;
 
   edit)
-    civibuild_edit
+    civibuild_app_edit
     ;;
 
   install|reinstall)
     [ "$ACTION" == "reinstall" ] && FORCE_INSTALL=1
-    civibuild_install
-    civibuild_save
-    civibuild_show
+    civibuild_app_install
+    civibuild_app_save
+    civibuild_app_show
     ;;
 
   list)
-    civibuild_list
+    civibuild_app_list
     ;;
 
   show)
-    civibuild_show
+    civibuild_app_show
     ;;
 
   snapshots)
@@ -133,6 +133,6 @@ case "$ACTION" in
 
   *)
     echo "Unrecognized action: $ACTION"
-    civibuild_usage
+    civibuild_app_usage
     ;;
 esac

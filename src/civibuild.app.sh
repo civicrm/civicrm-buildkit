@@ -2,7 +2,7 @@
 
 ###############################################################################
 ## Display usage message
-function civibuild_usage() {
+function civibuild_app_usage() {
   APP=$(basename "$0")
 
   #Fails in Ubuntu 12.04 Vagrant box ==> cat <<EOT
@@ -85,8 +85,8 @@ EOT
 
 ###############################################################################
 ## Run an external script (based on the site-type)
-## usage: civibuild_run <script-name>
-function civibuild_run() {
+## usage: civibuild_app_run <script-name>
+function civibuild_app_run() {
   MAIN_SCRIPT="${SITE_CONFIG_DIR}/$1.sh"
   [ ! -f "$MAIN_SCRIPT" ] && echo "ERROR: Missing main script ($MAIN_SCRIPT)" && exit 98
 
@@ -98,8 +98,8 @@ function civibuild_run() {
 
 ###############################################################################
 ## Run an external script (based on the site-type)
-## usage: civibuild_run_optional <script-name>
-function civibuild_run_optional() {
+## usage: civibuild_app_run_optional <script-name>
+function civibuild_app_run_optional() {
   MAIN_SCRIPT="${SITE_CONFIG_DIR}/$1.sh"
   if [ -f "$MAIN_SCRIPT" ]; then
     echo "[[Execute $MAIN_SCRIPT]]"
@@ -113,8 +113,8 @@ function civibuild_run_optional() {
 ## Run the download scripts if necessary
 ## i.e. run them if FORCE_DOWNLOAD or if
 ## the folder doesn't exist
-function civibuild_download() {
-  cvutil_assertvars civibuild_download WEB_ROOT PRJDIR CACHE_DIR SITE_NAME SITE_TYPE
+function civibuild_app_download() {
+  cvutil_assertvars civibuild_app_download WEB_ROOT PRJDIR CACHE_DIR SITE_NAME SITE_TYPE
 
   echo "[[Download $SITE_NAME (type '$SITE_TYPE' in '$WEB_ROOT')]]"
 
@@ -131,7 +131,7 @@ function civibuild_download() {
     IS_INSTALLED=
     pushd "$PRJDIR" > /dev/null
       default_cache_setup
-      civibuild_run download
+      civibuild_app_run download
       git_cache_deref_remotes "$CACHE_DIR" "$WEB_ROOT"
       if [ -n "$PATCHES" ]; then
         pushd "$WEB_ROOT" >> /dev/null
@@ -152,8 +152,8 @@ function civibuild_download() {
 ## Run the installation scripts if necessary
 ## i.e. run them if FORCE_INSTALL or if the
 ## site wasn't previously installed
-function civibuild_install() {
-  cvutil_assertvars civibuild_install WEB_ROOT PRIVATE_ROOT SITE_NAME SITE_ID SITE_TYPE
+function civibuild_app_install() {
+  cvutil_assertvars civibuild_app_install WEB_ROOT PRIVATE_ROOT SITE_NAME SITE_ID SITE_TYPE
 
   echo "[[Install $SITE_NAME/$SITE_ID (type '$SITE_TYPE' in '$WEB_ROOT')]]"
 
@@ -173,7 +173,7 @@ function civibuild_install() {
 
   if [ -n "$FORCE_INSTALL" -a -n "$IS_INSTALLED" ]; then
     pushd "$WEB_ROOT" > /dev/null
-      civibuild_run uninstall
+      civibuild_app_run uninstall
     popd > /dev/null
     if [ -d "$PRIVATE_ROOT" ]; then
       rm -rf "$PRIVATE_ROOT"
@@ -182,7 +182,7 @@ function civibuild_install() {
 
   if [ -n "$FORCE_INSTALL" -o -z "$IS_INSTALLED" ]; then
     pushd "$WEB_ROOT" > /dev/null
-      civibuild_run install
+      civibuild_app_run install
     popd > /dev/null
     amp_snapshot_create
     IS_INSTALLED=1
@@ -195,8 +195,8 @@ function civibuild_install() {
 
 ###############################################################################
 ## Write any persistent settings to disk
-function civibuild_save() {
-  cvutil_assertvars civibuild_save BLDDIR SITE_NAME SITE_ID PERSISTENT_VARS
+function civibuild_app_save() {
+  cvutil_assertvars civibuild_app_save BLDDIR SITE_NAME SITE_ID PERSISTENT_VARS
 
   if [ "$SITE_ID" == "default" ]; then
     cvutil_save "${BLDDIR}/${SITE_NAME}.sh" $PERSISTENT_VARS
@@ -206,8 +206,8 @@ function civibuild_save() {
 }
 
 ###############################################################################
-function civibuild_list() {
-  cvutil_assertvars civibuild_list BLDDIR
+function civibuild_app_list() {
+  cvutil_assertvars civibuild_app_list BLDDIR
 
   for b in `find $BLDDIR -maxdepth 1 -type f`; do
     basename $b | sed 's/\.sh//'
@@ -215,33 +215,33 @@ function civibuild_list() {
 }
 
 ###############################################################################
-function civibuild_show() {
+function civibuild_app_show() {
   if [ -n "$SHOW_HTML" ]; then
-    civibuild_show_html
+    civibuild_app_show_html
   fi
 
   if [ -n "$SHOW_FULL_BUILD_CONF" ]; then
-    civibuild_show_summary $PERSISTENT_VARS
+    civibuild_app_show_summary $PERSISTENT_VARS
   else
-    civibuild_show_summary \
+    civibuild_app_show_summary \
       CMS_ROOT CMS_URL CMS_DB_DSN \
       CIVI_DB_DSN TEST_DB_DSN \
       ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS
   fi
 }
 
-function civibuild_show_summary() {
-  cvutil_assertvars civibuild_show_summary "$@"
+function civibuild_app_show_summary() {
+  cvutil_assertvars civibuild_app_show_summary "$@"
   cvutil_summary "[[Show site summary ($SITE_NAME/$SITE_ID)]]" $@
-  civibuild_run_optional show
+  civibuild_app_run_optional show
   echo "[[General notes]]"
   echo " - You may need to restart httpd."
   echo " - You may need to add the hostname and IP to /etc/hosts or DNS."
 }
 
-function civibuild_show_html() {
+function civibuild_app_show_html() {
   echo "[[Generate HTML ($SHOW_HTML)]]"
-  cvutil_assertvars civibuild_show PERSISTENT_VARS SHOW_LAST_SCAN SHOW_NEW_SCAN SHOW_HTML SITE_NAME WEB_ROOT
+  cvutil_assertvars civibuild_app_show PERSISTENT_VARS SHOW_LAST_SCAN SHOW_NEW_SCAN SHOW_HTML SITE_NAME WEB_ROOT
   if [ ! -f "$SHOW_LAST_SCAN" ]; then
     cvutil_makeparent "$SHOW_LAST_SCAN"
     echo '{"details":[],"root":""}' > "$SHOW_LAST_SCAN"
@@ -263,8 +263,8 @@ function civibuild_show_html() {
 }
 
 ###############################################################################
-function civibuild_edit() {
-  cvutil_assertvars civibuild_edit BLDDIR SITE_NAME SITE_ID
+function civibuild_app_edit() {
+  cvutil_assertvars civibuild_app_edit BLDDIR SITE_NAME SITE_ID
 
   if [ -f "${BLDDIR}/${SITE_NAME}.sh" ]; then
     echo "[[Edit ${BLDDIR}/${SITE_NAME}.sh]]"
@@ -283,12 +283,12 @@ function civibuild_edit() {
 }
 
 ###############################################################################
-function civibuild_clone_create() {
+function civibuild_app_clone_create() {
   if [ -z "$CLONE_ID" ]; then
     echo "missing required parameter: --clone-id 123"
     exit 1
   fi
-  cvutil_assertvars civibuild_clone_create CLONE_DIR CLONE_ID CMS_SQL CIVI_SQL
+  cvutil_assertvars civibuild_app_clone_create CLONE_DIR CLONE_ID CMS_SQL CIVI_SQL
 
   if [ ! -d "$CLONE_DIR" -o "$CMS_SQL" -nt "$CLONE_DIR/.mark" -o "$CMS_SQL" -nt "$CLONE_DIR/.mark" ]; then
     IS_NEW=1
@@ -306,20 +306,20 @@ function civibuild_clone_create() {
   else
     #echo "[[Clone already exists ($CLONE_DIR). Snapshots appear unchanged. Use --force to re-create]]"
     echo "[[Clone already exists ($CLONE_DIR). Use --force to re-create]]"
-    civibuild_clone_import
+    civibuild_app_clone_import
   fi
 }
 
 ###############################################################################
 ## Destroy a clone
-function civibuild_clone_destroy() {
+function civibuild_app_clone_destroy() {
   if [ -z $CLONE_ID ]; then
-    cvutil_assertvars civibuild_clone_destroy CLONE_ROOT
+    cvutil_assertvars civibuild_app_clone_destroy CLONE_ROOT
     if [ -d "$CLONE_ROOT" ]; then
       rm -rf "$CLONE_ROOT"
     fi
   else
-    cvutil_assertvars civibuild_clone_destroy CLONE_DIR
+    cvutil_assertvars civibuild_app_clone_destroy CLONE_DIR
     if [ -d "$CLONE_DIR" ]; then
       rm -rf "$CLONE_DIR"
     fi
@@ -329,20 +329,20 @@ function civibuild_clone_destroy() {
 
 ###############################################################################
 ## Load DB details for a clone
-function civibuild_clone_import() {
+function civibuild_app_clone_import() {
   if [ -z "$CLONE_ID" ]; then
     echo "missing required parameter: --clone-id 123"
     exit 1
   fi
-  cvutil_assertvars civibuild_clone_create CLONE_DIR CLONE_ID
+  cvutil_assertvars civibuild_app_clone_create CLONE_DIR CLONE_ID
   _amp_import "$CLONE_DIR" cms CLONE_CMS
   _amp_import "$CLONE_DIR" civi CLONE_CIVI
 }
 
 ###############################################################################
 ## Display DB details for a clone
-function civibuild_clone_show() {
-  cvutil_assertvars civibuild_clone_show SITE_NAME SITE_ID CLONE_ID
+function civibuild_app_clone_show() {
+  cvutil_assertvars civibuild_app_clone_show SITE_NAME SITE_ID CLONE_ID
   cvutil_summary "[[Show clone summary ($SITE_NAME/$SITE_ID/$CLONE_ID)]]" \
     CLONE_DIR \
     CLONE_CMS_DB_DSN \

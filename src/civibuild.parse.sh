@@ -25,7 +25,7 @@ function civibuild_parse_unnamed_params() {
     civibuild_expand_site_name "$OPTION"
   done
 
-  [ -z "$ACTION" ] && civibuild_usage
+  [ -z "$ACTION" ] && civibuild_app_usage
 
   if [ `echo "$ACTION" | egrep -c 'snapshots|restore-all|list'` -eq 0 ]; then
 
@@ -34,8 +34,8 @@ function civibuild_parse_unnamed_params() {
       civibuild_expand_site_name "$SITE_NAME"
     fi
 
-    [ -z "$SITE_NAME" ] && civibuild_usage
-    [ -z "$SITE_ID" ] && civibuild_usage
+    [ -z "$SITE_NAME" ] && civibuild_app_usage
+    [ -z "$SITE_ID" ] && civibuild_app_usage
 
     ## Load settings based in SITE_NAME / SITE_ID
     if [ -f "${BLDDIR}/${SITE_NAME}.sh" ]; then
@@ -123,7 +123,7 @@ function civibuild_parse() {
 
     case "$OPTION" in
       -h|--help|-?)
-        civibuild_usage
+        civibuild_app_usage
         ;;
 
       --admin-email)
@@ -254,7 +254,7 @@ function civibuild_parse() {
       *)
         if [ "${OPTION::1}" == "-" ]; then
           echo "Unrecognized option: $OPTION"
-          civibuild_usage
+          civibuild_app_usage
         else
           ARGS=("${ARGS[@]}" "$OPTION")
         fi
