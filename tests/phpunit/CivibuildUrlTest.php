@@ -4,15 +4,23 @@ use \Civi\Civibuild\ProcessUtil;
 
 class CivibuildUrlTest extends \Civi\Civibuild\CivibuildTestCase {
 
+  /**
+   * @var string
+   * Create a build with the given type (BUILDKIT/app/config/BUILDTYPE).
+   */
   protected $buildType = 'empty';
-  protected $buildName = 'testdgtxlifi';
-  protected $alias = 'testalias-anujrdw';
 
   /**
    * @var string
-   * Path to a stub script. This basically calls civibuild
+   * Create a build with the given name (e.g. BUILDKIT/build/BUILDNAME).
    */
-  protected $stub;
+  protected $buildName = 'testdgtxlifi';
+
+  /**
+   * @var string
+   * Create a build with the given alias (via civibuild.aliases.sh).
+   */
+  protected $alias = 'testalias-anujrdw';
 
   protected function setUp() {
     parent::setUp();
@@ -66,4 +74,5 @@ class CivibuildUrlTest extends \Civi\Civibuild\CivibuildTestCase {
     $this->assertRegExp(";Execute [^\n]*/install.sh;", $result->getOutput());
     $this->assertContains("- CMS_URL: $expectedUrl\n", $result->getOutput());
   }
+
 }
