@@ -190,4 +190,8 @@ integration tests which create and destroy real builds on the local system.
 To run them:
 
  * Configure `amp` (as above)
- * Run `phpunit4` (no arguments needed)
+ * Ensure that a test site is configured (`civibuild create civibild-test --type empty`)
+ * Run `phpunit4` or `env DEBUG=1 OFFLINE=1 phpunit4`
+   * Note that the tests accept some optional environment variables:
+      * `DEBUG=1` - Display command output as it runs
+      * `OFFLINE=1` - Try to avoid unnecessary network traffic

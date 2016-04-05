@@ -47,6 +47,9 @@ Description: Download and/or install the application
   --web-root <path>   The full path to the website root. [Default: ${BLDDIR}/<build-name>]
   --civi-ver <ver>    The branch or tag of CiviCRM desired (master, 4.4, 4.3, 4.3.0, etc) [Optional]
   --cms-ver <ver>     The release of the CMS desired [Optional]
+  --patch <spec>      Git patch(es) to apply immediately after downloading [Optional]
+                      Ex: "https://github.com/civicrm/civicrm-core/pull/8022"
+                      Ex: ";civicrm-packages;/my/local/change-for-packages.patch"
 
   --url <url>         The public URL of the site
   --title <title>     The title of the site
@@ -154,6 +157,11 @@ function civibuild_download() {
       default_cache_setup
       civibuild_run download
       git_cache_deref_remotes "$CACHE_DIR" "$WEB_ROOT"
+      if [ -n "$PATCHES" ]; then
+        pushd "$WEB_ROOT" >> /dev/null
+          git scan automerge --rebuild $PATCHES
+        popd >> /dev/null
+      fi
     popd > /dev/null
     if [ ! -d "$WEB_ROOT" ]; then
       echo "Download failed to create directory"
@@ -574,6 +582,11 @@ while [ -n "$1" ] ; do
 
     --no-cms)
       CMS_SQL_SKIP=1
+      ;;
+
+    --patch)
+      PATCHES="$1"
+      shift
       ;;
 
     --snapshot)

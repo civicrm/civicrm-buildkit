@@ -1,0 +1,20 @@
+From f6cb0895dfdf37d302b5a84237c67a86e5d2d474 Mon Sep 17 00:00:00 2001
+From: Tim Otten <totten@civicrm.org>
+Date: Mon, 4 Apr 2016 16:11:12 -0700
+Subject: [PATCH] Some test data in a dummy patch file.
+
+---
+ DUMMY-PATCH-DATA.txt | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 DUMMY-PATCH-DATA.txt
+
+diff --git a/DUMMY-PATCH-DATA.txt b/DUMMY-PATCH-DATA.txt
+new file mode 100644
+index 0000000..0f1a816
+--- /dev/null
++++ b/DUMMY-PATCH-DATA.txt
+@@ -0,0 +1 @@
++This is dummy patch data.
+-- 
+2.6.4
+
