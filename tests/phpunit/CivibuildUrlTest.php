@@ -35,18 +35,18 @@ class CivibuildUrlTest extends \Civi\Civibuild\CivibuildTestCase {
       "civibuild create {$this->buildName} --type {$this->buildType} --url 'http://foo.example.com'",
       "http://foo.example.com",
     );
-    //$cases[] = array(
-    //  "civibuild create {$this->buildName} --type {$this->buildType} --url-template 'http://www.%SITE_NAME%.ex'",
-    //  "http://www.{$this->buildName}.ex",
-    //);
+    $cases[] = array(
+      "civibuild create {$this->buildName} --type {$this->buildType} --url-template 'http://www.%SITE_NAME%.ex'",
+      "http://www.{$this->buildName}.ex",
+    );
     $cases[] = array(
       "civibuild create {$this->alias}",
       "http://{$this->alias}.dev",
     );
-    //$cases[] = array(
-    //  "civibuild create {$this->alias} --url-template 'http://www.%SITE_NAME%.ex'",
-    //  "http://www.{$this->alias}.ex",
-    //);
+    $cases[] = array(
+      "civibuild create {$this->alias} --url-template 'http://www.%SITE_NAME%.ex'",
+      "http://www.{$this->alias}.ex",
+    );
     $cases[] = array(
       "civibuild create {$this->alias} --url 'http://foo.example.com'",
       "http://foo.example.com",

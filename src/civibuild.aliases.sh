@@ -77,10 +77,13 @@ function civibuild_alias_resolve() {
     hr16)	 SITE_TYPE=hr16		    ; CIVI_VERSION=4.7	     ; CMS_TITLE="CiviHR 1.6 Demo"		     ; HR_VERSION=PCHR-863-migrate-to-4.7     ;;
     hrmaster)    SITE_TYPE=hr15             ; CIVI_VERSION=master    ; CMS_TITLE="CiviHR Sandbox"                    ; HR_VERSION=master     ;;
 
+    ## For testing purposes
+    testalias-anujrdw)  SITE_TYPE=empty         ; CIVI_VERION=4.6 ;;
+
     *) known=;;
   esac
 
-  if [ -n "$known" ]; then
-    CMS_URL="http://$1.dev"
+  if [ -n "$known" -a -z "$URL_TEMPLATE" ]; then
+    URL_TEMPLATE='http://%SITE_NAME%.dev'
   fi
 }

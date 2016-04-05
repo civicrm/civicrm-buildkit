@@ -246,6 +246,11 @@ function civibuild_parse() {
         shift
         ;;
 
+      --url-template)
+        URL_TEMPLATE="$1"
+        shift
+        ;;
+
       --web-root)
         WEB_ROOT="$1"
         shift
