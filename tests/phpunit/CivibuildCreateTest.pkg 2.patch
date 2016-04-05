@@ -1,0 +1,21 @@
+From 5800cebc415bf7a4d4c5868847091b36b6cf832a Mon Sep 17 00:00:00 2001
+From: Tim Otten <totten@civicrm.org>
+Date: Mon, 4 Apr 2016 17:49:21 -0700
+Subject: [PATCH 2/2] Add SECOND-DUMMY.txt
+
+---
+ SECOND-DUMMY.txt | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 SECOND-DUMMY.txt
+
+diff --git a/SECOND-DUMMY.txt b/SECOND-DUMMY.txt
+new file mode 100644
+index 0000000..0150963
+--- /dev/null
++++ b/SECOND-DUMMY.txt
+@@ -0,0 +1 @@
++This is the secondy dummy file.
+\ No newline at end of file
+-- 
+2.6.4
+

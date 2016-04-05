@@ -6,6 +6,11 @@
   "authors": [
     { "name": "Tim Otten", "email": "to-git@think.hm" }
   ],
+  "autoload": {
+    "psr-0": {
+      "Civi\\Civibuild": ["src/"]
+    }
+  },
   "config": {
     "bin-dir": "bin"
   },
