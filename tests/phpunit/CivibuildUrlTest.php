@@ -36,7 +36,7 @@ class CivibuildUrlTest extends \Civi\Civibuild\CivibuildTestCase {
     $cases = array();
 
     $cases[] = array(
-      "civibuild create {$this->buildName} --type {$this->buildType}",
+      "civibuild create {$this->buildName} --type {$this->buildType} --url-template '%AUTO%'",
       'http://localhost:7979',
     );
     $cases[] = array(
@@ -48,7 +48,7 @@ class CivibuildUrlTest extends \Civi\Civibuild\CivibuildTestCase {
       "http://www.{$this->buildName}.ex",
     );
     $cases[] = array(
-      "civibuild create {$this->alias}",
+      "civibuild create {$this->alias} --url-template '%AUTO%'",
       "http://{$this->alias}.dev",
     );
     $cases[] = array(

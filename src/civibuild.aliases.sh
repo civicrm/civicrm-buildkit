@@ -21,7 +21,7 @@
 ## usage: civibuild_alias_resolve <name>
 ## example: civibuild_alias_resolve d45
 function civibuild_alias_resolve() {
-  local known=1
+  IS_ALIAS=1
   case "$1" in
     d43)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.3       ; CMS_TITLE="CiviCRM 4.3 Demo on Drupal"        ; DISC_VERSION=4.4	;;
     d44)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.4       ; CMS_TITLE="CiviCRM 4.4 Demo on Drupal"        ; VOL_VERSION=4.4-1.x	; DISC_VERSION=4.4	;;
@@ -80,10 +80,10 @@ function civibuild_alias_resolve() {
     ## For testing purposes
     testalias-anujrdw)  SITE_TYPE=empty         ; CIVI_VERION=4.6 ;;
 
-    *) known=;;
+    *) IS_ALIAS= ;;
   esac
 
-  if [ -n "$known" -a -z "$URL_TEMPLATE" ]; then
-    URL_TEMPLATE='http://%SITE_NAME%.dev'
-  fi
+#  if [ -n "$known" -a "%AUTO%" = "$URL_TEMPLATE" ]; then
+#    URL_TEMPLATE='http://%SITE_NAME%.dev'
+#  fi
 }

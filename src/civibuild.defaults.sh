@@ -97,12 +97,12 @@ CIVI_VERSION=master
 PATCHES=
 
 ## A template for picking the default URL (using variable "SITE_NAME").
-## If blank, computed by amp.
 ## Ex: "http://%SITE_NAME%.dev"
-## Default (for most builds): blank
-## Default (for aliases): "http://%SITE_NAME%.dev"
-## Note: Those defaults are weird. Changing them will be compatibility break.
-URL_TEMPLATE=
+## Ex: "%AUTO%"
+##
+## In "%AUTO%", normal sites use amp default (e.g. http://localhost:7979)
+## but aliase use "http://%SITE_NAME%.dev". This is for backward compatibility.
+URL_TEMPLATE='%AUTO%'
 
 ###############################################################################
 ## "create" variables defined by */install.sh
