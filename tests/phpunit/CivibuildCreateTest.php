@@ -17,7 +17,7 @@ class CivibuildCreateTest extends \Civi\Civibuild\CivibuildTestCase {
    * (assumes no one will have created such an instance)
    */
   public function testWpDemoBasic() {
-    ProcessUtil::runOk($this->cmd(
+    $result = ProcessUtil::runOk($this->cmd(
       'civibuild create civibuild-test --force --type wp-demo --civi-ver master' .
       ' --url http://civibuild-test.localhost'
     ));
@@ -26,6 +26,13 @@ class CivibuildCreateTest extends \Civi\Civibuild\CivibuildTestCase {
     $this->assertFalse(file_exists($this->getAbsPath('civibuild-test', 'wp-content/plugins/civicrm/civicrm/DUMMY-PATCH-DATA.txt')), 'Expect pristine core');
     $this->assertFalse(file_exists($this->getAbsPath('civibuild-test', 'wp-content/plugins/civicrm/civicrm/packages/FIRST-DUMMY.txt')), 'Expect pristine packages');
     $this->assertFalse(file_exists($this->getAbsPath('civibuild-test', 'wp-content/plugins/civicrm/civicrm/packages/SECOND-DUMMY.txt')), 'Expect pristine packages');
+    $this->assertRegExp('; - CMS_ROOT: [^\n]+/build/civibuild-test;', $result->getOutput());
+    $this->assertRegExp('; - CIVI_DB_DSN: mysql://.*:.*@.*/.*;', $result->getOutput());
+
+    $configFile = $this->getPrjDir() . '/build/civibuild-test.sh';
+    $this->assertFileExists($configFile);
+    $config = file_get_contents($configFile);
+    $this->assertRegExp(';CMS_ROOT=[^\n]+/build/civibuild-test;', $config);
   }
 
   public function testWpDemoWithPatch() {
@@ -33,7 +40,7 @@ class CivibuildCreateTest extends \Civi\Civibuild\CivibuildTestCase {
     $pkgPatch1 = __DIR__ . '/CivibuildCreateTest.pkg 1.patch';
     $pkgPatch2 = __DIR__ . '/CivibuildCreateTest.pkg 2.patch';
 
-    ProcessUtil::runOk($this->cmd(
+    $result = ProcessUtil::runOk($this->cmd(
       'civibuild create civibuild-test --force --type wp-demo --civi-ver master' .
       ' --url http://civibuild-test.localhost' .
       ' --patch ' . escapeshellarg(";civicrm-packages;$pkgPatch1") .
@@ -45,6 +52,8 @@ class CivibuildCreateTest extends \Civi\Civibuild\CivibuildTestCase {
     $this->assertTrue(file_exists($this->getAbsPath('civibuild-test', 'wp-content/plugins/civicrm/civicrm/DUMMY-PATCH-DATA.txt')), 'Expect patched core');
     $this->assertTrue(file_exists($this->getAbsPath('civibuild-test', 'wp-content/plugins/civicrm/civicrm/packages/FIRST-DUMMY.txt')), 'Expect patched packages');
     $this->assertTrue(file_exists($this->getAbsPath('civibuild-test', 'wp-content/plugins/civicrm/civicrm/packages/SECOND-DUMMY.txt')), 'Expect patched packages');
+    $this->assertRegExp('; - CMS_ROOT: .*/build/civibuild-test;', $result->getOutput());
+    $this->assertRegExp('; - CIVI_DB_DSN: mysql://.*:.*@.*/.*;', $result->getOutput());
   }
 
 }
