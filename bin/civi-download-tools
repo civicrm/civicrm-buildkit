@@ -253,7 +253,7 @@ function get_system_installer() {
     source /etc/lsb-release
   fi
   case "$DISTRIB_CODENAME" in
-    precise|trusty|jessie)
+    precise|trusty|jessie|xenial)
       echo "do_system_$DISTRIB_CODENAME"
       ;;
     *)
@@ -295,6 +295,36 @@ function do_system_trusty() {
       sudo apt-get -y install $PACKAGES
       sudo php5enmod mcrypt
       sudo php5enmod imap
+      sudo a2enmod rewrite
+      sudo apache2ctl restart
+    else
+      echo "Aborted" 1>&2
+      exit 1
+    fi
+  set +e
+}
+
+###############################################################################
+function do_system_xenial() {
+  set -e
+    PACKAGES="acl git wget unzip mysql-server mysql-client php5.6-cli php5.6-imap php5.6-ldap php5.6-curl php5.6-mysql php5.6-intl php5.6-gd php5.6-mcrypt php5.6-bcmath php5.6-mbstring php5.6-zip php5.6-xml apache2 libapache2-mod-php5.6 nodejs-legacy npm ruby rake"
+    echo "Detected \"Ubuntu Xenial 16.04\"."
+    echo ""
+    echo "Task: Install software-properties-common and ppa:ondrej/php (PHP 5.6)"
+    echo "Task: $PACKAGES"
+    echo ""
+    echo "Warning: This system will not support php-mysql extension"
+    echo ""
+    if cvutil_confirm "Run automated installation? [Y/n] " y y; then
+      sudo apt-get install software-properties-common
+      sudo add-apt-repository ppa:ondrej/php
+      sudo apt-get update
+      sudo apt-get -y install $PACKAGES
+      sudo phpenmod bcmath
+      sudo phpenmod curl
+      sudo phpenmod imap
+      sudo phpenmod mcrypt
+      sudo phpenmod xml
       sudo a2enmod rewrite
       sudo apache2ctl restart
     else
