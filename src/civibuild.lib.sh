@@ -711,6 +711,7 @@ function backdrop_install() {
     cvutil_inject_settings "$CMS_ROOT/settings.php" "backdrop.settings.d"
 
     ## FIXME: no drush for backdrop: drush vset --yes file_private_path "${PRIVATE_ROOT}/${DRUPAL_SITE_DIR}"
+    [ -n "$APACHE_VHOST_ALIAS" ] && cvutil_ed .htaccess '# RewriteBase /$' 's;# RewriteBase /$;RewriteBase /;'
   popd >> /dev/null
 }
 
@@ -766,6 +767,7 @@ function drupal7_install() {
     amp datadir "sites/${DRUPAL_SITE_DIR}/files" "${PRIVATE_ROOT}/${DRUPAL_SITE_DIR}"
     cvutil_mkdir "sites/${DRUPAL_SITE_DIR}/modules"
     drush vset --yes file_private_path "${PRIVATE_ROOT}/${DRUPAL_SITE_DIR}"
+    [ -n "$APACHE_VHOST_ALIAS" ] && cvutil_ed .htaccess '# RewriteBase /$' 's;# RewriteBase /$;RewriteBase /;'
   popd >> /dev/null
 }
 
@@ -795,6 +797,7 @@ function drupal8_install() {
     ## Setup extra directories
     amp datadir "sites/${DRUPAL_SITE_DIR}/files" "${PRIVATE_ROOT}/${DRUPAL_SITE_DIR}"
     cvutil_mkdir "sites/${DRUPAL_SITE_DIR}/modules"
+    [ -n "$APACHE_VHOST_ALIAS" ] && cvutil_ed .htaccess '# RewriteBase /$' 's;# RewriteBase /$;RewriteBase /;'
   popd >> /dev/null
 }
 
@@ -1052,5 +1055,18 @@ function default_cache_setup() {
     if [ -f "$PRJDIR/app/config/caches.sh" ]; then
       source "$PRJDIR/app/config/caches.sh"
     fi
+  fi
+}
+
+###############################################################################
+## Edit a line in a file
+## usage: cvutil_ed <file> <grep-match> <sed-replace>
+function cvutil_ed() {
+  file="$1"
+  matches="$2"
+  replacement="$3"
+  if grep -q "$matches" "$file"  ; then
+    mv "$file" "$file".bak
+    sed "$replacement" < "$file".bak > "$file"
   fi
 }
