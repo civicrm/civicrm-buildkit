@@ -104,7 +104,7 @@ class MyFinder {
     $f->in($this->buildDir)
       ->depth('== 0')
       ->directories()
-      ->filter(function (\SplFileInfo $file) use ($self, $newest) {
+      ->filter(function (\SplFileInfo $file) use ($self, $newest, $batches) {
         $batch = $self->pickBatch($file->getBasename());
         if (!$batch) {
           return FALSE;
@@ -115,7 +115,7 @@ class MyFinder {
         }
 
         if ($file->getCTime() < $self->redundantAt
-          && $file->getBasename() === $newest[$batch]
+          && $file->getBasename() !== $newest[$batch]
         ) {
           return TRUE;
         }
