@@ -109,6 +109,7 @@ function civibuild_detect_site_name() {
 
 ###############################################################################
 ## Parse options
+declare -a ARGS=()
 function civibuild_parse() {
   source "$PRJDIR/src/civibuild.defaults.sh"
   [ -f "$PRJDIR/app/civibuild.conf" ] && source "$PRJDIR/app/civibuild.conf"
@@ -116,7 +117,6 @@ function civibuild_parse() {
 
   civibuild_parse_unnamed_params $@
 
-  declare -a ARGS=()
   while [ -n "$1" ] ; do
     OPTION="$1"
     shift
