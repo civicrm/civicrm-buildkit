@@ -56,4 +56,29 @@ class CivibuildCreateTest extends \Civi\Civibuild\CivibuildTestCase {
     $this->assertRegExp('; - CIVI_DB_DSN: mysql://.*:.*@.*/.*;', $result->getOutput());
   }
 
+  public function testWpDemoWithConflictedPatch() {
+    $corePatch = __DIR__ . '/CivibuildCreateTest.core-1.patch';
+    $pkgPatch1 = __DIR__ . '/CivibuildCreateTest.pkg 1.patch';
+    $pkgPatch2 = __DIR__ . '/CivibuildCreateTest.pkg 2.patch';
+    $pkgPatchConflict = __DIR__ . '/CivibuildCreateTest.pkg conflict.patch';
+
+    try {
+      ProcessUtil::runOk($this->cmd(
+        'civibuild download civibuild-test --force --type wp-demo --civi-ver master' .
+        ' --url http://civibuild-test.localhost' .
+        ' --patch ' . escapeshellarg(";civicrm-packages;$pkgPatch1") .
+        ' --patch ' . escapeshellarg(";civicrm-core;$corePatch") .
+        ' --patch ' . escapeshellarg(";civicrm-packages;$pkgPatch2") .
+        ' --patch ' . escapeshellarg(";civicrm-packages;$pkgPatchConflict")
+      ));
+      $this->fail("Expected download to fail with error");
+    } catch (\Civi\Civibuild\Exception\ProcessErrorException $e) {
+      $result = $e->getProcess();
+      $this->assertEquals(95, $result->getExitCode());
+      $this->assertContains('COMMAND: git apply --check', $result->getErrorOutput());
+      $this->assertContains('Failed to apply patch(es)', $result->getOutput());
+      $this->assertNotRegExp('; - CMS_ROOT: .*/build/civibuild-test;', $result->getOutput());
+    }
+  }
+
 }

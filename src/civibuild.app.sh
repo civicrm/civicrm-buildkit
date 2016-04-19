@@ -135,7 +135,10 @@ function civibuild_app_download() {
       git_cache_deref_remotes "$CACHE_DIR" "$WEB_ROOT"
       if [ -n "$PATCHES" ]; then
         pushd "$WEB_ROOT" >> /dev/null
-          git scan automerge --rebuild --url-split='|' "$PATCHES"
+          if ! git scan automerge --rebuild --url-split='|' "$PATCHES" ; then
+            echo "Failed to apply patch(es)"
+            exit 95
+          fi
         popd >> /dev/null
       fi
     popd > /dev/null
