@@ -139,3 +139,14 @@ wp cap add civicrm_admin \
   view_public_civimail_content
 
 wp user create "$DEMO_USER" "$DEMO_EMAIL" --role=civicrm_admin --user_pass="$DEMO_PASS"
+
+wp civicrm api extension.install key=org.civicrm.angularprofiles debug=1
+
+wp civicrm api extension.install key=org.civicrm.volunteer debug=1
+
+wp cap add civicrm_admin \
+  register to volunteer \
+  log own hours \
+  create volunteer projects \
+  edit own volunteer projects \
+  delete own volunteer projects
