@@ -3,6 +3,7 @@
 ## download.sh -- Download WordPress and CiviCRM
 
 ###############################################################################
+[ -z "$VOL_VERSION" ] && VOL_VERSION='4.4-1.x'
 
 WPCLI_ARGS=
 [ -n "$CMS_VERSION" ] && WPCLI_ARGS="$WPCLI_ARGS --version=$CMS_VERSION"
@@ -24,6 +25,7 @@ pushd $WEB_ROOT/wp-content/plugins >> /dev/null
   git clone ${CACHE_DIR}/civicrm/civicrm-core.git      -b "$CIVI_VERSION" civicrm/civicrm
   git clone ${CACHE_DIR}/civicrm/civicrm-packages.git  -b "$CIVI_VERSION" civicrm/civicrm/packages
   git clone ${CACHE_DIR}/civicrm/civicrm-demo-wp.git   -b master          civicrm-demo-wp
+  git clone ${CACHE_DIR}/civicrm/civivolunteer.git     -b "$VOL_VERSION"  civicrm/civicrm/tools/extensions/civivolunteer
 
   git_set_hooks civicrm-wordpress   civicrm                    "../civicrm/tools/scripts/git"
   git_set_hooks civicrm-core        civicrm/civicrm            "../tools/scripts/git"
