@@ -5,6 +5,11 @@
 ## Drupal is actually in a subdir of the main source tree
 CMS_ROOT="$WEB_ROOT/drupal"
 
+# Update vendor libraries.
+pushd "$WEB_ROOT"
+composer install
+popd
+
 ###############################################################################
 ## Create virtual-host and databases
 
@@ -30,62 +35,63 @@ civicrm_install
 
 ###############################################################################
 ## Extra configuration
-pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
+pushd "$CMS_ROOT"
+drush -y en \
+  civicrm \
+  toolbar \
+  garland \
+  adyen_audit \
+  amazon_audit \
+  astropay_audit \
+  contribution_audit \
+  contribution_tracking \
+  environment_indicator \
+  exchange_rates \
+  ganglia_reporter \
+  globalcollect_audit \
+  large_donation \
+  log_audit \
+  offline2civicrm \
+  paypal_audit \
+  queue2civicrm \
+  recurring \
+  recurring_globalcollect \
+  syslog \
+  thank_you \
+  wmf_audit \
+  wmf_campaigns \
+  wmf_civicrm \
+  wmf_common \
+  wmf_communication \
+  wmf_contribution_search \
+  wmf_fredge_qc \
+  wmf_logging \
+  wmf_refund_qc \
+  wmf_reports \
+  wmf_test_settings \
+  wmf_unsubscribe \
+  wmf_unsubscribe_qc \
+  wmf_zendesk_reports \
+  worldpay_audit
 
-  drush -y en \
-    civicrm \
-    toolbar \
-    garland \
-    contribution_audit \
-    contribution_tracking \
-    devel \
-    environment_indicator \
-    exchange_rates \
-    ganglia_reporter \
-    globalcollect_audit \
-    log_audit \
-    offline2civicrm \
-    paypal_audit \
-    queue2civicrm \
-    queue2civicrm_tests \
-    recurring \
-    recurring_globalcollect \
-    twigext_l10n_tests \
-    syslog \
-    thank_you \
-    wmf_civicrm \
-    wmf_common \
-    wmf_communication \
-    wmf_communication_tests \
-    wmf_contribution_search \
-    wmf_fredge_qc \
-    wmf_logging \
-    wmf_refund_qc \
-    wmf_reports \
-    wmf_test_settings \
-    wmf_unsubscribe \
-    wmf_unsubscribe_qc
+drush -y updatedb
 
-  drush -y updatedb
+## Setup theme
+#above# drush -y en garland
+export SITE_CONFIG_DIR
+drush -y -u "$ADMIN_USER" scr "$SITE_CONFIG_DIR/install-theme.php"
 
-  ## Setup theme
-  #above# drush -y en garland
-  export SITE_CONFIG_DIR
-  drush -y -u "$ADMIN_USER" scr "$SITE_CONFIG_DIR/install-theme.php"
+## Based on the block info, CRM_Core_Block::CREATE_NEW and CRM_Core_Block::ADD should be enabled by default, but they aren't.
+## "drush -y cc all" and "drush -y cc block" do *NOT* solve the problem. But this does:
+drush php-eval -u "$ADMIN_USER" 'module_load_include("inc","block","block.admin"); block_admin_display();'
 
-  ## Based on the block info, CRM_Core_Block::CREATE_NEW and CRM_Core_Block::ADD should be enabled by default, but they aren't.
-  ## "drush -y cc all" and "drush -y cc block" do *NOT* solve the problem. But this does:
-  drush php-eval -u "$ADMIN_USER" 'module_load_include("inc","block","block.admin"); block_admin_display();'
-
-  ## Setup demo user
-  drush -y en civicrm_webtest
-  drush -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
-  #drush -y user-add-role civicrm_webtest_user "$DEMO_USER"
-  # In Garland, CiviCRM's toolbar looks messy unless you also activate Drupal's "toolbar", so grant "access toolbar"
-  # We've activated more components than typical web-test baseline, so grant rights to those components.
-  #for perm in 'access toolbar'
-  #do
-  #  drush -y role-add-perm civicrm_webtest_user "$perm"
-  #done
-
-popd >> /dev/null
+## Setup demo user
+drush -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
+#drush -y user-add-role civicrm_webtest_user "$DEMO_USER"
+# In Garland, CiviCRM's toolbar looks messy unless you also activate Drupal's "toolbar", so grant "access toolbar"
+# We've activated more components than typical web-test baseline, so grant rights to those components.
+#for perm in 'access toolbar'
+#do
+#  drush -y role-add-perm civicrm_webtest_user "$perm"
+#done
+popd
