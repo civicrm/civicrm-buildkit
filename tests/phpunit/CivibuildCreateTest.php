@@ -81,4 +81,41 @@ class CivibuildCreateTest extends \Civi\Civibuild\CivibuildTestCase {
     }
   }
 
+  /**
+   * Create a test instance name Civibuild-test
+   * (assumes no one will have created such an instance)
+   */
+  public function testEmptyWithExtraZipfile() {
+    $result = ProcessUtil::runOk($this->cmd(
+      'civibuild create civibuild-test --force --type empty ' .
+      ' --dl ' . escapeshellarg('foo/bar=' . __DIR__ . '/example-add-on.zip')
+    ));
+
+    $this->assertTrue(is_dir($this->getAbsPath('civibuild-test', 'foo/bar/example-add-on')), 'Expect to find packages dir');
+    $this->assertContains("Hello", file_get_contents($this->getAbsPath('civibuild-test', 'foo/bar/example-add-on/README.txt')));
+
+    $this->assertRegExp('; - CMS_ROOT: [^\n]+/build/civibuild-test;', $result->getOutput());
+    $this->assertRegExp('; - CIVI_DB_DSN: mysql://.*:.*@.*/.*;', $result->getOutput());
+
+    $configFile = $this->getPrjDir() . '/build/civibuild-test.sh';
+    $this->assertFileExists($configFile);
+    $config = file_get_contents($configFile);
+    $this->assertRegExp(';CMS_ROOT=[^\n]+/build/civibuild-test;', $config);
+  }
+
+  public function testEmptyWithExtraZipfile_bad() {
+    try {
+      ProcessUtil::runOk($this->cmd(
+        'civibuild create civibuild-test --force --type empty ' .
+        ' --dl ' . escapeshellarg('foo/bar=' . __DIR__ . '/does-not-exist.zip')
+      ));
+      $this->fail("Expected download to fail with error");
+    } catch (\Civi\Civibuild\Exception\ProcessErrorException $e) {
+      $result = $e->getProcess();
+      $this->assertEquals(94, $result->getExitCode());
+      $this->assertContains('Failed to determine if archive is local/remote or zip/tar', $result->getOutput());
+      $this->assertNotRegExp('; - CMS_ROOT: .*/build/civibuild-test;', $result->getOutput());
+    }
+  }
+
 }

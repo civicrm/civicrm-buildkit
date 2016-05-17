@@ -181,6 +181,11 @@ function civibuild_parse() {
         shift
         ;;
 
+      --dl)
+        EXTRA_DLS="$EXTRA_DLS|$1"
+        shift
+        ;;
+
       --force)
         FORCE_DOWNLOAD=1
         FORCE_INSTALL=1
