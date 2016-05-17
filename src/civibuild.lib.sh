@@ -128,6 +128,19 @@ function cvutil_mkdir() {
 }
 
 ###############################################################################
+## Compose a new URL For a site
+## Usage: myurl=$(cvutil_mkurl <shortname>)
+function cvutil_mkurl() {
+  local subsite_name="$1"
+  cvutil_assertvars cvutil_mkurl URL_TEMPLATE
+  if [ "%AUTO%" == "$URL_TEMPLATE" ]; then
+    echo "http://%subsite_name%.dev" | sed "s;%SITE_NAME%;$subsite_name;g"
+  else
+    echo "$URL_TEMPLATE" | sed "s;%SITE_NAME%;$subsite_name;g"
+  fi
+}
+
+###############################################################################
 ## Combine host and port to a single string
 ## usage: MY_VAR=$(cvutil_build_hostport $MY_HOST $MY_PORT )
 function cvutil_build_hostport() {
