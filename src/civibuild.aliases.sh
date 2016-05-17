@@ -77,6 +77,13 @@ function civibuild_alias_resolve() {
     hr16)        SITE_TYPE=hr16             ; CIVI_VERSION=4.7.6     ; CMS_TITLE="CiviHR 1.6 Demo"                   ; HR_VERSION=PCHR-863-migrate-to-4.7     ;;
     hrmaster)    SITE_TYPE=hr15             ; CIVI_VERSION=master    ; CMS_TITLE="CiviHR Sandbox"                    ; HR_VERSION=master     ;;
 
+    bempty)      SITE_TYPE=backdrop-empty   ; CIVI_VERSION=none      ; CMS_TITLE="Backdrop Sandbox"                  ;;
+    dempty)      SITE_TYPE=drupal-empty     ; CIVI_VERSION=none      ; CMS_TITLE="Drupal 7 Sandbox"                  ;;
+    d7-empty)    SITE_TYPE=drupal-empty     ; CIVI_VERSION=none      ; CMS_TITLE="Drupal 7 Sandbox"                  ;;
+    # TODO: d8-empty)    SITE_TYPE=drupal-empty     ; CIVI_VERSION=none      ; CMS_TITLE="Drupal 8 Sandbox"                  ;;
+    wpempty)     SITE_TYPE=wp-empty         ; CIVI_VERSION=none      ; CMS_TITLE="WordPress Sandbox"                 ;;
+    wp-empty)    SITE_TYPE=wp-empty         ; CIVI_VERSION=none      ; CMS_TITLE="WordPress Sandbox"                 ;;
+
     ## For testing purposes
     testalias-anujrdw)  SITE_TYPE=empty         ; CIVI_VERION=4.6 ;;
 
