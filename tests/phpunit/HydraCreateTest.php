@@ -17,9 +17,9 @@ class HydraCreateTest extends \Civi\Civibuild\CivibuildTestCase {
     $escapedDir = escapeshellarg(__DIR__ . '');
     $options = '--prefix hydratest- --url-template ' . escapeshellarg('http://%SITE_NAME%.localhost');
 
-    ProcessUtil::runOk($this->cmd("hydra destroy $options"));
+    ProcessUtil::runOk($this->cmd("civihydra destroy $options"));
 
-    $result = ProcessUtil::runOk($this->cmd("hydra create $options $escapedDir/dummy-tarballs/*"));
+    $result = ProcessUtil::runOk($this->cmd("civihydra create $options $escapedDir/dummy-tarballs/*"));
 
     $this->assertFilesRegex(array(
       $this->getAbsPath('hydratest-backdrop', 'modules/civicrm/README.txt') => ';civicrm-core plus civicrm-backdrop@1.x;',

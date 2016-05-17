@@ -173,25 +173,25 @@ function hydra_destroy() {
 function hydra_usage() {
   echo "about: Create a series of empty test builds, preloaded with the CiviCRM tarballs."
   echo ""
-  echo "usage: hydra create [options] [civicrm-tar-files...]"
-  echo "usage: hydra show [options]"
-  echo "usage: hydra destroy [options]"
+  echo "usage: civihydra create [options] [civicrm-tar-files...]"
+  echo "usage: civihydra show [options]"
+  echo "usage: civihydra destroy [options]"
   echo
   echo "Common options:"
   echo "  --prefix <build-name-prefix>                   (default: hydra-)"
   echo "  --url-template <http://%SITE_NAME%.localhost>  (default: load from civibuild.conf)"
   echo ""
   echo "Example: Build a D7 site using a recent nightly tarball."
-  echo "  hydra create http://dist.civicrm.org/by-date/latest/master/civicrm-4.7.8-drupal-20160516.tar.gz"
+  echo "  civihydra create http://dist.civicrm.org/by-date/latest/master/civicrm-4.7.8-drupal-20160516.tar.gz"
   echo ""
   echo "Example: Build D7, WordPress, and Backdrop sites using official tarballs."
-  echo "  hydra create http://download.civicrm.org/civicrm-4.7.7-{drupal.tar.gz,wordpress.zip,backdrop-unstable.tar.gz}"
+  echo "  civihydra create http://download.civicrm.org/civicrm-4.7.7-{drupal.tar.gz,wordpress.zip,backdrop-unstable.tar.gz}"
   echo ""
   echo "Example: Build custom tarballs from a pull-request. Build a set of test sites."
   echo "  civibuild create dist --patch https://github.com/civicrm/civicrm-core/pull/8177"
   echo "  cd ~/buildkit/build/dist/src/distmaker"
   echo "  ./distmaker.sh all"
-  echo "  hydra create ~/buildkit/build/dist/out/tar/*"
+  echo "  civihydra create ~/buildkit/build/dist/out/tar/*"
 }
 
 ###############################################################################
