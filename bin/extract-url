@@ -1,0 +1,174 @@
+#!/usr/bin/env php
+<?php
+
+###############################################################################
+## Bootstrap
+
+ini_set('display_errors', 1);
+$found = 0;
+$autoloaders = array(
+  dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php',
+  dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'autoload.php'
+);
+foreach ($autoloaders as $autoloader) {
+  if (file_exists($autoloader)) {
+    require_once $autoloader;
+    $found = 1;
+    break;
+  }
+}
+if (!$found) {
+  die("Failed to find autoloader");
+}
+
+###############################################################################
+function main($argv) {
+  array_shift($argv);
+
+  $verbose = FALSE;
+  $delim = NULL;
+  $pathArchivePairs = array();
+  while (!empty($argv)) {
+    $expr = array_shift($argv);
+
+    switch ($expr) {
+      case '-v':
+        $verbose = TRUE;
+        break;
+
+      case '-d':
+        $delim = array_shift($argv);
+        break;
+
+      default:
+        if (!$delim) {
+          $pathArchivePairs[] = $expr;
+        }
+        else {
+          $pathArchivePairs = array_merge(
+            $pathArchivePairs,
+            explode($delim, $expr)
+          );
+        }
+        break;
+    }
+  }
+
+  if (empty($pathArchivePairs)) {
+    usage("missing required argument: <dir1>=<url1>");
+  }
+
+  foreach ($pathArchivePairs as $pathArchivePair) {
+    if (empty($pathArchivePair)) {
+      continue;
+    }
+    list ($baseDir, $archiveUrl) = explode('=', $pathArchivePair, 2);
+    download_extract($baseDir, $archiveUrl, $verbose);
+  }
+
+  return 0;
+}
+
+###############################################################################
+/**
+ * In $baseDir, extract $archiveUrl.
+ *
+ * @param string $baseDir
+ * @param string $archiveUrl
+ */
+function download_extract($baseDir, $archiveUrl, $verbose) {
+  $fs = new \Symfony\Component\Filesystem\Filesystem();
+
+  list ($format, $isDownload, $archiveFile) = parse_archive_url($archiveUrl);
+  if ($format === NULL || $isDownload === NULL) {
+    usage("Failed to determine if archive is local/remote or zip/tar. ($baseDir=$archiveUrl)");
+  }
+
+  if (!is_dir($baseDir)) {
+    $fs->mkdir($baseDir);
+  }
+
+  if ($isDownload) {
+    echo "[[Download $archiveUrl to $archiveFile]]\n";
+    file_put_contents($archiveFile, file_get_contents($archiveUrl));
+  }
+
+  switch ($format) {
+    case 'targz':
+      echo "[[Extract tar file, $archiveFile]]\n";
+      $verboseArg = $verbose ? "-v" : "";
+      run($baseDir, "tar $verboseArg -xzf " . escapeshellarg($archiveFile));
+      break;
+
+    case 'zip':
+      echo "[[Extract zip file, $archiveFile]]\n";
+      $verboseArg = $verbose ? "" : "-q";
+      run($baseDir, "unzip $verboseArg " . escapeshellarg($archiveFile));
+      break;
+
+    default:
+      usage("Unrecognized archive format ($baseDir=$archiveUrl)");
+  }
+
+  if ($isDownload) {
+    unlink($archiveFile);
+  }
+}
+
+/**
+ * @param $baseDir
+ * @param $command
+ * @param $returnVar
+ */
+function run($baseDir, $command) {
+  $origCwd = getcwd();
+  chdir($baseDir);
+  passthru($command, $returnVar);
+  chdir($origCwd);
+  if ($returnVar) {
+    exit(2);
+  }
+}
+
+function parse_archive_url($archiveUrl) {
+  if (file_exists($archiveUrl)) {
+    $isDownload = FALSE;
+    $fileName = realpath($archiveUrl);
+  }
+  elseif (preg_match('/^https?:/', $archiveUrl)) {
+    $isDownload = TRUE;
+    $fileName = tempnam(sys_get_temp_dir(), 'dl')
+      . basename(parse_url($archiveUrl, PHP_URL_PATH));
+  }
+  else {
+    $isDownload = NULL;
+  }
+
+  if (preg_match('/(\.tar\.gz|\.tgz)$/', $fileName)) {
+    $format = 'targz';
+  }
+  elseif (preg_match('/\.zip$/', $fileName)) {
+    $format = 'zip';
+  }
+  else {
+    $format = NULL;
+  }
+
+  return array($format, $isDownload, $fileName);
+}
+
+###############################################################################
+function usage($error) {
+  echo "about: Download an archive URL and extract in a particular directory.\n";
+  echo "usage: extract-url [-v] [-d <char>] [<dir1>=<url1>] [<dir2>=<url2>]...\n";
+  echo "   -v    Verbose mode\n";
+  echo "   -d    Pass multiple dir=url expressions using a custom delimiter\n";
+  if ($error) {
+    echo "error: $error\n";
+    exit(1);
+  }
+}
+
+
+###############################################################################
+exit(main($argv));

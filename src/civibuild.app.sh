@@ -20,6 +20,7 @@ Description: Download and/or install the application
   --web-root <path>   The full path to the website root. [Default: ${BLDDIR}/<build-name>]
   --civi-ver <ver>    The branch or tag of CiviCRM desired (master, 4.4, 4.3, 4.3.0, etc) [Optional]
   --cms-ver <ver>     The release of the CMS desired [Optional]
+  --dl <path>=<url>   Download and extract zip/tar files [Optional]
   --patch <spec>      Apply git patch immediately after downloading [Optional]
                       Ex: "https://github.com/civicrm/civicrm-core/pull/8022"
                       Ex: ";civicrm-packages;/my/local/change-for-packages.patch"
@@ -133,6 +134,14 @@ function civibuild_app_download() {
       default_cache_setup
       civibuild_app_run download
       git_cache_deref_remotes "$CACHE_DIR" "$WEB_ROOT"
+      if [ -n "$EXTRA_DLS" ]; then
+        pushd "$WEB_ROOT" >> /dev/null
+          if ! extract-url -v -d '|' "$EXTRA_DLS" ; then
+            echo "Failed to extract extra archives"
+            exit 94
+          fi
+        popd >> /dev/null
+      fi
       if [ -n "$PATCHES" ]; then
         pushd "$WEB_ROOT" >> /dev/null
           if ! git scan automerge --rebuild --url-split='|' "$PATCHES" ; then

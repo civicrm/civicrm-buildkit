@@ -395,6 +395,8 @@ check_command git required
 check_command tar required
 check_command bzip2 required
 check_command gzip required
+check_command unzip required
+check_command zip required
 
 check_php_ext Phar required
 check_php_ext SimpleXML required

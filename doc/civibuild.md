@@ -49,9 +49,12 @@ configurations.  For example, at time of writing, it includes:
 
  * *backdrop-clean*: A bare, "out-of-the-box" installation of Backdrop+CiviCRM
  * *backdrop-demo*: A demo site running Backdrop and CiviCRM
+ * *backdrop-empty*: An empty Backdrop site (without CiviCRM). Useful for testing tarball installation.
  * *drupal-clean*: A bare, "out-of-the-box" installation of Drupal+CiviCRM
  * *drupal-demo*: A demo site running Drupal and CiviCRM
+ * *drupal-empty*: An empty Drupal site (without CiviCRM). Useful for testing tarball installation.
  * *wp-demo*: A demo site running WordPress and CiviCRM
+ * *wp-empty*: An empty WordPress site (without CiviCRM). Useful for testing tarball installation.
  * *hrdemo* A demo site running Drupal, CiviCRM, and CiviHR
  * *symfony*: An experimental hybrid site running Drupal 7, Symfony 2, and CiviCRM
  * *cxnapp*: A self-signed CiviConnect app based on the reference implementation.

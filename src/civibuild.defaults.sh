@@ -91,10 +91,14 @@ CIVI_SITE_KEY=
 ## The CiviCRM branch/version
 CIVI_VERSION=master
 
-## Space-delimited list of patches to apply (after downloading)
+## |-delimited list of patches to apply (after downloading)
 ## Ex: "https://github.com/civicrm/civicrm-core/pull/8022"
 ## Ex: ";civicrm-packages;/my/local/change-for-packages.patch"
 PATCHES=
+
+## |-delimited list of  to apply (after downloading)
+## Ex: "relpath=https://example.com/file.zip"
+EXTRA_DLS=
 
 ## A template for picking the default URL (using variable "SITE_NAME").
 ## Ex: "http://%SITE_NAME%.dev"

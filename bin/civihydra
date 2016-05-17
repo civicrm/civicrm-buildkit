@@ -1,0 +1,217 @@
+#!/bin/bash
+set -e
+
+###############################################################################
+## Bootstrap
+
+## Determine the absolute path of the directory with the file
+## usage: absdirname <file-path>
+function absdirname() {
+  pushd $(dirname $0) >> /dev/null
+    pwd
+  popd >> /dev/null
+}
+
+BINDIR=$(absdirname "$0")
+PRJDIR=$(dirname "$BINDIR")
+TMPDIR="$PRJDIR/app/tmp"
+BLDDIR="$PRJDIR/build"
+
+## Make sure bundled utilities are available, regardless of local config
+export PATH="$BINDIR:$PATH"
+
+source "$PRJDIR/src/civibuild.lib.sh"
+
+###############################################################################
+## Main
+
+declare -a ARGS
+function hydra_parse() {
+  HYDRA_PREFIX=hydra-
+  URL_TEMPLATE="%AUTO%"
+
+  ## Hydra is standalone command (separate from civibuild) because we need to
+  ## create multiple sites and initialize the environment variables separately
+  ## each time. However, civibuild.conf should have a pretty consistent/minimal
+  ## impact, and we need to interpret URL_TEMPLATE a bit differently.
+
+  [ -f "$PRJDIR/app/civibuild.conf" ] && source "$PRJDIR/app/civibuild.conf"
+
+  if [ -n "$1" ]; then
+    ACTION="$1"
+    shift
+  else
+    ACTION="help"
+  fi
+
+  while [ -n "$1" ] ; do
+    OPTION="$1"
+    shift
+
+    case "$OPTION" in
+      -h|--help|-?)
+        hydra_usage
+        exit 0
+        ;;
+
+      --prefix)
+        HYDRA_PREFIX="$1"
+        shift
+        ;;
+
+      --url-template)
+        URL_TEMPLATE="$1"
+        shift
+        ;;
+
+      *)
+        if [ "${OPTION::1}" == "-" ]; then
+          echo "Unrecognized option: $OPTION"
+          hydra_usage
+          exit 1
+        else
+          ARGS=("${ARGS[@]}" "$OPTION")
+        fi
+    esac
+  done
+}
+
+function hydra_create() {
+  cvutil_assertvars "hydra_create" HYDRA_PREFIX URL_TEMPLATE
+
+  for TARFILE in "${ARGS[@]}" ; do
+    local subsite_name=
+    local subsite_type=
+    local subsite_url=
+    local subsite_dl=
+
+    case $(basename "$TARFILE") in
+      civicrm-*-drupal.tar.gz|civicrm-*-drupal-*.tar.gz)
+        subsite_name="${HYDRA_PREFIX}drupal"
+        subsite_type="drupal-empty"
+        subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}drupal")
+        subsite_dl="sites/all/modules=$TARFILE"
+        ;;
+
+      civicrm-*-backdrop.tar.gz|civicrm-*-backdrop-*.tar.gz)
+        subsite_name="${HYDRA_PREFIX}backdrop"
+        subsite_type="backdrop-empty"
+        subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}backdrop")
+        subsite_dl="modules=$TARFILE"
+        ;;
+
+      civicrm-*-wordpress.zip|civicrm-*-wordpress-*.zip)
+        subsite_name="${HYDRA_PREFIX}wp"
+        subsite_type="wp-empty"
+        subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}wp")
+        subsite_dl="wp-content/plugins=$TARFILE"
+        ;;
+
+      *)
+        echo "Skip $TARFILE"
+        continue
+        ;;
+    esac
+
+    if [ -d "$BLDDIR/$subsite_name" ]; then
+      rm -rf "$BLDDIR/$subsite_name"
+    fi
+
+    civibuild create "$subsite_name" --type "$subsite_type" --dl "$subsite_dl" --url "$subsite_url"
+  done
+}
+
+function hydra_show() {
+  cvutil_assertvars "hydra_show" HYDRA_PREFIX URL_TEMPLATE
+
+  civibuild list | grep ^$HYDRA_PREFIX | while read subsite_name ; do
+    local subsite_url=
+    local login_url=
+    local install_url=
+
+    case "$subsite_name" in
+      *-drupal)
+        subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}drupal")
+        login_url="$subsite_url/user/login"
+        install_url="$subsite_url/sites/all/modules/civicrm/install/index.php"
+        ;;
+
+      *-backdrop)
+        subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}backdrop")
+        login_url="$subsite_url/user/login"
+        install_url="$subsite_url/modules/civicrm/install/index.php"
+        ;;
+
+      *-wp)
+        subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}wp")
+        login_url="$subsite_url/wp-admin/"
+        install_url="$subsite_url/wp-admin/plugins.php"
+        ;;
+
+      *)
+        echo "ERROR: Unrecognized site: $subsite_name"
+        continue
+        ;;
+    esac
+
+    civibuild show "$subsite_name"
+    echo "[[Extra URLs]]]"
+    echo " - Login URL: $login_url"
+    echo " - Install URL: $install_url"
+    echo
+
+  done
+}
+
+function hydra_destroy() {
+  cvutil_assertvars "hydra_destroy" HYDRA_PREFIX
+  civibuild list | grep ^$HYDRA_PREFIX | while read site ; do
+    civibuild destroy $site
+  done
+}
+
+function hydra_usage() {
+  echo "about: Create a series of empty test builds, preloaded with the CiviCRM tarballs."
+  echo ""
+  echo "usage: civihydra create [options] [civicrm-tar-files...]"
+  echo "usage: civihydra show [options]"
+  echo "usage: civihydra destroy [options]"
+  echo
+  echo "Common options:"
+  echo "  --prefix <build-name-prefix>                   (default: hydra-)"
+  echo "  --url-template <http://%SITE_NAME%.localhost>  (default: load from civibuild.conf)"
+  echo ""
+  echo "Example: Build a D7 site using a recent nightly tarball."
+  echo "  civihydra create http://dist.civicrm.org/by-date/latest/master/civicrm-4.7.8-drupal-20160516.tar.gz"
+  echo ""
+  echo "Example: Build D7, WordPress, and Backdrop sites using official tarballs."
+  echo "  civihydra create http://download.civicrm.org/civicrm-4.7.7-{drupal.tar.gz,wordpress.zip,backdrop-unstable.tar.gz}"
+  echo ""
+  echo "Example: Build custom tarballs from a pull-request. Build a set of test sites."
+  echo "  civibuild create dist --patch https://github.com/civicrm/civicrm-core/pull/8177"
+  echo "  cd ~/buildkit/build/dist/src/distmaker"
+  echo "  ./distmaker.sh all"
+  echo "  civihydra create ~/buildkit/build/dist/out/tar/*"
+}
+
+###############################################################################
+hydra_parse "$@"
+
+case "$ACTION" in
+  create)
+    hydra_create
+    hydra_show
+    ;;
+
+  destroy)
+    hydra_destroy
+    ;;
+
+  show)
+    hydra_show
+    ;;
+
+  *)
+    hydra_usage
+    ;;
+esac

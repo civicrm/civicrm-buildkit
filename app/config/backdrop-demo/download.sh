@@ -13,7 +13,7 @@ echo "[[Download Backdrop]]"
 git clone "$CACHE_DIR/backdrop/backdrop.git" "$WEB_ROOT"
 
 echo "[[Download CiviCRM]]"
-[ ! -d "$WEB_ROOT/moduless" ] && mkdir -p "$WEB_ROOT/modules"
+[ ! -d "$WEB_ROOT/modules" ] && mkdir -p "$WEB_ROOT/modules"
 pushd $WEB_ROOT/modules >> /dev/null
 
   git clone ${CACHE_DIR}/civicrm/civicrm-core.git      -b "$CIVI_VERSION"     civicrm
