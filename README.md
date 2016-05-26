@@ -17,7 +17,6 @@ infrastructure for civicrm.org.
  * PHP 5.3+ (For MAMP/XAMPP/etc, see [Setup Command-Line PHP](http://wiki.civicrm.org/confluence/display/CRMDOC/Setup+Command-Line+PHP))
  * [NodeJS](http://nodejs.org/)
  * Recommended: Apache 2.2+ and MySQL 5.1+ (client and server) (for [amp](https://github.com/totten/amp) and [civibuild](doc/civibuild.md))
- * Recommended: Ruby/Rake (for [hub](http://hub.github.com/))
 
 ## Download: Option #1: Full Stack Ubuntu
 
@@ -98,7 +97,7 @@ would need to re-run the `export` command.
  * Source code management
    * [git-scan](https://github.com/totten/git-scan/) - Manage a large number of git repositories.
    * [gitify](doc/gitify.md) - Convert a CiviCRM installation to a git repo.
-   * [hub](http://hub.github.com/) - Send commands to github.com (Note: Requires Ruby/Rake).
+   * [hub](http://hub.github.com/) - Send commands to github.com.
  * Source code quality
    * **civilint** - Check the syntax of uncommitted files using **phpcs**, **jshint**, etc.
    * [jshint](http://jshint.com/) - Check the syntax of Javascript files.
