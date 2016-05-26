@@ -261,6 +261,11 @@ function civibuild_parse() {
         shift
         ;;
 
+      --hr-ver)
+        HR_VERSION="$1"
+        shift
+        ;;
+
       *)
         if [ "${OPTION::1}" == "-" ]; then
           echo "Unrecognized option: $OPTION"
