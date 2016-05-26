@@ -307,17 +307,14 @@ function do_system_trusty() {
 ###############################################################################
 function do_system_xenial() {
   set -e
-    PACKAGES="acl git wget unzip mysql-server mysql-client php5.6-cli php5.6-imap php5.6-ldap php5.6-curl php5.6-mysql php5.6-intl php5.6-gd php5.6-mcrypt php5.6-bcmath php5.6-mbstring php5.6-zip php5.6-xml apache2 libapache2-mod-php5.6 nodejs-legacy npm ruby rake"
+    PACKAGES="acl git wget unzip mysql-server mysql-client php7.0-cli php7.0-imap php7.0-ldap php7.0-curl php7.0-mysql php7.0-intl php7.0-gd php7.0-mcrypt php7.0-bcmath php7.0-mbstring php7.0-zip php7.0-xml apache2 libapache2-mod-php7.0 nodejs-legacy npm ruby rake"
     echo "Detected \"Ubuntu Xenial 16.04\"."
     echo ""
-    echo "Task: Install software-properties-common and ppa:ondrej/php (PHP 5.6)"
     echo "Task: $PACKAGES"
     echo ""
     echo "Warning: This system will not support php-mysql extension"
     echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
-      sudo apt-get install software-properties-common
-      sudo add-apt-repository ppa:ondrej/php
       sudo apt-get update
       sudo apt-get -y install $PACKAGES
       sudo phpenmod bcmath
