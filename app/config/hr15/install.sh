@@ -45,6 +45,8 @@ civicrm_install
 ## Extra configuration
 pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
+  drush -y dl drush_extras
+
   drush -y updatedb
   drush -y dis overlay shortcut color
   drush -y en civicrm toolbar locale seven login_destination userprotect
@@ -103,6 +105,12 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
     'access HRJobs' 'edit HRJobs'
   do
     drush -y role-add-perm civihr_admin "$perm"
+  done
+
+  for block in 'navigation' 'form' 'powered-by' 'help' 'navigation' 'login' \
+    '2' '3' '5' '7'
+  do
+    drush block-disable --delta="$block"
   done
 
 popd >> /dev/null
