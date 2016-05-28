@@ -49,7 +49,7 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   drush -y updatedb
   drush -y dis overlay shortcut color
-  drush -y en civicrm toolbar locale seven login_destination userprotect
+  drush -y en administerusersbyrole subpermissions civicrm toolbar locale seven login_destination userprotect
 
   ## Setup welcome page
   drush -y scr "$SITE_CONFIG_DIR/install-welcome.php"
