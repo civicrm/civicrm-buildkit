@@ -113,4 +113,6 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
     drush block-disable --delta="$block"
   done
 
+  ## Create My Details and My Emergency Contact forms
+  drush refresh-node-export-files
 popd >> /dev/null
