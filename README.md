@@ -10,6 +10,8 @@ full collection -- installing each individually takes a lot of work.
 This is the same collection of tools which manages the test/demo/release
 infrastructure for civicrm.org.
 
+Before installing buildkit on your existing environment you may want to consider using the [Vagrant virtual machine](https://github.com/civicrm/civicrm-buildkit-vagrant)  created for this purpose.  
+
 ## System Requirements
 
  * Bash (Unix shell)
