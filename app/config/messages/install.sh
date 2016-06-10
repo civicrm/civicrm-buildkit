@@ -29,6 +29,9 @@ parameters:
     mailer_password: null
     locale: en
     secret: '$(cvutil_makepasswd 32)'
+    civicrm_org_url: 'https://civicrm.org'
+    civicrm_api_key: 'FIXME'
+    civicrm_org_key: 'FIXME'
 EOSETTING
 
 pushd "$WEB_ROOT" >> /dev/null
