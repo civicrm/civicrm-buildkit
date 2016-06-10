@@ -10,33 +10,44 @@ full collection -- installing each individually takes a lot of work.
 This is the same collection of tools which manages the test/demo/release
 infrastructure for civicrm.org.
 
-## System Requirements
-
- * Bash (Unix shell)
- * Git
- * PHP 5.3+ (For MAMP/XAMPP/etc, see [Setup Command-Line PHP](http://wiki.civicrm.org/confluence/display/CRMDOC/Setup+Command-Line+PHP))
- * [NodeJS](http://nodejs.org/)
- * Recommended: Apache 2.2+ and MySQL 5.1+ (client and server) (for [amp](https://github.com/totten/amp) and [civibuild](doc/civibuild.md))
-
-## Download: Option #1: Full Stack Ubuntu
+## Download: Option #1: Full Stack on New Ubuntu Host
 
 If you have a new installation of Ubuntu 12.04 or 14.04, then you can download
-everything -- buildkit and the system requirements (`git`, `php`, `apache`, `mysql`, etc) -- with
-one command. This command will install buildkit to `~/buildkit`:
+everything -- buildkit and the system requirements -- with one command. This
+command will install buildkit to `~/buildkit`:
 
 ```bash
 curl -Ls https://civicrm.org/get-buildkit.sh | bash -s -- --full --dir ~/buildkit
 ```
 
 Note:
- * When executing the above command, you should *not* run as root. However, you *should*
+ * When executing the above command, you should *not* run as `root`. However, you *should*
 have `sudo` permissions.
- * The `--full` option is *opinionated*; it specifically installs `php`, `apache`, and `mysql` (rather than `hvm`, `nginx`, `lighttpd`, or `percona`). If you try to mix `--full` with alternative systems, then expect conflicts.
+ * The `--full` option is *very opinionated*; it specifically installs `php`, `apache`, and `mysql` (rather than `hvm`, `nginx`, `lighttpd`, or `percona`). If you try to mix `--full` with alternative systems, then expect conflicts.
 
-## Download: Option #2: Other Systems
+## Download: Option #2: Vagrant on Windows, OS X, etal
 
-If you already installed the system requirements (`git`, `php`, etc or equivalents), then you can
-download buildkit to `~/buildkit` with these commands:
+If you use Windows or OS X, then [Vagrant](https://www.vagrantup.com/) provides a great way to setup
+an Ubuntu VM. For more instructions, see [civicrm-buildkit-vagrant](https://github.com/civicrm/civicrm-buildkit-vagrant).
+
+## Download: Option #3: Other Environments
+
+You may install buildkit in other environments. The main pre-requisites are:
+
+ * Bash (Unix shell)
+ * Git
+ * PHP 5.3+
+ * NodeJS
+ * Recommended: Apache 2.2+ and MySQL 5.1+ (client and server) (for [amp](https://github.com/totten/amp) and [civibuild](doc/civibuild.md))
+ * Recommended: Linux or OS X
+
+All pre-requisites must support command-line access using the standard command
+names (`git`, `php`, `node`, `mysql`, `mysqldump`, etc). In some environments,
+you may need to enable these commands by configuring `PATH` -- this is especially
+true for MAMP, XAMPP, and other downloaded packages.
+(See, e.g., [Setup Command-Line PHP](http://wiki.civicrm.org/confluence/display/CRMDOC/Setup+Command-Line+PHP).)
+
+Once the pre-requisites are met, download buildkit to `~/buildkit` with these commands:
 
 ```bash
 git clone https://github.com/civicrm/civicrm-buildkit.git ~/buildkit
@@ -44,9 +55,9 @@ cd ~/buildkit
 ./bin/civi-download-tools
 ```
 
-## Download: Option #3: Upgrade
+## Staying Up-to-Date
 
-If you have previously downloaded buildkit and want to update it, run:
+The configurations and tools in buildkit are periodically updated. To get the latest, simply run:
 
 ```bash
 cd ~/buildkit
