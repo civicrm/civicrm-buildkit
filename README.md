@@ -27,8 +27,7 @@ have `sudo` permissions.
 
 ## Download: Option #2: Vagrant on Windows, OS X, etal
 
-If you use Windows or OS X, then [Vagrant](https://www.vagrantup.com/) provides a great way to setup
-an Ubuntu VM. For more instructions, see [civicrm-buildkit-vagrant](https://github.com/civicrm/civicrm-buildkit-vagrant).
+If you use Windows or OS X, then you can create an Ubuntu virtual machine using [Vagrant](https://www.vagrantup.com/). For more instructions, see [civicrm-buildkit-vagrant](https://github.com/civicrm/civicrm-buildkit-vagrant).
 
 ## Download: Option #3: Other Environments
 
@@ -47,7 +46,7 @@ you may need to enable these commands by configuring `PATH` -- this is especiall
 true for MAMP, XAMPP, and other downloaded packages.
 (See, e.g., [Setup Command-Line PHP](http://wiki.civicrm.org/confluence/display/CRMDOC/Setup+Command-Line+PHP).)
 
-Once the pre-requisites are met, download buildkit to `~/buildkit` with these commands:
+Once the pre-requisites are met, download buildkit to `~/buildkit`:
 
 ```bash
 git clone https://github.com/civicrm/civicrm-buildkit.git ~/buildkit
