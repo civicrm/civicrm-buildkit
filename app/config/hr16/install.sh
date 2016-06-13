@@ -17,6 +17,12 @@ function admin_only_permission_for() {
 }
 
 ##
+# Creates the "Personal" Location Type
+function create_personal_location_type() {
+  drush cvapi LocationType.create sequential=1 name="Personal" display_name="Personal" vcard_name="PERSONAL" description="Place of Residence"
+}
+
+##
 # Denies the given permission to all roles
 function no_permission_for() {
   for user_role in 'anonymous user' 'authenticated user' 'administrator' \
@@ -195,6 +201,7 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   done
 
   set_permissions
+  create_personal_location_type
 
   ## Create My Details and My Emergency Contact forms
   drush refresh-node-export-files
