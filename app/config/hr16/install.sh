@@ -23,6 +23,14 @@ function create_personal_location_type() {
 }
 
 ##
+# Deletes the "Name and address profile"
+function delete_name_and_address_profile() {
+  PROFILE_ID=`[[ $(drush cvapi UFGroup.getsingle return="id" title="Name and address") =~ \[id\].+([1-9]) ]] && echo ${BASH_REMATCH[1]}`
+
+  drush cvapi UFGroup.delete sequential=1 id=$PROFILE_ID
+}
+
+##
 # Denies the given permission to all roles
 function no_permission_for() {
   for user_role in 'anonymous user' 'authenticated user' 'administrator' \
@@ -202,6 +210,7 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   set_permissions
   create_personal_location_type
+  delete_name_and_address_profile
 
   ## Create My Details and My Emergency Contact forms
   drush refresh-node-export-files
