@@ -12,13 +12,8 @@ amp_install
 ###############################################################################
 ## Setup config files
 
-# Std Symfony dirs. Some dirs already commited in git, so we set perms on each.
-amp datadir "$WEB_ROOT/var" "$WEB_ROOT/var/cache" "$WEB_ROOT/var/logs" "$WEB_ROOT/var/sessions"
-
-# This is default location where civicrm-docs publishes its builds.
-amp datadir "$WEB_ROOT/web/static"
-
-cat > "$WEB_ROOT/app/config/parameters.yml" << EOSETTING
+function docs_make_parameters() {
+  cat > "$WEB_ROOT/app/config/parameters.yml" << EOSETTING
 # This file is auto-generated during the composer install
 parameters:
     database_host: '$CMS_DB_HOST'
@@ -31,9 +26,21 @@ parameters:
     mailer_user: null
     mailer_password: null
     secret: '$(cvutil_makepasswd 32)'
+    publisher_repos_dir: '$WEB_ROOT/var/repos'
+    # mkdocs_path: /Applications/MAMP/Library/bin
 EOSETTING
+}
+
+# Std Symfony dirs. Some dirs already commited in git, so we set perms on each.
+amp datadir "$WEB_ROOT/var" "$WEB_ROOT/var/cache" "$WEB_ROOT/var/logs" "$WEB_ROOT/var/repos" "$WEB_ROOT/var/sessions"
+
+# This is default location where civicrm-docs publishes its builds.
+amp datadir "$WEB_ROOT/web/static"
 
 pushd "$WEB_ROOT" >> /dev/null
+  ## Make parameters.yml to avoid questionnaire
+  docs_make_parameters
   composer install
-  #./app/console doctrine:schema:create
+  ## ugg, composer trounces our parameters.yml
+  docs_make_parameters
 popd >> /dev/null
