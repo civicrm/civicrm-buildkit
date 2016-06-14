@@ -17,6 +17,28 @@ function admin_only_permission_for() {
 }
 
 ##
+# Grants the given permission for the admin and the civi users
+function admin_and_civi_users_permission_for() {
+  for user_role in 'administrator' 'civihr_staff' 'civihr_manager' 'civihr_admin'
+  do
+    drush -y role-add-perm "$user_role" "$1"
+  done
+}
+
+##
+# Creates the default CiviHR users
+function create_default_users() {
+  drush -y user-create --password="civihr_staff" --mail="civihr_staff@compucorp.co.uk" "civihr_staff"
+  drush -y user-add-role civihr_staff "civihr_staff"
+
+  drush -y user-create --password="civihr_manager" --mail="civihr_manager@compucorp.co.uk" "civihr_manager"
+  drush -y user-add-role civihr_manager "civihr_manager"
+
+  drush -y user-create --password="civihr_admin" --mail="civihr_admin@compucorp.co.uk" "civihr_admin"
+  drush -y user-add-role civihr_admin "civihr_admin"
+}
+
+##
 # Creates the "Personal" Location Type
 function create_personal_location_type() {
   drush cvapi LocationType.create sequential=1 name="Personal" display_name="Personal" vcard_name="PERSONAL" description="Place of Residence"
@@ -31,21 +53,35 @@ function delete_name_and_address_profile() {
 }
 
 ##
+# Disables the unused drupal blocks, leaving only the "main content" one active
+function disabled_unused_blocks() {
+  for block in 'navigation' 'form' 'powered-by' 'help' 'navigation' 'login' \
+    '2' '3' '5' '7'
+  do
+    drush block-disable --delta="$block"
+  done
+}
+
+##
+# Installs CiviHR extensions
+function install_civihr() {
+  ## (no sample data as default)
+  bash ${CIVI_CORE}/tools/extensions/civihr/bin/drush-install.sh
+
+  ## (with sample data - if required)
+  # bash ${CIVI_CORE}/tools/extensions/civihr/bin/drush-install.sh --with-sample-data
+
+  ## Disable / Uninstall old extensions (temporary should be removed when we don't need the old HRjob anymore)
+  drush cvapi extension.disable keys=org.civicrm.hrjob
+}
+
+##
 # Denies the given permission to all roles
 function no_permission_for() {
   for user_role in 'anonymous user' 'authenticated user' 'administrator' \
     'civihr_staff' 'civihr_manager' 'civihr_admin'
   do
     drush -y role-remove-perm "$user_role" "$1"
-  done
-}
-
-##
-# Grants the given permission for the admin and the civi users
-function admin_and_civi_users_permission_for() {
-  for user_role in 'administrator' 'civihr_staff' 'civihr_manager' 'civihr_admin'
-  do
-    drush -y role-add-perm "$user_role" "$1"
   done
 }
 
@@ -108,6 +144,19 @@ function set_permissions() {
   set_hr_document_type_permissions
 }
 
+##
+# Sets up the themes
+function setup_themes {
+  ## Drupal theme
+  drush -y en civihr_default_theme
+  drush -y vset theme_default civihr_default_theme
+
+  ## Civicrm and admin theme
+  drush -y vset admin_theme seven
+  drush -y vset civicrmtheme_theme_admin seven
+  drush -y vset civicrmtheme_theme_public seven
+}
+
 ###############################################################################
 ## Create virtual-host and databases
 
@@ -117,9 +166,7 @@ amp_install
 ## Grant access for the Drupal database user to access the Civi Database too
 
 mysql $CIVI_DB_ARGS <<EOSQL
-
-    GRANT ALL PRIVILEGES ON $CIVI_DB_NAME.* TO $CMS_DB_USER@'%';
-   
+  GRANT ALL PRIVILEGES ON $CIVI_DB_NAME.* TO $CMS_DB_USER@'%';
 EOSQL
 
 ###############################################################################
@@ -170,44 +217,15 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
     drush role-remove-perm "authenticated user" "$perm"
   done
 
-  ## Install CiviHR (no sample data as default)
-  bash ${CIVI_CORE}/tools/extensions/civihr/bin/drush-install.sh
-  
-  ## Install CiviHR (with sample data - if required)
-  # bash ${CIVI_CORE}/tools/extensions/civihr/bin/drush-install.sh --with-sample-data
-  
-  ## Disable / Uninstall old extensions (temporary should be removed when we don't need the old HRjob anymore)
-  drush cvapi extension.disable keys=org.civicrm.hrjob
+  install_civihr
 
   drush en front_page -y
   drush en civicrmtheme -y
   drush en civihr_employee_portal_features -y
 
-  ## Setup drupal theme
-  drush -y en civihr_default_theme
-  drush -y vset theme_default civihr_default_theme
-
-  ## Setup Civicrm and admin theme
-  drush -y vset admin_theme seven
-  drush -y vset civicrmtheme_theme_admin seven
-  drush -y vset civicrmtheme_theme_public seven
-
-  ## Create default users
-  drush -y user-create --password="civihr_staff" --mail="civihr_staff@compucorp.co.uk" "civihr_staff"
-  drush -y user-add-role civihr_staff "civihr_staff"
-
-  drush -y user-create --password="civihr_manager" --mail="civihr_manager@compucorp.co.uk" "civihr_manager"
-  drush -y user-add-role civihr_manager "civihr_manager"
-
-  drush -y user-create --password="civihr_admin" --mail="civihr_admin@compucorp.co.uk" "civihr_admin"
-  drush -y user-add-role civihr_admin "civihr_admin"
-
-  for block in 'navigation' 'form' 'powered-by' 'help' 'navigation' 'login' \
-    '2' '3' '5' '7'
-  do
-    drush block-disable --delta="$block"
-  done
-
+  setup_themes
+  create_default_users
+  disabled_unused_blocks
   set_permissions
   create_personal_location_type
   delete_name_and_address_profile
