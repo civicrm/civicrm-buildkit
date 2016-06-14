@@ -214,4 +214,7 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   ## Create My Details and My Emergency Contact forms
   drush refresh-node-export-files
+
+  ## Clear the cache
+  drush cc all
 popd >> /dev/null
