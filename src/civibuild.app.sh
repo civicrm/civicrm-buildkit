@@ -103,10 +103,10 @@ function civibuild_app_run() {
 function civibuild_app_run_optional() {
   MAIN_SCRIPT="${SITE_CONFIG_DIR}/$1.sh"
   if [ -f "$MAIN_SCRIPT" ]; then
-    echo "[[Execute $MAIN_SCRIPT]]"
-    set -ex
+    #echo "[[Execute $MAIN_SCRIPT]]"
+    #set -ex
     source "$MAIN_SCRIPT"
-    set +ex
+    #set +ex
   fi
 }
 
