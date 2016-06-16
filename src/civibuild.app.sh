@@ -121,6 +121,7 @@ function civibuild_app_download() {
 
   if [ -n "$FORCE_DOWNLOAD" -a -d "$WEB_ROOT" ]; then
     if cvutil_confirm "About to re-download \"$WEB_ROOT\". Are you sure you want destroy existing files? [y/N] " n y; then
+      chmod u+w -R "$WEB_ROOT"
       rm -rf "$WEB_ROOT"
     else
       echo "Aborted" 1>&2
