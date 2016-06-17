@@ -11,11 +11,15 @@ amp_install
 ## Setup Drupal (config files, database tables)
 
 drupal8_install
+DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
+pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
+  drush8 -y updatedb
+  drush8 -y en libraries
+popd >> /dev/null
 
 ###############################################################################
 ## Setup CiviCRM (config files, database tables)
 
-DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
 CIVI_DOMAIN_NAME="Demonstrators Anonymous"
 CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
 CIVI_CORE="${WEB_ROOT}/libraries/civicrm"
@@ -37,7 +41,7 @@ civicrm_install
 pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   drush8 -y updatedb
-  drush8 -y en libraries civicrm
+  drush8 -y en civicrm
 
   ## make sure drush functions are loaded
   drush8 cc drush -y
