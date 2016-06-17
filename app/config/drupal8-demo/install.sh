@@ -11,11 +11,15 @@ amp_install
 ## Setup Drupal (config files, database tables)
 
 drupal8_install
+DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
+pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
+  drush8 -y updatedb
+  drush8 -y en libraries
+popd >> /dev/null
 
 ###############################################################################
 ## Setup CiviCRM (config files, database tables)
 
-DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
 CIVI_DOMAIN_NAME="Demonstrators Anonymous"
 CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
 CIVI_CORE="${WEB_ROOT}/libraries/civicrm"
@@ -28,23 +32,6 @@ CIVI_UF="Drupal8"
 if [[ "$CIVI_VERSION" =~ ^4.[0123456](\.([0-9]|alpha|beta)+)?$ ]] ; then
   CIVI_EXT_DIR="${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}/ext"
   CIVI_EXT_URL="${CMS_URL}/sites/${DRUPAL_SITE_DIR}/ext"
-fi
-
-# these steps should be happening because of the make file but....
-# perhaps because they are not on https://www.drupal.org/project/drupalorg_whitelist ?
-mkdir -p "${WEB_ROOT}/libraries/"
-cd "${WEB_ROOT}/libraries/"
-if [[ ! -e 'civicrm' ]]; then
-  git clone https://github.com/civicrm/civicrm-core.git
-fi
-cd civicrm
-if [[ ! -e 'packages' ]]; then
-  git clone https://github.com/civicrm/civicrm-packages.git
-fi
-
-cd "${WEB_ROOT}/modules/"
-if [[ ! -e 'civicrm' ]]; then
-  git clone https://github.com/civicrm/civicrm-drupal.git -b 8.x-${CIVI_VERSION} civicrm
 fi
 
 civicrm_install
