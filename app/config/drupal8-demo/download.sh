@@ -20,4 +20,4 @@ cat "$SITE_CONFIG_DIR/drush.make.tmpl" \
   | sed "s;%%NG_PRFL_VERSION%%;${NG_PRFL_VERSION};" \
   > "$MAKEFILE"
 
-drush -y make --working-copy "$MAKEFILE" "$WEB_ROOT"
+drush8 -y make --working-copy "$MAKEFILE" "$WEB_ROOT"

@@ -37,7 +37,7 @@ civicrm_install
 pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   drush8 -y updatedb
-  drush8 -y en civicrm
+  drush8 -y en libraries civicrm
 
   ## make sure drush functions are loaded
   drush8 cc drush -y
