@@ -43,4 +43,5 @@ pushd "$WEB_ROOT" >> /dev/null
   composer install
   ## ugg, composer trounces our parameters.yml
   docs_make_parameters
+  ./bin/console cache:clear
 popd >> /dev/null
