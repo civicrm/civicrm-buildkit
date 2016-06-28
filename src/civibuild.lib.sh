@@ -390,9 +390,9 @@ function _amp_snapshot_restore_cms() {
   _amp_install_cms
   if [ "$CMS_DB_DSN" != "$orig_CMS_DB_DSN" ]; then
     ## shouldn't happen unless someone has been mucking around...
-    echo "WARNING: CMS DB has changed! Config files may be stale!" > /dev/stderr
-    echo "  OLD: $orig_CMS_DB_DSN" > /dev/stderr
-    echo "  NEW: $CMS_DB_DSN" > /dev/stderr
+    echo "WARNING: CMS DB has changed! Config files may be stale!" 1>&2
+    echo "  OLD: $orig_CMS_DB_DSN" 1>&2
+    echo "  NEW: $CMS_DB_DSN" 1>&2
   fi
 
   _amp_snapshot_restore CMS "$CMS_SQL"
@@ -403,9 +403,9 @@ function _amp_snapshot_restore_civi() {
   _amp_install_civi
   if [ "$CIVI_DB_DSN" != "$orig_CIVI_DB_DSN" ]; then
     ## shouldn't happen unless someone has been mucking around...
-    echo "WARNING: Civi DB has changed! Config files may be stale!" > /dev/stderr
-    echo "  OLD: $orig_CIVI_DB_DSN" > /dev/stderr
-    echo "  NEW: $CIVI_DB_DSN" > /dev/stderr
+    echo "WARNING: Civi DB has changed! Config files may be stale!" 1>&2
+    echo "  OLD: $orig_CIVI_DB_DSN" 1>&2
+    echo "  NEW: $CIVI_DB_DSN" 1>&2
   fi
 
   _amp_snapshot_restore CIVI "$CIVI_SQL"
@@ -416,9 +416,9 @@ function _amp_snapshot_restore_test() {
   _amp_install_test
   if [ "$TEST_DB_DSN" != "$orig_TEST_DB_DSN" ]; then
     ## shouldn't happen unless someone has been mucking around...
-    echo "WARNING: TEST DB has changed! Config files may be stale!" > /dev/stderr
-    echo "  OLD: $orig_TEST_DB_DSN" > /dev/stderr
-    echo "  NEW: $TEST_DB_DSN" > /dev/stderr
+    echo "WARNING: TEST DB has changed! Config files may be stale!" 1>&2
+    echo "  OLD: $orig_TEST_DB_DSN" 1>&2
+    echo "  NEW: $TEST_DB_DSN" 1>&2
   fi
 
   _amp_snapshot_restore TEST "$CIVI_SQL"
@@ -436,7 +436,7 @@ function _amp_snapshot_restore() {
 
   echo "[[Restore \"$1\" DB ($db_name) from file ($sql_file)]]"
   if [ ! -f "$sql_file" ]; then
-    echo "Missing SQL file: $sql_file" >> /dev/stderr
+    echo "Missing SQL file: $sql_file" 1>&2
     exit 1
   fi
   gunzip --stdout "$sql_file" | eval mysql $db_args
