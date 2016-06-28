@@ -356,14 +356,14 @@ function amp_snapshot_create() {
     echo "[[Save CMS DB ($CMS_DB_NAME) to file ($CMS_SQL)]]"
     cvutil_assertvars amp_snapshot_create CMS_SQL CMS_DB_ARGS CMS_DB_NAME
     cvutil_makeparent "$CMS_SQL"
-    mysqldump $CMS_DB_ARGS | gzip > "$CMS_SQL"
+    eval mysqldump $CMS_DB_ARGS | gzip > "$CMS_SQL"
   fi
 
   if [ -z "$CIVI_SQL_SKIP" ]; then
     echo "[[Save Civi DB ($CIVI_DB_NAME) to file ($CIVI_SQL)]]"
     cvutil_assertvars amp_snapshot_create CIVI_SQL CIVI_DB_ARGS CIVI_DB_NAME
     cvutil_makeparent "$CIVI_SQL"
-    mysqldump $CIVI_DB_ARGS | gzip > "$CIVI_SQL"
+    eval mysqldump $CIVI_DB_ARGS | gzip > "$CIVI_SQL"
   fi
 }
 
@@ -439,7 +439,7 @@ function _amp_snapshot_restore() {
     echo "Missing SQL file: $sql_file" >> /dev/stderr
     exit 1
   fi
-  gunzip --stdout "$sql_file" | mysql $db_args
+  gunzip --stdout "$sql_file" | eval mysql $db_args
 }
 
 
@@ -475,13 +475,13 @@ function civicrm_install() {
     if [ -e "xml" -a -e "bin/setup.sh" ]; then
       env SITE_ID="$SITE_ID" bash ./bin/setup.sh
     elif [ -e "sql/civicrm.mysql" -a -e "sql/civicrm_generated.mysql" ]; then
-      cat sql/civicrm.mysql sql/civicrm_generated.mysql | mysql $CIVI_DB_ARGS
+      cat sql/civicrm.mysql sql/civicrm_generated.mysql | eval mysql $CIVI_DB_ARGS
     else
       echo "Failed to locate civi SQL files"
     fi
   popd >> /dev/null
 
-  mysql $CIVI_DB_ARGS <<EOSQL
+  eval mysql $CIVI_DB_ARGS <<EOSQL
     UPDATE civicrm_domain SET name = '$CIVI_DOMAIN_NAME';
     SELECT @option_group_id := id
       FROM civicrm_option_group n

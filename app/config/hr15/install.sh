@@ -10,7 +10,7 @@ amp_install
 ###############################################################################
 ## Grant access for the Drupal database user to access the Civi Database too
 
-mysql $CIVI_DB_ARGS <<EOSQL
+eval mysql $CIVI_DB_ARGS <<EOSQL
 
     GRANT ALL PRIVILEGES ON $CIVI_DB_NAME.* TO $CMS_DB_USER@'%';
    
