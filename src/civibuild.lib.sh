@@ -386,39 +386,39 @@ function amp_snapshot_restore() {
 }
 
 function _amp_snapshot_restore_cms() {
-  local orig_CMS_DB_ARGS="$CMS_DB_ARGS"
+  local orig_CMS_DB_DSN="$CMS_DB_DSN"
   _amp_install_cms
-  if [ "$CMS_DB_ARGS" != "$orig_CMS_DB_ARGS" ]; then
+  if [ "$CMS_DB_DSN" != "$orig_CMS_DB_DSN" ]; then
     ## shouldn't happen unless someone has been mucking around...
     echo "WARNING: CMS DB has changed! Config files may be stale!" > /dev/stderr
-    echo "  OLD: $orig_CMS_DB_ARG" > /dev/stderr
-    echo "  NEW: $CMS_DB_ARGS" > /dev/stderr
+    echo "  OLD: $orig_CMS_DB_DSN" > /dev/stderr
+    echo "  NEW: $CMS_DB_DSN" > /dev/stderr
   fi
 
   _amp_snapshot_restore CMS "$CMS_SQL"
 }
 
 function _amp_snapshot_restore_civi() {
-  local orig_CIVI_DB_ARGS="$CIVI_DB_ARGS"
+  local orig_CIVI_DB_DSN="$CIVI_DB_DSN"
   _amp_install_civi
-  if [ "$CIVI_DB_ARGS" != "$orig_CIVI_DB_ARGS" ]; then
+  if [ "$CIVI_DB_DSN" != "$orig_CIVI_DB_DSN" ]; then
     ## shouldn't happen unless someone has been mucking around...
     echo "WARNING: Civi DB has changed! Config files may be stale!" > /dev/stderr
-    echo "  OLD: $orig_CIVI_DB_ARG" > /dev/stderr
-    echo "  NEW: $CIVI_DB_ARGS" > /dev/stderr
+    echo "  OLD: $orig_CIVI_DB_DSN" > /dev/stderr
+    echo "  NEW: $CIVI_DB_DSN" > /dev/stderr
   fi
 
   _amp_snapshot_restore CIVI "$CIVI_SQL"
 }
 
 function _amp_snapshot_restore_test() {
-  local orig_TEST_DB_ARGS="$TEST_DB_ARGS"
+  local orig_TEST_DB_DSN="$TEST_DB_DSN"
   _amp_install_test
-  if [ "$TEST_DB_ARGS" != "$orig_TEST_DB_ARGS" ]; then
+  if [ "$TEST_DB_DSN" != "$orig_TEST_DB_DSN" ]; then
     ## shouldn't happen unless someone has been mucking around...
     echo "WARNING: TEST DB has changed! Config files may be stale!" > /dev/stderr
-    echo "  OLD: $orig_TEST_DB_ARG" > /dev/stderr
-    echo "  NEW: $TEST_DB_ARGS" > /dev/stderr
+    echo "  OLD: $orig_TEST_DB_DSN" > /dev/stderr
+    echo "  NEW: $TEST_DB_DSN" > /dev/stderr
   fi
 
   _amp_snapshot_restore TEST "$CIVI_SQL"
