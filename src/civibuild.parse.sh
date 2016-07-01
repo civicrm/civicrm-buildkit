@@ -261,6 +261,11 @@ function civibuild_parse() {
         shift
         ;;
 
+      --checkout)
+        CHECKOUT="$1"
+        shift
+        ;;
+
       --hr-ver)
         HR_VERSION="$1"
         shift

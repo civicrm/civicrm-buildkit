@@ -28,7 +28,7 @@ function civibuild_alias_resolve() {
     d45)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviCRM 4.5 Demo on Drupal"        ; VOL_VERSION=v4.5-1.4.0   ; DISC_VERSION=4.4      ;;
     d46)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.6       ; CMS_TITLE="CiviCRM 4.6 Demo on Drupal"        ; VOL_VERSION=v4.5-1.4.0   ; DISC_VERSION=master   ; RULES_VERSION=master   ;;
     d47)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM 4.7 Demo on Drupal"        ; VOL_VERSION=master       ; DISC_VERSION=master   ;;
-    dmaster)     SITE_TYPE=drupal-demo      ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal"         ; VOL_VERSION=master       ; DISC_VERSION=master   ;;
+    dmaster)     SITE_TYPE=drupal-demo      ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal"         ; VOL_VERSION=master       ; DISC_VERSION=master        ; CHECKOUT=branch    ;;
 
     d7-43)       SITE_TYPE=drupal-clean     ; CIVI_VERSION=4.3       ; CMS_TITLE="CiviCRM 4.3 Demo on Drupal 7"      ;;
     d7-44)       SITE_TYPE=drupal-clean     ; CIVI_VERSION=4.4       ; CMS_TITLE="CiviCRM 4.4 Demo on Drupal 7"      ;;
@@ -73,8 +73,8 @@ function civibuild_alias_resolve() {
 
     hr13)        SITE_TYPE=hrdemo           ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviHR 1.3 Demo"                   ; HR_VERSION=1.3        ;;
     hr14)        SITE_TYPE=hrdemo           ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviHR 1.4 Demo"                   ; HR_VERSION=1.4        ;;
-    hr15)        SITE_TYPE=hr15             ; CIVI_VERSION=4.6       ; CMS_TITLE="CiviHR 1.5 Demo"                   ; HR_VERSION=master     ;;
-    hr16)        SITE_TYPE=hr16             ; CIVI_VERSION=4.7.6     ; CMS_TITLE="CiviHR 1.6 Demo"                   ; HR_VERSION=PCHR-863-migrate-to-4.7     ;;
+    hr15)        SITE_TYPE=hr15             ; CIVI_VERSION=4.6       ; CMS_TITLE="CiviHR 1.5 Demo"                   ; HR_VERSION=master    ; CHECKOUT=branch   ;;
+    hr16)        SITE_TYPE=hr16             ; CIVI_VERSION=4.7.6     ; CMS_TITLE="CiviHR 1.6 Demo"                   ; HR_VERSION=PCHR-863-migrate-to-4.7     ; CHECKOUT=tag   ;;
     hrmaster)    SITE_TYPE=hr15             ; CIVI_VERSION=master    ; CMS_TITLE="CiviHR Sandbox"                    ; HR_VERSION=master     ;;
 
     bempty)      SITE_TYPE=backdrop-empty   ; CIVI_VERSION=none      ; CMS_TITLE="Backdrop Sandbox"                  ;;
