@@ -356,14 +356,14 @@ function amp_snapshot_create() {
     echo "[[Save CMS DB ($CMS_DB_NAME) to file ($CMS_SQL)]]"
     cvutil_assertvars amp_snapshot_create CMS_SQL CMS_DB_ARGS CMS_DB_NAME
     cvutil_makeparent "$CMS_SQL"
-    mysqldump $CMS_DB_ARGS | gzip > "$CMS_SQL"
+    eval mysqldump $CMS_DB_ARGS | gzip > "$CMS_SQL"
   fi
 
   if [ -z "$CIVI_SQL_SKIP" ]; then
     echo "[[Save Civi DB ($CIVI_DB_NAME) to file ($CIVI_SQL)]]"
     cvutil_assertvars amp_snapshot_create CIVI_SQL CIVI_DB_ARGS CIVI_DB_NAME
     cvutil_makeparent "$CIVI_SQL"
-    mysqldump $CIVI_DB_ARGS | gzip > "$CIVI_SQL"
+    eval mysqldump $CIVI_DB_ARGS | gzip > "$CIVI_SQL"
   fi
 }
 
@@ -386,39 +386,39 @@ function amp_snapshot_restore() {
 }
 
 function _amp_snapshot_restore_cms() {
-  local orig_CMS_DB_ARGS="$CMS_DB_ARGS"
+  local orig_CMS_DB_DSN="$CMS_DB_DSN"
   _amp_install_cms
-  if [ "$CMS_DB_ARGS" != "$orig_CMS_DB_ARGS" ]; then
+  if [ "$CMS_DB_DSN" != "$orig_CMS_DB_DSN" ]; then
     ## shouldn't happen unless someone has been mucking around...
-    echo "WARNING: CMS DB has changed! Config files may be stale!" > /dev/stderr
-    echo "  OLD: $orig_CMS_DB_ARG" > /dev/stderr
-    echo "  NEW: $CMS_DB_ARGS" > /dev/stderr
+    echo "WARNING: CMS DB has changed! Config files may be stale!" 1>&2
+    echo "  OLD: $orig_CMS_DB_DSN" 1>&2
+    echo "  NEW: $CMS_DB_DSN" 1>&2
   fi
 
   _amp_snapshot_restore CMS "$CMS_SQL"
 }
 
 function _amp_snapshot_restore_civi() {
-  local orig_CIVI_DB_ARGS="$CIVI_DB_ARGS"
+  local orig_CIVI_DB_DSN="$CIVI_DB_DSN"
   _amp_install_civi
-  if [ "$CIVI_DB_ARGS" != "$orig_CIVI_DB_ARGS" ]; then
+  if [ "$CIVI_DB_DSN" != "$orig_CIVI_DB_DSN" ]; then
     ## shouldn't happen unless someone has been mucking around...
-    echo "WARNING: Civi DB has changed! Config files may be stale!" > /dev/stderr
-    echo "  OLD: $orig_CIVI_DB_ARG" > /dev/stderr
-    echo "  NEW: $CIVI_DB_ARGS" > /dev/stderr
+    echo "WARNING: Civi DB has changed! Config files may be stale!" 1>&2
+    echo "  OLD: $orig_CIVI_DB_DSN" 1>&2
+    echo "  NEW: $CIVI_DB_DSN" 1>&2
   fi
 
   _amp_snapshot_restore CIVI "$CIVI_SQL"
 }
 
 function _amp_snapshot_restore_test() {
-  local orig_TEST_DB_ARGS="$TEST_DB_ARGS"
+  local orig_TEST_DB_DSN="$TEST_DB_DSN"
   _amp_install_test
-  if [ "$TEST_DB_ARGS" != "$orig_TEST_DB_ARGS" ]; then
+  if [ "$TEST_DB_DSN" != "$orig_TEST_DB_DSN" ]; then
     ## shouldn't happen unless someone has been mucking around...
-    echo "WARNING: TEST DB has changed! Config files may be stale!" > /dev/stderr
-    echo "  OLD: $orig_TEST_DB_ARG" > /dev/stderr
-    echo "  NEW: $TEST_DB_ARGS" > /dev/stderr
+    echo "WARNING: TEST DB has changed! Config files may be stale!" 1>&2
+    echo "  OLD: $orig_TEST_DB_DSN" 1>&2
+    echo "  NEW: $TEST_DB_DSN" 1>&2
   fi
 
   _amp_snapshot_restore TEST "$CIVI_SQL"
@@ -436,10 +436,10 @@ function _amp_snapshot_restore() {
 
   echo "[[Restore \"$1\" DB ($db_name) from file ($sql_file)]]"
   if [ ! -f "$sql_file" ]; then
-    echo "Missing SQL file: $sql_file" >> /dev/stderr
+    echo "Missing SQL file: $sql_file" 1>&2
     exit 1
   fi
-  gunzip --stdout "$sql_file" | mysql $db_args
+  gunzip --stdout "$sql_file" | eval mysql $db_args
 }
 
 
@@ -475,13 +475,13 @@ function civicrm_install() {
     if [ -e "xml" -a -e "bin/setup.sh" ]; then
       env SITE_ID="$SITE_ID" bash ./bin/setup.sh
     elif [ -e "sql/civicrm.mysql" -a -e "sql/civicrm_generated.mysql" ]; then
-      cat sql/civicrm.mysql sql/civicrm_generated.mysql | mysql $CIVI_DB_ARGS
+      cat sql/civicrm.mysql sql/civicrm_generated.mysql | eval mysql $CIVI_DB_ARGS
     else
       echo "Failed to locate civi SQL files"
     fi
   popd >> /dev/null
 
-  mysql $CIVI_DB_ARGS <<EOSQL
+  eval mysql $CIVI_DB_ARGS <<EOSQL
     UPDATE civicrm_domain SET name = '$CIVI_DOMAIN_NAME';
     SELECT @option_group_id := id
       FROM civicrm_option_group n

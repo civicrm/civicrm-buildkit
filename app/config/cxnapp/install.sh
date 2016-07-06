@@ -34,5 +34,6 @@ pushd "$WEB_ROOT" >> /dev/null
   composer install
   ./app/console doctrine:schema:create
   ./app/console cxnapp:init org.civicrm.cron "$CXNAPP_BASE_DN"
+  ./app/console cxnapp:init org.civicrm.profile "$CXNAPP_BASE_DN"
   ./app/console dirsvc:init "$CXNAPP_BASE_DN"
 popd >> /dev/null

@@ -20,13 +20,12 @@ LOCKFILE="$TMPDIR/civi-download-tools.lock"
 LOCKTIMEOUT=90
 CIVIXURL="https://download.civicrm.org/civix/civix.phar-2016-03-08-3946d92d"
 CVURL="https://download.civicrm.org/cv/cv.phar-b6e28d1"
-HUBTAG="v1.12.4"
-HUBURL="https://github.com/github/hub"
+HUB_VERSION="2.2.3"
 DRUSH8URL=http://files.drush.org/drush.phar
 PHPUNITURL=https://phar.phpunit.de/phpunit-4.8.21.phar
 WPCLIURL=https://github.com/wp-cli/wp-cli/releases/download/v0.23.0/wp-cli-0.23.0.phar
-GITSCANURL="https://download.civicrm.org/git-scan/git-scan.phar-2016-04-28-07187ef7"
-AMPURL="https://download.civicrm.org/amp/amp.phar-2016-04-26-26baf4a3"
+GITSCANURL="https://download.civicrm.org/git-scan/git-scan.phar-2016-06-01-51baeef5"
+AMPURL="https://download.civicrm.org/amp/amp.phar-2016-06-27-c6aea029"
 CIVISTRINGSURL="https://download.civicrm.org/civistrings/civistrings.phar-2016-03-10-df547ff9"
 IS_QUIET=
 IS_FORCE=
@@ -241,6 +240,42 @@ function cvutil_confirm() {
 }
 
 ###############################################################################
+## usage: get_hub_url <version>
+
+# Examples:
+# https://github.com/github/hub/releases/download/v2.2.3/hub-darwin-amd64-2.2.3.tgz
+# https://github.com/github/hub/releases/download/v2.2.3/hub-linux-386-2.2.3.tgz
+# https://github.com/github/hub/releases/download/v2.2.3/hub-linux-amd64-2.2.3.tgz
+# https://github.com/github/hub/releases/download/v2.2.3/hub-windows-386-2.2.3.zip
+# https://github.com/github/hub/releases/download/v2.2.3/hub-windows-amd64-2.2.3.zip
+
+function get_hub_url() {
+  local VERSION="$1"
+  local PLATFORM=
+  local FORMAT=
+
+  case $(uname -a) in
+    *Darwin*x86_64*)
+      PLATFORM=darwin-amd64
+      FORMAT=tgz
+      ;;
+    *Linux*x86_64*)
+      PLATFORM=linux-amd64
+      FORMAT=tgz
+      ;;
+    *Linux*i386*|*Linux*i686*)
+      PLATFORM=linux-386
+      FORMAT=tgz
+      ;;
+    *)
+      echo ""
+      return
+  esac
+
+  echo https://github.com/github/hub/releases/download/v${VERSION}/hub-${PLATFORM}-${VERSION}.${FORMAT}
+}
+
+###############################################################################
 ## Determine the function to handle system package installation
 function get_system_installer() {
   if [ -n "$DISTRIB_CODENAME" ]; then
@@ -265,7 +300,7 @@ function get_system_installer() {
 ###############################################################################
 function do_system_precise() {
   set -e
-    PACKAGES="acl git wget unzip mysql-server mysql-client php5-cli php5-imap php5-ldap php5-curl php5-mysql php5-intl php5-gd php5-mcrypt php-apc apache2 libapache2-mod-php5 nodejs ruby rake"
+    PACKAGES="acl git wget unzip mysql-server mysql-client php5-cli php5-imap php5-ldap php5-curl php5-mysql php5-intl php5-gd php5-mcrypt php-apc apache2 libapache2-mod-php5 nodejs"
     echo "Detected \"Ubuntu Precise 12.04\"."
     echo ""
     echo "Recommended packages: $PACKAGES"
@@ -285,7 +320,7 @@ function do_system_precise() {
 ###############################################################################
 function do_system_trusty() {
   set -e
-    PACKAGES="acl git wget unzip mysql-server mysql-client php5-cli php5-imap php5-ldap php5-curl php5-mysql php5-intl php5-gd php5-mcrypt php-apc apache2 libapache2-mod-php5 nodejs-legacy npm ruby rake"
+    PACKAGES="acl git wget unzip mysql-server mysql-client php5-cli php5-imap php5-ldap php5-curl php5-mysql php5-intl php5-gd php5-mcrypt php-apc apache2 libapache2-mod-php5 nodejs-legacy npm"
     echo "Detected \"Ubuntu Trusty 14.04\"."
     echo ""
     echo "Recommended packages: $PACKAGES"
@@ -307,17 +342,14 @@ function do_system_trusty() {
 ###############################################################################
 function do_system_xenial() {
   set -e
-    PACKAGES="acl git wget unzip mysql-server mysql-client php5.6-cli php5.6-imap php5.6-ldap php5.6-curl php5.6-mysql php5.6-intl php5.6-gd php5.6-mcrypt php5.6-bcmath php5.6-mbstring php5.6-zip php5.6-xml apache2 libapache2-mod-php5.6 nodejs-legacy npm ruby rake"
+    PACKAGES="acl git wget unzip mysql-server mysql-client php7.0-cli php7.0-imap php7.0-ldap php7.0-curl php7.0-mysql php7.0-intl php7.0-gd php7.0-mcrypt php7.0-bcmath php7.0-mbstring php7.0-zip php7.0-xml apache2 libapache2-mod-php7.0 nodejs-legacy npm"
     echo "Detected \"Ubuntu Xenial 16.04\"."
     echo ""
-    echo "Task: Install software-properties-common and ppa:ondrej/php (PHP 5.6)"
     echo "Task: $PACKAGES"
     echo ""
     echo "Warning: This system will not support php-mysql extension"
     echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
-      sudo apt-get install software-properties-common
-      sudo add-apt-repository ppa:ondrej/php
       sudo apt-get update
       sudo apt-get -y install $PACKAGES
       sudo phpenmod bcmath
@@ -337,7 +369,7 @@ function do_system_xenial() {
 ###############################################################################
 function do_system_jessie() {
   set -e
-    PACKAGES="acl git wget unzip mysql-server mysql-client php5-cli php5-imap php5-ldap php5-curl php5-mysql php5-intl php5-gd php5-mcrypt php-apc apache2 libapache2-mod-php5 nodejs-legacy npm ruby rake"
+    PACKAGES="acl git wget unzip mysql-server mysql-client php5-cli php5-imap php5-ldap php5-curl php5-mysql php5-intl php5-gd php5-mcrypt php-apc apache2 libapache2-mod-php5 nodejs-legacy npm"
     echo "Detected \"Debian Jessie\"."
     echo ""
     echo "Recommended packages: $PACKAGES"
@@ -492,37 +524,39 @@ pushd $PRJDIR >> /dev/null
 
   ## Download "hub"
   touch "$PRJDIR/extern/hub.txt"
-  if [ -z "$IS_FORCE" -a -e "$PRJDIR/extern/hub/bin/hub" -a -e "$PRJDIR/bin/hub" -a "$(cat $PRJDIR/extern/hub.txt)" == "$HUBURL $HUBTAG" ]; then
+  if [ -z "$IS_FORCE" -a -e "$PRJDIR/extern/hub/bin/hub" -a -e "$PRJDIR/bin/hub" -a "$(cat $PRJDIR/extern/hub.txt)" == "$HUB_VERSION" ]; then
     echo_comment "[[hub ($PRJDIR/extern/hub) already exists. Skipping.]]"
-  elif [ -z "`which ruby`" -o -z "`which rake`" ]; then
-    echo_comment "[[hub requires Ruby and Rake (which are unavailable). Skipping.]]"
   else
-    echo "[[Install hub]]"
+    HUBURL=$(get_hub_url $HUB_VERSION)
+    if [ -z "$HUBURL" ]; then
+      echo "[[Skip hub. Could not determine binary.]]"
+    else
+      echo "[[Install hub]]"
 
-    ## Cleanup
-    [ -e app/tmp/hub ] && rm -rf app/tmp/hub
-    [ -e extern/hub ] && rm -rf extern/hub
-    mkdir -p app/tmp extern/hub
+      ## Cleanup
+      [ -e app/tmp/hub ] && rm -rf app/tmp/hub
+      [ -e extern/hub ] && rm -rf extern/hub
+      [ -e "$TMPDIR/hub.tgz" ] && rm -f "$TMPDIR/hub.tgz"
+      mkdir -p app/tmp extern/hub
 
-    ## Download
-    git clone "$HUBURL" app/tmp/hub
-    pushd app/tmp/hub
-      git checkout $HUBTAG
-    popd
+      ## Download
+      download_url "$HUBURL" "$TMPDIR/hub.tgz"
 
-    ## Build
-    pushd app/tmp/hub >> /dev/null
-      PREFIX="$PRJDIR/extern/hub" rake install
-    popd >> /dev/null
+      ## Build
+      pushd extern/hub >> /dev/null
+        tar --strip-components=1 -xvzf "$TMPDIR/hub.tgz"
+      popd >> /dev/null
 
-    ## Setup a relative symlink
-    pushd bin >> /dev/null
-      [ -f hub ] && rm -f hub
-      ln -s ../extern/hub/bin/hub hub
-    popd >> /dev/null
+      ## Setup a relative symlink
+      pushd bin >> /dev/null
+        [ -f hub ] && rm -f hub
+        ln -s ../extern/hub/bin/hub hub
+      popd >> /dev/null
 
-    ## Mark as downloaded
-    echo "$HUBURL $HUBTAG" > "$PRJDIR/extern/hub.txt"
+      ## Mark as downloaded
+      echo "$HUB_VERSION" > "$PRJDIR/extern/hub.txt"
+
+    fi
   fi
 
 popd >> /dev/null
