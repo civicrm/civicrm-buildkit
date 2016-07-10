@@ -145,7 +145,7 @@ function civibuild_app_download() {
       fi
       if [ -n "$PATCHES" ]; then
         pushd "$WEB_ROOT" >> /dev/null
-          if ! git scan automerge --rebuild --url-split='|' "$PATCHES" ; then
+          if ! git scan automerge --rebuild --url-split='|' "$PATCHES" --passthru='--ignore-whitespace' ; then
             echo "Failed to apply patch(es)"
             exit 95
           fi
