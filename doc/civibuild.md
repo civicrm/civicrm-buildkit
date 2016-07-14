@@ -23,6 +23,8 @@ in missing parts.
 
 ## Quickstart
 
+If you haven't already, [download buildkit](../README.md). Then:
+
 ```bash
 ## Configure "amp" with details of your Apache/MySQL environment.  Pay close
 ## attention to the instructions.  They may involve adding a line to your
