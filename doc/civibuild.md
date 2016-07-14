@@ -24,6 +24,21 @@ in missing parts.
 ## Quickstart
 
 ```bash
+
+## Install buildkit if not already done so
+
+$ curl -Ls https://civicrm.org/get-buildkit.sh | bash -s -- --full --dir ~/buildkit
+
+## Add the following to .bashrc to easily run kit commands
+
+PATH=~/buildkit/bin:$PATH
+export VISUAL=vim
+export EDITOR="$VISUAL"
+
+## Install other dependencies.  run:
+
+$ civi-download-tools
+
 ## Configure "amp" with details of your Apache/MySQL environment.  Pay close
 ## attention to the instructions.  They may involve adding a line to your
 ## Apache configuration file.
@@ -40,6 +55,26 @@ $ amp test
 ## The command will print out URLs and credentials for accessing the website.
 
 $ civibuild create dmaster --url http://localhost:8001 --admin-pass s3cr3t
+
+# To install CiviCRM 4.6 with drupal-demo.  Note: the latest releave of 
+# civivolunteer, 4.5-1.4, is only stable with CiviCRM version 4.6
+
+$ civibuild create d46-demo --url http://localhost:8001 --admin-pass s3cr3t --civi-ver 4.6 --type drupal-demo
+
+## If installing drupal-demo, fix the perms for civicrm tmp files
+$ sudo chown -R www-data:www-data buildkit/build/d46-demo/sites/default/files
+$ sudo chmod -R 777 buildkit/build/d46-demo/sites/default/files/civicrm/templates_c
+
+## By default, buildkit installs an older version of CiviVolunteer which doesn't
+## work with CiviCRM 4.6.  To get CiviVolunteer working, update to newer version:
+
+$ cd buildkit/build/d46-demo/sites/all/modules/civicrm/tools/extensions/civivolunteer
+$ drush civicrm-ext-disable org.civicrm.volunteer
+$ git pull
+$ git pull origin 4.5-1.4
+$ git checkout 4.5-1.4
+$ drush civicrm-ext-install org.civicrm.volunteer
+
 ```
 
 ## Build Types
