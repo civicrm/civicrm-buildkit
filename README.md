@@ -14,16 +14,20 @@ infrastructure for civicrm.org.
 
  * [Full Download: Ubuntu](doc/download-ubuntu.md) - Download buildkit and all system dependencies (mysql, etc). This is ideal when setting up a new, clean Ubuntu host.
  * [Full Download: Vagrantbox](https://github.com/civicrm/civicrm-buildkit-vagrant) - Download a prepared virtual-machine with all system dependencies (mysql, etc). This is ideal for Windows and OS X.
- * [Manual Download](doc/download-manual.md) - Just download buildkit and its tools. This is ideal if you have already installed the system dependencies (mysql, etc).
+ * [Manual Download](doc/download-manual.md) - Just download buildkit. This is ideal if you have already installed the system dependencies (mysql, etc).
 
 After you've downloaded buildkit the first time, you should periodically [update the tools](doc/download-update.md).
 
-## CLI Setup
+## Configuration and Usage
 
-Buildkit includes many commands.  To access these on the command-line in a standard way, [configure the `PATH`](doc/cli-persistent.md).
+<!---
+FIXME: If we can modify `civi-download-tools --full` to setup PATH automatically, then this step can be moved strictly under "Manual Download"
+-->
 
-If you are a more sophisticated developer who wishes to have multiple copies of your tools, then you can
-[configure the `PATH` temporarily](doc/cli-temporary.md).
+ 1. [PATH: Configure CLI support](doc/path.md) 
+ 2. [Civibuild: Create a full dev/demo build](doc/civibuild.md)
+ 3. [Daily Coding: First Pull-Request, Housekeeping, etc](doc/daily-coding.md)
+ 4. [Experimental: Multiple demo/training sites](doc/demo-sites.md)
 
 ## CLI Tools
 
@@ -56,9 +60,3 @@ If you are a more sophisticated developer who wishes to have multiple copies of 
    * [karma](http://karma-runner.github.io) (w/[jasmine](http://jasmine.github.io/)) - Unit testing for Javascript.
    * [paratest](https://github.com/brianium/paratest) - Parallelized version of PHPUnit.
    * [phpunit](http://phpunit.de/) - Unit testing for PHP (with Selenium and DB add-ons).
-
-## Documentation
-
- * [Civibuild: Create a full dev/demo build](doc/civibuild.md)
- * [Daily Coding: First Pull-Request, Housekeeping, etc](doc/daily-coding.md)
- * [Experimental: Multiple demo/training sites](doc/demo-sites.md)
