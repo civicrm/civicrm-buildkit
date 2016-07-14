@@ -10,89 +10,20 @@ full collection -- installing each individually takes a lot of work.
 This is the same collection of tools which manages the test/demo/release
 infrastructure for civicrm.org.
 
-## Download: Option #1: Full Stack on New Ubuntu Host
+## Download
 
-If you have a new installation of Ubuntu 12.04 or 14.04, then you can download
-everything -- buildkit and the system requirements -- with one command. This
-command will install buildkit to `~/buildkit`:
+ * [Full Download: Ubuntu](doc/download-ubuntu.md) - Download buildkit and all system dependencies (mysql, etc). This is ideal when setting up a new, clean Ubuntu host.
+ * [Full Download: Vagrantbox](https://github.com/civicrm/civicrm-buildkit-vagrant) - Download a prepared virtual-machine with all system dependencies (mysql, etc). This is ideal for Windows and OS X.
+ * [Manual Download](doc/download-manual.md) - Just download buildkit and its tools. This is ideal if you have already installed the system dependencies (mysql, etc).
 
-```bash
-curl -Ls https://civicrm.org/get-buildkit.sh | bash -s -- --full --dir ~/buildkit
-```
+After you've downloaded buildkit the first time, you should periodically [update the tools](doc/download-update.md).
 
-Note:
- * When executing the above command, you should *not* run as `root`. However, you *should*
-have `sudo` permissions.
- * The `--full` option is *very opinionated*; it specifically installs `php`, `apache`, and `mysql` (rather than `hvm`, `nginx`, `lighttpd`, or `percona`). If you try to mix `--full` with alternative systems, then expect conflicts.
+## CLI Setup
 
-## Download: Option #2: Vagrant on Windows, OS X, etal
+Buildkit includes many commands.  To access these on the command-line in a standard way, [configure the `PATH`](doc/cli-persistent.md).
 
-If you use Windows or OS X, then you can create an Ubuntu virtual machine using [Vagrant](https://www.vagrantup.com/). For more instructions, see [civicrm-buildkit-vagrant](https://github.com/civicrm/civicrm-buildkit-vagrant).
-
-## Download: Option #3: Other Environments
-
-You may install buildkit in other environments. The main pre-requisites are:
-
- * Bash (Unix shell)
- * Git
- * PHP 5.3+
- * NodeJS
- * Recommended: Apache 2.2+ and MySQL 5.1+ (client and server) (for [amp](https://github.com/totten/amp) and [civibuild](doc/civibuild.md))
- * Recommended: Linux or OS X
-
-All pre-requisites must support command-line access using the standard command
-names (`git`, `php`, `node`, `mysql`, `mysqldump`, etc). In some environments,
-you may need to enable these commands by configuring `PATH` -- this is especially
-true for MAMP, XAMPP, and other downloaded packages.
-(See, e.g., [Setup Command-Line PHP](http://wiki.civicrm.org/confluence/display/CRMDOC/Setup+Command-Line+PHP).)
-
-Once the pre-requisites are met, download buildkit to `~/buildkit`:
-
-```bash
-git clone https://github.com/civicrm/civicrm-buildkit.git ~/buildkit
-cd ~/buildkit
-./bin/civi-download-tools
-```
-
-## Staying Up-to-Date
-
-The configurations and tools in buildkit are periodically updated. To get the latest, simply run:
-
-```bash
-cd ~/buildkit
-git pull
-./bin/civi-download-tools
-```
-
-### CLI Setup: Option #1: Persistent
-
-It is useful to register buildkit in the `PATH`. This enables you to run commands
-by entering a name (e.g.  `civix`) rather than a full path (e.g.
-`/path/to/buildkit/bin/civix`).
-
-If you want to ensure that these CLI tools are always available, then:
- 
- 1. Determine the location of your shell configuration file. This is usually `~/.bashrc`, `~/.bash_profile`, or `~/.profile`.
- 2. At the end of the file, add `export PATH="/path/to/buildkit/bin:$PATH"` (*with proper adjustments to match your local system*).
- 3. Close and reopen the terminal.
- 4. Enter the command `which civibuild`. This should display a full-path. If nothing appears, then retry the steps.
-
-### CLI Setup: Option #2: Temporary
-
-Alternatively, if you're just getting started, or if you worry about
-conflicts between buildkit and your existing tools, then you can
-register buildkit in the PATH temporarily. Simply adapt and run the `export`
-command directly in the terminal:
-
-```bash
-export PATH=/path/to/buildkit/bin:$PATH
-```
-
-You can restore the normal environment by closing the terminal and opening
-a new one.
-
-Each time you open a new terminal while working on Civi development, you
-would need to re-run the `export` command.
+If you are a more sophisticated developer who wishes to have multiple copies of your tools, then you can
+[configure the `PATH` temporarily](doc/cli-temporary.md).
 
 ## CLI Tools
 
