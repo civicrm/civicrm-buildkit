@@ -13,15 +13,15 @@ infrastructure for civicrm.org.
 ## Download
 
  * [Full Download: Ubuntu](doc/download-ubuntu.md) - Download buildkit and all system dependencies (mysql, etc). This is ideal when setting up a new, clean Ubuntu host.
- * [Full Download: Vagrantbox](https://github.com/civicrm/civicrm-buildkit-vagrant) - Download a prepared virtual-machine with all system dependencies (mysql, etc). This is ideal for Windows and OS X.
- * [Manual Download](doc/download-manual.md) - Just download buildkit. This is ideal if you have already installed the system dependencies (mysql, etc).
+ * [Full Download: Vagrantbox](https://github.com/civicrm/civicrm-buildkit-vagrant) - Download a prepared virtual-machine with all system dependencies (mysql, etc). This is ideal if you work on Windows or OS X.
+ * [Manual Download](doc/download-manual.md) - Just download buildkit. This is ideal if you have already installed the system dependencies by some other means (CentOS, MAMP, etc).
 
 After you've downloaded buildkit the first time, you should periodically [update the tools](doc/download-update.md).
 
 ## Configuration and Usage
 
 <!---
-FIXME: If we can modify `civi-download-tools --full` to setup PATH automatically, then this step can be moved strictly under "Manual Download"
+FIXME: If we can modify `civi-download-tools --full` to setup PATH automatically, then we can remove step 1 and put it under "Manual Download"
 -->
 
  1. [PATH: Configure CLI support](doc/path.md) 

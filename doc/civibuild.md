@@ -21,9 +21,13 @@ these.  Unfortunately, such tools generally require extra work for a Civi
 developer environment.  Civibuild works with these tools and and fills
 in missing parts.
 
-## Quickstart
+## Your First Build
 
-If you haven't already, [download buildkit](../README.md). Then:
+> Tip: If you haven't already downloaded buildkit, see [README.md](../README.md).
+
+The first build requires only a few commands.  However, these are also the
+hardest commands -- you need to provide detailed information about the
+Apache/MySQL/PHP systems, and you may need to try them a few times.
 
 ```bash
 ## Configure "amp" with details of your Apache/MySQL environment.  Pay close
@@ -32,42 +36,46 @@ If you haven't already, [download buildkit](../README.md). Then:
 
 $ amp config
 
-## Test that "amp" has full and correct information about Apache/MySQL.  You
-## may need to alternately restart httpd, re-run "amp test", and/or re-run
-## "amp config" a few times.
+## Test that "amp" has full and correct information about Apache/MySQL.
 
 $ amp test
+
+## Note: You may need to alternately restart httpd, re-run "amp config",
+## and/or re-run "amp test" a few times.
 
 ## Create a new build using Drupal and the CiviCRM "master" branch.
 ## The command will print out URLs and credentials for accessing the website.
 
-$ civibuild create dmaster --url http://localhost:8001 --admin-pass s3cr3t
+$ civibuild create dmaster --url http://dmaster.localhost --admin-pass s3cr3t
 ```
+
+Once you have a working build of `dmaster`, you can continue working with `civibuild` to create
+different builds (as described below) or [learn more about other day-to-day development tasks](daily-coding.md).
 
 ## Build Types
 
-civibuild includes a small library of build scripts for different
+`civibuild` includes a small library of build scripts for different
 configurations.  For example, at time of writing, it includes:
 
- * *backdrop-clean*: A bare, "out-of-the-box" installation of Backdrop+CiviCRM
- * *backdrop-demo*: A demo site running Backdrop and CiviCRM
- * *backdrop-empty*: An empty Backdrop site (without CiviCRM). Useful for testing tarball installation.
- * *drupal-clean*: A bare, "out-of-the-box" installation of Drupal+CiviCRM
- * *drupal-demo*: A demo site running Drupal and CiviCRM
- * *drupal-empty*: An empty Drupal site (without CiviCRM). Useful for testing tarball installation.
- * *wp-demo*: A demo site running WordPress and CiviCRM
- * *wp-empty*: An empty WordPress site (without CiviCRM). Useful for testing tarball installation.
- * *hrdemo* A demo site running Drupal, CiviCRM, and CiviHR
- * *symfony*: An experimental hybrid site running Drupal 7, Symfony 2, and CiviCRM
- * *cxnapp*: A self-signed CiviConnect app based on the reference implementation.
- * *messages*: A backend service for delivering in-app messages (eg "Getting Started").
- * *extdir*: A mock website akin to civicrm.org/extdir/ . Useful for testing the extension download process.
- * *dist*: A website containing nightly builds akin to dist.civicrm.org. Useful for preparing CiviCRM tarballs.
- * *l10n*: WIP - A build environment for creating translation files.
- * *joomla-demo*: WIP/incomplete/broken
+ * `backdrop-clean`: A bare, "out-of-the-box" installation of Backdrop+CiviCRM
+ * `backdrop-demo`: A demo site running Backdrop and CiviCRM
+ * `backdrop-empty`: An empty Backdrop site (without CiviCRM). Useful for testing tarball installation.
+ * `drupal-clean`: A bare, "out-of-the-box" installation of Drupal+CiviCRM
+ * `drupal-demo`: A demo site running Drupal and CiviCRM
+ * `drupal-empty`: An empty Drupal site (without CiviCRM). Useful for testing tarball installation.
+ * `wp-demo`: A demo site running WordPress and CiviCRM
+ * `wp-empty`: An empty WordPress site (without CiviCRM). Useful for testing tarball installation.
+ * `hrdemo` A demo site running Drupal, CiviCRM, and CiviHR
+ * `symfony`: An experimental hybrid site running Drupal 7, Symfony 2, and CiviCRM
+ * `cxnapp`: A self-signed CiviConnect app based on the reference implementation.
+ * `messages`: A backend service for delivering in-app messages (eg "Getting Started").
+ * `extdir`: A mock website akin to civicrm.org/extdir/ . Useful for testing the extension download process.
+ * `dist`: A website containing nightly builds akin to dist.civicrm.org. Useful for preparing CiviCRM tarballs.
+ * `l10n`: WIP - A build environment for creating translation files.
+ * `joomla-demo`: WIP/incomplete/broken
 
 For a list of available build-types as well as documentation on writing build scripts,
-see [app/config](/app/config).
+see [`app/config`](/app/config).
 
 Build types can be mixed/matched with different versions of Civi, e.g.
 
