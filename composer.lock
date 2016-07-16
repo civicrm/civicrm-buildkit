@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "6f050bbc2c8cfd1b7fc8ed16bb6a8661",
-    "content-hash": "fca8818761cbfce709fb55aca59e1cbb",
+    "hash": "3b02b682ffb49c34c0a241f4c13e1bd6",
+    "content-hash": "882d31fc35f7362891d1c26637b634c9",
     "packages": [
         {
             "name": "brianium/habitat",
@@ -333,45 +333,6 @@
             "description": "Drush is a command line shell and scripting interface for Drupal, a veritable Swiss Army knife designed to make life easier for those of us who spend some of our working hours hacking away at the command prompt.",
             "homepage": "http://www.drush.org",
             "time": "2013-10-26 07:40:45"
-        },
-        {
-            "name": "joomlatools/joomla-console",
-            "version": "dev-master-buildkit",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/totten/joomla-console.git",
-                "reference": "c2c339c7e49986f737a7ac8396ae1234beecb8c8"
-            },
-            "require": {
-                "symfony/console": "2.4.*"
-            },
-            "bin": [
-                "bin/joomla"
-            ],
-            "type": "project",
-            "autoload": {
-                "psr-0": {
-                    "Joomlatools\\": "src/"
-                }
-            },
-            "license": [
-                "MPLv2"
-            ],
-            "authors": [
-                {
-                    "name": "Joomlatools",
-                    "email": "info@joomlatools.com",
-                    "homepage": "https://www.joomlatools.com"
-                }
-            ],
-            "description": "This command-line script helps to ease the management of Joomla sites in your development environment.",
-            "homepage": "https://github.com/joomlatools/joomla-console",
-            "keywords": [
-                "console",
-                "joomla",
-                "tools"
-            ],
-            "time": "2014-09-18 06:10:30"
         },
         {
             "name": "mustache/mustache",
@@ -1080,47 +1041,6 @@
             "time": "2015-03-20 22:07:39"
         },
         {
-            "name": "rhumsaa/array_column",
-            "version": "1.1.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ramsey/array_column.git",
-                "reference": "c09744baae0e023d1021055f9c65755b88a9721f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ramsey/array_column/zipball/c09744baae0e023d1021055f9c65755b88a9721f",
-                "reference": "c09744baae0e023d1021055f9c65755b88a9721f",
-                "shasum": ""
-            },
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "src/array_column.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Ben Ramsey",
-                    "homepage": "http://benramsey.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Provides functionality for array_column() to projects using PHP earlier than version 5.5.",
-            "homepage": "https://github.com/ramsey/array_column",
-            "keywords": [
-                "array",
-                "array_column",
-                "column"
-            ],
-            "abandoned": "ramsey/array_column",
-            "time": "2013-07-22 16:12:38"
-        },
-        {
             "name": "rmccue/requests",
             "version": "v1.6.1",
             "source": {
@@ -1292,38 +1212,45 @@
         },
         {
             "name": "symfony/console",
-            "version": "v2.4.10",
-            "target-dir": "Symfony/Component/Console",
+            "version": "v2.8.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "39dd1c85ffdfc3c5fb008019dd027af05f64ec36"
+                "reference": "c392a6ec72f2122748032c2ad6870420561ffcfa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/39dd1c85ffdfc3c5fb008019dd027af05f64ec36",
-                "reference": "39dd1c85ffdfc3c5fb008019dd027af05f64ec36",
+                "url": "https://api.github.com/repos/symfony/console/zipball/c392a6ec72f2122748032c2ad6870420561ffcfa",
+                "reference": "c392a6ec72f2122748032c2ad6870420561ffcfa",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.3"
+                "php": ">=5.3.9",
+                "symfony/polyfill-mbstring": "~1.0"
             },
             "require-dev": {
-                "symfony/event-dispatcher": "~2.1"
+                "psr/log": "~1.0",
+                "symfony/event-dispatcher": "~2.1|~3.0.0",
+                "symfony/process": "~2.1|~3.0.0"
             },
             "suggest": {
-                "symfony/event-dispatcher": ""
+                "psr/log": "For using the console logger",
+                "symfony/event-dispatcher": "",
+                "symfony/process": ""
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.4-dev"
+                    "dev-master": "2.8-dev"
                 }
             },
             "autoload": {
-                "psr-0": {
+                "psr-4": {
                     "Symfony\\Component\\Console\\": ""
-                }
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -1331,17 +1258,17 @@
             ],
             "authors": [
                 {
-                    "name": "Symfony Community",
-                    "homepage": "http://symfony.com/contributors"
-                },
-                {
                     "name": "Fabien Potencier",
                     "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
                 }
             ],
             "description": "Symfony Console Component",
-            "homepage": "http://symfony.com",
-            "time": "2014-09-22 08:51:05"
+            "homepage": "https://symfony.com",
+            "time": "2016-06-29 07:02:14"
         },
         {
             "name": "symfony/dependency-injection",
@@ -1493,6 +1420,65 @@
             "description": "Symfony Finder Component",
             "homepage": "http://symfony.com",
             "time": "2014-12-02 20:19:20"
+        },
+        {
+            "name": "symfony/polyfill-mbstring",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-mbstring.git",
+                "reference": "dff51f72b0706335131b00a7f49606168c582594"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/dff51f72b0706335131b00a7f49606168c582594",
+                "reference": "dff51f72b0706335131b00a7f49606168c582594",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "suggest": {
+                "ext-mbstring": "For best performance"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.2-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Polyfill\\Mbstring\\": ""
+                },
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill for the Mbstring extension",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "mbstring",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "time": "2016-05-18 14:26:46"
         },
         {
             "name": "symfony/process",
@@ -1742,12 +1728,6 @@
             "alias_normalized": "0.7.0.0",
             "version": "dev-batching",
             "package": "brianium/paratest"
-        },
-        {
-            "alias": "1.1.0",
-            "alias_normalized": "1.1.0.0",
-            "version": "dev-master-buildkit",
-            "package": "joomlatools/joomla-console"
         }
     ],
     "minimum-stability": "stable",
@@ -1756,8 +1736,7 @@
         "totten/php-symbol-diff": 20,
         "civicrm/upgrade-test": 20,
         "drupal/coder": 20,
-        "brianium/paratest": 20,
-        "joomlatools/joomla-console": 20
+        "brianium/paratest": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
