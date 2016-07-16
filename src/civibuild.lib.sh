@@ -1005,6 +1005,33 @@ function git_cache_deref_remotes() {
 }
 
 ###############################################################################
+## Joomla -- Generate config files and setup database
+## usage: joomla_install
+function joomla_install() {
+  local parent=$(dirname "$CMS_ROOT")
+  local child=$(basename "$CMS_ROOT")
+  joomla site:install -v \
+    --www "$parent" \
+    -L "$CMS_DB_USER:$CMS_DB_PASS" -H "$CMS_DB_HOST" -P "$CMS_DB_PORT" --mysql-database "$CMS_DB_NAME" \
+    --overwrite \
+    --skip-exists-check \
+    "$child"
+}
+
+###############################################################################
+## Reset all the key details (username, password, email) for one of the
+## Joomla user accounts.
+##
+## usage: joomla_reset_user <olduser> <newuser> <newpass> <newemail>
+function joomla_reset_user() {
+  env OLDUSER="$1" NEWUSER="$2" NEWPASS="$3" NEWMAIL="$4" amp sql -e -Ncms <<EOSQL
+UPDATE j_users
+SET username=@ENV[NEWUSER], password=md5(@ENV[NEWPASS]), email=@ENV[NEWMAIL]
+WHERE username=@ENV[OLDUSER];
+EOSQL
+}
+
+###############################################################################
 ## Initialize (or update) a cached copy of an svn URL
 ## usage: svn_cache_setup <url> <cache-dir>
 function svn_cache_setup() {
