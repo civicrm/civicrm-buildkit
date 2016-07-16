@@ -27,6 +27,7 @@ WPCLIURL=https://github.com/wp-cli/wp-cli/releases/download/v0.23.0/wp-cli-0.23.
 GITSCANURL="https://download.civicrm.org/git-scan/git-scan.phar-2016-06-01-51baeef5"
 AMPURL="https://download.civicrm.org/amp/amp.phar-2016-07-15-cc791dfe"
 CIVISTRINGSURL="https://download.civicrm.org/civistrings/civistrings.phar-2016-03-10-df547ff9"
+JOOMLAURL="https://download.civicrm.org/joomlatools-console/joomla.phar-2016-07-15-d2b7d23a"
 IS_QUIET=
 IS_FORCE=
 IS_FULL=
@@ -521,6 +522,7 @@ pushd $PRJDIR >> /dev/null
   download_program_if_changed "$AMPURL" "$PRJDIR/bin/amp" "$PRJDIR/extern/amp.txt"
   download_program_if_changed "$CIVIXURL" "$PRJDIR/bin/civix" "$PRJDIR/extern/civix.txt"
   download_program_if_changed "$CIVISTRINGSURL" "$PRJDIR/bin/civistrings" "$PRJDIR/extern/civistrings.txt"
+  download_program_if_changed "$JOOMLAURL" "$PRJDIR/bin/joomla" "$PRJDIR/extern/joomla.txt"
 
   ## Download "hub"
   touch "$PRJDIR/extern/hub.txt"
