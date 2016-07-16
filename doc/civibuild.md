@@ -63,6 +63,7 @@ configurations.  For example, at time of writing, it includes:
  * `drupal-clean`: A bare, "out-of-the-box" installation of Drupal+CiviCRM
  * `drupal-demo`: A demo site running Drupal and CiviCRM
  * `drupal-empty`: An empty Drupal site (without CiviCRM). Useful for testing tarball installation.
+ * `joomla-empty`: An empty Joomla site (without CiviCRM). Useful for testing tarball installation.
  * `wp-demo`: A demo site running WordPress and CiviCRM
  * `wp-empty`: An empty WordPress site (without CiviCRM). Useful for testing tarball installation.
  * `hrdemo` A demo site running Drupal, CiviCRM, and CiviHR
