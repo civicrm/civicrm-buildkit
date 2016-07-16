@@ -100,6 +100,19 @@ function hydra_create() {
         subsite_dl="modules=$TARFILE"
         ;;
 
+      civicrm-*-joomla-alt*)
+        ## Need to explicitly skip joomla-alt as a way to disambiguate the next blob.
+        echo "Skip $TARFILE"
+        continue
+        ;;
+
+      civicrm-*-joomla.zip|civicrm-*-joomla-*.zip)
+        subsite_name="${HYDRA_PREFIX}joomla"
+        subsite_type="joomla-empty"
+        subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}joomla")
+        subsite_dl="tmp=$TARFILE"
+        ;;
+
       civicrm-*-wordpress.zip|civicrm-*-wordpress-*.zip)
         subsite_name="${HYDRA_PREFIX}wp"
         subsite_type="wp-empty"
@@ -140,6 +153,12 @@ function hydra_show() {
         subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}backdrop")
         login_url="$subsite_url/user/login"
         install_url="$subsite_url/modules/civicrm/install/index.php"
+        ;;
+
+      *-joomla)
+        subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}joomla")
+        login_url="$subsite_url/administrator/"
+        install_url="$subsite_url/administrator/index.php?option=com_installer"
         ;;
 
       *-wp)

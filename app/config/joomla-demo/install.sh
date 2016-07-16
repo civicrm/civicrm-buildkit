@@ -10,19 +10,12 @@ amp_install
 ###############################################################################
 ## Setup Joomla (config files, database tables)
 
+joomla_install
+
 pushd "$CMS_ROOT" >> /dev/null
-  joomla site:create . --download=no --install=yes \
-    --joomla="$CMS_VERSION" \
-    --mysql="$CMS_DB_USER:$CMS_DB_PASS@$CMS_DB_HOST:$CMS_DB_PORT" \
-    --dbname="$CMS_DB_NAME" \
-    --nousers
+  joomla_reset_user 'admin' "$ADMIN_USER" "$ADMIN_PASS" "$ADMIN_EMAIL"
+  joomla_reset_user 'user' "$DEMO_USER" "$DEMO_PASS" "$DEMO_EMAIL"
 popd >>/dev/null
-
-# Create Admin User
-joomla user:create -b "$CMS_ROOT" --name="Demonstrators Anonymous Administrator" --user="$ADMIN_USER" --pass="$ADMIN_PASS" --email="$ADMIN_EMAIL" --group='super users'
-
-# Create Demo User
-joomla user:create -b "$CMS_ROOT" --name="Demo User" --user="$DEMO_USER" --pass="$DEMO_PASS" --email="$DEMO_EMAIL" --group=registered
 
 ###############################################################################
 ## Setup CiviCRM (config files, database tables)

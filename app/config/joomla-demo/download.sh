@@ -7,11 +7,9 @@
 CMS_VERSION=${CMS_VERSION:-latest}
 CMS_ROOT="$WEB_ROOT/joomla"
 
-cvutil_mkdir "$WEB_ROOT" "$WEB_ROOT/joomla" "$WEB_ROOT/src"
+cvutil_mkdir "$WEB_ROOT" "$WEB_ROOT/src"
 
-pushd "$WEB_ROOT/joomla" >> /dev/null
-  joomla site:create . --download=yes --install=no --joomla="$CMS_VERSION"
-popd >> /dev/null
+joomla site:download joomla --release="$CMS_VERSION" --www="$WEB_ROOT"
 
 pushd "$WEB_ROOT" >> /dev/null
   git clone ${CACHE_DIR}/civicrm/civicrm-joomla.git    -b "$CIVI_VERSION" src/civicrm
