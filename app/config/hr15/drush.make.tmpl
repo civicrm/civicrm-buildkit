@@ -82,10 +82,10 @@ projects[redirect][subdir] = contrib
 projects[redirect][version] = 1.0-rc1
 
 projects[webform][subdir] = contrib
-projects[webform][version] = 4.4
+projects[webform][version] = 4.12
 
 projects[webform_civicrm][subdir] = contrib
-projects[webform_civicrm][version] = 4.10
+projects[webform_civicrm][version] = "4.x-dev"
 
 projects[views][subdir] = contrib
 projects[views][version] = 3.11
@@ -241,7 +241,7 @@ libraries[civihr_employee_portal][destination] = modules
 libraries[civihr_employee_portal][directory_name] = civihr-custom
 libraries[civihr_employee_portal][download][type] = git
 libraries[civihr_employee_portal][download][url] = https://github.com/compucorp/civihr-employee-portal
-libraries[civihr_employee_portal][download][branch] = master
+libraries[civihr_employee_portal][download][branch] = %%HR_VERSION%%
 libraries[civihr_employee_portal][overwrite] = TRUE
 
 ; ****************************************
@@ -255,7 +255,7 @@ projects[radix][version] = "3.0-rc2"
 libraries[civihr_employee_portal_theme][destination] = themes
 libraries[civihr_employee_portal_theme][download][type] = git
 libraries[civihr_employee_portal_theme][download][url] = https://github.com/compucorp/civihr-employee-portal-theme
-libraries[civihr_employee_portal_theme][download][branch] = master
+libraries[civihr_employee_portal_theme][download][branch] = %%HR_VERSION%%
 libraries[civihr_employee_portal_theme][overwrite] = TRUE
 
 ; ****************************************
@@ -278,7 +278,7 @@ projects[bootstrap][version] = "3.1"
 libraries[civihr_tasks][destination] = modules/civicrm/tools/extensions
 libraries[civihr_tasks][download][type] = git
 libraries[civihr_tasks][download][url] = https://github.com/compucorp/civihr-tasks-assignments
-libraries[civihr_tasks][download][branch] = master
+libraries[civihr_tasks][download][branch] = %%HR_VERSION%%
 libraries[civihr_tasks][overwrite] = TRUE
 
 ; ****************************************
