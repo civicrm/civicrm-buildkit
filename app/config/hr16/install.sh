@@ -222,6 +222,7 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   drush en front_page -y
   drush en civicrmtheme -y
   drush en civihr_employee_portal_features -y
+  drush en username_to_external_id -y
 
   setup_themes
   create_default_users
