@@ -147,24 +147,28 @@ function hydra_show() {
         subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}drupal")
         login_url="$subsite_url/user/login"
         install_url="$subsite_url/sites/all/modules/civicrm/install/index.php"
+        install_blurb=""
         ;;
 
       *-backdrop)
         subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}backdrop")
         login_url="$subsite_url/user/login"
         install_url="$subsite_url/modules/civicrm/install/index.php"
+        install_blurb=""
         ;;
 
       *-joomla)
         subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}joomla")
         login_url="$subsite_url/administrator/"
         install_url="$subsite_url/administrator/index.php?option=com_installer"
+        install_blurb="Choose 'Install from Folder' and enter $BLDDIR/$subsite_name/tmp/com_civicrm"
         ;;
 
       *-wp)
         subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}wp")
         login_url="$subsite_url/wp-admin/"
         install_url="$subsite_url/wp-admin/plugins.php"
+        install_blurb=""
         ;;
 
       *)
@@ -177,6 +181,7 @@ function hydra_show() {
     echo "[[Extra URLs]]]"
     echo " - Login URL: $login_url"
     echo " - Install URL: $install_url"
+    [ -n "$install_blurb" ] && echo " - Install Notes: $install_blurb"
     echo
 
   done
