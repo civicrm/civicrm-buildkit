@@ -62,7 +62,7 @@ function cividist_validate() {
 ## Put the output files in $BY_HASH and $BY_DATE.
 function cividist_build() {
   for REF in "$@" ; do
-    git scan foreach -c "pwd; git checkout . ; git clean -f -d"
+    git scan foreach -c "pwd; rm CRM/*/DAO/*.php CRM/*/*/DAO/*.php -f ; git checkout . ; git clean -f -d"
     if givi checkout $REF; then
       ## FIXME: Should compute separate hashes for each combo of (civi-ver,cms,cms-major-ver)
       local hash=$(git scan hash)${HASH_SUFFIX}
