@@ -5,27 +5,27 @@
 (TODO: Write a real tutorial!)
 
 Suppose we've just downloaded buildkit and want to prepare a patch for
-CiviCRM 4.5.  This requires downloading and installing the bleeding edge
-(4.5.x) code for CiviCRM+CMS as well as writing and publishing the patch.
+CiviCRM 4.7 (`master).  This requires downloading and installing the code for
+CiviCRM+CMS as well as writing and publishing the patch.
 
 ```bash
-## Download Drupal 7.x and CiviCRM 4.5.x
-civicrm-buildkit$ civibuild create drupal-demo --civi-ver 4.5 --url http://localhost:8001
+## Download Drupal 7.x and CiviCRM master
+civicrm-buildkit$ civibuild create drupal-demo --civi-ver master --url http://localhost:8001
 
 ## Create a "fork" of civicrm-core on github.com for publishing changes
 civicrm-buildkit$ cd build/drupal-demo/sites/all/modules/civicrm
 civicrm$ hub fork
 
 ## Create some changes locally
-civicrm$ git checkout origin/4.5 -b 4.5-mypatch
+civicrm$ git checkout origin/master -b master-mypatch
 civicrm$ vi CRM/Utils/Array.php
 civicrm$ civilint CRM/Utils/Array.php
 ## Repeat vi/civilint until clean
 civicrm$ git commit CRM/Utils/Array.php
 
 ## Publish our changes on github.com
-civicrm$ git push mygithubuser 4.5-mypatch
-civicrm$ hub pull-request -b 4.5
+civicrm$ git push mygithubuser master-mypatch
+civicrm$ hub pull-request -b master
 
 ## Make further changes based on feedback
 civicrm$ vi CRM/Utils/Array.php
@@ -34,12 +34,15 @@ civicrm$ git commit CRM/Utils/Array.php
 civicrm$ git push mygithubuser
 ```
 
-Please note: A build may include several different git repositories. The
-commands should look about the same on any repository, although different
-git repositories may use different names for their versions/branches (eg the
-civicrm-core, civicrm-joomla, and civicrm-wordpress repositories have
-branches named "4.5", but the civicrm-drupal repository has a branch named
-"7.x-4.5").
+Please note:
+ * This example targets CiviCRM v4.7 (`master`). If you're targetting an older version,
+   change all references from `master` to appropriate branch (e.g. `4.6` or `4.5` or `4.4`).
+ * A build may include several different git repositories. The
+   commands should look about the same on any repository, although different
+   git repositories may use different names for their versions/branches (eg the
+   civicrm-core, civicrm-joomla, and civicrm-wordpress repositories have
+   branches named `master`, but the civicrm-drupal repository has a branch named
+   `7.x-master`).
 
 ## Housekeeping
 
