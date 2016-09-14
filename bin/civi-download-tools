@@ -577,7 +577,8 @@ check_php_ext hash recommended
 check_php_ext imap recommended
 check_php_ext intl recommended
 check_php_ext mbstring recommended
-check_php_ext mysql recommended
+check_php_ext mysql recommended    ## <= 4.7.11
+check_php_ext mysqli recommended   ## >= 4.7.12
 check_php_ext openssl recommended
 check_php_ext session recommended
 check_php_ext zip recommended
