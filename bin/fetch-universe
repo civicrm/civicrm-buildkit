@@ -1,0 +1,95 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * @param string $cwd Current working directory
+ * @param string $cmd Command to execute
+ * @return int
+ *   Exit code from command
+ */
+function run($cwd, $cmd) {
+  $old = getcwd();
+  fwrite(STDERR, "\nRUN[[$cwd]]: $cmd\n");
+  chdir($cwd);
+  passthru($cmd, $status);
+  chdir($old);
+  return $status;
+}
+
+########################################################################################
+if (empty($argv[1])) {
+  fwrite(STDERR, "Missing base directory\n");
+  fwrite(STDERR, "usage: fetch-universe <base-dir>\n");
+  exit(1);
+}
+
+$basedir = realpath($argv[1]);
+
+if (!file_exists($basedir) || !is_dir($basedir)) {
+  fwrite(STDERR, "Missing base directory\n");
+  fwrite(STDERR, "usage: fetch-universe <base-dir>\n");
+  exit(1);
+}
+
+
+########################################################################################
+$exts = json_decode(file_get_contents('https://civicrm.org/extdir/git-urls.json'), 1);
+$core = array(
+  'civicrm-core' => array(
+    'git_url' => 'https://github.com/civicrm/civicrm-core',
+  ),
+  'civicrm-drupal' => array(
+    'git_url' => 'https://github.com/civicrm/civicrm-drupal',
+  ),
+  'civicrm-joomla' => array(
+    'git_url' => 'https://github.com/civicrm/civicrm-joomla',
+  ),
+  'civicrm-l10n' => array(
+    'git_url' => 'https://github.com/civicrm/l10n',
+  ),
+  'civicrm-packages' => array(
+    'git_url' => 'https://github.com/civicrm/civicrm-packages',
+  ),
+  'civicrm-wordpress' => array(
+    'git_url' => 'https://github.com/civicrm/civicrm-wordpress',
+  ),
+);
+
+
+########################################################################################
+$statuses = array(); // array(string $key => int $code)
+
+$repos = array_merge($exts, $core);
+ksort($repos);
+foreach ($repos as $key => $ext) {
+  $dir = "$basedir/$key";
+  if (empty($ext['git_url'])) {
+    fwrite(STDERR, "$key does not have git_url\n");
+    $statuses[$key] = 1;
+  }
+  elseif (file_exists($dir)) {
+    $statuses[$key] = run($dir, "git pull");
+  }
+  else {
+    $statuses[$key] = run($basedir, sprintf("git clone %s %s", $ext['git_url'], $dir));
+  }
+
+  if (file_exists("$dir/composer.json") && $statuses[$key] == 0) {
+    $statuses[$key] = run($dir, "composer install");
+  }
+}
+
+
+########################################################################################
+$ok = array_keys(array_filter($statuses, function($val){
+  return ($val == 0);
+}));
+$err = array_keys(array_filter($statuses, function($val){
+  return ($val != 0);
+}));
+
+print_r(array(
+  'ok' => $ok,
+  'err' => $err,
+));
+exit(array_sum($statuses));
