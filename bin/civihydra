@@ -153,7 +153,7 @@ function hydra_show() {
       *-backdrop)
         subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}backdrop")
         login_url="$subsite_url/user/login"
-        install_url="$subsite_url/modules/civicrm/install/index.php"
+        install_url="$subsite_url/modules/civicrm/install/index.php?civicrm_install_type=backdrop"
         install_blurb=""
         ;;
 
