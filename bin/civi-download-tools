@@ -343,7 +343,7 @@ function do_system_trusty() {
 ###############################################################################
 function do_system_xenial() {
   set -e
-    PACKAGES="acl git wget unzip mysql-server mysql-client php7.0-cli php7.0-imap php7.0-ldap php7.0-curl php7.0-mysql php7.0-intl php7.0-gd php7.0-mcrypt php7.0-bcmath php7.0-mbstring php7.0-zip php7.0-xml apache2 libapache2-mod-php7.0 nodejs-legacy npm"
+    PACKAGES="acl git wget unzip mysql-server mysql-client php7.0-cli php7.0-imap php7.0-ldap php7.0-curl php7.0-mysql php7.0-intl php7.0-gd php7.0-mcrypt php7.0-bcmath php7.0-mbstring php7.0-soap php7.0-zip php7.0-xml apache2 libapache2-mod-php7.0 nodejs-legacy npm"
     echo "Detected \"Ubuntu Xenial 16.04\"."
     echo ""
     echo "Task: $PACKAGES"
@@ -583,6 +583,7 @@ fi
 check_php_ext mysqli recommended   ## >= 4.7.12
 check_php_ext openssl recommended
 check_php_ext session recommended
+check_php_ext soap recommended
 check_php_ext zip recommended
 
 check_command node recommended "WARNING: Failed to locate command \"node\". NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
