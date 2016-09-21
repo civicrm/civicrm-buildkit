@@ -71,7 +71,7 @@ foreach ($repos as $key => $ext) {
     $statuses[$key] = run($dir, "git pull");
   }
   else {
-    $statuses[$key] = run($basedir, sprintf("git clone %s %s", $ext['git_url'], $dir));
+    $statuses[$key] = run($basedir, sprintf("git clone %s %s", escapeshellarg($ext['git_url']), escapeshellarg($dir)));
   }
 
   if (file_exists("$dir/composer.json") && $statuses[$key] == 0) {
