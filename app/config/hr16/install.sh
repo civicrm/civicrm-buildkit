@@ -3,29 +3,6 @@
 ## install.sh -- Create config files and databases; fill the databases
 
 ##
-# Grants the given permission only to the admin roles (admin, civihr_admin)
-function admin_only_permission_for() {
-  for user_role in 'administrator' 'civihr_admin'; do
-    drush -y role-add-perm "$user_role" "$1"
-  done
-
-  for user_role in 'anonymous user' 'authenticated user' 'civihr_staff' \
-    'civihr_manager'
-  do
-    drush -y role-remove-perm "$user_role" "$1"
-  done
-}
-
-##
-# Grants the given permission for the admin and the civi users
-function admin_and_civi_users_permission_for() {
-  for user_role in 'administrator' 'civihr_staff' 'civihr_manager' 'civihr_admin'
-  do
-    drush -y role-add-perm "$user_role" "$1"
-  done
-}
-
-##
 # Creates the default CiviHR users
 function create_default_users() {
   drush -y user-create --password="civihr_staff" --mail="civihr_staff@compucorp.co.uk" "civihr_staff"
@@ -66,79 +43,10 @@ function disabled_unused_blocks() {
 # Installs CiviHR extensions
 function install_civihr() {
   ## (no sample data as default)
-  bash ${CIVI_CORE}/tools/extensions/civihr/bin/drush-install.sh
+  bash ${CIVI_CORE}/tools/extensions/civihr/bin/drush-install.sh ${CIVI_CORE}
 
   ## (with sample data - if required)
   # bash ${CIVI_CORE}/tools/extensions/civihr/bin/drush-install.sh --with-sample-data
-}
-
-##
-# Denies the given permission to all roles
-function no_permission_for() {
-  for user_role in 'anonymous user' 'authenticated user' 'administrator' \
-    'civihr_staff' 'civihr_manager' 'civihr_admin'
-  do
-    drush -y role-remove-perm "$user_role" "$1"
-  done
-}
-
-##
-# Gives the "edit" and "cancel" user permission to admin users for
-# every "civihr_" users and for users with no roles
-function set_edit_and_cancel_user_permissions() {
-  IDS=$(drush rls --fields=rid | awk '{if(NR>1)print}')
-
-  printf '%s\n' "$IDS" | while read line ; do
-    if [[ $line -gt 10 ]] || [[ $line == 2 ]] ; then
-        admin_only_permission_for "edit users with role $line"
-        admin_only_permission_for "cancel users with role $line"
-    fi
-  done
-}
-
-##
-# Gives the "Edit terms" and "Delete terms" for the "HR Resource type"
-# to admin users
-function set_hr_document_type_permissions() {
-  TAXONOMY_TERMS=$(drush tvl)
-
-  printf '%s\n' "$TAXONOMY_TERMS" | while read line ; do
-    if echo $line | grep -q "hr_resource_type"; then
-      HR_DOCUMENT_TYPE_ID=$(echo $line |cut -d' ' -f1)
-
-      admin_only_permission_for "edit terms in $HR_DOCUMENT_TYPE_ID"
-      admin_only_permission_for "delete terms in $HR_DOCUMENT_TYPE_ID"
-    fi
-  done
-}
-
-##
-# Set the drupal permissions
-function set_permissions() {
-  # In Drupal, CiviCRM's toolbar looks messy unless you also activate Drupal's "toolbar", so we grant "access toolbar".
-  admin_only_permission_for 'access toolbar'
-
-  admin_only_permission_for 'access CiviCRM'
-  admin_only_permission_for 'view the administration theme'
-  admin_only_permission_for 'create users'
-  admin_only_permission_for 'access users overview'
-  admin_only_permission_for 'assign civihr_admin role'
-  admin_only_permission_for 'assign civihr_staff role'
-  admin_only_permission_for 'assign civihr_manager role'
-  admin_only_permission_for 'create hr_documents content'
-  admin_only_permission_for 'access content overview'
-  admin_only_permission_for 'edit own hr_documents content'
-  admin_only_permission_for 'edit any hr_documents content'
-  admin_only_permission_for 'delete own hr_documents content'
-  admin_only_permission_for 'delete any hr_documents content'
-
-  admin_and_civi_users_permission_for 'change own password'
-
-  no_permission_for 'view my contact'
-  no_permission_for 'access Contact Dashboard'
-
-  set_edit_and_cancel_user_permissions
-  set_hr_document_type_permissions
 }
 
 ##
@@ -208,23 +116,13 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   #above# drush -y en login_destination
   drush -y scr "$SITE_CONFIG_DIR/install-login-destination.php"
 
-  ## Setup userprotect
-  #above# drush -y en userprotect
-  for perm in "change own e-mail" "change own openid" "change own password" ; do
-    drush role-remove-perm "authenticated user" "$perm"
-  done
-
   install_civihr
 
-  drush en front_page -y
-  drush en civicrmtheme -y
-  drush en civihr_employee_portal_features -y
-  drush en username_to_external_id -y
+  drush -y en front_page civicrmtheme civihr_employee_portal_features civihr_default_permissions username_to_external_id
 
   setup_themes
   create_default_users
   disabled_unused_blocks
-  set_permissions
   create_personal_location_type
   delete_name_and_address_profile
 
