@@ -38,8 +38,21 @@ $core = array(
   'civicrm-core' => array(
     'git_url' => 'https://github.com/civicrm/civicrm-core',
   ),
-  'civicrm-drupal' => array(
+  'civicrm-backdrop-1.x' => array(
+    'git_url' => 'https://github.com/civicrm/civicrm-backdrop',
+    'git_branch' => '1.x-master',
+  ),
+  'civicrm-drupal-6.x' => array(
     'git_url' => 'https://github.com/civicrm/civicrm-drupal',
+    'git_branch' => '6.x-master',
+  ),
+  'civicrm-drupal-7.x' => array(
+    'git_url' => 'https://github.com/civicrm/civicrm-drupal',
+    'git_branch' => '7.x-master',
+  ),
+  'civicrm-drupal-8.x' => array(
+    'git_url' => 'https://github.com/civicrm/civicrm-drupal',
+    'git_branch' => '8.x-master',
   ),
   'civicrm-joomla' => array(
     'git_url' => 'https://github.com/civicrm/civicrm-joomla',
@@ -54,6 +67,7 @@ $core = array(
     'git_url' => 'https://github.com/civicrm/civicrm-wordpress',
   ),
 );
+$deprecated = array('civicrm-drupal');
 
 
 ########################################################################################
@@ -71,7 +85,8 @@ foreach ($repos as $key => $ext) {
     $statuses[$key] = run($dir, "git pull");
   }
   else {
-    $statuses[$key] = run($basedir, sprintf("git clone %s %s", escapeshellarg($ext['git_url']), escapeshellarg($dir)));
+    $branchExpr = empty($ext['git_branch']) ? '' : ('-b ' . escapeshellarg($ext['git_branch']));
+    $statuses[$key] = run($basedir, sprintf("git clone %s %s %s", escapeshellarg($ext['git_url']), escapeshellarg($dir), $branchExpr));
   }
 
   if (file_exists("$dir/composer.json") && $statuses[$key] == 0) {
@@ -79,6 +94,13 @@ foreach ($repos as $key => $ext) {
   }
 }
 
+$msgs = array();
+foreach ($deprecated as $key) {
+  $dir = "$basedir/$key";
+  if (file_exists($dir)) {
+    $msgs[] = "The folder \"$key\" is deprecated. Consider removing it";
+  }
+}
 
 ########################################################################################
 $ok = array_keys(array_filter($statuses, function($val){
@@ -91,5 +113,6 @@ $err = array_keys(array_filter($statuses, function($val){
 print_r(array(
   'ok' => $ok,
   'err' => $err,
+  'msgs' => $msgs,
 ));
 exit(array_sum($statuses));
