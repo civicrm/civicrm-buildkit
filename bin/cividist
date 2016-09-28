@@ -121,6 +121,7 @@ function _cividist_build_hash() {
         regmv '\.zip$' "-${FILE_SUFFIX}.zip"
         regmv '\.tgz$' "-${FILE_SUFFIX}.tgz"
         regmv '\.tar\.gz$' "-${FILE_SUFFIX}.tar.gz"
+        regmv '\.json$' "-${FILE_SUFFIX}.json"
         echo "ReadmeName README.html" > .htaccess
         _cividist_build_readme > README.html
       popd >> /dev/null
