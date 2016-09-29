@@ -210,7 +210,8 @@ function cividist_aggregate() {
   pushd "$BY_DATE"
     find -mindepth 1 -maxdepth 1 -type d | while read DATEDIR ; do
       pushd "$DATEDIR" >> /dev/null
-        find -maxdepth 2 -name 'civicrm-*.json' | php "$PRJDIR/src/cividist-aggregate-json.php" "$1" > summary.json
+        local DATE=$(basename "$PWD")
+        find -maxdepth 2 -name 'civicrm-*.json' | php "$PRJDIR/src/cividist-aggregate-json.php" "$1/by-date/$DATE" > summary.json
       popd >> /dev/null
     done
   popd >> /dev/null

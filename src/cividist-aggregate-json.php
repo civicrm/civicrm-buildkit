@@ -13,7 +13,10 @@ foreach ($files as $file) {
   $versions[$name] = regen_tar_urls($versions[$name], dirname($file), "$baseUrl/$name");
 }
 
-echo json_encode($versions, defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT : 0);
+$jsonOptions = 0;
+if (defined('JSON_PRETTY_PRINT')) $jsonOptions |= JSON_PRETTY_PRINT;
+if (defined('JSON_UNESCAPED_SLASHES')) $jsonOptions |= JSON_UNESCAPED_SLASHES;
+echo json_encode($versions, $jsonOptions);
 
 ##############################
 
