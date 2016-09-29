@@ -1,8 +1,16 @@
 #!/bin/bash
 set -e
 
+function absdirname() {
+  pushd $(dirname $0) >> /dev/null
+    pwd
+  popd >> /dev/null
+}
+
 ###############################################################################
 ## Variables and constants
+BINDIR=$(absdirname "$0")
+PRJDIR=$(dirname "$BINDIR")
 MAX_AGE=${MAX_AGE:-14}
 MAX_REFS=${MAX_REFS:-10000}
 GIT_REMOTE=${GIT_REMOTE:-origin}
@@ -197,6 +205,20 @@ function cividist_prune() {
 }
 
 ###############################################################################
+## cividist_aggregate <folder>
+function cividist_aggregate() {
+  pushd "$BY_DATE"
+    find -mindepth 1 -maxdepth 1 -type d | while read DATEDIR ; do
+      pushd "$DATEDIR" >> /dev/null
+        find -maxdepth 2 -name 'civicrm-*.json' | php "$PRJDIR/src/cividist-aggregate-json.php" > summary.json
+      popd >> /dev/null
+    done
+  popd >> /dev/null
+
+
+}
+
+###############################################################################
 function cividist_help() {
   echo "Maintain a rotating list of nightly tarballs."
   echo
@@ -216,6 +238,9 @@ function cividist_help() {
   echo
   echo "Remove any old/orphaned tarballs"
   echo "  usage: $(basename $0) prune"
+  echo
+  echo "Aggregate any JSON summaries about releases"
+  echo "  usage: $(basename $0) aggregate"
   echo
   echo "See also: $DOCURL"
 }
@@ -301,6 +326,9 @@ pushd $SRC >> /dev/null
       ;;
     prune)
       cividist_prune
+      ;;
+    aggregate)
+      cividist_aggregate "$@"
       ;;
     *)
       cividist_help
