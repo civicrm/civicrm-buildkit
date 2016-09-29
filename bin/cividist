@@ -205,17 +205,15 @@ function cividist_prune() {
 }
 
 ###############################################################################
-## cividist_aggregate <folder>
+## cividist_aggregate <base-url>
 function cividist_aggregate() {
   pushd "$BY_DATE"
     find -mindepth 1 -maxdepth 1 -type d | while read DATEDIR ; do
       pushd "$DATEDIR" >> /dev/null
-        find -maxdepth 2 -name 'civicrm-*.json' | php "$PRJDIR/src/cividist-aggregate-json.php" > summary.json
+        find -maxdepth 2 -name 'civicrm-*.json' | php "$PRJDIR/src/cividist-aggregate-json.php" "$1" > summary.json
       popd >> /dev/null
     done
   popd >> /dev/null
-
-
 }
 
 ###############################################################################
@@ -240,7 +238,7 @@ function cividist_help() {
   echo "  usage: $(basename $0) prune"
   echo
   echo "Aggregate any JSON summaries about releases"
-  echo "  usage: $(basename $0) aggregate"
+  echo "  usage: $(basename $0) aggregate <base-url>"
   echo
   echo "See also: $DOCURL"
 }
@@ -328,7 +326,7 @@ pushd $SRC >> /dev/null
       cividist_prune
       ;;
     aggregate)
-      cividist_aggregate "$@"
+      cividist_aggregate "$2"
       ;;
     *)
       cividist_help
