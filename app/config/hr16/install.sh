@@ -107,18 +107,14 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   drush -y updatedb
   drush -y dis overlay shortcut color
-  drush -y en administerusersbyrole role_delegation subpermissions civicrm toolbar locale seven login_destination userprotect
+  drush -y en administerusersbyrole role_delegation subpermissions civicrm toolbar locale seven userprotect
 
   ## Setup welcome page
   drush -y scr "$SITE_CONFIG_DIR/install-welcome.php"
 
-  ## Setup login_destination
-  #above# drush -y en login_destination
-  drush -y scr "$SITE_CONFIG_DIR/install-login-destination.php"
-
   install_civihr
 
-  drush -y en front_page civicrmtheme civihr_employee_portal_features civihr_default_permissions username_to_external_id
+  drush -y en civicrmtheme civihr_employee_portal_features civihr_default_permissions username_to_external_id
 
   setup_themes
   create_default_users
