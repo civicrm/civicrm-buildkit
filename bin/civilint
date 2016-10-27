@@ -132,7 +132,10 @@ fi
 ## Capture the list of files
 TMP=$(mktempdir)
 if [ -z "$1" ]; then
-  if [ ! -d .git ]; then
+  GITROOT=$(git rev-parse --show-toplevel)
+  if [ -d "$GITROOT" ]; then
+    cd "$GITROOT"
+  else
     echo "ERROR: Cannot check for uncommitted changes in git. Please change to the git root."
     echo
     show_help
