@@ -37,6 +37,7 @@ bin/drush8
 bin/git-php-symbol-diff
 bin/git-scan
 bin/git-scan.bat
+bin/grunt
 bin/hub
 bin/joomla
 bin/joomla.bat
@@ -53,6 +54,8 @@ bin/phpcs.bat
 bin/phpunit
 bin/phpunit.bat
 bin/phpunit4
+bin/protractor
+bin/webdriver-manager
 bin/wp
 bin/wp.bat
 build/
