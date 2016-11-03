@@ -37,6 +37,7 @@ bin/drush8
 bin/git-php-symbol-diff
 bin/git-scan
 bin/git-scan.bat
+bin/grunt
 bin/hub
 bin/joomla
 bin/joomla.bat
