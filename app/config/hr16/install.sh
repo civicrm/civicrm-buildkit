@@ -114,7 +114,7 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   install_civihr
 
-  drush -y en civicrmtheme civihr_employee_portal_features civihr_default_permissions username_to_external_id
+  drush -y en civicrmtheme civihr_employee_portal_features civihr_default_permissions
 
   setup_themes
   create_default_users
