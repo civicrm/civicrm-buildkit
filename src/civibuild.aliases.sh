@@ -74,7 +74,8 @@ function civibuild_alias_resolve() {
     hr13)        SITE_TYPE=hrdemo           ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviHR 1.3 Demo"                   ; HR_VERSION=1.3        ;;
     hr14)        SITE_TYPE=hrdemo           ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviHR 1.4 Demo"                   ; HR_VERSION=1.4        ;;
     hr15)        SITE_TYPE=hr15             ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviHR 1.5 Demo"                   ; HR_VERSION=1.5     ;;
-    hr16)        SITE_TYPE=hr16             ; CIVI_VERSION=4.7.9     ; CMS_TITLE="CiviHR 1.6 Demo"                   ; HR_VERSION=master    ;;
+    hr16)        SITE_TYPE=hr16             ; CIVI_VERSION=4.7.9     ; CMS_TITLE="CiviHR 1.6 Demo"                   ; HR_VERSION=master    ;
+NO_SAMPLE_DATA=1       ;;
     hrmaster)    SITE_TYPE=hr15             ; CIVI_VERSION=master    ; CMS_TITLE="CiviHR Sandbox"                    ; HR_VERSION=master     ;;
 
     bempty)      SITE_TYPE=backdrop-empty   ; CIVI_VERSION=none      ; CMS_TITLE="Backdrop Sandbox"                  ;;
