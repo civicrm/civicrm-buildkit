@@ -1,0 +1,50 @@
+#!/bin/bash
+
+function usage {
+  echo
+  echo Usage:
+  echo "  cd build/dist/src"
+  echo "  civi-auto-branch origin/4.5.6 myorigin/4.5.6.7"
+  echo 
+  echo "build/dist/src" contains the stock buildkit directories
+  echo "origin/4.5.6" refers to upstream branch origin
+  echo "myorigin/4.5.6.7" refers to your new branch
+  echo
+}
+
+if [[ ("$1" == "" || "$2" == "") ]] ; then
+  usage
+  exit 1
+fi
+
+if [[ ! ("$1" =~ .*/.* || "$2" =~ .*/.*) ]] ; then
+  usage
+  exit 1
+fi
+
+SRC_REMOTE=$(dirname $1)
+SRC_BRANCH=$(basename $1)
+TGT_REMOTE=$(dirname $2)
+TGT_BRANCH=$(basename $2)
+
+## ex: do_auto_branch <path> <prefix>
+function do_auto_branch {
+  pushd $1
+    if [ ! -e .git/refs/remotes/$TGT_REMOTE/$TGT_BRANCH ]; then
+      echo "Creating branch $2$TGT_BRANCH from $SRC_REMOTE/$2$SRC_BRANCH"
+      git branch $2$TGT_BRANCH $SRC_REMOTE/$2$SRC_BRANCH 
+    else
+      echo "Branch $TGT_REMOTE/$TGT_BRANCH exists locally, not creating."
+    fi
+    echo "Pushing $2$TGT_BRANCH to $TGT_REMOTE"
+    git push $TGT_REMOTE $2$TGT_BRANCH
+  popd
+}
+
+do_auto_branch "."
+do_auto_branch "packages"
+do_auto_branch "backdrop" 1.x-
+do_auto_branch "drupal" 7.x-
+do_auto_branch "drupal" 6.x-
+do_auto_branch "joomla"
+do_auto_branch "WordPress"
