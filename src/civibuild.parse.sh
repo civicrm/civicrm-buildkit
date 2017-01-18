@@ -261,6 +261,11 @@ function civibuild_parse() {
         shift
         ;;
 
+      --no-sample-data)
+        NO_SAMPLE_DATA="$1"
+        shift
+        ;;
+
       --hr-ver)
         HR_VERSION="$1"
         shift

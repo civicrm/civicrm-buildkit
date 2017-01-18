@@ -34,6 +34,11 @@ Description: Download and/or install the application
   --demo-pass         Password for the CMS's demo user
   --demo-email        Email of the CMS's demo user
 
+  --sample-data       If set : will install civicrm along with sample data  
+                      (with civicrm_generated.sql).
+                      If is not set : will install civicrm with required
+                      data only (with civicrm_data.sql).
+
   --force             If necessary, destroy pre-existing files/directories/DBs
                       (For "reinstall", "--force" is implicit.)
 
