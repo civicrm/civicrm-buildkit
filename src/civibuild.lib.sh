@@ -472,13 +472,13 @@ function civicrm_install() {
 
   pushd "$CIVI_CORE" >> /dev/null
     ## Does this build include development support (eg git or tarball-based)?
-    if [ -e "xml" -a -e "bin/setup.sh" -n "$NO_SAMPLE_DATA" ]; then
+    if [ -e "xml" -a -e "bin/setup.sh" -a -n "$NO_SAMPLE_DATA" ]; then
       env SITE_ID="$SITE_ID" bash ./bin/setup.sh -Dgsdf
-    elif [ -e "xml" -a -e "bin/setup.sh" -z "$NO_SAMPLE_DATA" ]; then
+    elif [ -e "xml" -a -e "bin/setup.sh" -a -z "$NO_SAMPLE_DATA" ]; then
       env SITE_ID="$SITE_ID" bash ./bin/setup.sh
-    elif [ -e "sql/civicrm.mysql" -a -e "sql/civicrm_generated.mysql" -z "$NO_SAMPLE_DATA"]; then
+    elif [ -e "sql/civicrm.mysql" -a -e "sql/civicrm_generated.mysql" -a -z "$NO_SAMPLE_DATA"]; then
       cat sql/civicrm.mysql sql/civicrm_generated.mysql | eval mysql $CIVI_DB_ARGS
-    elif [ -e "sql/civicrm.mysql" -a -e "sql/civicrm_data.mysql" -n "$NO_SAMPLE_DATA" ]; then
+    elif [ -e "sql/civicrm.mysql" -a -e "sql/civicrm_data.mysql" -a -n "$NO_SAMPLE_DATA" ]; then
       cat sql/civicrm.mysql sql/civicrm_data.mysql | eval mysql $CIVI_DB_ARGS
     else
       echo "Failed to locate civi SQL files"
