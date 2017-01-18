@@ -263,6 +263,7 @@ PERSISTENT_VARS="
 ## Declare Actions
 ## Aliases must also be declared
 DECLARED_ACTIONS="
+  cache-warmup
   clone-create clone-destroy clone-show
   create
   destroy

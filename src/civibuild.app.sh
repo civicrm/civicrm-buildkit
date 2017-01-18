@@ -64,6 +64,9 @@ Description: Create or restore a snapshot of the CMS+CRM DBs
   --civi-sql <sql-file>  The path to a SQL backup of the CiviCRM DB [Optional]
   --no-civi              Skip resetting the CiviCRM DB [Optional]
 
+Syntax: $APP cache-warmup
+Description: Proactively update git cache
+
 Syntax: $APP clone-create <build-name>[/<ms-id>] [options] [snapshot-options]
 Syntax: $APP clone-show <build-name>[/<ms-id>] [options]
 Syntax: $APP clone-destroy <build-name>[/<ms-id>] [options]
