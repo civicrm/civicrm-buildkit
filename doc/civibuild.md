@@ -60,8 +60,10 @@ configurations.  For example, at time of writing, it includes:
  * `backdrop-clean`: A bare, "out-of-the-box" installation of Backdrop+CiviCRM
  * `backdrop-demo`: A demo site running Backdrop and CiviCRM
  * `backdrop-empty`: An empty Backdrop site (without CiviCRM). Useful for testing tarball installation.
- * `drupal-clean`: A bare, "out-of-the-box" installation of Drupal+CiviCRM
- * `drupal-demo`: A demo site running Drupal and CiviCRM
+ * `drupal8-clean`: A bare, "Out of the box" Installation of Druapl8+CiviCRM.
+ * `druapl8-demo` : A demo site running Drupal8 and CiviCRM.
+ * `drupal-clean`: A bare, "out-of-the-box" installation of Drupal+CiviCRM.
+ * `drupal-demo`: A demo site running Drupal and CiviCRM.
  * `drupal-empty`: An empty Drupal site (without CiviCRM). Useful for testing tarball installation.
  * `joomla-empty`: An empty Joomla site (without CiviCRM). Useful for testing tarball installation.
  * `wp-demo`: A demo site running WordPress and CiviCRM
