@@ -36,43 +36,7 @@ civicrm_install
 ###############################################################################
 ## Extra configuration
 pushd "$CMS_ROOT"
-drush -y en \
-  civicrm \
-  toolbar \
-  garland \
-  adyen_audit \
-  amazon_audit \
-  astropay_audit \
-  contribution_audit \
-  contribution_tracking \
-  environment_indicator \
-  exchange_rates \
-  ganglia_reporter \
-  globalcollect_audit \
-  large_donation \
-  log_audit \
-  offline2civicrm \
-  paypal_audit \
-  queue2civicrm \
-  recurring \
-  recurring_globalcollect \
-  syslog \
-  thank_you \
-  wmf_audit \
-  wmf_campaigns \
-  wmf_civicrm \
-  wmf_common \
-  wmf_communication \
-  wmf_contribution_search \
-  wmf_fredge_qc \
-  wmf_logging \
-  wmf_refund_qc \
-  wmf_reports \
-  wmf_test_settings \
-  wmf_unsubscribe \
-  wmf_unsubscribe_qc \
-  wmf_zendesk_reports \
-  worldpay_audit
+drush -y en `cat sites/default/enabled_modules`
 
 drush -y updatedb
 
