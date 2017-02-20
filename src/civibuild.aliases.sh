@@ -23,14 +23,12 @@
 function civibuild_alias_resolve() {
   IS_ALIAS=1
   case "$1" in
-    d43)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.3       ; CMS_TITLE="CiviCRM 4.3 Demo on Drupal"        ; DISC_VERSION=4.4         ;;
     d44)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.4       ; CMS_TITLE="CiviCRM 4.4 Demo on Drupal"        ; VOL_VERSION=4.4-1.x      ; DISC_VERSION=4.4      ;;
     d45)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviCRM 4.5 Demo on Drupal"        ; VOL_VERSION=v4.5-1.4.0   ; DISC_VERSION=4.4      ;;
     d46)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=4.6       ; CMS_TITLE="CiviCRM 4.6 Demo on Drupal"        ; VOL_VERSION=v4.5-1.4.0   ; DISC_VERSION=master   ; RULES_VERSION=master   ;;
     d47)         SITE_TYPE=drupal-demo      ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM 4.7 Demo on Drupal"        ; VOL_VERSION=master       ; DISC_VERSION=master   ;;
     dmaster)     SITE_TYPE=drupal-demo      ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal"         ; VOL_VERSION=master       ; DISC_VERSION=master   ;;
 
-    d7-43)       SITE_TYPE=drupal-clean     ; CIVI_VERSION=4.3       ; CMS_TITLE="CiviCRM 4.3 Demo on Drupal 7"      ;;
     d7-44)       SITE_TYPE=drupal-clean     ; CIVI_VERSION=4.4       ; CMS_TITLE="CiviCRM 4.4 Demo on Drupal 7"      ;;
     d7-45)       SITE_TYPE=drupal-clean     ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviCRM 4.5 Demo on Drupal 7"      ;;
     d7-46)       SITE_TYPE=drupal-clean     ; CIVI_VERSION=4.6       ; CMS_TITLE="CiviCRM 4.6 Demo on Drupal 7"      ;;
@@ -43,21 +41,18 @@ function civibuild_alias_resolve() {
 #   d8-47)       SITE_TYPE=drupal8-demo     ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM 4.7 Demo on Drupal 8"      ; VOL_VERSION=master       ; DISC_VERSION=master   ;;
     d8-master)   SITE_TYPE=drupal8-clean    ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal 8"       ;;
 
-    dc43)        SITE_TYPE=drupal-clean     ; CIVI_VERSION=4.3       ; CMS_TITLE="CiviCRM 4.3 Clean on Drupal"       ;;
     dc44)        SITE_TYPE=drupal-clean     ; CIVI_VERSION=4.4       ; CMS_TITLE="CiviCRM 4.4 Clean on Drupal"       ;;
     dc45)        SITE_TYPE=drupal-clean     ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviCRM 4.5 Clean on Drupal"       ;;
     dc46)        SITE_TYPE=drupal-clean     ; CIVI_VERSION=4.6       ; CMS_TITLE="CiviCRM 4.6 Clean on Drupal"       ;;
     dc47)        SITE_TYPE=drupal-clean     ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM 4.7 Clean on Drupal"       ;;
     dcmaster)    SITE_TYPE=drupal-clean     ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Clean Sandbox on Drupal"   ;;
 
-    wp43)        SITE_TYPE=wp-demo          ; CIVI_VERSION=4.3       ; CMS_TITLE="CiviCRM 4.3 Demo on WordPress"     ;;
     wp44)        SITE_TYPE=wp-demo          ; CIVI_VERSION=4.4       ; CMS_TITLE="CiviCRM 4.4 Demo on WordPress"     ; VOL_VERSION=4.4-1.x    ;;
     wp45)        SITE_TYPE=wp-demo          ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviCRM 4.5 Demo on WordPress"     ; VOL_VERSION=v4.5-1.4.0 ;;
     wp46)        SITE_TYPE=wp-demo          ; CIVI_VERSION=4.6       ; CMS_TITLE="CiviCRM 4.6 Demo on WordPress"     ; VOL_VERSION=v4.5-1.4.0 ;;
     wp47)        SITE_TYPE=wp-demo          ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM 4.7 Demo on WordPress"     ; VOL_VERSION=master     ;;
     wpmaster)    SITE_TYPE=wp-demo          ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on WordPress"      ; VOL_VERSION=master     ;;
 
-    wp-43)       SITE_TYPE=wp-demo          ; CIVI_VERSION=4.3       ; CMS_TITLE="CiviCRM 4.3 Demo on WordPress"     ;;
     wp-44)       SITE_TYPE=wp-demo          ; CIVI_VERSION=4.4       ; CMS_TITLE="CiviCRM 4.4 Demo on WordPress"     ; VOL_VERSION=4.4-1.x    ;;
     wp-45)       SITE_TYPE=wp-demo          ; CIVI_VERSION=4.5       ; CMS_TITLE="CiviCRM 4.5 Demo on WordPress"     ; VOL_VERSION=v4.5-1.4.0 ;;
     wp-46)       SITE_TYPE=wp-demo          ; CIVI_VERSION=4.6       ; CMS_TITLE="CiviCRM 4.6 Demo on WordPress"     ; VOL_VERSION=v4.5-1.4.0 ;;
