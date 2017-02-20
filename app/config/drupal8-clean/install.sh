@@ -47,10 +47,9 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   drush8 cc drush -y
 
   ## Setup CiviCRM
-  echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign"]}' \
-    | drush8 cvapi setting.create --in=json
-  drush8 cvapi setting.create versionCheck=0 debug=1
-  drush8 cvapi MailSettings.create id=1 is_default=1 domain=example.org debug=1
+  #echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign"]}' \
+  #  | drush8 cvapi setting.create --in=json
+  #civicrm_apply_demo_defaults
 
   ## Setup theme
   #above# drush8 -y en garland

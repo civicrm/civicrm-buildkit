@@ -29,4 +29,5 @@ civicrm_install
 
 pushd "$CMS_ROOT" >> /dev/null
   php "$SITE_CONFIG_DIR/module-enable.php" civicrm
+  civicrm_apply_demo_defaults
 popd >> /dev/null
