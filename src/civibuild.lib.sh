@@ -692,7 +692,7 @@ PHP
 
     ## Create WP data dirs
     cvutil_mkdir "wp-content/plugins/modules"
-    amp datadir "wp-content/plugins/files"
+    amp datadir "wp-content/plugins/files" "wp-content/uploads/"
 
     cvutil_inject_settings "wp-config.php" "wp-config.d"
   popd >> /dev/null
