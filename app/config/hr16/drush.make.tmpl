@@ -218,7 +218,7 @@ projects[views_json_query][patch][] = "https://raw.githubusercontent.com/compuco
 projects[views_data_export][subdir] = civihr-contrib-required
 projects[views_data_export][version] = 3.1
 
-projects[views_bulk_operations][subdir] = civihr-contrib-required 
+projects[views_bulk_operations][subdir] = civihr-contrib-required
 projects[views_bulk_operations][version] = 3.3
 
 projects[browserclass][subdir] = civihr-contrib-required
@@ -274,6 +274,20 @@ libraries[civihr_tasks][download][type] = git
 libraries[civihr_tasks][download][url] = https://github.com/compucorp/civihr-tasks-assignments
 libraries[civihr_tasks][download][branch] = %%HR_VERSION%%
 libraries[civihr_tasks][overwrite] = TRUE
+
+; ****************************************
+; Compucorp forks of civicrm modules (for internal development cycle)
+; ****************************************
+
+libraries[org.civicrm.shoreditch][destination] = modules/civicrm/tools/extensions
+libraries[org.civicrm.shoreditch][download][type] = git
+libraries[org.civicrm.shoreditch][download][url] = https://github.com/compucorp/org.civicrm.shoreditch
+libraries[org.civicrm.shoreditch][overwrite] = TRUE
+
+libraries[org.civicrm.styleguide][destination] = modules/civicrm/tools/extensions
+libraries[org.civicrm.styleguide][download][type] = git
+libraries[org.civicrm.styleguide][download][url] = https://github.com/compucorp/org.civicrm.styleguide
+libraries[org.civicrm.styleguide][overwrite] = TRUE
 
 ; ****************************************
 ; Compucorp custom libraries for Drupal
