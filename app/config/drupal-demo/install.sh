@@ -46,8 +46,7 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign","CiviGrant"]}' \
     | drush cvapi setting.create --in=json
   ## Note: CiviGrant disabled by default. If you enable, update the permissions as well.
-  drush cvapi setting.create versionCheck=0 debug=1
-  drush cvapi MailSettings.create id=1 is_default=1 domain=example.org debug=1
+  civicrm_apply_demo_defaults
 
   ## Setup theme
   #above# drush -y en garland

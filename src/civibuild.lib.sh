@@ -498,6 +498,35 @@ EOSQL
 }
 
 ###############################################################################
+## Appy more default values
+function civicrm_apply_demo_defaults() {
+  if cv ev 'exit(version_compare(CRM_Utils_System::version(), "4.7.0", "<") ?0:1);' ; then
+    cv api setting.create versionCheck=0 debug=1
+  fi
+  cv api MailSettings.create id=1 is_default=1 domain=example.org debug=1
+  if [ -z "$NO_SAMPLE_DATA" ]; then
+    cv -vv ev 'eval(file_get_contents("php://stdin"));' <<EOPHP
+      \$cid = civicrm_api3('Domain', 'getvalue', array(
+        'id' => 1,
+        'return' => 'contact_id'
+      ));
+      civicrm_api3('Address', 'create', array(
+        'contact_id' => \$cid,
+        'location_type_id' => 1,
+        'street_address' => '123 Some St',
+        'city' => 'Hereville',
+        'country_id' => 'US',
+        'state_province_id' => 'California',
+        'postal_code' => '94100',
+        'options' => array(
+          'match' => array('contact_id', 'location_type_id'),
+        ),
+      ));
+EOPHP
+  fi
+}
+
+###############################################################################
 ## Generate a "civicrm.settings.php" file
 function civicrm_make_settings_php() {
   cvutil_assertvars civicrm_make_settings_php CIVI_SETTINGS CIVI_CORE CIVI_UF CIVI_TEMPLATEC CMS_URL CIVI_SITE_KEY
