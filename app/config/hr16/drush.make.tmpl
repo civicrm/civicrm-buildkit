@@ -18,10 +18,6 @@ projects[] = drupal
 ; CiviCRM core
 ; ****************************************
 
-; IMPORTANT: replace "github.com/civicrm" by your own fork of CiviCRM.
-; This will make it easier to submit pull-requests for patches.
-; see: http://wiki.civicrm.org/confluence/display/CRMDOC/Github+for+CiviCRM
-
 libraries[civicrmdrupal][destination] = modules
 libraries[civicrmdrupal][directory_name] = civicrm/drupal
 libraries[civicrmdrupal][download][type] = git
@@ -43,20 +39,6 @@ libraries[civihr][download][url] = %%CACHE_DIR%%/civicrm/civihr.git
 libraries[civihr][download][branch] = %%HR_VERSION%%
 libraries[civihr][overwrite] = TRUE
 
-; Download available l10n releases (may be outdated)
-; libraries[civicrm_l10n][destination] = modules
-; libraries[civicrm_l10n][directory_name] = civicrm/l10n/fr_CA/LC_MESSAGES/
-; libraries[civicrm_l10n][download][type] = get
-; libraries[civicrm_l10n][download][url] = "https://raw.github.com/civicrm/l10n/master/po/fr_CA/civicrm.mo"
-; libraries[civicrm_l10n][overwrite] = TRUE
-
-; Overwrite .mo files with latest version from SVN
-; libraries[civicrm_l10n_latest][destination] = modules
-; libraries[civicrm_l10n_latest][directory_name] = civicrm/l10n
-; libraries[civicrm_l10n_latest][download][type] = svn
-; libraries[civicrm_l10n_latest][download][url] = http://svn.civicrm.org/l10n/trunk/
-; libraries[civicrm_l10n_latest][overwrite] = TRUE
-
 libraries[civicrm][destination] = modules
 libraries[civicrm][directory_name] = civicrm
 libraries[civicrm][download][type] = git
@@ -70,7 +52,6 @@ libraries[civicrm][overwrite] = TRUE
 
 projects[civicrm_error][subdir] = contrib
 projects[civicrm_error][version] = 2.0-rc3
-
 
 projects[libraries][subdir] = contrib
 projects[libraries][version] = 2.2
@@ -218,7 +199,7 @@ projects[views_json_query][patch][] = "https://raw.githubusercontent.com/compuco
 projects[views_data_export][subdir] = civihr-contrib-required
 projects[views_data_export][version] = 3.1
 
-projects[views_bulk_operations][subdir] = civihr-contrib-required 
+projects[views_bulk_operations][subdir] = civihr-contrib-required
 projects[views_bulk_operations][version] = 3.3
 
 projects[browserclass][subdir] = civihr-contrib-required
@@ -260,20 +241,28 @@ libraries[civihr_employee_portal_theme][overwrite] = TRUE
 projects[bootstrap][version] = "3.1"
 
 ; ****************************************
-; Compucorp custom civicrm modules (not required anymore as the extensions are moved to civihr repo)
+; Compucorp custom civicrm extensions
 ; ****************************************
-
-; libraries[civihr_compucorp][destination] = modules/civicrm/tools/extensions
-; libraries[civihr_compucorp][download][type] = git
-; libraries[civihr_compucorp][download][url] = https://github.com/compucorp/civihr-custom-civi-extensions
-; libraries[civihr_compucorp][download][branch] = master
-; libraries[civihr_compucorp][overwrite] = TRUE
 
 libraries[civihr_tasks][destination] = modules/civicrm/tools/extensions
 libraries[civihr_tasks][download][type] = git
 libraries[civihr_tasks][download][url] = https://github.com/compucorp/civihr-tasks-assignments
 libraries[civihr_tasks][download][branch] = %%HR_VERSION%%
 libraries[civihr_tasks][overwrite] = TRUE
+
+; ****************************************
+; Compucorp forks of civicrm modules (for internal development cycle)
+; ****************************************
+
+libraries[org.civicrm.shoreditch][destination] = modules/civicrm/tools/extensions
+libraries[org.civicrm.shoreditch][download][type] = git
+libraries[org.civicrm.shoreditch][download][url] = https://github.com/compucorp/org.civicrm.shoreditch
+libraries[org.civicrm.shoreditch][overwrite] = TRUE
+
+libraries[org.civicrm.styleguide][destination] = modules/civicrm/tools/extensions
+libraries[org.civicrm.styleguide][download][type] = git
+libraries[org.civicrm.styleguide][download][url] = https://github.com/compucorp/org.civicrm.styleguide
+libraries[org.civicrm.styleguide][overwrite] = TRUE
 
 ; ****************************************
 ; Compucorp custom libraries for Drupal
