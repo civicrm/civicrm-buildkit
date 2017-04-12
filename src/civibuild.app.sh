@@ -21,6 +21,7 @@ Description: Download and/or install the application
   --civi-ver <ver>    The branch or tag of CiviCRM desired (master, 4.4, 4.3, 4.3.0, etc) [Optional]
   --cms-ver <ver>     The release of the CMS desired [Optional]
   --dl <path>=<url>   Download and extract zip/tar files [Optional]
+  --ext <ext>         Download an extension [Optional]
   --patch <spec>      Apply git patch immediately after downloading [Optional]
                       Ex: "https://github.com/civicrm/civicrm-core/pull/8022"
                       Ex: ";civicrm-packages;/my/local/change-for-packages.patch"
@@ -206,6 +207,15 @@ function civibuild_app_install() {
     IS_INSTALLED=1
   else
     echo "Already installed ${SITE_NAME}/${SITE_ID}"
+  fi
+
+  if [ -n "$EXT_DLS" ]; then
+    pushd "$WEB_ROOT" >> /dev/null
+      if ! cv dl -k $EXT_DLS ; then
+        echo "Failed to download or enable extensions ($EXT_DLS)"
+        exit 92
+      fi
+    popd >> /dev/null
   fi
 
   _amp_snapshot_restore_test

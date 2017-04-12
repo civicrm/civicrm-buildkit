@@ -100,6 +100,9 @@ PATCHES=
 ## Ex: "relpath=https://example.com/file.zip"
 EXTRA_DLS=
 
+## Space-delimited list of extensions to download (via cv/civicrm.org)
+EXT_DLs=
+
 ## A template for picking the default URL (using variable "SITE_NAME").
 ## Ex: "http://%SITE_NAME%.dev"
 ## Ex: "%AUTO%"
@@ -255,6 +258,7 @@ PERSISTENT_VARS="
   TEST_DB_DSN TEST_DB_USER TEST_DB_PASS TEST_DB_HOST TEST_DB_PORT TEST_DB_NAME TEST_DB_ARGS
   CIVI_SETTINGS CIVI_FILES CIVI_TEMPLATEC CIVI_UF
   IS_INSTALLED
+  EXT_DLS
   SITE_TOKEN SITE_TYPE
 "
 # ignore: runtime options like CIVI_SQL_SKIP and FORCE_DOWNLOAD
