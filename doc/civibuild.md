@@ -25,6 +25,8 @@ in missing parts.
 
 > Tip: If you haven't already downloaded buildkit, see [README.md](../README.md).
 
+> Tip: Login as a non-`root` user who has `sudo` permission. This will ensure that new files are owned by a regular user, and (if necessary) it enables `civibuild` to restart Apache or edit `/etc/hosts`.
+
 The first build requires only a few commands.  However, these are also the
 hardest commands -- you need to provide detailed information about the
 Apache/MySQL/PHP systems, and you may need to try them a few times.
