@@ -66,6 +66,19 @@ $core = array(
   'civicrm-wordpress' => array(
     'git_url' => 'https://github.com/civicrm/civicrm-wordpress',
   ),
+  'civihr' => array(
+    'git_url' => 'https://github.com/civicrm/civihr',
+    'git_branch' => 'staging',
+  ),
+  'civix' => array(
+    'git_url' => 'https://github.com/totten/civix',
+  ),
+  'civistrings' => array(
+    'git_url' => 'https://github.com/civicrm/civistrings',
+  ),
+  'cv' => array(
+    'git_url' => 'https://github.com/civicrm/cv',
+  ),
 );
 $deprecated = array('civicrm-drupal');
 
