@@ -76,6 +76,7 @@ configurations.  For example, at time of writing, it includes:
  * `messages`: A backend service for delivering in-app messages (eg "Getting Started").
  * `extdir`: A mock website akin to civicrm.org/extdir/ . Useful for testing the extension download process.
  * `dist`: A website containing nightly builds akin to dist.civicrm.org. Useful for preparing CiviCRM tarballs.
+ * `distmgr`: A service which manages redirects and report-backs for the download site.
  * `l10n`: WIP - A build environment for creating translation files.
  * `joomla-demo`: WIP/incomplete/broken
 
