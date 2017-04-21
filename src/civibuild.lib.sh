@@ -476,7 +476,7 @@ function civicrm_install() {
       env SITE_ID="$SITE_ID" bash ./bin/setup.sh -Dgsdf
     elif [ -e "xml" -a -e "bin/setup.sh" -a -z "$NO_SAMPLE_DATA" ]; then
       env SITE_ID="$SITE_ID" bash ./bin/setup.sh
-    elif [ -e "sql/civicrm.mysql" -a -e "sql/civicrm_generated.mysql" -a -z "$NO_SAMPLE_DATA"]; then
+    elif [ -e "sql/civicrm.mysql" -a -e "sql/civicrm_generated.mysql" -a -z "$NO_SAMPLE_DATA" ]; then
       cat sql/civicrm.mysql sql/civicrm_generated.mysql | eval mysql $CIVI_DB_ARGS
     elif [ -e "sql/civicrm.mysql" -a -e "sql/civicrm_data.mysql" -a -n "$NO_SAMPLE_DATA" ]; then
       cat sql/civicrm.mysql sql/civicrm_data.mysql | eval mysql $CIVI_DB_ARGS
