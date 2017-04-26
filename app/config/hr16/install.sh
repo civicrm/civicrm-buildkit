@@ -13,6 +13,8 @@ function create_default_users() {
 
   drush -y user-create --password="civihr_admin" --mail="civihr_admin@compucorp.co.uk" "civihr_admin"
   drush -y user-add-role civihr_admin "civihr_admin"
+
+  drush -y user-add-role civihr_admin_local "civihr_admin_local"
 }
 
 ##
