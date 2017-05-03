@@ -321,7 +321,7 @@ function do_system_precise() {
 ###############################################################################
 function do_system_trusty() {
   set -e
-    PACKAGES="acl git wget unzip zip mysql-server mysql-client php5-cli php5-imap php5-ldap php5-curl php5-mysql php5-intl php5-gd php5-mcrypt php-apc apache2 libapache2-mod-php5 nodejs-legacy npm"
+    PACKAGES="acl curl git wget unzip zip mysql-server mysql-client php5-cli php5-imap php5-ldap php5-curl php5-mysql php5-intl php5-gd php5-mcrypt php-apc apache2 libapache2-mod-php5"
     echo "Detected \"Ubuntu Trusty 14.04\"."
     echo ""
     echo "Recommended packages: $PACKAGES"
@@ -329,6 +329,8 @@ function do_system_trusty() {
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
       sudo apt-get update
       sudo apt-get -y install $PACKAGES
+      sudo curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+      sudo apt-get install -y nodejs
       sudo php5enmod mcrypt
       sudo php5enmod imap
       sudo a2enmod rewrite
