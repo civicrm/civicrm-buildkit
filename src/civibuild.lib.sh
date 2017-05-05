@@ -356,14 +356,14 @@ function amp_snapshot_create() {
     echo "[[Save CMS DB ($CMS_DB_NAME) to file ($CMS_SQL)]]"
     cvutil_assertvars amp_snapshot_create CMS_SQL CMS_DB_ARGS CMS_DB_NAME
     cvutil_makeparent "$CMS_SQL"
-    eval mysqldump $CMS_DB_ARGS | gzip > "$CMS_SQL"
+    amp sql:dump --root="$CMS_ROOT" -Ncms | gzip > "$CMS_SQL"
   fi
 
   if [ -z "$CIVI_SQL_SKIP" ]; then
     echo "[[Save Civi DB ($CIVI_DB_NAME) to file ($CIVI_SQL)]]"
     cvutil_assertvars amp_snapshot_create CIVI_SQL CIVI_DB_ARGS CIVI_DB_NAME
     cvutil_makeparent "$CIVI_SQL"
-    eval mysqldump $CIVI_DB_ARGS | gzip > "$CIVI_SQL"
+    amp sql:dump --root="$CMS_ROOT" -Ncivi | gzip > "$CIVI_SQL"
   fi
 }
 
@@ -395,7 +395,7 @@ function _amp_snapshot_restore_cms() {
     echo "  NEW: $CMS_DB_DSN" 1>&2
   fi
 
-  _amp_snapshot_restore CMS "$CMS_SQL"
+  _amp_snapshot_restore "$CMS_ROOT" cms "$CMS_SQL"
 }
 
 function _amp_snapshot_restore_civi() {
@@ -408,7 +408,7 @@ function _amp_snapshot_restore_civi() {
     echo "  NEW: $CIVI_DB_DSN" 1>&2
   fi
 
-  _amp_snapshot_restore CIVI "$CIVI_SQL"
+  _amp_snapshot_restore "$CMS_ROOT" civi "$CIVI_SQL"
 }
 
 function _amp_snapshot_restore_test() {
@@ -421,14 +421,14 @@ function _amp_snapshot_restore_test() {
     echo "  NEW: $TEST_DB_DSN" 1>&2
   fi
 
-  _amp_snapshot_restore TEST "$CIVI_SQL"
+  _amp_snapshot_restore "$CMS_ROOT" test "$CIVI_SQL"
 }
 
 ## Load a sql snapshot into the given DB
 ## usage: _amp_snapshot_restore <DB_PREFIX> <sql-file>
-## example: _amp_snapshot_restore CMS "/path/to/cms.sql.gz"
-## example: _amp_snapshot_restore CIVI "/path/to/civi.sql.gz"
-function _amp_snapshot_restore() {
+## example: _amp_snapshot_restore_clone CMS "/path/to/cms.sql.gz"
+## example: _amp_snapshot_restore_clone CIVI "/path/to/civi.sql.gz"
+function _amp_snapshot_restore_clone() {
   cvutil_assertvars amp_snapshot_restore_X $1_DB_ARGS $1_DB_NAME
   local db_name=$(eval echo \$${1}_DB_NAME)
   local db_args=$(eval echo \$${1}_DB_ARGS)
@@ -440,6 +440,23 @@ function _amp_snapshot_restore() {
     exit 1
   fi
   gunzip --stdout "$sql_file" | eval mysql $db_args
+}
+
+## Load a sql snapshot into the given DB
+## usage: _amp_snapshot_restore <amproot> <ampname> <sql-file>
+## example: _amp_snapshot_restore "$CMS_ROOT" civi "/path/to/cms.sql.gz"
+function _amp_snapshot_restore() {
+  cvutil_assertvars amp_snapshot_restore_X $1_DB_ARGS $1_DB_NAME
+  local db_root="$1"
+  local db_name="$2"
+  local sql_file="$3"
+
+  echo "[[Restore \"$1\" DB ($db_name) from file ($sql_file)]]"
+  if [ ! -f "$sql_file" ]; then
+    echo "Missing SQL file: $sql_file" 1>&2
+    exit 1
+  fi
+  gunzip --stdout "$sql_file" | amp sql --root="$db_root" --name="$db_name"
 }
 
 
@@ -477,15 +494,15 @@ function civicrm_install() {
     elif [ -e "xml" -a -e "bin/setup.sh" -a -z "$NO_SAMPLE_DATA" ]; then
       env SITE_ID="$SITE_ID" bash ./bin/setup.sh
     elif [ -e "sql/civicrm.mysql" -a -e "sql/civicrm_generated.mysql" -a -z "$NO_SAMPLE_DATA" ]; then
-      cat sql/civicrm.mysql sql/civicrm_generated.mysql | eval mysql $CIVI_DB_ARGS
+      cat sql/civicrm.mysql sql/civicrm_generated.mysql | amp sql -Ncivi --root="$CMS_ROOT"
     elif [ -e "sql/civicrm.mysql" -a -e "sql/civicrm_data.mysql" -a -n "$NO_SAMPLE_DATA" ]; then
-      cat sql/civicrm.mysql sql/civicrm_data.mysql | eval mysql $CIVI_DB_ARGS
+      cat sql/civicrm.mysql sql/civicrm_data.mysql | amp sql -Ncivi --root="$CMS_ROOT"
     else
       echo "Failed to locate civi SQL files"
     fi
   popd >> /dev/null
 
-  eval mysql $CIVI_DB_ARGS <<EOSQL
+  amp sql -Ncivi --root="$CMS_ROOT" <<EOSQL
     UPDATE civicrm_domain SET name = '$CIVI_DOMAIN_NAME';
     SELECT @option_group_id := id
       FROM civicrm_option_group n

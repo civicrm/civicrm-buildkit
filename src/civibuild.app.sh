@@ -297,9 +297,9 @@ function civibuild_app_clone_create() {
     cvutil_mkdir "$CLONE_DIR"
     pushd $CLONE_DIR >> /dev/null
       _amp_install_clone cms CLONE_CMS
-      _amp_snapshot_restore CLONE_CMS "$CMS_SQL"
+      _amp_snapshot_restore_clone CLONE_CMS "$CMS_SQL"
       _amp_install_clone civi CLONE_CIVI
-      _amp_snapshot_restore CLONE_CIVI "$CIVI_SQL"
+      _amp_snapshot_restore_clone CLONE_CIVI "$CIVI_SQL"
     popd >> /dev/null
     touch "$CLONE_DIR/.mark"
   else
