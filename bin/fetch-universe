@@ -57,9 +57,6 @@ $core = array(
   'civicrm-joomla' => array(
     'git_url' => 'https://github.com/civicrm/civicrm-joomla',
   ),
-  'civicrm-l10n' => array(
-    'git_url' => 'https://github.com/civicrm/l10n',
-  ),
   'civicrm-packages' => array(
     'git_url' => 'https://github.com/civicrm/civicrm-packages',
   ),
@@ -73,13 +70,47 @@ $core = array(
   'civix' => array(
     'git_url' => 'https://github.com/totten/civix',
   ),
-  'civistrings' => array(
-    'git_url' => 'https://github.com/civicrm/civistrings',
-  ),
-  'cv' => array(
-    'git_url' => 'https://github.com/civicrm/cv',
-  ),
 );
+
+// These repos all have basic names and use default branch.
+$subRepos = array(
+  'apachesolr_civiAttachments',
+  'api4',
+  'civicon',
+  'civicrm-ac',
+  'civicrm-botdylan',
+  'civicrm-community-messages',
+  'civicrm-cxn-rpc',
+  'civicrm-demo-wp',
+  'civicrm-docs',
+  'civicrm-docs-material',
+  'civicrm-extdir-example',
+  'civicrm-l10n-extensions',
+  'civicrm-org-platform',
+  'civicrm-org-site',
+  'civicrm-pingback',
+  'civicrm-statistics',
+  'civicrm-upgrade-test',
+  'coder',
+  'cv-nodejs',
+  'cxnapp',
+  'pr-report',
+  'zetacomponents-mail ',
+  'cv',
+  'civistrings',
+  'civicrm-user-guide',
+  'civicrm-dev-docs',
+  'civicrm-infra',
+  'civicrm-dist-manager',
+  'release-management',
+  'l10n',
+);
+foreach ($subRepos as $subRepo) {
+  $core[$subRepo] = array(
+    'git_url' => 'https://github.com/civicrm/' . $subRepo,
+  );
+}
+
 $deprecated = array('civicrm-drupal');
 
 
