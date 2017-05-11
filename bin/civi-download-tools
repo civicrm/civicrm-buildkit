@@ -1,5 +1,5 @@
 #!/bin/bash
-set +x
+
 ## Download Drupal, CiviCRM, dependencies, and useful development tools.
 ## Setup basic symlinks.
 ##
