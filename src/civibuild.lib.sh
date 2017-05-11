@@ -11,11 +11,16 @@
 ###############################################################################
 ## Assert that shell variables are defined. If not defined, exit with an error.
 ## usage: assertvars <context> <var1> <var2> <var3> ...
+## exmple: cvutil_assertvars civibuild_app_download WEB_ROOT PRJDIR CACHE_DIR SITE_NAME SITE_TYPE
 function cvutil_assertvars() {
   _cvutil_assertvars_back="$-"
 
+  # disable verbose output:
   set +x
+
+  # the calling function name:
   context="$1"
+
   shift
   while [ "$1" ]; do
     var="$1"
@@ -27,6 +32,7 @@ function cvutil_assertvars() {
     shift
   done
 
+  #restore previous bash options (revert set +x)
   set -${_cvutil_assertvars_back}
 }
 
