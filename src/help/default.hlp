@@ -1,7 +1,7 @@
 [33mUsage:[37m 
 command [options] [arguments]
 
-[33mCommon options:[37m 
+[33mCommon option(s):[37m 
 [32m  -h, --help[37m           Displays help for a command
   <build-name>        The name of the sub-directory to build
   <ms-id>             The unique id for a site within a multisite build
@@ -20,25 +20,19 @@ command [options] [arguments]
 
   [32msnapshots[37m            List available snapshots
 
-  [32msnapshot[37m  Restore a snapshot of the CMS+CRM DBs
+  [32msnapshot[37m             Restore a snapshot of the CMS+CRM DBs
   [32mrestore[37m              Restore a snapshot of the CMS+CRM DBs
 
-  [32mcache-warmup[37m 
-Description: Proactively update git cache
+  [32mcache-warmup[37m         Proactively update git cache
 
-  [32mclone-create[37m 
-  [32mclone-show[37m 
-  [32mclone-destroy[37m 
-Description: Create, export, or destroy a DB clone based on a snapshot
+  [32mclone-create[37m         Create a DB clone based on a snapshot
+  [32mclone-show[37m           ???? Create, export, or destroy a DB clone based on a snapshot
+  [32mclone-destroy[37m        Destroy a DB clone based on a snapshot
 
-  [32mrestore-all[37m 
-Description: Restore *all* HTTP/DB services from their respective snapshots
 
-  [32mupgrade-test[37m 
-Description: Loads each DB snapshot and runs the current upgrade logic
+  [32mrestore-all[37m          Restore *all* HTTP/DB services from their respective snapshots
 
-  [32mdestroy[37m 
-Description: Destroy all data about a particular build
-RED='\033[0;31m'
-NC='\033[0m' # No Color
-I ${RED}love${NC} Stack Overflow\n
+
+  [32mupgrade-test[37m         Loads each DB snapshot and runs the current upgrade logic
+
+  [32mdestroy[37m              Destroy all data about a particular build
