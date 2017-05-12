@@ -25,9 +25,9 @@ command [options] [arguments]
 
   [32mcache-warmup[37m         Proactively update git cache
 
-  [32mclone-create[37m         Create a DB clone based on a snapshot
-  [32mclone-show[37m           ???? Create, export, or destroy a DB clone based on a snapshot
-  [32mclone-destroy[37m        Destroy a DB clone based on a snapshot
+  [32mclone-create[37m         Create a database clone based on a build or snapshot
+  [32mclone-show[37m           Display a database clone's DSN settings
+  [32mclone-destroy[37m        Destroy a database clone
 
 
   [32mrestore-all[37m          Restore *all* HTTP/DB services from their respective snapshots
