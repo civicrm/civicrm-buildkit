@@ -3,17 +3,11 @@
 ###############################################################################
 ## Display usage message
 function civibuild_app_usage() {
-  echo "usage: $ACTION"
-  if [ -z $ACTION ]; then
-    echo "no action"
+  if [ -f "$PRJDIR/src/help/$ACTION.hlp" ]; then
+    cat "$PRJDIR/src/help/$ACTION.hlp"
+  else
     cat "$PRJDIR/src/help/default.hlp"
-    #cat "$PRJDIR/src/help/default.hlp"
   fi
-  echo "support help"
-  exit
-  APP=$(basename "$0")
-
-  #Fails in Ubuntu 12.04 Vagrant box ==> cat <<EOT
 
   exit 99;
 }
