@@ -6,6 +6,9 @@ function civibuild_parse_unnamed_params() {
     #skip named options
     [ "${OPTION::1}" == "-" ] && continue
 
+    # if an option is "help" (not "--help") just show usage
+    [ "$OPTION" == "help" ] && civibuild_app_usage
+
     # don't overwrite SITE_NAME if already set
     [ -n "$SITE_NAME" ] && continue
 
