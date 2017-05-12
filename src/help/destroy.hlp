@@ -1,4 +1,6 @@
 [33mUsage:[37m 
-  destroy
+  destroy <build-name>
 
-This subcommand takes no options or arguments.
+[33mArguments:[37m
+[32m  <build-name>[37m           The name of the build to destroy
+
