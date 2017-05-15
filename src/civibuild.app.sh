@@ -3,89 +3,11 @@
 ###############################################################################
 ## Display usage message
 function civibuild_app_usage() {
-  APP=$(basename "$0")
-
-  #Fails in Ubuntu 12.04 Vagrant box ==> cat <<EOT
-  php -r 'echo file_get_contents("php://stdin");' <<EOT
-Common options:
-  <build-name>        The name of the sub-directory to build
-  <ms-id>             The unique id for a site within a multisite build
-
-Syntax: $APP create    <build-name>[/<ms-id>] [options]
-Syntax: $APP download  <build-name>           [options]
-Syntax: $APP install   <build-name>[/<ms-id>] [options]
-Syntax: $APP reinstall <build-name>[/<ms-id>] [options]
-Description: Download and/or install the application
-  --type <type>       The name of the download/install scripts. (If omitted, assume <build-name>) [Optional]
-  --web-root <path>   The full path to the website root. [Default: ${BLDDIR}/<build-name>]
-  --civi-ver <ver>    The branch or tag of CiviCRM desired (master, 4.4, 4.3, 4.3.0, etc) [Optional]
-  --cms-ver <ver>     The release of the CMS desired [Optional]
-  --dl <path>=<url>   Download and extract zip/tar files [Optional]
-  --ext <ext>         Download an extension [Optional]
-  --patch <spec>      Apply git patch immediately after downloading [Optional]
-                      Ex: "https://github.com/civicrm/civicrm-core/pull/8022"
-                      Ex: ";civicrm-packages;/my/local/change-for-packages.patch"
-
-  --url <url>         The public URL of the site
-  --title <title>     The title of the site
-  --admin-user        Name of the CMS's administrative user
-  --admin-pass        Password for the CMS's administrative user
-  --admin-email       Email of the CMS's administrative user
-  --demo-user         Name of the CMS's demo user
-  --demo-pass         Password for the CMS's demo user
-  --demo-email        Email of the CMS's demo user
-
-  --no-sample-data    Instead of loading the sample dataset, load the minimalist dataset
-
-  --force             If necessary, destroy pre-existing files/directories/DBs
-                      (For "reinstall", "--force" is implicit.)
-
-Syntax: $APP list
-Description: Display a list of build-names found in the build directory.
-
-Syntax: $APP edit <build-name>[/<ms-id>]
-Description: Edit the <build-dir>/<build-name>[.<ms-id>].sh config file
-
-Syntax: $APP show <build-name>[/<ms-id>] [options]
-Description: Show key details about the build
-  --html <dir>        A new HTML dir which will report build status in detail
-  --new-scan <file>   A new JSON file which summarizes the git structure
-  --last-scan <file>  An existing JSON file which summarizes the old git structure
-  --full              Show all build options declared
-
-Syntax: $APP snapshots
-Description: List available snapshots
-
-Syntax: $APP snapshot <build-name>[/<ms-id>] [options]
-Syntax: $APP restore  <build-name>[/<ms-id>] [options]
-Description: Create or restore a snapshot of the CMS+CRM DBs
-  --snapshot <name>      The name of the snapshot subdirectory. (If omitted, assume <build-name>) [Optional]
-  --cms-sql <sql-file>   The path to a SQL backup of the CMS DB [Optional]
-  --no-cms               Skip resetting the CMS DB [Optional]
-  --civi-sql <sql-file>  The path to a SQL backup of the CiviCRM DB [Optional]
-  --no-civi              Skip resetting the CiviCRM DB [Optional]
-
-Syntax: $APP cache-warmup
-Description: Proactively update git cache
-
-Syntax: $APP clone-create <build-name>[/<ms-id>] [options] [snapshot-options]
-Syntax: $APP clone-show <build-name>[/<ms-id>] [options]
-Syntax: $APP clone-destroy <build-name>[/<ms-id>] [options]
-Description: Create, export, or destroy a DB clone based on a snapshot
-  --clone-id <name>      The name of the specific clone. [Required for clone-create, clone-show]
-  --force                If necessary, destroy pre-existing files/directories/DBs
-
-Syntax: $APP restore-all
-Description: Restore *all* HTTP/DB services from their respective snapshots
-
-Syntax: $APP upgrade-test <build-name>[/<ms-id>] <sql-bz2-files>...
-Description: Loads each DB snapshot and runs the current upgrade logic
-  <sql-bz2-files>        One or more *.sql.bz2 files.
-                         [Default path: $UPGRADE_DATA_DIR/]
-
-Syntax: $APP destroy <build-name>
-Description: Destroy all data about a particular build
-EOT
+  if [ -f "$PRJDIR/src/help/$ACTION.hlp" ]; then
+    cat "$PRJDIR/src/help/$ACTION.hlp"
+  else
+    cat "$PRJDIR/src/help/default.hlp"
+  fi
 
   exit 99;
 }

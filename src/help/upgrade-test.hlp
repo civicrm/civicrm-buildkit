@@ -1,0 +1,5 @@
+[33mUsage:[37m 
+  upgrade-test <build-name>[/<ms-id>] <sql-bz2-files>
+
+[33mArguments:[37m 
+[32m  <sql-bz2-files>[37m     One or more *.sql.bz2 files.  [Default path: $UPGRADE_DATA_DIR/]
