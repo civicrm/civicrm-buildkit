@@ -1,6 +1,6 @@
-[33mUsage:[37m 
+[33mUsage:[0m
   destroy <build-name>
 
-[33mArguments:[37m
-[32m  <build-name>[37m           The name of the build to destroy
+[33mArguments:[0m
+[32m  <build-name>[0m           The name of the build to destroy
 [0m

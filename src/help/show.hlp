@@ -1,14 +1,14 @@
-[33mUsage:[37m 
+[33mUsage:[0m
   show <build-name>[/<ms-id>] [options]
 
-[33mArguments:[37m 
-[32m  <build-name>[37m         The name of the sub-directory to build
-[32m  <ms-id>[37m              The unique id for a site within a multisite build
+[33mArguments:[0m
+[32m  <build-name>[0m         The name of the sub-directory to build
+[32m  <ms-id>[0m              The unique id for a site within a multisite build
 
-[33mOptions:[37m 
-[32m  -h, --help[37m           Displays help for a command
-[32m  --html <dir>[37m         A new HTML dir which will report build status in detail
-[32m  --new-scan <file>[37m    A new JSON file which summarizes the git structure
-[32m  --last-scan <file>[37m   An existing JSON file which summarizes the old git structure
-[32m  --full[37m               Show all build options declared
+[33mOptions:[0m
+[32m  -h, --help[0m           Displays help for a command
+[32m  --html <dir>[0m         A new HTML dir which will report build status in detail
+[32m  --new-scan <file>[0m    A new JSON file which summarizes the git structure
+[32m  --last-scan <file>[0m   An existing JSON file which summarizes the old git structure
+[32m  --full[0m               Show all build options declared
 [0m

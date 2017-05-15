@@ -1,31 +1,31 @@
-[33mUsage:[37m 
+[33mUsage:[0m
   install <build-name>[/<ms-id>] [options]
 
-[33mArguments:[37m 
-[32m  <build-name>[37m         The name of the sub-directory to build
-[32m  <ms-id>[37m              The unique id for a site within a multisite build
+[33mArguments:[0m
+[32m  <build-name>[0m         The name of the sub-directory to build
+[32m  <ms-id>[0m              The unique id for a site within a multisite build
 
-[33mOptions:[37m 
-[32m  -h, --help[37m           Displays help for a command
-[32m  --type <type>[37m        The name of the download/install scripts. (If omitted, assume <build-name>) [Optional]
-[32m  --web-root <path>[37m    The full path to the website root. [Default: ${BLDDIR}/<build-name>]
-[32m  --civi-ver <ver>[37m     The branch or tag of CiviCRM desired (master, 4.7, 4.6, 4.6.0, etc) [Optional]
-[32m  --cms-ver <ver>[37m      The release of the CMS desired [Optional]
-[32m  --dl <path>=<url>[37m    Download and extract zip/tar files [Optional]
-[32m  --ext <ext>[37m          Download an extension [Optional]
-[32m  --patch <spec>[37m       Apply git patch immediately after downloading [Optional]
+[33mOptions:[0m
+[32m  -h, --help[0m           Displays help for a command
+[32m  --type <type>[0m        The name of the download/install scripts. (If omitted, assume <build-name>) [Optional]
+[32m  --web-root <path>[0m    The full path to the website root. [Default: ${BLDDIR}/<build-name>]
+[32m  --civi-ver <ver>[0m     The branch or tag of CiviCRM desired (master, 4.7, 4.6, 4.6.0, etc) [Optional]
+[32m  --cms-ver <ver>[0m      The release of the CMS desired [Optional]
+[32m  --dl <path>=<url>[0m    Download and extract zip/tar files [Optional]
+[32m  --ext <ext>[0m          Download an extension [Optional]
+[32m  --patch <spec>[0m       Apply git patch immediately after downloading [Optional]
                       Ex: "https://github.com/civicrm/civicrm-core/pull/8022"
                       Ex: ";civicrm-packages;/my/local/change-for-packages.patch"
-[32m  --url <url>[37m          The public URL of the site
-[32m  --title <title>[37m      The title of the site
-[32m  --admin-user[37m         Name of the CMS's administrative user
-[32m  --admin-pass[37m         Password for the CMS's administrative user
-[32m  --admin-email[37m        Email of the CMS's administrative user
-[32m  --demo-user[37m          Name of the CMS's demo user
-[32m  --demo-pass[37m          Password for the CMS's demo user
-[32m  --demo-email[37m         Email of the CMS's demo user
-[32m  --no-sample-data[37m     Instead of loading the sample dataset, load a minimal dataset
+[32m  --url <url>[0m          The public URL of the site
+[32m  --title <title>[0m      The title of the site
+[32m  --admin-user[0m         Name of the CMS's administrative user
+[32m  --admin-pass[0m         Password for the CMS's administrative user
+[32m  --admin-email[0m        Email of the CMS's administrative user
+[32m  --demo-user[0m          Name of the CMS's demo user
+[32m  --demo-pass[0m          Password for the CMS's demo user
+[32m  --demo-email[0m         Email of the CMS's demo user
+[32m  --no-sample-data[0m     Instead of loading the sample dataset, load a minimal dataset
 
-[32m  --force[37m             If necessary, destroy pre-existing files/directories/DBs
+[32m  --force[0m             If necessary, destroy pre-existing files/directories/DBs
                       (For "reinstall", "--force" is implicit.)
 [0m

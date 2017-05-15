@@ -1,10 +1,10 @@
-[33mUsage:[37m 
+[33mUsage:[0m
   edit <build-name>[/<ms-id>]
 
-[33mArguments:[37m 
-[32m  <build-name>[37m         The name of the sub-directory to build
-[32m  <ms-id>[37m              The unique id for a site within a multisite build
+[33mArguments:[0m
+[32m  <build-name>[0m         The name of the sub-directory to build
+[32m  <ms-id>[0m              The unique id for a site within a multisite build
 
-[33mOptions:[37m 
-[32m  -h, --help[37m           Displays help for a command
+[33mOptions:[0m
+[32m  -h, --help[0m           Displays help for a command
 [0m

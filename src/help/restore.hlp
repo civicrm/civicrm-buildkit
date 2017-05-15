@@ -1,15 +1,15 @@
-[33mUsage:[37m 
+[33mUsage:[0m
   restore <build-name>[/<ms-id>] [options]
 
-[33mArguments:[37m 
-[32m  <build-name>[37m           The name of the sub-directory to build
-[32m  <ms-id>[37m                The unique id for a site within a multisite build
+[33mArguments:[0m
+[32m  <build-name>[0m           The name of the sub-directory to build
+[32m  <ms-id>[0m                The unique id for a site within a multisite build
 
-[33mOptions:[37m 
-[32m  --snapshot <name>[37m      The name of the snapshot subdirectory. (If omitted, assume <build-name>) [Optional]
-[32m  --cms-sql <sql-file>[37m   The path to a SQL backup of the CMS DB [Optional]
-[32m  --no-cms[37m               Skip resetting the CMS DB [Optional]
-[32m  --civi-sql <sql-file>[37m  The path to a SQL backup of the CiviCRM DB [Optional]
-[32m  --no-civi[37m              Skip resetting the CiviCRM DB [Optional]
+[33mOptions:[0m
+[32m  --snapshot <name>[0m      The name of the snapshot subdirectory. (If omitted, assume <build-name>) [Optional]
+[32m  --cms-sql <sql-file>[0m   The path to a SQL backup of the CMS DB [Optional]
+[32m  --no-cms[0m               Skip resetting the CMS DB [Optional]
+[32m  --civi-sql <sql-file>[0m  The path to a SQL backup of the CiviCRM DB [Optional]
+[32m  --no-civi[0m              Skip resetting the CiviCRM DB [Optional]
 
 [0m

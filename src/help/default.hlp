@@ -1,29 +1,29 @@
-[33mUsage:[37m 
+[33mUsage:[0m
 civibuild [options] command
 
-[33mOptions:[37m 
-[32m  -h, --help <command>[37m Displays help for a command
+[33mOptions:[0m
+[32m  -h, --help <command>[0m Displays help for a command
 
-[33mCommands:[37m 
- [33mBuild Management[37m 
-  [32mcreate[37m                Create a build (a CiviCRM + CMS instance)
-  [32mdownload[37m              Downloads a build but does not install it
-  [32minstall[37m               Install a build
-  [32mreinstall[37m             Reinstall a build
-  [32mdestroy[37m               Destroy all data about a particular build
-  [32mlist[37m                  Display a list of build-names found in the build directory
-  [32medit [37m                 Edit the config file for a build or snapshot
-  [32mshow[37m                  Show key details about the build
- [33mSnapshots[37m 
-  [32msnapshots[37m             List available snapshots
-  [32msnapshot[37m              Restore a snapshot of the CMS+CRM DBs
-  [32mrestore[37m               Restore a snapshot of the CMS+CRM DBs
-  [32mrestore-all[37m           Restore *all* HTTP/DB services from their respective snapshots
- [33mClones[37m 
-  [32mclone-create[37m          Create a database clone based on a build or snapshot
-  [32mclone-show[37m            Display a database clone's DSN settings
-  [32mclone-destroy[37m         Destroy a database clone
+[33mCommands:[0m
+ [33mBuild Management[0m
+  [32mcreate[0m                Create a build (a CiviCRM + CMS instance)
+  [32mdownload[0m              Downloads a build but does not install it
+  [32minstall[0m               Install a build
+  [32mreinstall[0m             Reinstall a build
+  [32mdestroy[0m               Destroy all data about a particular build
+  [32mlist[0m                  Display a list of build-names found in the build directory
+  [32medit [0m                 Edit the config file for a build or snapshot
+  [32mshow[0m                  Show key details about the build
+ [33mSnapshots[0m
+  [32msnapshots[0m             List available snapshots
+  [32msnapshot[0m              Restore a snapshot of the CMS+CRM DBs
+  [32mrestore[0m               Restore a snapshot of the CMS+CRM DBs
+  [32mrestore-all[0m           Restore *all* HTTP/DB services from their respective snapshots
+ [33mClones[0m
+  [32mclone-create[0m          Create a database clone based on a build or snapshot
+  [32mclone-show[0m            Display a database clone's DSN settings
+  [32mclone-destroy[0m         Destroy a database clone
 
-  [32mcache-warmup[37m          Proactively update git cache
-  [32mupgrade-test[37m          Loads each DB snapshot and runs the current upgrade logic
+  [32mcache-warmup[0m          Proactively update git cache
+  [32mupgrade-test[0m          Loads each DB snapshot and runs the current upgrade logic
 [0m
