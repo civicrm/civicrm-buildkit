@@ -11,3 +11,4 @@
 [32m  --new-scan <file>[37m    A new JSON file which summarizes the git structure
 [32m  --last-scan <file>[37m   An existing JSON file which summarizes the old git structure
 [32m  --full[37m               Show all build options declared
+[0m

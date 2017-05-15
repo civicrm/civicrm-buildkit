@@ -9,3 +9,5 @@
 [32m  -h, --help[37m           Displays help for a command
 [32m  --clone-id <name>[37m    The name of the specific clone. [Required]
 [32m  --force[37m              If necessary, destroy pre-existing files/directories/DBs
+
+[0m

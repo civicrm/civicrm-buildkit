@@ -29,3 +29,4 @@
 [32m  --force[37m             If necessary, destroy pre-existing files/directories/DBs
                       (For "reinstall", "--force" is implicit.)
 
+[0m
