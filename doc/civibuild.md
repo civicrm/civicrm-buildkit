@@ -86,20 +86,24 @@ see [`app/config`](/app/config).
 Build types can be mixed/matched with different versions of Civi, e.g.
 
 ```bash
-$ civibuild create my-drupal-civi44 \
+$ civibuild create my-drupal-civi47 \
   --type drupal-demo \
-  --civi-ver 4.4 \
-  --url http://my-drupal-civi44.localhost
-$ civibuild create my-drupal-civi45 \
+  --civi-ver master \
+  --url http://my-drupal-civi47.localhost
+$ civibuild create my-drupal-civi46 \
   --type drupal-demo \
-  --civi-ver 4.5 \
-  --url http://my-drupal-civi45.localhost
-$ civibuild create my-wordpress-civi45 \
+  --civi-ver 4.6 \
+  --url http://my-drupal-civi46.localhost
+$ civibuild create my-wordpress-civi4719 \
   --type wp-demo \
-  --civi-ver 4.5 \
+  --civi-ver 4.7.19 \
   --cms-ver 4.0 \
-  --url http://my-wp-civi45.localhost
+  --url http://my-wp-civi4719.localhost
 ```
+
+The `civi-ver` argument will accept any branch or version tag.  *Note: the 4.7 version is in the `master` branch.*.
+
+You can also specify `--patch` with a pull request URL to apply those changes on top of your CiviCRM version.
 
 ## Build Aliases
 
