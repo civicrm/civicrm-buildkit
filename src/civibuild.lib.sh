@@ -93,12 +93,12 @@ function cvutil_export() {
 ## Summarize the content of key environment variables
 ## usage: cvutil_summary <message> <var1> <var2> ...
 function cvutil_summary() {
+# Not asserting any vars because then we can't report that they are in fact empty.
   if [ -n "$1" ]; then
     echo $1
   fi
   shift
 
-  cvutil_assertvars cvutil_summary "$@"
   for var in "$@" ; do
     eval "val=\$$var"
     echo " - $var: $val"

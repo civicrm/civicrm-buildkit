@@ -172,7 +172,8 @@ function civibuild_app_show() {
 }
 
 function civibuild_app_show_summary() {
-  cvutil_assertvars civibuild_app_show_summary "$@"
+# Don't follow assertvars pattern of "$@" because we want to report even if vars are empty:
+  cvutil_assertvars civibuild_app_show_summary "SITE_NAME" "SITE_ID"
   cvutil_summary "[[Show site summary ($SITE_NAME/$SITE_ID)]]" $@
   civibuild_app_run_optional show
   echo "[[General notes]]"
