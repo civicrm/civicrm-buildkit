@@ -5,22 +5,8 @@ You may install buildkit in other environments. The main pre-requisites are:
  * Linux or OS X
  * Git
  * PHP 5.3+
- * Php extension: bcmath
- * Php extension: curl
- * Php extension: gd
- * Php extension: gettext
- * Php extension: imap
- * Php extension: intl
- * Php extension: json
- * Php etxension: mbstring
- * Php extension: mcrypt
- * Php extension: openssl
- * Php extension: pdo_mysql
- * Php extension: phar
- * Php extension: posix (only for php 5)
- * Php extension: soap
- * Pxp extension: zip
- * NodeJS (version lower than 4.2 arre reported as not working)
+   * Extensions: bcmath curl gd gettext imap intl json mbstring mcrypt openssl pdo_mysql phar posix soap zip
+ * NodeJS (v5 recommended)
  * NPM 
  * Recommended: Apache 2.2+ and MySQL 5.1+ (client and server) (for [amp](https://github.com/totten/amp) and [civibuild](doc/civibuild.md))
  
