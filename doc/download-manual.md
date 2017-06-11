@@ -4,12 +4,12 @@ You may install buildkit in other environments. The main pre-requisites are:
 
  * Linux or OS X
  * Git
- * With apache version 2.4 you also need to enable mod_access_compat
- * PHP 5.3+
-   * Extensions: bcmath curl gd gettext imap intl json mbstring mcrypt openssl pdo_mysql phar posix soap zip
+ * PHP 5.3+ (Extensions: `bcmath curl gd gettext imap intl json mbstring mcrypt openssl pdo_mysql phar posix soap zip`)
  * NodeJS (v5 recommended)
  * NPM 
- * Recommended: Apache 2.2+ and MySQL 5.1+ (client and server) (for [amp](https://github.com/totten/amp) and [civibuild](doc/civibuild.md))
+ * Recommended (_for [amp](https://github.com/totten/amp) and [civibuild](doc/civibuild.md)_)
+   * Apache 2.2 or 2.4 (Modules: `mod_rewrite`. On SUSE, possibly `mod_access_compat`)
+   * MySQL 5.1+ (client and server)
  
 All pre-requisites must support command-line access using the standard command
 names (`git`, `php`, `node`, `mysql`, `mysqldump`, etc). In some environments,
