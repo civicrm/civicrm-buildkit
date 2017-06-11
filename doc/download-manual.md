@@ -4,6 +4,7 @@ You may install buildkit in other environments. The main pre-requisites are:
 
  * Linux or OS X
  * Git
+ * With apache version 2.4 you also need to enable mod_access_compat
  * PHP 5.3+
    * Extensions: bcmath curl gd gettext imap intl json mbstring mcrypt openssl pdo_mysql phar posix soap zip
  * NodeJS (v5 recommended)
