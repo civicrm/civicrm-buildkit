@@ -107,7 +107,8 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   drush -y updatedb
   drush -y dis overlay shortcut color
-  drush -y en administerusersbyrole role_delegation subpermissions civicrm toolbar locale seven userprotect masquerade smtp
+  drush -y en administerusersbyrole role_delegation subpermissions civicrm toolbar locale seven userprotect masquerade smtp logintoboggan
+  drush vset logintoboggan_login_with_email 1
 
   ## Setup welcome page
   drush -y scr "$SITE_CONFIG_DIR/install-welcome.php"
