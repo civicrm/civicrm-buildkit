@@ -1,7 +1,10 @@
 # civicrm-buildkit
 
 Buildkit is a collection of ~20 tools for developing and testing CiviCRM.
-These tools are referenced in the CiviCRM developer documentation.
+
+See our Developer Guide for [full documenation on buildkit](https://docs.civicrm.org/dev/en/latest/tools/buildkit/) which includes installation instructions.
+
+---
 
 Many of these tools are commonly used by web developers, so you may have
 already installed a few.  Even so, it's generally easier to download the
@@ -10,26 +13,10 @@ full collection &mdash; installing each individually takes a lot of work.
 This is the same collection of tools which manages the test/demo/release
 infrastructure for civicrm.org.
 
-## Download
 
-* [Full Download: Ubuntu](doc/download-ubuntu.md) - Download buildkit and all system dependencies (mysql, etc). This is ideal when setting up a new, clean Ubuntu host.
-* [Full Download: Vagrantbox](https://github.com/civicrm/civicrm-buildkit-vagrant) - Download a prepared virtual-machine with all system dependencies (mysql, etc). This is ideal if you work on Windows or OS X.
-* [Manual Download](doc/download-manual.md) - Just download buildkit. This is ideal if you have already installed the system dependencies by some other means (CentOS, MAMP, etc).
+## Tools included within buildkit
 
-After you've downloaded buildkit the first time, you should periodically [update the tools](doc/download-update.md).
-
-## Configuration and Usage
-
-<!---
-FIXME: If we can modify `civi-download-tools --full` to setup PATH automatically, then we can remove step 1 and put it under "Manual Download"
--->
-
-1. [PATH: Configure CLI support](doc/path.md)
-1. [Civibuild: Create a full dev/demo build](doc/civibuild.md)
-1. [Daily Coding: First Pull-Request, Housekeeping, etc](doc/daily-coding.md)
-1. [Experimental: Multiple demo/training sites](doc/demo-sites.md)
-
-## CLI Tools
+*This list of tools is also maintained [in the Developer Guide](https://docs.civicrm.org/dev/en/latest/tools/#with-buildkit)*
 
 * CiviCRM
     * [civix](https://github.com/totten/civix) - Generate skeletal code for CiviCRM extensions.
