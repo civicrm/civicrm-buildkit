@@ -51,6 +51,7 @@ function civibuild_alias_resolve() {
     dcmaster)    SITE_TYPE=drupal-clean     ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Clean Sandbox on Drupal"   ;;
 
     dcase)       SITE_TYPE=drupal-case      ; CIVI_VERSION=master    ; CMS_TITLE="CiviCase Sandbox on Drupal"        ;;
+    wpcase)      SITE_TYPE=wp-case          ; CIVI_VERSION=master    ; CMS_TITLE="CiviCase Sandbox on WordPress"     ;;
 
     wp43)        SITE_TYPE=wp-demo          ; CIVI_VERSION=4.3       ; CMS_TITLE="CiviCRM 4.3 Demo on WordPress"     ;;
     wp44)        SITE_TYPE=wp-demo          ; CIVI_VERSION=4.4       ; CMS_TITLE="CiviCRM 4.4 Demo on WordPress"     ; VOL_VERSION=4.4-1.x    ;;
