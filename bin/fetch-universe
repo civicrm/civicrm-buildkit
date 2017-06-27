@@ -95,7 +95,7 @@ $subRepos = array(
   'cv-nodejs',
   'cxnapp',
   'pr-report',
-  'zetacomponents-mail ',
+  'zetacomponents-mail',
   'cv',
   'civistrings',
   'civicrm-user-guide',
