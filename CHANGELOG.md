@@ -1,8 +1,9 @@
 # Changelog
 
-New versions of buildkit are likely to include new versions of tools. The
-new tools will download automatically when you first run `civibuild`.
-If you prefer to download explicitly, then re-run `civi-download-tools`.
+Buildkit is periodically updated with newer versions of its tools.  Changes
+are generally "drop-in" updates that don't require any special action. 
+However, if a change requires special action, it should be documented in
+this changelog.
 
 ### v14.05.0 => v14.06.0
 
