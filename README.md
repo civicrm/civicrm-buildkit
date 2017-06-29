@@ -2,21 +2,16 @@
 
 Buildkit is a collection of ~20 tools for developing and testing CiviCRM.
 
-See our Developer Guide for [full documenation on buildkit](https://docs.civicrm.org/dev/en/latest/tools/buildkit/) which includes installation instructions.
+> For installation instructions and other documentation, see [CiviCRM Developer Guide: Buildkit](https://docs.civicrm.org/dev/en/latest/tools/buildkit/).
 
----
+Many of these tools can be installed individually -- but individually
+installing all of them takes a lot of work. Installing the collection
+is generally easier. This is the same collection which manages the
+test/demo/release infrastructure for `civicrm.org`.
 
-Many of these tools are commonly used by web developers, so you may have
-already installed a few.  Even so, it's generally easier to download the
-full collection &mdash; installing each individually takes a lot of work.
+## Bundled tools
 
-This is the same collection of tools which manages the test/demo/release
-infrastructure for civicrm.org.
-
-
-## Tools included within buildkit
-
-*This list of tools is also maintained [in the Developer Guide](https://docs.civicrm.org/dev/en/latest/tools/#with-buildkit)*
+<!-- see also: https://docs.civicrm.org/dev/en/latest/tools/#with-buildkit -->
 
 * CiviCRM
     * [civix](https://github.com/totten/civix) - Generate skeletal code for CiviCRM extensions.
