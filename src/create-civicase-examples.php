@@ -21,7 +21,7 @@ function addMilestoneActivityType() {
  * Add more activity-types to a case-type.
  */
 function updateCaseType($caseType, $addActTypes) {
-  $housingSupport = civicrm_api3('CaseType', 'getsingle', array('name' => 'housing_support'));
+  $housingSupport = civicrm_api3('CaseType', 'getsingle', array('name' => $caseType));
   $actTypes = CRM_Utils_Array::collect('name', $housingSupport['definition']['activityTypes']);
   $newTypes = array_diff($addActTypes, $actTypes);
   foreach ($newTypes as $newType) {
