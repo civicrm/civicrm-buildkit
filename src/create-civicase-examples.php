@@ -11,6 +11,7 @@ function addMilestoneActivityType() {
     'label' => 'Milestone',
     'name' => 'Milestone',
     'grouping' => 'milestone',
+    'component_id' => 'CiviCase',
     'options' => array('match' => array('option_group_id', 'name')),
   ));
 }
