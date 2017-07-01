@@ -1,18 +1,21 @@
 <?php
-
-addMilestoneActivityType();
-updateCaseType('housing_support', array('Print PDF Letter', 'Email', 'Milestone'));
-updateCaseType('adult_day_care_referral', array('Print PDF Letter', 'Email', 'Milestone'));
+allowActivityType('housing_support', array('Print PDF Letter', 'Email', 'Case Task'));
+allowActivityType('adult_day_care_referral', array('Print PDF Letter', 'Email', 'Case Task'));
+addToTimeline('housing_support', array('name' => 'Case Task', 'reference_activity' => 'Open Case', 'reference_offset' => '9', 'reference_select' => 'newest'));
+addToTimeline('housing_support', array('name' => 'Case Task', 'reference_activity' => 'Open Case', 'reference_offset' => '10', 'reference_select' => 'newest'));
+changeGrouping('Secure temporary housing', 'milestone');
+changeGrouping('Long-term housing plan', 'milestone');
+changeGrouping('Medical evaluation', 'milestone');
+changeGrouping('Mental health evaluation', 'milestone');
+changeGrouping('Case Task', 'task');
 addExampleTags();
 addExampleCases();
 
-function addMilestoneActivityType() {
+function changeGrouping($actType, $grouping) {
   civicrm_api3('OptionValue', 'create', array(
     'option_group_id' => 'activity_type',
-    'label' => 'Milestone',
-    'name' => 'Milestone',
-    'grouping' => 'milestone',
-    'component_id' => 'CiviCase',
+    'name' => $actType,
+    'grouping' => $grouping,
     'options' => array('match' => array('option_group_id', 'name')),
   ));
 }
@@ -20,18 +23,36 @@ function addMilestoneActivityType() {
 /**
  * Add more activity-types to a case-type.
  */
-function updateCaseType($caseType, $addActTypes) {
-  $housingSupport = civicrm_api3('CaseType', 'getsingle', array('name' => $caseType));
-  $actTypes = CRM_Utils_Array::collect('name', $housingSupport['definition']['activityTypes']);
+function allowActivityType($caseType, $addActTypes) {
+  $caseType = civicrm_api3('CaseType', 'getsingle', array('name' => $caseType));
+  $actTypes = CRM_Utils_Array::collect('name', $caseType['definition']['activityTypes']);
   $newTypes = array_diff($addActTypes, $actTypes);
   foreach ($newTypes as $newType) {
-    $housingSupport['definition']['activityTypes'][] = array(
+    $caseType['definition']['activityTypes'][] = array(
       'name' => $newType,
     );
   }
   civicrm_api3('CaseType', 'create', array(
-    'id' => $housingSupport['id'],
-    'definition' => $housingSupport['definition'],
+    'id' => $caseType['id'],
+    'definition' => $caseType['definition'],
+  ));
+}
+
+/**
+ * Add another entry to the timeline
+ */
+function addToTimeline($caseType, $timelineEntry) {
+  $caseType = civicrm_api3('CaseType', 'getsingle', array('name' => $caseType));
+
+  foreach ($caseType['definition']['activitySets'] as &$actSet) {
+    if ($actSet['name'] === 'standard_timeline') {
+      $actSet['activityTypes'][] = $timelineEntry;
+    }
+  }
+
+  civicrm_api3('CaseType', 'create', array(
+    'id' => $caseType['id'],
+    'definition' => $caseType['definition'],
   ));
 }
 
