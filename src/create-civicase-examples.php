@@ -2,6 +2,7 @@
 
 addMilestoneActivityType();
 updateCaseType('housing_support', array('Print PDF Letter', 'Email', 'Milestone'));
+updateCaseType('adult_day_care_referral', array('Print PDF Letter', 'Email', 'Milestone'));
 addExampleTags();
 addExampleCases();
 
