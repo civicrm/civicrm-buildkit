@@ -10,13 +10,18 @@
 ## `src/civibuild.defaults.sh`.
 
 #############################################################################
-## Example: Place all builds in /srv/www.
-##
-## Note: Moving builds is tricky because some builds require storing
-## absolute paths.  It's easier to destroy/recreate than to move.
+## Example: Change the default username/password for the administrator.
 
-# BLDDIR=/srv/www
+# ADMIN_USER="ethanhunt"
+# ADMIN_PASS="686PrototypeWithArtificialIntelligence"
+# ADMIN_EMAIL="imf@state.gov"
 
+#############################################################################
+## Example: Change the default username/password for the demo user.
+
+# DEMO_USER="jimphelps"
+# DEMO_PASS="TheSecretaryWillDisavow"
+# DEMO_EMAIL="imf@trustno.one"
 
 #############################################################################
 ## Example: Set default URLs based on a wildcard domain (eg *.local)
@@ -30,8 +35,11 @@
 # APACHE_VHOST_ALIAS=1
 
 #############################################################################
-## Example: Change the default username/password the administrator.
+## Example: Place all builds in /srv/www.
 
-# ADMIN_USER="ethanhunt"
-# ADMIN_PASS="686PrototypeWithArtificialIntelligence"
-# ADMIN_EMAIL="imf@state.gov"
+# BLDDIR=/srv/www
+
+## Tip: If you have existing builds and change the BLDDIR, you may
+## want to destroy and recreate them.  Moving them may be tricky
+## because you would need to find and update absolute-paths in
+## several places.
