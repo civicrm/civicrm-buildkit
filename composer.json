@@ -18,7 +18,7 @@
     "php": ">=5.3.3",
     "drush/drush": "dev-master#d1d13676f5beacaa9f8619088fe3ae45ea28a6cf",
     "totten/php-symbol-diff": "dev-master#54f869ca68a3cd75f3386f8490870369733d2c23",
-    "civicrm/upgrade-test": "dev-master#ebb03978d70e5629ef6e9275d9a0686d7c149e50",
+    "civicrm/upgrade-test": "dev-master#8747e21bfb0e4c57c539fb265070267b1e8662b4",
     "drupal/coder": "dev-8.x-2.x-civi#a801890a82d52e23a83c5d820270b6e228843d79",
     "brianium/paratest": "dev-batching as 0.7",
     "phpunit/phpunit": "3.7.27",
