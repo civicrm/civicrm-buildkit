@@ -122,6 +122,10 @@ function _cividist_build_hash() {
 
   mkdir -p "$hashtmp"
 
+  [ -d vendor ] && rm -rf vendor
+  [ -d bower_components ] && rm -rf bower_components
+  [ -d node_modules ] && rm -rf node_modules
+
   pushd distmaker >> /dev/null
     if env DM_TARGETDIR="$hashtmp" DM_REF_CORE="$REF" DM_VERSION_SUFFIX= ./distmaker.sh all ; then
       echo "[$DATE $REF] Built hash $hash" 1>&2
