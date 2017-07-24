@@ -350,8 +350,6 @@ function do_system_xenial() {
     echo ""
     echo "Task: $PACKAGES"
     echo ""
-    echo "Warning: This system will not support php-mysql extension"
-    echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
       sudo apt-get update
       sudo apt-get -y install $PACKAGES
