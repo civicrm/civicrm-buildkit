@@ -1,18 +1,7 @@
 To quickly add settings to all sites running through this deployment of
-buildkit, simply create a *.php file in a suitable directory.
+buildkit, simply create a `*.php` file in a suitable directory.
 
-The following directories will be scanned (listed from highest to lowest
-priority):
+Learn more about how the settings files work by reading about [civicrm.settings.d](https://docs.civicrm.org/dev/en/latest/tools/civibuild/#settings-civicrm) in the Developer Guide.
 
-  $SITE_DIR/civicrm.settings.d
-  /etc/civicrm.settings.d
-  $PRJDIR/app/config/$TYPE/civicrm.settings.d
-  $PRJDIR/app/civicrm.settings.d
+Files which end in `*.php.ex` are examples which can be copied.
 
-If the same file appears in multiple directories, it will only be loaded
-from the directory with highest priority.
-
-For more advanced logic, one can look at global $civibuild or at any of the
-standard CiviCRM configuration directives.
-
-Files which end in *.php.ex are examples which can be copied.
