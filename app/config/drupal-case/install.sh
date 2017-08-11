@@ -84,7 +84,9 @@ EOPERM
     add 'access uploaded files'
     add 'profile create'
     add 'profile view'
+EOPERM
 
+  drush scr "$PRJDIR/src/drush/perm.php" <<EOPERM
     role 'civicase_demo'
     add 'access AJAX API'
     add 'access all cases and activities'
