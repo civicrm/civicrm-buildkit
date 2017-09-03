@@ -65,11 +65,23 @@ function runPHPUnit() {
   phpunit-api*) TESTS="api_v3_AllTests" EXITCODE="$EXITCODES phpunit API" ;;
   phpunit-civi*) TESTS="Civi\\AllTests" EXITCODE="$EXITCODES phpunit Civi" ;;
   phpunit-crm*) TESTS="CRM_AllTests" EXITCODE="$EXITCODES phpunit CRM" ;;
-  *) TESTS="CRM_AllTests api_v3_AllTests Civi\\AllTests" EXITCODE="$EXITCODES phpunit" ;;
+  phpunit-e2e*) TESTS="E2E_AllTests" EXITCODE="$EXITCODES phpunit E2E" ;;
+  *) TESTS="E2E_AllTests CRM_AllTests api_v3_AllTests Civi\\AllTests" EXITCODE="$EXITCODES phpunit" ;;
   esac
 
-  if $GUARD phpunit-each --exclude-group ornery "$BLDDIR/sites/all/modules/civicrm" "$JUNITDIR" $TESTS ; then
-    EXITCODES=$EXITCODE
+  if [ $TESTTYPE = "phpunit-e2e" ] || [ $TESTTYPE = "all" ] ; then
+    if [ -f "$BLDDIR/sites/all/modules/civicrm/tests/phpunit/E2E/AllTests.php" ]; then
+      if ! $GUARD phpunit-each --exclude-group ornery "$BLDDIR/sites/all/modules/civicrm" "$JUNITDIR" E2E_AllTests ; then
+        EXITCODES="$EXITCODES phpunit"
+      fi
+      $GUARD civibuild restore "$BLDNAME"
+    fi
+  fi
+
+  if [ ! $TESTYPE = "phpunit-e2e" ]; then
+    if ! $GUARD phpunit-each --exclude-group ornery "$BLDDIR/sites/all/modules/civicrm" "$JUNITDIR" $TESTS ; then
+      EXITCODES=$EXITCODE
+    fi
   fi
   phpunit-xml-cleanup "$JUNITDIR"/*.xml
 }
