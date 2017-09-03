@@ -83,7 +83,7 @@ function runPHPUnit() {
     fi
   fi
 
-  if [ ! $TESTYPE = "phpunit-e2e" ]; then
+  if [ $TESTTYPE != "phpunit-e2e" ] ; then
     if ! $GUARD phpunit-each --exclude-group ornery "$BLDDIR/sites/all/modules/civicrm" "$JUNITDIR" $TESTS ; then
       EXITCODES=$EXITCODE
     fi
