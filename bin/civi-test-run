@@ -4,6 +4,7 @@ set -e
 function show_help() {
   echo "Execute the CiviCRM test suites"
   echo "usage: $0 <build-name> <civi-ver> <junit-output-dir> <test-type>"
+  echo "test-type is one of all, karma, upgrade, phpunit-civi, phpunit-crm, phpunit-api, phpunit-e2e"
 }
 
 if [ -z $1 ]; then
@@ -142,6 +143,9 @@ if  [ $TESTTYPE = "phpunit-api" ] || [ $TESTTYPE = "all" ] ; then
 fi
 if  [ $TESTTYPE = "phpunit-civi" ] || [ $TESTTYPE = "all" ] ; then
   [ ! -f "$JUNITDIR/Civi\\AllTests.xml" ] && fatal "Missing XML: Civi\\AllTests.xml"
+fi
+if  [ $TESTTYPE = "phpunit-e2e" ] || [ $TESTTYPE = "all" ] ; then
+  [ ! -f "$JUNITDIR/E2E_AllTests.xml" ] && fatal "Missing XML: E2E_AllTests.xml"
 fi
 if  [ $TESTTYPE = "karma" ] || [ $TESTTYPE = "all" ] ; then
   [ -d "$BLDDIR/sites/all/modules/civicrm/tests/karma" -a ! -f "$JUNITDIR/karma.xml" ] && fatal "Missing XML: karma.xml"
