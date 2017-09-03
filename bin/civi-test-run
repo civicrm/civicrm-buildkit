@@ -1,0 +1,116 @@
+#!/bin/bash
+set -e
+
+if [ -z $1 ]; then
+  echo "No Buildkit path passed in"
+  exit 2
+fi
+
+if [ -z $2 ]; then 
+  echo "No Build Name passed in"
+  exit 2
+fi
+
+if [ -z $3 ]; then
+  echo "No CiviCRM Version passed in"
+  exit 2
+fi
+
+if [ -z $4 ]; then
+  echo "No JUNIT Dir passed in"
+  exit 2
+fi
+
+if [ -z $5 ]; then
+  echo "No Test type passed in"
+  exit 2
+fi
+
+BLDKIT=$1
+BLDNAME=$2
+CIVIVER=$3
+BLDDIR="$BLDKIT/build/$BLDNAME"
+JUNITDIR=$4
+TESTTYPE=$5
+EXITCODES=
+GUARD=
+
+#################################################
+## Helpers
+function fatal() {
+  echo "$@"
+  exit 1
+}
+
+## RUN PHP Unit tests
+function runPHPUnit() {
+  case "$1" in
+  PHPUNIT-API*) TESTS="api_v3_AllTests" EXITCODE="$EXITCODES phpunit API" ;;
+  PHPUNIT-CIVI*) TESTS="Civi\\AllTests" EXITCODE="$EXITCODES phpunit Civi" ;;
+  PHPUNIT-CRM*) TESTS="CRM_AllTests" EXITCODE="$EXITCODES phpunit CRM" ;;
+  *) "CRM_AllTests api_v3_AllTests Civi\\AllTests" ;;
+  esac
+
+  if $3 phpunit-each --exclude-group ornery "$BLDDIR/sites/all/modules/civicrm" "$JUNITDIR" $TESTS ; then
+    EXITCODES=$EXITCODE
+  fi
+  phpunit-xml-cleanup "$JUNITDIR"/*.xml
+}
+
+## Run Karma tests if requested Javascript
+if [ $TESTTYPE = "Karma" ] || [ $TESTTYPE = "All" ] ; then
+  $GUARD pushd "$BLDDIR/sites/all/modules/civicrm"
+    ## Work-around: ensure pradmin user has sa contact
+    drush -u pradmin cvapi contact.get id=user_contact_id
+    if [ -f karma.conf.js ]; then
+      if ! $GUARD karma start --browsers PhantomJS --single-run --reporters dots,junit ; then
+        EXITCODES="$EXITCODES karma"
+      fi
+      $GUARD cp tests/output/karma.xml "$JUNITDIR/"
+    fi
+  $GUARD popd
+fi
+
+## Run Upgrade test if requested
+if [ $TESTTYPE = "Upgrade" ] || [ $TESTTYPE = "All" ] ; then
+
+  ## Run the tests -- DB upgrade tests
+  case "$CIVIVER" in
+  4.3*)    UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.3.0*" ;;
+  4.4*)    UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.3.0* 4.4.0*" ;;
+  4.5*)    UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.3.0* 4.4.0* 4.5.0*" ;;
+  4.6*)    UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.3.0* 4.4.0* 4.5.0* 4.6.0*" ;;
+  4.7*)    UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.4.0* 4.5.0* 4.6.0* 4.7.0*" ;;
+  master*) UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.4.0* 4.5.0* 4.6.0* 4.7.0*" ;;
+  *)      echo "UpgradeTest failed: Unrecognized version ($CIVIVER)" ; exit 1; ;;
+  esac
+if  ! $GUARD civibuild upgrade-test $BLDNAME $UTVERS ; then
+    EXITCODES="$EXITCODES upgrade-test"
+fi
+  $GUARD cp "$BLDKIT/app/debug/$BLDNAME/civicrm-upgrade-test.xml" "$JUNITDIR/"
+  $GUARD civibuild restore "$BLDNAME"
+fi
+
+runPHPUnit $TESTTYPE $EXITCODES $GUARD
+
+## Check test results and set exit code
+echo "Check test results and set exit code"
+cat "$JUNITDIR"/*.xml | grep '<failure' -q && fatal "Found <failure> in XML"
+cat "$JUNITDIR"/*.xml | grep '<error' -q && fatal "Found <error> in XML"
+if  [ $TESTTYPE = "Upgrade" ] || [ $TESTTYPE = "All" ] ; then
+  [ ! -f "$JUNITDIR/civicrm-upgrade-test.xml" ] && fatal "Missing XML: civicrm-upgrade-test.xml"
+fi
+if  [ $TESTTYPE = "PHPUNIT-CRM" ] || [ $TESTTYPE = "All" ] ; then
+  [ ! -f "$JUNITDIR/CRM_AllTests.xml" ] && fatal "Missing XML: CRM_AllTests.xml"
+fi 
+if  [ $TESTTYPE = "PHPUNIT-API" ] || [ $TESTTYPE = "All" ] ; then
+  [ ! -f "$JUNITDIR/api_v3_AllTests.xml" ] && fatal "Missing XML: api_v3_AllTests.xml"
+fi
+if  [ $TESTTYPE = "PHPUNIT-CIVI" ] || [ $TESTTYPE = "All" ] ; then
+  [ ! -f "$JUNITDIR/Civi\\AllTests.xml" ] && fatal "Missing XML: Civi\\AllTests.xml"
+fi
+if  [ $TESTTYPE = "Karma" ] || [ $TESTTYPE = "All" ] ; then
+  [ -d "$BLDDIR/sites/all/modules/civicrm/tests/karma" -a ! -f "$JUNITDIR/karma.xml" ] && fatal "Missing XML: karma.xml"
+fi
+[ -n "$EXITCODES" ] && fatal "At least one command failed abnormally [$EXITCODES]"
+echo "Exit normally"
