@@ -53,6 +53,11 @@ EXITCODES=
 GUARD=
 
 #################################################
+## Cleanup left-overs from previous test-runs
+[ -d "$JUNITDIR" ] && $GUARD rm -rf "$JUNITDIR"
+[ ! -d "$JUNITDIR" ] && $GUARD mkdir "$JUNITDIR"
+
+#################################################
 ## Helpers
 function fatal() {
   echo "$@"
