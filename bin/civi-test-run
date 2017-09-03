@@ -65,7 +65,7 @@ function runPHPUnit() {
   phpunit-api*) TESTS="api_v3_AllTests" EXITCODE="$EXITCODES phpunit API" ;;
   phpunit-civi*) TESTS="Civi\\AllTests" EXITCODE="$EXITCODES phpunit Civi" ;;
   phpunit-crm*) TESTS="CRM_AllTests" EXITCODE="$EXITCODES phpunit CRM" ;;
-  *) "CRM_AllTests api_v3_AllTests Civi\\AllTests" EXITCODE="$EXITCODES phpunit" ;;
+  *) TESTS="CRM_AllTests api_v3_AllTests Civi\\AllTests" EXITCODE="$EXITCODES phpunit" ;;
   esac
 
   if $GUARD phpunit-each --exclude-group ornery "$BLDDIR/sites/all/modules/civicrm" "$JUNITDIR" $TESTS ; then
