@@ -1,37 +1,54 @@
 #!/bin/bash
 set -e
 
+function show_help() {
+  echo "Execute the CiviCRM test suites"
+  echo "usage: $0 <build-name> <civi-ver> <junit-output-dir> <test-type>"
+}
+
 if [ -z $1 ]; then
-  echo "No Buildkit path passed in"
+  echo "No Build Name passed in"
+  echo
+  show_help
   exit 2
 fi
 
-if [ -z $2 ]; then 
-  echo "No Build Name passed in"
+if [ -z $2 ]; then
+  echo "No CiviCRM Version passed in"
+  echo
+  show_help
   exit 2
 fi
 
 if [ -z $3 ]; then
-  echo "No CiviCRM Version passed in"
+  echo "No JUNIT Dir passed in"
+  echo
+  show_help
   exit 2
 fi
 
 if [ -z $4 ]; then
-  echo "No JUNIT Dir passed in"
-  exit 2
-fi
-
-if [ -z $5 ]; then
   echo "No Test type passed in"
+  echo
+  show_help
   exit 2
 fi
 
-BLDKIT=$1
-BLDNAME=$2
-CIVIVER=$3
-BLDDIR="$BLDKIT/build/$BLDNAME"
-JUNITDIR=$4
-TESTTYPE=$5
+## Determine the absolute path of the directory with the file
+## absdirname <file-path>
+function absdirname() {
+  pushd $(dirname $0) >> /dev/null
+    pwd
+  popd >> /dev/null
+}
+
+BINDIR=$(absdirname "$0")
+PRJDIR=$(dirname "$BINDIR")
+BLDNAME=$1
+CIVIVER=$2
+BLDDIR="$PRJDIR/build/$BLDNAME"
+JUNITDIR=$3
+TESTTYPE=$4
 EXITCODES=
 GUARD=
 
@@ -44,21 +61,21 @@ function fatal() {
 
 ## RUN PHP Unit tests
 function runPHPUnit() {
-  case "$1" in
-  PHPUNIT-API*) TESTS="api_v3_AllTests" EXITCODE="$EXITCODES phpunit API" ;;
-  PHPUNIT-CIVI*) TESTS="Civi\\AllTests" EXITCODE="$EXITCODES phpunit Civi" ;;
-  PHPUNIT-CRM*) TESTS="CRM_AllTests" EXITCODE="$EXITCODES phpunit CRM" ;;
-  *) "CRM_AllTests api_v3_AllTests Civi\\AllTests" ;;
+  case "$TESTTYPE" in
+  phpunit-api*) TESTS="api_v3_AllTests" EXITCODE="$EXITCODES phpunit API" ;;
+  phpunit-civi*) TESTS="Civi\\AllTests" EXITCODE="$EXITCODES phpunit Civi" ;;
+  phpunit-crm*) TESTS="CRM_AllTests" EXITCODE="$EXITCODES phpunit CRM" ;;
+  *) "CRM_AllTests api_v3_AllTests Civi\\AllTests" EXITCODE="$EXITCODES phpunit" ;;
   esac
 
-  if $3 phpunit-each --exclude-group ornery "$BLDDIR/sites/all/modules/civicrm" "$JUNITDIR" $TESTS ; then
+  if $GUARD phpunit-each --exclude-group ornery "$BLDDIR/sites/all/modules/civicrm" "$JUNITDIR" $TESTS ; then
     EXITCODES=$EXITCODE
   fi
   phpunit-xml-cleanup "$JUNITDIR"/*.xml
 }
 
 ## Run Karma tests if requested Javascript
-if [ $TESTTYPE = "Karma" ] || [ $TESTTYPE = "All" ] ; then
+if [ $TESTTYPE = "karma" ] || [ $TESTTYPE = "all" ] ; then
   $GUARD pushd "$BLDDIR/sites/all/modules/civicrm"
     ## Work-around: ensure pradmin user has sa contact
     drush -u pradmin cvapi contact.get id=user_contact_id
@@ -72,7 +89,7 @@ if [ $TESTTYPE = "Karma" ] || [ $TESTTYPE = "All" ] ; then
 fi
 
 ## Run Upgrade test if requested
-if [ $TESTTYPE = "Upgrade" ] || [ $TESTTYPE = "All" ] ; then
+if [ $TESTTYPE = "upgrade" ] || [ $TESTTYPE = "all" ] ; then
 
   ## Run the tests -- DB upgrade tests
   case "$CIVIVER" in
@@ -91,25 +108,25 @@ fi
   $GUARD civibuild restore "$BLDNAME"
 fi
 
-runPHPUnit $TESTTYPE $EXITCODES $GUARD
+runPHPUnit
 
 ## Check test results and set exit code
 echo "Check test results and set exit code"
 cat "$JUNITDIR"/*.xml | grep '<failure' -q && fatal "Found <failure> in XML"
 cat "$JUNITDIR"/*.xml | grep '<error' -q && fatal "Found <error> in XML"
-if  [ $TESTTYPE = "Upgrade" ] || [ $TESTTYPE = "All" ] ; then
+if  [ $TESTTYPE = "upgrade" ] || [ $TESTTYPE = "all" ] ; then
   [ ! -f "$JUNITDIR/civicrm-upgrade-test.xml" ] && fatal "Missing XML: civicrm-upgrade-test.xml"
 fi
-if  [ $TESTTYPE = "PHPUNIT-CRM" ] || [ $TESTTYPE = "All" ] ; then
+if  [ $TESTTYPE = "phpunit-crm" ] || [ $TESTTYPE = "all" ] ; then
   [ ! -f "$JUNITDIR/CRM_AllTests.xml" ] && fatal "Missing XML: CRM_AllTests.xml"
 fi 
-if  [ $TESTTYPE = "PHPUNIT-API" ] || [ $TESTTYPE = "All" ] ; then
+if  [ $TESTTYPE = "phpunit-api" ] || [ $TESTTYPE = "all" ] ; then
   [ ! -f "$JUNITDIR/api_v3_AllTests.xml" ] && fatal "Missing XML: api_v3_AllTests.xml"
 fi
-if  [ $TESTTYPE = "PHPUNIT-CIVI" ] || [ $TESTTYPE = "All" ] ; then
+if  [ $TESTTYPE = "phpunit-civi" ] || [ $TESTTYPE = "all" ] ; then
   [ ! -f "$JUNITDIR/Civi\\AllTests.xml" ] && fatal "Missing XML: Civi\\AllTests.xml"
 fi
-if  [ $TESTTYPE = "Karma" ] || [ $TESTTYPE = "All" ] ; then
+if  [ $TESTTYPE = "karma" ] || [ $TESTTYPE = "all" ] ; then
   [ -d "$BLDDIR/sites/all/modules/civicrm/tests/karma" -a ! -f "$JUNITDIR/karma.xml" ] && fatal "Missing XML: karma.xml"
 fi
 [ -n "$EXITCODES" ] && fatal "At least one command failed abnormally [$EXITCODES]"
