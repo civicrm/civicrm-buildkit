@@ -96,7 +96,8 @@ function runPHPUnit() {
 if [ $TESTTYPE = "karma" ] || [ $TESTTYPE = "all" ] ; then
   $GUARD pushd "$BLDDIR/sites/all/modules/civicrm"
     ## Work-around: ensure pradmin user has sa contact
-    drush -u pradmin cvapi contact.get id=user_contact_id
+    ADMIN_USER=$(cv ev 'echo $GLOBALS['_CV']['ADMIN_USER'];')
+    drush -u "$ADMIN_USER" cvapi contact.get id=user_contact_id
     if [ -f karma.conf.js ]; then
       if ! $GUARD karma start --browsers PhantomJS --single-run --reporters dots,junit ; then
         EXITCODES="$EXITCODES karma"
@@ -126,7 +127,9 @@ fi
   $GUARD civibuild restore "$BLDNAME"
 fi
 
-runPHPUnit
+if [ $TESTTYPE != "upgrade" ] && [ $TESTTYPE != "karma" ] ; then
+  runPHPUnit
+fi
 
 ## Check test results and set exit code
 echo "Check test results and set exit code"
