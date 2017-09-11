@@ -129,7 +129,7 @@ if [ $TESTTYPE = "upgrade" ] || [ $TESTTYPE = "all" ] ; then
 if  ! $GUARD civibuild upgrade-test $BLDNAME $UTVERS ; then
     EXITCODES="$EXITCODES upgrade-test"
 fi
-  $GUARD cp "$BLDKIT/app/debug/$BLDNAME/civicrm-upgrade-test.xml" "$JUNITDIR/"
+  $GUARD cp "$PRJDIR/app/debug/$BLDNAME/civicrm-upgrade-test.xml" "$JUNITDIR/"
   $GUARD civibuild restore "$BLDNAME"
 fi
 
