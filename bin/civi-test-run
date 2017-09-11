@@ -71,8 +71,10 @@ function getCiviVer() {
   popd >> /dev/null
 }
 
-## RUN PHP Unit tests
-function runPHPUnit() {
+#################################################
+## Test tasks
+
+function task_phpunit() {
   case "$TESTTYPE" in
     phpunit-api*) TESTS="api_v3_AllTests" EXITCODE="$EXITCODES phpunit API" ;;
     phpunit-civi*) TESTS="Civi\\AllTests" EXITCODE="$EXITCODES phpunit Civi" ;;
@@ -98,8 +100,7 @@ function runPHPUnit() {
   phpunit-xml-cleanup "$JUNITDIR"/*.xml
 }
 
-## Run Karma tests if requested Javascript
-if [ $TESTTYPE = "karma" ] || [ $TESTTYPE = "all" ] ; then
+function task_karma() {
   $GUARD pushd "$CIVI_CORE"
     ## Work-around: ensure pradmin user has sa contact
     ADMIN_USER=$(cv ev 'echo $GLOBALS['_CV']['ADMIN_USER'];')
@@ -111,11 +112,9 @@ if [ $TESTTYPE = "karma" ] || [ $TESTTYPE = "all" ] ; then
       $GUARD cp tests/output/karma.xml "$JUNITDIR/"
     fi
   $GUARD popd
-fi
+}
 
-## Run Upgrade test if requested
-if [ $TESTTYPE = "upgrade" ] || [ $TESTTYPE = "all" ] ; then
-
+function task_upgrade() {
   ## Run the tests -- DB upgrade tests
   CIVIVER=$(getCiviVer)
   case "$CIVIVER" in
@@ -132,10 +131,23 @@ if [ $TESTTYPE = "upgrade" ] || [ $TESTTYPE = "all" ] ; then
   fi
   $GUARD cp "$PRJDIR/app/debug/$BLDNAME/civicrm-upgrade-test.xml" "$JUNITDIR/"
   $GUARD civibuild restore "$BLDNAME"
+}
+
+#################################################
+## Main
+
+## Run Karma tests if requested Javascript
+if [ $TESTTYPE = "karma" ] || [ $TESTTYPE = "all" ] ; then
+  task_karma
+fi
+
+## Run Upgrade test if requested
+if [ $TESTTYPE = "upgrade" ] || [ $TESTTYPE = "all" ] ; then
+  task_upgrade
 fi
 
 if [ $TESTTYPE != "upgrade" ] && [ $TESTTYPE != "karma" ] ; then
-  runPHPUnit
+  task_phpunit
 fi
 
 ## Check test results and set exit code
