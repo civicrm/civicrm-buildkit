@@ -74,11 +74,11 @@ function getCiviVer() {
 ## RUN PHP Unit tests
 function runPHPUnit() {
   case "$TESTTYPE" in
-  phpunit-api*) TESTS="api_v3_AllTests" EXITCODE="$EXITCODES phpunit API" ;;
-  phpunit-civi*) TESTS="Civi\\AllTests" EXITCODE="$EXITCODES phpunit Civi" ;;
-  phpunit-crm*) TESTS="CRM_AllTests" EXITCODE="$EXITCODES phpunit CRM" ;;
-  phpunit-e2e*) TESTS="E2E_AllTests" EXITCODE="$EXITCODES phpunit E2E" ;;
-  *) TESTS="E2E_AllTests CRM_AllTests api_v3_AllTests Civi\\AllTests" EXITCODE="$EXITCODES phpunit" ;;
+    phpunit-api*) TESTS="api_v3_AllTests" EXITCODE="$EXITCODES phpunit API" ;;
+    phpunit-civi*) TESTS="Civi\\AllTests" EXITCODE="$EXITCODES phpunit Civi" ;;
+    phpunit-crm*) TESTS="CRM_AllTests" EXITCODE="$EXITCODES phpunit CRM" ;;
+    phpunit-e2e*) TESTS="E2E_AllTests" EXITCODE="$EXITCODES phpunit E2E" ;;
+    *) TESTS="E2E_AllTests CRM_AllTests api_v3_AllTests Civi\\AllTests" EXITCODE="$EXITCODES phpunit" ;;
   esac
 
   if [ $TESTTYPE = "phpunit-e2e" ] || [ $TESTTYPE = "all" ] ; then
@@ -119,17 +119,17 @@ if [ $TESTTYPE = "upgrade" ] || [ $TESTTYPE = "all" ] ; then
   ## Run the tests -- DB upgrade tests
   CIVIVER=$(getCiviVer)
   case "$CIVIVER" in
-  4.3*)    UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.3.0*" ;;
-  4.4*)    UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.3.0* 4.4.0*" ;;
-  4.5*)    UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.3.0* 4.4.0* 4.5.0*" ;;
-  4.6*)    UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.3.0* 4.4.0* 4.5.0* 4.6.0*" ;;
-  4.7*)    UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.4.0* 4.5.0* 4.6.0* 4.7.0*" ;;
-  master*) UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.4.0* 4.5.0* 4.6.0* 4.7.0*" ;;
-  *)      echo "UpgradeTest failed: Unrecognized version ($CIVIVER)" ; exit 1; ;;
+    4.3*)    UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.3.0*" ;;
+    4.4*)    UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.3.0* 4.4.0*" ;;
+    4.5*)    UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.3.0* 4.4.0* 4.5.0*" ;;
+    4.6*)    UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.3.0* 4.4.0* 4.5.0* 4.6.0*" ;;
+    4.7*)    UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.4.0* 4.5.0* 4.6.0* 4.7.0*" ;;
+    master*) UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.4.0* 4.5.0* 4.6.0* 4.7.0*" ;;
+    *)      echo "UpgradeTest failed: Unrecognized version ($CIVIVER)" ; exit 1; ;;
   esac
-if  ! $GUARD civibuild upgrade-test $BLDNAME $UTVERS ; then
+  if  ! $GUARD civibuild upgrade-test $BLDNAME $UTVERS ; then
     EXITCODES="$EXITCODES upgrade-test"
-fi
+  fi
   $GUARD cp "$PRJDIR/app/debug/$BLDNAME/civicrm-upgrade-test.xml" "$JUNITDIR/"
   $GUARD civibuild restore "$BLDNAME"
 fi
