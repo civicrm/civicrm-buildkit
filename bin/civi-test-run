@@ -3,7 +3,7 @@ set -e
 
 function show_help() {
   echo "Execute the CiviCRM test suites"
-  echo "usage: $0 <build-name> <civi-ver> <junit-output-dir> <test-type>"
+  echo "usage: $0 <build-name> <junit-output-dir> <test-type>"
   echo "test-type is one of all, karma, upgrade, phpunit-civi, phpunit-crm, phpunit-api, phpunit-e2e"
 }
 
@@ -15,20 +15,13 @@ if [ -z $1 ]; then
 fi
 
 if [ -z $2 ]; then
-  echo "No CiviCRM Version passed in"
-  echo
-  show_help
-  exit 2
-fi
-
-if [ -z $3 ]; then
   echo "No JUNIT Dir passed in"
   echo
   show_help
   exit 2
 fi
 
-if [ -z $4 ]; then
+if [ -z $3 ]; then
   echo "No Test type passed in"
   echo
   show_help
@@ -45,11 +38,10 @@ function absdirname() {
 
 BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
-BLDNAME=$1
-CIVIVER=$2
+BLDNAME="$1"
 BLDDIR="$PRJDIR/build/$BLDNAME"
-JUNITDIR=$3
-TESTTYPE=$4
+JUNITDIR="$2"
+TESTTYPE="$3"
 EXITCODES=
 GUARD=
 
@@ -63,6 +55,18 @@ GUARD=
 function fatal() {
   echo "$@"
   exit 1
+}
+
+function getCiviVer() {
+  pushd "$BLDDIR/sites/all/modules/civicrm" >> /dev/null
+    if [ -f xml/version.xml ]; then
+      ## Works in any git-based build, even if gencode hasn't run yet.
+      php -r 'echo simplexml_load_file("xml/version.xml")->version_no;'
+    else
+      ## works in any tar-based build.
+      php -r 'require "civicrm-version.php"; $a = civicrmVersion(); echo $a["version"];'
+    fi
+  popd >> /dev/null
 }
 
 ## RUN PHP Unit tests
@@ -111,6 +115,7 @@ fi
 if [ $TESTTYPE = "upgrade" ] || [ $TESTTYPE = "all" ] ; then
 
   ## Run the tests -- DB upgrade tests
+  CIVIVER=$(getCiviVer)
   case "$CIVIVER" in
   4.3*)    UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.3.0*" ;;
   4.4*)    UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.3.0* 4.4.0*" ;;
