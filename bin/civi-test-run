@@ -40,6 +40,7 @@ BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
 BLDNAME="$1"
 BLDDIR="$PRJDIR/build/$BLDNAME"
+CIVI_CORE="$BLDDIR/sites/all/modules/civicrm"
 JUNITDIR="$2"
 TESTTYPE="$3"
 EXITCODES=
@@ -58,7 +59,7 @@ function fatal() {
 }
 
 function getCiviVer() {
-  pushd "$BLDDIR/sites/all/modules/civicrm" >> /dev/null
+  pushd "$CIVI_CORE" >> /dev/null
     if [ -f xml/version.xml ]; then
       ## Works in any git-based build, even if gencode hasn't run yet.
       php -r 'echo simplexml_load_file("xml/version.xml")->version_no;'
@@ -80,8 +81,8 @@ function runPHPUnit() {
   esac
 
   if [ $TESTTYPE = "phpunit-e2e" ] || [ $TESTTYPE = "all" ] ; then
-    if [ -f "$BLDDIR/sites/all/modules/civicrm/tests/phpunit/E2E/AllTests.php" ]; then
-      if ! $GUARD phpunit-each --exclude-group ornery "$BLDDIR/sites/all/modules/civicrm" "$JUNITDIR" E2E_AllTests ; then
+    if [ -f "$CIVI_CORE/tests/phpunit/E2E/AllTests.php" ]; then
+      if ! $GUARD phpunit-each --exclude-group ornery "$CIVI_CORE" "$JUNITDIR" E2E_AllTests ; then
         EXITCODES="$EXITCODES phpunit"
       fi
       $GUARD civibuild restore "$BLDNAME"
@@ -89,7 +90,7 @@ function runPHPUnit() {
   fi
 
   if [ $TESTTYPE != "phpunit-e2e" ] ; then
-    if ! $GUARD phpunit-each --exclude-group ornery "$BLDDIR/sites/all/modules/civicrm" "$JUNITDIR" $TESTS ; then
+    if ! $GUARD phpunit-each --exclude-group ornery "$CIVI_CORE" "$JUNITDIR" $TESTS ; then
       EXITCODES=$EXITCODE
     fi
   fi
@@ -98,7 +99,7 @@ function runPHPUnit() {
 
 ## Run Karma tests if requested Javascript
 if [ $TESTTYPE = "karma" ] || [ $TESTTYPE = "all" ] ; then
-  $GUARD pushd "$BLDDIR/sites/all/modules/civicrm"
+  $GUARD pushd "$CIVI_CORE"
     ## Work-around: ensure pradmin user has sa contact
     ADMIN_USER=$(cv ev 'echo $GLOBALS['_CV']['ADMIN_USER'];')
     drush -u "$ADMIN_USER" cvapi contact.get id=user_contact_id
@@ -156,7 +157,7 @@ if  [ $TESTTYPE = "phpunit-e2e" ] || [ $TESTTYPE = "all" ] ; then
   [ ! -f "$JUNITDIR/E2E_AllTests.xml" ] && fatal "Missing XML: E2E_AllTests.xml"
 fi
 if  [ $TESTTYPE = "karma" ] || [ $TESTTYPE = "all" ] ; then
-  [ -d "$BLDDIR/sites/all/modules/civicrm/tests/karma" -a ! -f "$JUNITDIR/karma.xml" ] && fatal "Missing XML: karma.xml"
+  [ -d "$CIVI_CORE/tests/karma" -a ! -f "$JUNITDIR/karma.xml" ] && fatal "Missing XML: karma.xml"
 fi
 [ -n "$EXITCODES" ] && fatal "At least one command failed abnormally [$EXITCODES]"
 echo "Exit normally"
