@@ -2,27 +2,28 @@
 set -e
 
 function show_help() {
-  echo "Execute the CiviCRM test suites"
-  echo "usage: $0 <build-name> <junit-output-dir> <test-type>"
+  PROG=$(basename "$0")
+  echo "about: Execute the CiviCRM test suites"
+  echo "usage: $PROG <build-name> <junit-output-dir> <test-type>"
   echo "test-type is one of all, karma, upgrade, phpunit-civi, phpunit-crm, phpunit-api, phpunit-e2e"
 }
 
 if [ -z $1 ]; then
-  echo "No Build Name passed in"
+  echo "Missing argument: <build-name>"
   echo
   show_help
   exit 2
 fi
 
 if [ -z $2 ]; then
-  echo "No JUNIT Dir passed in"
+  echo "Missing argument: <junit-output-dir>"
   echo
   show_help
   exit 2
 fi
 
 if [ -z $3 ]; then
-  echo "No Test type passed in"
+  echo "Missing argument: <test-type>"
   echo
   show_help
   exit 2
