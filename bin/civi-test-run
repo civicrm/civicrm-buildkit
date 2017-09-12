@@ -23,8 +23,24 @@ function getCiviVer() {
 function show_help() {
   PROG=$(basename "$0")
   echo "about: Execute the CiviCRM test suites"
-  echo "usage: $PROG -b <build-name> -j <junit-output-dir> <test-types>"
-  echo "test-types is one or more of: all, karma, upgrade, phpunit-civi, phpunit-crm, phpunit-api, phpunit-e2e"
+  echo
+  echo "usage: $PROG [-h] -b <build-name> -j <junit-output-dir> <test-types>"
+  echo
+  echo "  -h                  Display help"
+  echo "  -b <build-name>     The name of a local site produced by civibuild"
+  echo "  -j <junit-dir>      The path to a folder for storing results in JUnit XML"
+  echo "  <test-types>        A list of one more of the following:"
+  echo "                        - all"
+  echo "                        - karma"
+  echo "                        - phpunit-api"
+  echo "                        - phpunit-civi"
+  echo "                        - phpunit-crm"
+  echo "                        - phpunit-e2e"
+  echo "                        - upgrade"
+  echo
+  echo "example: Run the KarmaJS and DB-upgrade tests on D7/Civi-Master build"
+  echo "  $PROG -b dmaster -j /tmp/junit-output karma upgrade"
+  echo
 }
 
 #################################################
