@@ -93,28 +93,11 @@ function task_upgrade() {
 }
 
 #################################################
-## Parse inputs
-
-if [ -z $1 ]; then
-  echo "Missing argument: <build-name>"
-  echo
-  show_help
-  exit 2
-fi
-
-if [ -z $2 ]; then
-  echo "Missing argument: <junit-output-dir>"
-  echo
-  show_help
-  exit 2
-fi
-
-if [ -z $3 ]; then
-  echo "Missing argument: <test-type>"
-  echo
-  show_help
-  exit 2
-fi
+## Cleanup left-overs from previous test-runs
+function junit_cleanup() {
+  [ -d "$JUNITDIR" ] && $GUARD rm -rf "$JUNITDIR"
+  [ ! -d "$JUNITDIR" ] && $GUARD mkdir "$JUNITDIR"
+}
 
 ## Determine the absolute path of the directory with the file
 ## absdirname <file-path>
@@ -126,35 +109,62 @@ function absdirname() {
 
 BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
-BLDNAME="$1"
-BLDDIR="$PRJDIR/build/$BLDNAME"
-CIVI_CORE="$BLDDIR/sites/all/modules/civicrm"
-JUNITDIR="$2"
-TESTTYPE="$3"
 EXITCODES=
 GUARD=
 
 #################################################
-## Cleanup left-overs from previous test-runs
-[ -d "$JUNITDIR" ] && $GUARD rm -rf "$JUNITDIR"
-[ ! -d "$JUNITDIR" ] && $GUARD mkdir "$JUNITDIR"
+## Main
+function run_tests() {
+  ## Run Karma tests if requested Javascript
+  if [ $TESTTYPE = "karma" ] || [ $TESTTYPE = "all" ] ; then
+    task_karma
+  fi
+
+  ## Run Upgrade test if requested
+  if [ $TESTTYPE = "upgrade" ] || [ $TESTTYPE = "all" ] ; then
+    task_upgrade
+  fi
+
+  if [ $TESTTYPE != "upgrade" ] && [ $TESTTYPE != "karma" ] ; then
+    task_phpunit
+  fi
+}
+
 
 #################################################
-## Main
+## Parse inputs
+while [ -n "$1" ] ; do
+  if [ $1 = "-b" ] || [ $1 = "-j" ] ; then
+    OPTION="$1"
+    shift
 
-## Run Karma tests if requested Javascript
-if [ $TESTTYPE = "karma" ] || [ $TESTTYPE = "all" ] ; then
-  task_karma
-fi
+    case "$OPTION" in
+      #-h|--help|-?)
+      #  show_help
+      #  exit 2
+      #  ;;
 
-## Run Upgrade test if requested
-if [ $TESTTYPE = "upgrade" ] || [ $TESTTYPE = "all" ] ; then
-  task_upgrade
-fi
+      -b)
+        BLDNAME="$1"
+        BLDDIR="$PRJDIR/build/$BLDNAME"
+        CIVI_CORE="$BLDDIR/sites/all/modules/civicrm"
+        shift
+        ;;
 
-if [ $TESTTYPE != "upgrade" ] && [ $TESTTYPE != "karma" ] ; then
-  task_phpunit
-fi
+      -j)
+        JUNITDIR="$1"
+        junit_cleanup
+        shift
+        ;;
+
+    esac
+
+  else
+    TESTTYPE="$1"
+    run_tests
+    shift
+  fi
+done
 
 ## Check test results and set exit code
 echo "Check test results and set exit code"
