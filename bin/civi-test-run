@@ -23,8 +23,8 @@ function getCiviVer() {
 function show_help() {
   PROG=$(basename "$0")
   echo "about: Execute the CiviCRM test suites"
-  echo "usage: $PROG <build-name> <junit-output-dir> <test-type>"
-  echo "test-type is one of all, karma, upgrade, phpunit-civi, phpunit-crm, phpunit-api, phpunit-e2e"
+  echo "usage: $PROG -b <build-name> -j <junit-output-dir> <test-types>"
+  echo "test-types is one or more of: all, karma, upgrade, phpunit-civi, phpunit-crm, phpunit-api, phpunit-e2e"
 }
 
 #################################################
@@ -139,11 +139,6 @@ while [ -n "$1" ] ; do
     shift
 
     case "$OPTION" in
-      #-h|--help|-?)
-      #  show_help
-      #  exit 2
-      #  ;;
-
       -b)
         BLDNAME="$1"
         BLDDIR="$PRJDIR/build/$BLDNAME"
@@ -158,6 +153,10 @@ while [ -n "$1" ] ; do
         ;;
 
     esac
+
+  elif [ $1 = "-h" ] || [ $1 = "--help" ] || [ $1 = "-?" ] ; then
+    show_help
+    exit 2
 
   else
     TESTTYPE="$1"
