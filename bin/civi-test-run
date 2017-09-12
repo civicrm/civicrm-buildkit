@@ -198,23 +198,25 @@ done
 echo "Check test results and set exit code"
 cat "$JUNITDIR"/*.xml | grep '<failure' -q && fatal "Found <failure> in XML"
 cat "$JUNITDIR"/*.xml | grep '<error' -q && fatal "Found <error> in XML"
-if  [ $TESTTYPE = "upgrade" ] || [ $TESTTYPE = "all" ] ; then
-  [ ! -f "$JUNITDIR/civicrm-upgrade-test.xml" ] && fatal "Missing XML: civicrm-upgrade-test.xml"
-fi
-if  [ $TESTTYPE = "phpunit-crm" ] || [ $TESTTYPE = "all" ] ; then
-  [ ! -f "$JUNITDIR/CRM_AllTests.xml" ] && fatal "Missing XML: CRM_AllTests.xml"
-fi 
-if  [ $TESTTYPE = "phpunit-api" ] || [ $TESTTYPE = "all" ] ; then
-  [ ! -f "$JUNITDIR/api_v3_AllTests.xml" ] && fatal "Missing XML: api_v3_AllTests.xml"
-fi
-if  [ $TESTTYPE = "phpunit-civi" ] || [ $TESTTYPE = "all" ] ; then
-  [ ! -f "$JUNITDIR/Civi\\AllTests.xml" ] && fatal "Missing XML: Civi\\AllTests.xml"
-fi
-if  [ $TESTTYPE = "phpunit-e2e" ] || [ $TESTTYPE = "all" ] ; then
-  [ ! -f "$JUNITDIR/E2E_AllTests.xml" ] && fatal "Missing XML: E2E_AllTests.xml"
-fi
-if  [ $TESTTYPE = "karma" ] || [ $TESTTYPE = "all" ] ; then
-  [ -d "$CIVI_CORE/tests/karma" -a ! -f "$JUNITDIR/karma.xml" ] && fatal "Missing XML: karma.xml"
+for TESTTYPE in $SUITES ; do
+  if  [ $TESTTYPE = "upgrade" ] || [ $TESTTYPE = "all" ] ; then
+    [ ! -f "$JUNITDIR/civicrm-upgrade-test.xml" ] && fatal "Missing XML: civicrm-upgrade-test.xml"
+  fi
+  if  [ $TESTTYPE = "phpunit-crm" ] || [ $TESTTYPE = "all" ] ; then
+    [ ! -f "$JUNITDIR/CRM_AllTests.xml" ] && fatal "Missing XML: CRM_AllTests.xml"
+  fi
+  if  [ $TESTTYPE = "phpunit-api" ] || [ $TESTTYPE = "all" ] ; then
+    [ ! -f "$JUNITDIR/api_v3_AllTests.xml" ] && fatal "Missing XML: api_v3_AllTests.xml"
+  fi
+  if  [ $TESTTYPE = "phpunit-civi" ] || [ $TESTTYPE = "all" ] ; then
+    [ ! -f "$JUNITDIR/Civi\\AllTests.xml" ] && fatal "Missing XML: Civi\\AllTests.xml"
+  fi
+  if  [ $TESTTYPE = "phpunit-e2e" ] || [ $TESTTYPE = "all" ] ; then
+    [ ! -f "$JUNITDIR/E2E_AllTests.xml" ] && fatal "Missing XML: E2E_AllTests.xml"
+  fi
+  if  [ $TESTTYPE = "karma" ] || [ $TESTTYPE = "all" ] ; then
+    [ -d "$CIVI_CORE/tests/karma" -a ! -f "$JUNITDIR/karma.xml" ] && fatal "Missing XML: karma.xml"
+  fi
 fi
 [ -n "$EXITCODES" ] && fatal "At least one command failed abnormally [$EXITCODES]"
 echo "Exit normally"
