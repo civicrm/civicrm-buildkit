@@ -1,57 +1,6 @@
 #!/bin/bash
 set -e
 
-function show_help() {
-  PROG=$(basename "$0")
-  echo "about: Execute the CiviCRM test suites"
-  echo "usage: $PROG <build-name> <junit-output-dir> <test-type>"
-  echo "test-type is one of all, karma, upgrade, phpunit-civi, phpunit-crm, phpunit-api, phpunit-e2e"
-}
-
-if [ -z $1 ]; then
-  echo "Missing argument: <build-name>"
-  echo
-  show_help
-  exit 2
-fi
-
-if [ -z $2 ]; then
-  echo "Missing argument: <junit-output-dir>"
-  echo
-  show_help
-  exit 2
-fi
-
-if [ -z $3 ]; then
-  echo "Missing argument: <test-type>"
-  echo
-  show_help
-  exit 2
-fi
-
-## Determine the absolute path of the directory with the file
-## absdirname <file-path>
-function absdirname() {
-  pushd $(dirname $0) >> /dev/null
-    pwd
-  popd >> /dev/null
-}
-
-BINDIR=$(absdirname "$0")
-PRJDIR=$(dirname "$BINDIR")
-BLDNAME="$1"
-BLDDIR="$PRJDIR/build/$BLDNAME"
-CIVI_CORE="$BLDDIR/sites/all/modules/civicrm"
-JUNITDIR="$2"
-TESTTYPE="$3"
-EXITCODES=
-GUARD=
-
-#################################################
-## Cleanup left-overs from previous test-runs
-[ -d "$JUNITDIR" ] && $GUARD rm -rf "$JUNITDIR"
-[ ! -d "$JUNITDIR" ] && $GUARD mkdir "$JUNITDIR"
-
 #################################################
 ## Helpers
 function fatal() {
@@ -71,8 +20,18 @@ function getCiviVer() {
   popd >> /dev/null
 }
 
+function show_help() {
+  PROG=$(basename "$0")
+  echo "about: Execute the CiviCRM test suites"
+  echo "usage: $PROG <build-name> <junit-output-dir> <test-type>"
+  echo "test-type is one of all, karma, upgrade, phpunit-civi, phpunit-crm, phpunit-api, phpunit-e2e"
+}
+
 #################################################
 ## Test tasks
+##
+## Each task is responsible for depositing a JUnit XML file under
+## "$JUNITDIR".
 
 function task_phpunit() {
   case "$TESTTYPE" in
@@ -132,6 +91,53 @@ function task_upgrade() {
   $GUARD cp "$PRJDIR/app/debug/$BLDNAME/civicrm-upgrade-test.xml" "$JUNITDIR/"
   $GUARD civibuild restore "$BLDNAME"
 }
+
+#################################################
+## Parse inputs
+
+if [ -z $1 ]; then
+  echo "Missing argument: <build-name>"
+  echo
+  show_help
+  exit 2
+fi
+
+if [ -z $2 ]; then
+  echo "Missing argument: <junit-output-dir>"
+  echo
+  show_help
+  exit 2
+fi
+
+if [ -z $3 ]; then
+  echo "Missing argument: <test-type>"
+  echo
+  show_help
+  exit 2
+fi
+
+## Determine the absolute path of the directory with the file
+## absdirname <file-path>
+function absdirname() {
+  pushd $(dirname $0) >> /dev/null
+    pwd
+  popd >> /dev/null
+}
+
+BINDIR=$(absdirname "$0")
+PRJDIR=$(dirname "$BINDIR")
+BLDNAME="$1"
+BLDDIR="$PRJDIR/build/$BLDNAME"
+CIVI_CORE="$BLDDIR/sites/all/modules/civicrm"
+JUNITDIR="$2"
+TESTTYPE="$3"
+EXITCODES=
+GUARD=
+
+#################################################
+## Cleanup left-overs from previous test-runs
+[ -d "$JUNITDIR" ] && $GUARD rm -rf "$JUNITDIR"
+[ ! -d "$JUNITDIR" ] && $GUARD mkdir "$JUNITDIR"
 
 #################################################
 ## Main
