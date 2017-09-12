@@ -110,6 +110,7 @@ function absdirname() {
 BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
 EXITCODES=
+SUITES=
 GUARD=
 
 #################################################
@@ -159,10 +160,22 @@ while [ -n "$1" ] ; do
     exit 2
 
   else
-    TESTTYPE="$1"
-    run_tests
+    SUITES="$SUITES $1"
     shift
   fi
+done
+
+## Validate
+if [ -z "$SUITES" -o -z "$BLDNAME" -o -z "$JUNITDIR" ]; then
+  echo "Error: Missing required argument"
+  echo
+  show_help
+  exit 2
+fi
+
+## Main
+for TESTTYPE in $SUITES ; do
+  run_tests
 done
 
 ## Check test results and set exit code
