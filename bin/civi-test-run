@@ -217,6 +217,6 @@ for TESTTYPE in $SUITES ; do
   if  [ $TESTTYPE = "karma" ] || [ $TESTTYPE = "all" ] ; then
     [ -d "$CIVI_CORE/tests/karma" -a ! -f "$JUNITDIR/karma.xml" ] && fatal "Missing XML: karma.xml"
   fi
-fi
+done
 [ -n "$EXITCODES" ] && fatal "At least one command failed abnormally [$EXITCODES]"
 echo "Exit normally"
