@@ -23,8 +23,24 @@ function getCiviVer() {
 function show_help() {
   PROG=$(basename "$0")
   echo "about: Execute the CiviCRM test suites"
-  echo "usage: $PROG <build-name> <junit-output-dir> <test-type>"
-  echo "test-type is one of all, karma, upgrade, phpunit-civi, phpunit-crm, phpunit-api, phpunit-e2e"
+  echo
+  echo "usage: $PROG [-h] -b <build-name> -j <junit-output-dir> <test-types>"
+  echo
+  echo "  -h                  Display help"
+  echo "  -b <build-name>     The name of a local site produced by civibuild"
+  echo "  -j <junit-dir>      The path to a folder for storing results in JUnit XML"
+  echo "  <test-types>        A list of one more of the following:"
+  echo "                        - all"
+  echo "                        - karma"
+  echo "                        - phpunit-api"
+  echo "                        - phpunit-civi"
+  echo "                        - phpunit-crm"
+  echo "                        - phpunit-e2e"
+  echo "                        - upgrade"
+  echo
+  echo "example: Run the KarmaJS and DB-upgrade tests on D7/Civi-Master build"
+  echo "  $PROG -b dmaster -j /tmp/junit-output karma upgrade"
+  echo
 }
 
 #################################################
@@ -93,28 +109,11 @@ function task_upgrade() {
 }
 
 #################################################
-## Parse inputs
-
-if [ -z $1 ]; then
-  echo "Missing argument: <build-name>"
-  echo
-  show_help
-  exit 2
-fi
-
-if [ -z $2 ]; then
-  echo "Missing argument: <junit-output-dir>"
-  echo
-  show_help
-  exit 2
-fi
-
-if [ -z $3 ]; then
-  echo "Missing argument: <test-type>"
-  echo
-  show_help
-  exit 2
-fi
+## Cleanup left-overs from previous test-runs
+function junit_cleanup() {
+  [ -d "$JUNITDIR" ] && $GUARD rm -rf "$JUNITDIR"
+  [ ! -d "$JUNITDIR" ] && $GUARD mkdir "$JUNITDIR"
+}
 
 ## Determine the absolute path of the directory with the file
 ## absdirname <file-path>
@@ -126,57 +125,98 @@ function absdirname() {
 
 BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
-BLDNAME="$1"
-BLDDIR="$PRJDIR/build/$BLDNAME"
-CIVI_CORE="$BLDDIR/sites/all/modules/civicrm"
-JUNITDIR="$2"
-TESTTYPE="$3"
 EXITCODES=
+SUITES=
 GUARD=
 
 #################################################
-## Cleanup left-overs from previous test-runs
-[ -d "$JUNITDIR" ] && $GUARD rm -rf "$JUNITDIR"
-[ ! -d "$JUNITDIR" ] && $GUARD mkdir "$JUNITDIR"
+## Main
+function run_tests() {
+  ## Run Karma tests if requested Javascript
+  if [ $TESTTYPE = "karma" ] || [ $TESTTYPE = "all" ] ; then
+    task_karma
+  fi
+
+  ## Run Upgrade test if requested
+  if [ $TESTTYPE = "upgrade" ] || [ $TESTTYPE = "all" ] ; then
+    task_upgrade
+  fi
+
+  if [ $TESTTYPE != "upgrade" ] && [ $TESTTYPE != "karma" ] ; then
+    task_phpunit
+  fi
+}
+
 
 #################################################
+## Parse inputs
+while [ -n "$1" ] ; do
+  if [ $1 = "-b" ] || [ $1 = "-j" ] ; then
+    OPTION="$1"
+    shift
+
+    case "$OPTION" in
+      -b)
+        BLDNAME="$1"
+        BLDDIR="$PRJDIR/build/$BLDNAME"
+        CIVI_CORE="$BLDDIR/sites/all/modules/civicrm"
+        shift
+        ;;
+
+      -j)
+        JUNITDIR="$1"
+        junit_cleanup
+        shift
+        ;;
+
+    esac
+
+  elif [ $1 = "-h" ] || [ $1 = "--help" ] || [ $1 = "-?" ] ; then
+    show_help
+    exit 2
+
+  else
+    SUITES="$SUITES $1"
+    shift
+  fi
+done
+
+## Validate
+if [ -z "$SUITES" -o -z "$BLDNAME" -o -z "$JUNITDIR" ]; then
+  echo "Error: Missing required argument"
+  echo
+  show_help
+  exit 2
+fi
+
 ## Main
-
-## Run Karma tests if requested Javascript
-if [ $TESTTYPE = "karma" ] || [ $TESTTYPE = "all" ] ; then
-  task_karma
-fi
-
-## Run Upgrade test if requested
-if [ $TESTTYPE = "upgrade" ] || [ $TESTTYPE = "all" ] ; then
-  task_upgrade
-fi
-
-if [ $TESTTYPE != "upgrade" ] && [ $TESTTYPE != "karma" ] ; then
-  task_phpunit
-fi
+for TESTTYPE in $SUITES ; do
+  run_tests
+done
 
 ## Check test results and set exit code
 echo "Check test results and set exit code"
 cat "$JUNITDIR"/*.xml | grep '<failure' -q && fatal "Found <failure> in XML"
 cat "$JUNITDIR"/*.xml | grep '<error' -q && fatal "Found <error> in XML"
-if  [ $TESTTYPE = "upgrade" ] || [ $TESTTYPE = "all" ] ; then
-  [ ! -f "$JUNITDIR/civicrm-upgrade-test.xml" ] && fatal "Missing XML: civicrm-upgrade-test.xml"
-fi
-if  [ $TESTTYPE = "phpunit-crm" ] || [ $TESTTYPE = "all" ] ; then
-  [ ! -f "$JUNITDIR/CRM_AllTests.xml" ] && fatal "Missing XML: CRM_AllTests.xml"
-fi 
-if  [ $TESTTYPE = "phpunit-api" ] || [ $TESTTYPE = "all" ] ; then
-  [ ! -f "$JUNITDIR/api_v3_AllTests.xml" ] && fatal "Missing XML: api_v3_AllTests.xml"
-fi
-if  [ $TESTTYPE = "phpunit-civi" ] || [ $TESTTYPE = "all" ] ; then
-  [ ! -f "$JUNITDIR/Civi\\AllTests.xml" ] && fatal "Missing XML: Civi\\AllTests.xml"
-fi
-if  [ $TESTTYPE = "phpunit-e2e" ] || [ $TESTTYPE = "all" ] ; then
-  [ ! -f "$JUNITDIR/E2E_AllTests.xml" ] && fatal "Missing XML: E2E_AllTests.xml"
-fi
-if  [ $TESTTYPE = "karma" ] || [ $TESTTYPE = "all" ] ; then
-  [ -d "$CIVI_CORE/tests/karma" -a ! -f "$JUNITDIR/karma.xml" ] && fatal "Missing XML: karma.xml"
+for TESTTYPE in $SUITES ; do
+  if  [ $TESTTYPE = "upgrade" ] || [ $TESTTYPE = "all" ] ; then
+    [ ! -f "$JUNITDIR/civicrm-upgrade-test.xml" ] && fatal "Missing XML: civicrm-upgrade-test.xml"
+  fi
+  if  [ $TESTTYPE = "phpunit-crm" ] || [ $TESTTYPE = "all" ] ; then
+    [ ! -f "$JUNITDIR/CRM_AllTests.xml" ] && fatal "Missing XML: CRM_AllTests.xml"
+  fi
+  if  [ $TESTTYPE = "phpunit-api" ] || [ $TESTTYPE = "all" ] ; then
+    [ ! -f "$JUNITDIR/api_v3_AllTests.xml" ] && fatal "Missing XML: api_v3_AllTests.xml"
+  fi
+  if  [ $TESTTYPE = "phpunit-civi" ] || [ $TESTTYPE = "all" ] ; then
+    [ ! -f "$JUNITDIR/Civi\\AllTests.xml" ] && fatal "Missing XML: Civi\\AllTests.xml"
+  fi
+  if  [ $TESTTYPE = "phpunit-e2e" ] || [ $TESTTYPE = "all" ] ; then
+    [ ! -f "$JUNITDIR/E2E_AllTests.xml" ] && fatal "Missing XML: E2E_AllTests.xml"
+  fi
+  if  [ $TESTTYPE = "karma" ] || [ $TESTTYPE = "all" ] ; then
+    [ -d "$CIVI_CORE/tests/karma" -a ! -f "$JUNITDIR/karma.xml" ] && fatal "Missing XML: karma.xml"
+  fi
 fi
 [ -n "$EXITCODES" ] && fatal "At least one command failed abnormally [$EXITCODES]"
 echo "Exit normally"
