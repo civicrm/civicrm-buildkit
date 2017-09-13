@@ -50,28 +50,16 @@ function show_help() {
 ## "$JUNITDIR".
 
 function task_phpunit() {
-  case "$TESTTYPE" in
-    phpunit-api*) TESTS="api_v3_AllTests" EXITCODE="$EXITCODES phpunit API" ;;
-    phpunit-civi*) TESTS="Civi\\AllTests" EXITCODE="$EXITCODES phpunit Civi" ;;
-    phpunit-crm*) TESTS="CRM_AllTests" EXITCODE="$EXITCODES phpunit CRM" ;;
-    phpunit-e2e*) TESTS="E2E_AllTests" EXITCODE="$EXITCODES phpunit E2E" ;;
-    *) TESTS="E2E_AllTests CRM_AllTests api_v3_AllTests Civi\\AllTests" EXITCODE="$EXITCODES phpunit" ;;
-  esac
+  SUITE="$1"
 
-  if [ $TESTTYPE = "phpunit-e2e" ] || [ $TESTTYPE = "all" ] ; then
-    if [ -f "$CIVI_CORE/tests/phpunit/E2E/AllTests.php" ]; then
-      if ! $GUARD phpunit-each --exclude-group ornery "$CIVI_CORE" "$JUNITDIR" E2E_AllTests ; then
-        EXITCODES="$EXITCODES phpunit"
-      fi
+  if ! $GUARD phpunit-each --exclude-group ornery "$CIVI_CORE" "$JUNITDIR" $SUITE ; then
+    EXITCODES="$EXITCODES phpunit"
+  fi
+
+  if [ $SUITE = 'E2E_AllTests' ]; then
       $GUARD civibuild restore "$BLDNAME"
-    fi
   fi
 
-  if [ $TESTTYPE != "phpunit-e2e" ] ; then
-    if ! $GUARD phpunit-each --exclude-group ornery "$CIVI_CORE" "$JUNITDIR" $TESTS ; then
-      EXITCODES=$EXITCODE
-    fi
-  fi
   phpunit-xml-cleanup "$JUNITDIR"/*.xml
 }
 
@@ -130,25 +118,6 @@ SUITES=
 GUARD=
 
 #################################################
-## Main
-function run_tests() {
-  ## Run Karma tests if requested Javascript
-  if [ $TESTTYPE = "karma" ] || [ $TESTTYPE = "all" ] ; then
-    task_karma
-  fi
-
-  ## Run Upgrade test if requested
-  if [ $TESTTYPE = "upgrade" ] || [ $TESTTYPE = "all" ] ; then
-    task_upgrade
-  fi
-
-  if [ $TESTTYPE != "upgrade" ] && [ $TESTTYPE != "karma" ] ; then
-    task_phpunit
-  fi
-}
-
-
-#################################################
 ## Parse inputs
 while [ -n "$1" ] ; do
   if [ $1 = "-b" ] || [ $1 = "-j" ] ; then
@@ -175,6 +144,14 @@ while [ -n "$1" ] ; do
     show_help
     exit 2
 
+  elif [ $1 = "all" ] ; then
+    if [ -f "$CIVI_CORE/tests/phpunit/E2E/AllTests.php" ]; then
+      SUITES="karma upgrade phpunit-e2e phpunit-crm phpunit-api phpunit-civi"
+    else
+      SUITES="karma upgrade phpunit-crm phpunit-api phpunit-civi"
+    fi
+    shift
+
   else
     SUITES="$SUITES $1"
     shift
@@ -191,7 +168,15 @@ fi
 
 ## Main
 for TESTTYPE in $SUITES ; do
-  run_tests
+  case "$TESTTYPE" in
+    karma)  task_karma ;;
+    upgrade)  task_upgrade ;;
+    phpunit-e2e)  task_phpunit E2E_AllTests ;;
+    phpunit-crm)  task_phpunit CRM_AllTests ;;
+    phpunit-api)  task_phpunit api_v3_AllTests ;;
+    phpunit-civi)  task_phpunit 'Civi\AllTests' ;;
+    *) echo "unrecognized suite: $TESTTYPE"; exit 2 ;;
+  esac
 done
 
 ## Check test results and set exit code
