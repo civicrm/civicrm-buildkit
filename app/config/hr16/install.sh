@@ -119,7 +119,8 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
     masquerade \
     smtp \
     logintoboggan \
-    yoti
+    yoti \
+    ckeditor
 
   drush vset logintoboggan_login_with_email 1
   drush vset --format=integer node_export_reset_path_webform 0
