@@ -24,12 +24,13 @@ function show_help() {
   PROG=$(basename "$0")
   echo "about: Execute the CiviCRM test suites"
   echo
-  echo "usage: $PROG [-h] -b <build-name> -j <junit-output-dir> <test-types>"
+  echo "usage: $PROG [options] <suites>"
   echo
+  echo "options:"
   echo "  -h                  Display help"
-  echo "  -b <build-name>     The name of a local site produced by civibuild"
-  echo "  -j <junit-dir>      The path to a folder for storing results in JUnit XML"
-  echo "  <test-types>        A list of one more of the following:"
+  echo "  -b <build-name>     The name of a local site produced by civibuild (required)"
+  echo "  -j <junit-dir>      The path to a folder for storing results in JUnit XML (required)"
+  echo "  <suites>            A list of one more of the following:"
   echo "                        - all"
   echo "                        - karma"
   echo "                        - phpunit-api"
