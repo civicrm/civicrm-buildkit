@@ -329,7 +329,7 @@ function do_system_trusty() {
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
       sudo apt-get update
       sudo apt-get -y install $PACKAGES
-      sudo curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+      sudo curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -
       sudo apt-get install -y nodejs
       sudo php5enmod mcrypt
       sudo php5enmod imap
