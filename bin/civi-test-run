@@ -104,7 +104,7 @@ function junit_cleanup() {
   [ ! -d "$JUNITDIR" ] && $GUARD mkdir "$JUNITDIR"
 }
 
-function phpunit_drupal() {
+function task_phpunit_drupal() {
   $GUARD pushd "$CIVI_CORE/drupal"
   if ! $GUARD phpunit4 --tap --log-junit "$JUNITDIR/phpunit_drupal.xml" '--exclude-group' 'ornery' ; then
     EXITCODES="$EXITCODES phpunit-drupal"
@@ -189,7 +189,7 @@ for TESTTYPE in $SUITES ; do
     phpunit-crm)  task_phpunit CRM_AllTests ;;
     phpunit-api)  task_phpunit api_v3_AllTests ;;
     phpunit-civi)  task_phpunit 'Civi\AllTests' ;;
-    phpunit-drupal) phpunit_drupal ;;
+    phpunit-drupal) task_phpunit_drupal ;;
     *) echo "unrecognized suite: $TESTTYPE"; exit 2 ;;
   esac
 done
