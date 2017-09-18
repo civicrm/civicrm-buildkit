@@ -32,6 +32,8 @@ CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
 CIVI_UF="Drupal"
 
 civicrm_install
+echo "global \$civicrm_setting;" >> "${WEB_ROOT}/sites/default/civicrm.settings.php"
+echo "\$civicrm_setting['Directory Preferences']['extensionsDir'] = '${WEB_ROOT}/sites/default/civicrm/extensions';" >> "${WEB_ROOT}/sites/default/civicrm.settings.php"
 
 ###############################################################################
 ## Extra configuration
