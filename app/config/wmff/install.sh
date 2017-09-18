@@ -30,6 +30,8 @@ CIVI_SETTINGS="${WEB_ROOT}/sites/default/civicrm.settings.php"
 CIVI_FILES="${WEB_ROOT}/sites/default/files/civicrm"
 CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
 CIVI_UF="Drupal"
+CIVI_EXT_DIR="${WEB_ROOT}/sites/default/civicrm/extensions"
+CIVI_EXT_URL="${CMS_URL}/sites/default/civicrm/extensions"
 
 civicrm_install
 
