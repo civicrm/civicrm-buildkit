@@ -406,7 +406,7 @@ function do_system_stretch() {
     echo "Detected \"Debian Jessie\"."
     echo ""
     echo "Installing nodejs Debian repository."
-    wget -O- https://deb.nodesource.com/setup_6.x | sudo -E bash -
+    wget -O- https://deb.nodesource.com/setup_8.x | sudo -E bash -
     echo ""
     echo "Recommended packages: $PACKAGES"
     echo ""
