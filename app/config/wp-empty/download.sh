@@ -5,14 +5,13 @@
 ###############################################################################
 [ -z "$VOL_VERSION" ] && VOL_VERSION='4.4-1.x'
 
-WPCLI_ARGS=
-[ -n "$CMS_VERSION" ] && WPCLI_ARGS="$WPCLI_ARGS --version=$CMS_VERSION"
+[ -z "$CMS_VERSION" ] && CMS_VERSION=4.8
 
 echo "[[Download WordPress]]"
 mkdir "$WEB_ROOT"
 pushd "$WEB_ROOT" >> /dev/null
-  "$PRJDIR/bin/wp" core download$WPCLI_ARGS
+  "$PRJDIR/bin/wp" core download --version=$CMS_VERSION
   if [ ! -e "wp-cli.yml" ]; then
-    ln -s "$SITE_CONFIG_DIR/wp-cli.yml" "wp-cli.yml"
+    cp -a "$SITE_CONFIG_DIR/wp-cli.yml" "wp-cli.yml"
   fi
 popd >> /dev/null
