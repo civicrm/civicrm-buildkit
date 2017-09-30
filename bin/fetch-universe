@@ -133,7 +133,7 @@ foreach ($repos as $key => $ext) {
   }
 
   if (file_exists("$dir/composer.json") && $statuses[$key] == 0) {
-    $statuses[$key] = run($dir, "composer install");
+    $statuses[$key] = run($dir, "composer install --no-scripts");
   }
 }
 
