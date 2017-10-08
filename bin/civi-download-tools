@@ -289,7 +289,7 @@ function get_system_installer() {
     source /etc/lsb-release
   fi
   case "$DISTRIB_CODENAME" in
-    precise|trusty|jessie|xenial|yakkety|zesty)
+    precise|trusty|jessie|stretch|xenial|yakkety|zesty)
       echo "do_system_$DISTRIB_CODENAME"
       ;;
     *)
@@ -399,7 +399,30 @@ function do_system_jessie() {
     fi
   set +e
 }
-
+###############################################################################
+function do_system_stretch() {
+  set -e
+    PACKAGES="acl git wget unzip zip mysql-server mysql-client php-cli php-imap php-ldap php-curl php-mysql php-intl php-gd php-mcrypt php-apcu apache2 libapache2-mod-php php-bcmath php-mbstring php-soap php-zip"
+    echo "Detected \"Debian Jessie\"."
+    echo ""
+    echo "Installing nodejs Debian repository."
+    wget -O- https://deb.nodesource.com/setup_8.x | sudo -E bash -
+    echo ""
+    echo "Recommended packages: $PACKAGES"
+    echo ""
+    if cvutil_confirm "Run automated installation? [Y/n] " y y; then
+      sudo apt-get update
+      sudo apt-get -y install $PACKAGES
+      sudo phpenmod mcrypt
+      sudo phpenmod imap
+      sudo a2enmod rewrite
+      sudo apache2ctl restart
+    else
+      echo "Aborted" 1>&2
+      exit 1
+    fi
+  set +e
+}
 ###############################################################################
 function do_system_unknown() {
   echo "ERROR: Could not identify the required system packages."
