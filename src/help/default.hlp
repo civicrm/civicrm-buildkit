@@ -16,7 +16,7 @@ civibuild [options] command
   [32mshow[0m                  Show key details about the build
  [33mSnapshots[0m
   [32msnapshots[0m             List available snapshots
-  [32msnapshot[0m              Restore a snapshot of the CMS+CRM DBs
+  [32msnapshot[0m              Create a snapshot of the CMS+CRM DBs
   [32mrestore[0m               Restore a snapshot of the CMS+CRM DBs
   [32mrestore-all[0m           Restore *all* HTTP/DB services from their respective snapshots
  [33mClones[0m
