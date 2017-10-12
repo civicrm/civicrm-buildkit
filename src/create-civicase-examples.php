@@ -74,20 +74,71 @@ function addExampleTags() {
 }
 
 /**
- * Create one case for each contact (#100..#150).
+ * Create one case for each individual contact.
+ *
+ * Randomly add a second or third contact to some cases.
  */
 function addExampleCases() {
   $caseTypes = array(
     'housing_support',
     'adult_day_care_referral',
   );
+  $exampleTags = array('Apple', 'Banana', 'Grape', 'Orange', 'Edge Case');
 
-  for ($i = 100; $i < 150; $i++) {
-    $caseType = $caseTypes[$i % count($caseTypes)];
-    civicrm_api3('Case', 'create', array(
-      'contact_id' => $i,
+  $contacts = civicrm_api3('Contact', 'get', array(
+    'contact_type' => 'Individual',
+    'is_deceased' => 0,
+    'options' => array('limit' => 0),
+    'return' => array('id', 'display_name'),
+  ));
+
+  foreach ($contacts['values'] as $cid => $contact) {
+    $caseType = $caseTypes[$cid % count($caseTypes)];
+    $cids = array($cid);
+    $names = array();
+    // Add additonal contacts to case
+    if (mt_rand(0, 10) > 6) {
+      $cids = array_unique(array($cid, array_rand($contacts['values'])));
+      if (mt_rand(0, 10) > 5) {
+        $cids = array_unique(array($cid, array_rand($contacts['values']), array_rand($contacts['values'])));
+      }
+    }
+    foreach ($cids as $c) {
+      $names[] = $contacts['values'][$c]['display_name'];
+    }
+    $age = mt_rand(0, 500);
+    $endDate = ($age > 300) ? mt_rand(0, 200) : NULL;
+    $case = civicrm_api3('Case', 'create', array(
+      'contact_id' => $cids,
       'case_type_id' => $caseType,
-      'subject' => "The $i subject",
+      'subject' => "This case is in reference to " . implode(' and ', $names) . ".",
+      'start_date' => "now - $age day",
+      'end_date' => $endDate ? "now - $endDate day" : NULL,
+      'status_id' => $endDate ? 'Closed' : 'Open',
     ));
+    if ($endDate) {
+      civicrm_api3('Activity', 'create', array(
+        'case_id' => $case['id'],
+        'activity_type_id' => 'Change Case Status',
+        'target_contact_id' => $cids,
+        'subject' => 'Case status changed from Ongoing to Resolved',
+        'activity_date_time' => "now - $endDate day",
+        'status_id' => 'Completed',
+      ));
+      civicrm_api3('Activity', 'get', array(
+        'case_id' => $case['id'],
+        'status_id' => 'Scheduled',
+        'api.Activity.setvalue' => array('field' => 'status_id', 'value' => 2),
+      ));
+    }
+    // Tag some cases
+    if (mt_rand(0, 10) > 5) {
+      $tag = array_rand($exampleTags);
+      civicrm_api3('EntityTag', 'create', array(
+        'entity_table' => "civicrm_case",
+        'entity_id' => $case['id'],
+        'tag_id' => $exampleTags[$tag],
+      ));
+    }
   }
 }
