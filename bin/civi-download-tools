@@ -167,8 +167,8 @@ function show_command() {
 ## Debian.org's NodeJS package uses a non-standard name for the node binary.
 ## If necessary, setup an alias for the standard name.
 function nodejs_debian_workaround() {
-  if which nodejs >> /dev/null ; then
-    if ! which node >> /dev/null ; then
+  if which nodejs &> /dev/null ; then
+    if ! which node &> /dev/null ; then
       echo "[[NodeJS binary appears to be misnamed. Creating 'node' alias.]]"
       ln -s "$(which nodejs)" "$BINDIR/node"
     fi
