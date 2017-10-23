@@ -22,7 +22,6 @@ CIVIXURL="https://download.civicrm.org/civix/civix.phar-2017-10-09-650c46da"
 CVURL="https://download.civicrm.org/cv/cv.phar-2017-10-02-2c279c8e"
 HUB_VERSION="2.2.9"
 DRUSH8URL=http://files.drush.org/drush.phar
-PHPUNITURL=https://phar.phpunit.de/phpunit-4.8.21.phar
 WPCLIURL=https://github.com/wp-cli/wp-cli/releases/download/v1.3.0/wp-cli-1.3.0.phar
 GITSCANURL="https://download.civicrm.org/git-scan/git-scan.phar-2017-06-28-101620c7"
 AMPURL="https://download.civicrm.org/amp/amp.phar-2017-10-09-92650fb0"
@@ -550,7 +549,6 @@ pushd $PRJDIR >> /dev/null
   ## download_program_if_changed <url> <out-file> <flag-file>
   download_program_if_changed "$DRUSH8URL" "$PRJDIR/bin/drush8" "$PRJDIR/extern/drush8.txt"
   download_program_if_changed "$CVURL" "$PRJDIR/bin/cv" "$PRJDIR/extern/cv.txt"
-  download_program_if_changed "$PHPUNITURL" "$PRJDIR/bin/phpunit4" "$PRJDIR/extern/phpunit4.txt"
   download_program_if_changed "$WPCLIURL" "$PRJDIR/bin/wp" "$PRJDIR/extern/wp-cli.txt"
   download_program_if_changed "$GITSCANURL" "$PRJDIR/bin/git-scan" "$PRJDIR/extern/git-scan.txt"
   download_program_if_changed "$AMPURL" "$PRJDIR/bin/amp" "$PRJDIR/extern/amp.txt"
