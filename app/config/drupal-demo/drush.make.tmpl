@@ -43,13 +43,6 @@ libraries[civicrmpackages][download][url] = %%CACHE_DIR%%/civicrm/civicrm-packag
 libraries[civicrmpackages][download][branch] = %%CIVI_VERSION%%
 libraries[civicrmpackages][overwrite] = TRUE
 
-; Download available l10n releases (may be outdated)
-; libraries[civicrm_l10n][destination] = modules
-; libraries[civicrm_l10n][directory_name] = civicrm/l10n/fr_CA/LC_MESSAGES/
-; libraries[civicrm_l10n][download][type] = get
-; libraries[civicrm_l10n][download][url] = "https://raw.github.com/civicrm/l10n/master/po/fr_CA/civicrm.mo"
-; libraries[civicrm_l10n][overwrite] = TRUE
-
 ; Overwrite .mo files with latest versions
 libraries[civicrm_l10n_latest][destination] = modules
 libraries[civicrm_l10n_latest][directory_name] = civicrm/l10n
@@ -57,6 +50,12 @@ libraries[civicrm_l10n_latest][download][type] = get
 libraries[civicrm_l10n_latest][download][url] = http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
 libraries[civicrm_l10n_latest][overwrite] = TRUE
 
+; Download available l10n releases (may be outdated)
+; libraries[civicrm_l10n][destination] = modules
+; libraries[civicrm_l10n][directory_name] = civicrm/l10n/fr_CA/LC_MESSAGES/
+; libraries[civicrm_l10n][download][type] = get
+; libraries[civicrm_l10n][download][url] = "https://raw.github.com/civicrm/l10n/master/po/fr_CA/civicrm.mo"
+; libraries[civicrm_l10n][overwrite] = TRUE
 
 ; ****************************************
 ; Runtime Modules

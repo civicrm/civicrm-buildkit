@@ -18,6 +18,13 @@ projects[] = drupal
 ; CiviCRM core
 ; ****************************************
 
+libraries[civicrm][destination] = modules
+libraries[civicrm][directory_name] = civicrm
+libraries[civicrm][download][type] = git
+libraries[civicrm][download][url] = %%CACHE_DIR%%/civicrm/civicrm-core.git
+libraries[civicrm][download][tag] = %%CIVI_VERSION%%
+libraries[civicrm][overwrite] = TRUE
+
 libraries[civicrmdrupal][destination] = modules
 libraries[civicrmdrupal][directory_name] = civicrm/drupal
 libraries[civicrmdrupal][download][type] = git
@@ -38,13 +45,6 @@ libraries[civihr][download][type] = git
 libraries[civihr][download][url] = %%CACHE_DIR%%/civicrm/civihr.git
 libraries[civihr][download][branch] = %%HR_VERSION%%
 libraries[civihr][overwrite] = TRUE
-
-libraries[civicrm][destination] = modules
-libraries[civicrm][directory_name] = civicrm
-libraries[civicrm][download][type] = git
-libraries[civicrm][download][url] = %%CACHE_DIR%%/civicrm/civicrm-core.git
-libraries[civicrm][download][tag] = %%CIVI_VERSION%%
-libraries[civicrm][overwrite] = TRUE
 
 ; ****************************************
 ; Runtime Modules
