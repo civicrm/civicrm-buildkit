@@ -22,6 +22,13 @@ projects[] = drupal
 ; This will make it easier to submit pull-requests for patches.
 ; see: http://wiki.civicrm.org/confluence/display/CRMDOC/Github+for+CiviCRM
 
+libraries[civicrm][destination] = modules
+libraries[civicrm][directory_name] = civicrm
+libraries[civicrm][download][type] = git
+libraries[civicrm][download][url] = %%CACHE_DIR%%/CiviCRM42/civicrm42-core.git
+libraries[civicrm][download][branch] = %%CIVI_VERSION%%
+libraries[civicrm][overwrite] = TRUE
+
 libraries[civicrmdrupal][destination] = modules
 libraries[civicrmdrupal][directory_name] = civicrm/drupal
 libraries[civicrmdrupal][download][type] = git
@@ -36,13 +43,6 @@ libraries[civicrmpackages][download][url] = %%CACHE_DIR%%/CiviCRM42/civicrm42-pa
 libraries[civicrmpackages][download][branch] = %%CIVI_VERSION%%
 libraries[civicrmpackages][overwrite] = TRUE
 
-; Download available l10n releases (may be outdated)
-; libraries[civicrm_l10n][destination] = modules
-; libraries[civicrm_l10n][directory_name] = civicrm/l10n/fr_CA/LC_MESSAGES/
-; libraries[civicrm_l10n][download][type] = get
-; libraries[civicrm_l10n][download][url] = "https://raw.github.com/civicrm/l10n/master/po/fr_CA/civicrm.mo"
-; libraries[civicrm_l10n][overwrite] = TRUE
-
 ; Overwrite .mo files with latest version from SVN
 ; libraries[civicrm_l10n_latest][destination] = modules
 ; libraries[civicrm_l10n_latest][directory_name] = civicrm/l10n
@@ -50,12 +50,12 @@ libraries[civicrmpackages][overwrite] = TRUE
 ; libraries[civicrm_l10n_latest][download][url] = http://svn.civicrm.org/l10n/trunk/
 ; libraries[civicrm_l10n_latest][overwrite] = TRUE
 
-libraries[civicrm][destination] = modules
-libraries[civicrm][directory_name] = civicrm
-libraries[civicrm][download][type] = git
-libraries[civicrm][download][url] = %%CACHE_DIR%%/CiviCRM42/civicrm42-core.git
-libraries[civicrm][download][branch] = %%CIVI_VERSION%%
-libraries[civicrm][overwrite] = TRUE
+; Download available l10n releases (may be outdated)
+; libraries[civicrm_l10n][destination] = modules
+; libraries[civicrm_l10n][directory_name] = civicrm/l10n/fr_CA/LC_MESSAGES/
+; libraries[civicrm_l10n][download][type] = get
+; libraries[civicrm_l10n][download][url] = "https://raw.github.com/civicrm/l10n/master/po/fr_CA/civicrm.mo"
+; libraries[civicrm_l10n][overwrite] = TRUE
 
 ; ****************************************
 ; Runtime Modules
