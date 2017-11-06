@@ -122,6 +122,7 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
     yoti
 
   drush vset logintoboggan_login_with_email 1
+  drush vset --format=integer user_pictures 0
 
   ## Setup welcome page
   drush -y scr "$SITE_CONFIG_DIR/install-welcome.php"
