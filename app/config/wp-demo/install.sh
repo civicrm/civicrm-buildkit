@@ -53,6 +53,7 @@ wp eval '$home = get_page_by_title("Welcome to CiviCRM with WordPress"); update_
 
 wp plugin activate civicrm
 wp plugin activate civicrm-demo-wp
+wp plugin install civicrm-admin-utilities && wp plugin activate civicrm-admin-utilities
 
 civicrm_apply_demo_defaults
 
