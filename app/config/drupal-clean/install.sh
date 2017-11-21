@@ -41,6 +41,8 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   ## disable annoying/unneeded modules
   drush -y dis overlay
 
+  cv ev 'return CRM_Utils_System::synchronizeUsers();'
+
   ## Setup theme
   #above# drush -y en garland
   export SITE_CONFIG_DIR

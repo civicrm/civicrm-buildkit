@@ -50,6 +50,7 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   #echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign"]}' \
   #  | drush8 cvapi setting.create --in=json
   #civicrm_apply_demo_defaults
+  #cv ev 'return CRM_Utils_System::synchronizeUsers();'
 
   ## Setup theme
   #above# drush8 -y en garland
