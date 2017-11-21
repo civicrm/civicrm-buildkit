@@ -47,6 +47,7 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
     | drush cvapi setting.create --in=json
   ## Note: CiviGrant disabled by default. If you enable, update the permissions as well.
   civicrm_apply_demo_defaults
+  cv ev 'return CRM_Utils_System::synchronizeUsers();'
 
   ## Setup theme
   #above# drush -y en garland

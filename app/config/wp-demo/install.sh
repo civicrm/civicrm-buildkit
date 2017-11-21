@@ -56,6 +56,7 @@ wp plugin activate civicrm-demo-wp
 wp plugin install civicrm-admin-utilities && wp plugin activate civicrm-admin-utilities
 
 civicrm_apply_demo_defaults
+cv ev 'return CRM_Utils_System::synchronizeUsers();'
 
 wp role create civicrm_admin 'CiviCRM Administrator'
 wp cap add civicrm_admin \
