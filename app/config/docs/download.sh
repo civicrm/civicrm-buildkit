@@ -14,10 +14,10 @@ fi
 
 echo "[[Download civicrm-docs]]"
 
-git_cache_setup "https://github.com/civicrm/civicrm-docs.git"              "$CACHE_DIR/civicrm/civicrm-docs.git"
+git_cache_setup "https://lab.civicrm.org/documentation/docs-publisher.git" "$CACHE_DIR/LAB/documentation/docs-publisher.git"
 
 mkdir "$WEB_ROOT"
 pushd "$WEB_ROOT" >> /dev/null
-  git clone  "$CACHE_DIR/civicrm/civicrm-docs.git" .
+  git clone  "$CACHE_DIR/LAB/documentation/docs-publisher.git" .
   composer install --no-scripts
 popd >> /dev/null
