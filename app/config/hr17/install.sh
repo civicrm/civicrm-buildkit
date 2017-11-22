@@ -121,7 +121,7 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
     logintoboggan \
     yoti \
     menu_attributes \
-    menu_per_role
+    roles_for_menu
 
   drush vset logintoboggan_login_with_email 1
   drush vset --format=integer user_pictures 0
