@@ -126,12 +126,30 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   drush vset logintoboggan_login_with_email 1
   drush vset --format=integer user_pictures 0
 
+  drush vset --format=integer node_export_reset_path_webform 0
+
+  ## Mail settings
+  drush vset --format=integer mimemail_sitestyle 0
+  drush vset --format=integer smtp_allowhtml 1
+  drush vset mailsystem_theme default
+  drush dis -y mimemail_compress
+
   ## Setup welcome page
   drush -y scr "$SITE_CONFIG_DIR/install-welcome.php"
 
   install_civihr
 
-  drush -y en civicrmtheme civihr_employee_portal_features civihr_leave_absences leave_and_absences_features civihr_default_permissions
+  drush -y en civicrmtheme \
+    civihr_employee_portal_features \
+    civihr_leave_absences \
+    leave_and_absences_features \
+    civihr_default_permissions \
+    onboarding_slideshow \
+    civihr_default_mail_content
+
+  ## Fix gzipped file
+  (cd ${WEB_ROOT}/libraries/jquery.cycle; [[ $(file jquery.cycle.all.js) == *gzip* ]] && mv jquery.cycle.all.js jquery.cycle.all.js.gz && gunzip jquery.cycle.all.js.gz)
+
   drush -y features-revert civihr_employee_portal_features
 
   setup_themes
