@@ -147,8 +147,13 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
     onboarding_slideshow \
     civihr_default_mail_content
 
-  ## Fix gzipped file
-  (cd ${WEB_ROOT}/libraries/jquery.cycle; [[ $(file jquery.cycle.all.js) == *gzip* ]] && mv jquery.cycle.all.js jquery.cycle.all.js.gz && gunzip jquery.cycle.all.js.gz)
+   ## Fix gzipped file
+  pushd ${WEB_ROOT}/libraries/jquery.cycle;
+  if file jquery.cycle.all.js | grep -q 'gzip'; then
+    mv jquery.cycle.all.js jquery.cycle.all.js.gz
+    gunzip jquery.cycle.all.js.gz
+  fi
+  popd
 
   drush -y features-revert civihr_employee_portal_features
 
