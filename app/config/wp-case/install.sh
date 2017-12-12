@@ -46,7 +46,7 @@ wp plugin activate civicrm-demo-wp
 
 echo '{"enable_components":["CiviMail","CiviReport","CiviCase"]}' | cv api setting.create --in=json
 civicrm_apply_demo_defaults
-cv ev 'return CRM_Utils_System::synchronizeUsers();'
+cv ev 'if(is_callable(array("CRM_Core_BAO_CMSUser","synchronize"))){CRM_Core_BAO_CMSUser::synchronize(FALSE);}else{CRM_Utils_System::synchronizeUsers();}'
 
 ## Install Shoreditch and CiviCase
 cv en shoreditch styleguide civicase
