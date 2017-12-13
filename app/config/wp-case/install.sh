@@ -50,7 +50,7 @@ cv ev 'if(is_callable(array("CRM_Core_BAO_CMSUser","synchronize"))){CRM_Core_BAO
 
 ## Install Shoreditch and CiviCase
 cv en shoreditch styleguide civicase
-cv api setting.create customCSSURL=$(cv url -x shoreditch/css/custom-civicrm.css --out=list)
+cv api setting.create customCSSURL='[civicrm.root]/ext/shoreditch/css/custom-civicrm.css'
 cv scr --user="$ADMIN_USER" "$PRJDIR/src/create-civicase-examples.php"
 
 ## Setup permissions
