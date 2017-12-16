@@ -50,7 +50,7 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   ## Install Shoreditch and CiviCase
   cv en shoreditch styleguide civicase
-  cv api setting.create customCSSURL=$(cv url -x shoreditch/css/custom-civicrm.css --out=list)
+  cv api setting.create customCSSURL='[civicrm.root]/ext/shoreditch/css/custom-civicrm.css'
   cv scr --user="$ADMIN_USER" "$PRJDIR/src/create-civicase-examples.php"
 
   ## Based on the block info, CRM_Core_Block::CREATE_NEW and CRM_Core_Block::ADD should be enabled by default, but they aren't.
