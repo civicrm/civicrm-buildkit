@@ -8,7 +8,7 @@ ini_set('display_errors', 1);
 $found = 0;
 $autoloaders = array(
   dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php',
-  dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'autoload.php'
+  dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'autoload.php',
 );
 foreach ($autoloaders as $autoloader) {
   if (file_exists($autoloader)) {
@@ -27,6 +27,7 @@ function main($argv) {
 
   $verbose = FALSE;
   $delim = NULL;
+  $cacheTtl = -1;
   $pathArchivePairs = array();
   while (!empty($argv)) {
     $expr = array_shift($argv);
@@ -38,6 +39,10 @@ function main($argv) {
 
       case '-d':
         $delim = array_shift($argv);
+        break;
+
+      case '--cache-ttl':
+        $cacheTtl = array_shift($argv);
         break;
 
       default:
@@ -63,7 +68,7 @@ function main($argv) {
       continue;
     }
     list ($baseDir, $archiveUrl) = explode('=', $pathArchivePair, 2);
-    download_extract($baseDir, $archiveUrl, $verbose);
+    download_extract($baseDir, $archiveUrl, $verbose, $cacheTtl);
   }
 
   return 0;
@@ -76,7 +81,7 @@ function main($argv) {
  * @param string $baseDir
  * @param string $archiveUrl
  */
-function download_extract($baseDir, $archiveUrl, $verbose) {
+function download_extract($baseDir, $archiveUrl, $verbose, $cacheTtl) {
   $fs = new \Symfony\Component\Filesystem\Filesystem();
 
   list ($format, $isDownload, $archiveFile) = parse_archive_url($archiveUrl);
@@ -89,8 +94,10 @@ function download_extract($baseDir, $archiveUrl, $verbose) {
   }
 
   if ($isDownload) {
-    echo "[[Download $archiveUrl to $archiveFile]]\n";
-    file_put_contents($archiveFile, file_get_contents($archiveUrl));
+    if ($cacheTtl < 0 || !file_exists($archiveFile) || is_older_than($archiveFile, time() - $cacheTtl)) {
+      echo "[[Download $archiveUrl to $archiveFile]]\n";
+      file_put_contents($archiveFile, file_get_contents($archiveUrl));
+    }
   }
 
   switch ($format) {
@@ -110,9 +117,14 @@ function download_extract($baseDir, $archiveUrl, $verbose) {
       usage("Unrecognized archive format ($baseDir=$archiveUrl)");
   }
 
-  if ($isDownload) {
+  if ($isDownload && $cacheTtl <= 0) {
     unlink($archiveFile);
   }
+}
+
+function is_older_than($file, $timestamp) {
+  $stat = stat($file);
+  return $stat['mtime'] < $timestamp;
 }
 
 /**
@@ -137,7 +149,8 @@ function parse_archive_url($archiveUrl) {
   }
   elseif (preg_match('/^https?:/', $archiveUrl)) {
     $isDownload = TRUE;
-    $fileName = tempnam(sys_get_temp_dir(), 'dl')
+    $fileName = get_cache_dir() . DIRECTORY_SEPARATOR
+      . md5($archiveUrl) . '-'
       . basename(parse_url($archiveUrl, PHP_URL_PATH));
   }
   else {
@@ -157,12 +170,26 @@ function parse_archive_url($archiveUrl) {
   return array($format, $isDownload, $fileName);
 }
 
+function get_cache_dir() {
+  $cacheDir = implode(DIRECTORY_SEPARATOR, array(
+    dirname(__DIR__),
+    'app',
+    'tmp',
+  ));
+  if (!file_exists($cacheDir)) {
+    $fs = new \Symfony\Component\Filesystem\Filesystem();
+    $fs->mkdir($cacheDir);
+  }
+  return $cacheDir;
+}
+
 ###############################################################################
 function usage($error) {
   echo "about: Download an archive URL and extract in a particular directory.\n";
-  echo "usage: extract-url [-v] [-d <char>] [<dir1>=<url1>] [<dir2>=<url2>]...\n";
-  echo "   -v    Verbose mode\n";
-  echo "   -d    Pass multiple dir=url expressions using a custom delimiter\n";
+  echo "usage: extract-url [-v] [-d <char>] [--cache-ttl <seconds> ] [<dir1>=<url1>] [<dir2>=<url2>]...\n";
+  echo "   -v           Verbose mode\n";
+  echo "   -d           Pass multiple dir=url expressions using a custom delimiter\n";
+  echo "   --cache-ttl  Optionally enable download caching. Keep items in the cache for given duration.";
   if ($error) {
     echo "error: $error\n";
     exit(1);
