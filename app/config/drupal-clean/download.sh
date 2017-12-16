@@ -6,8 +6,10 @@
 
 [ -z "$CMS_VERSION" ] && CMS_VERSION=7.x
 
+[ -d "$WEB_ROOT.drushtmp" ] && rm -rf "$WEB_ROOT.drushtmp"
 drush -y dl drupal-${CMS_VERSION} --destination="$WEB_ROOT.drushtmp" --drupal-project-rename
 mv "$WEB_ROOT.drushtmp/drupal" "$WEB_ROOT"
+[ -d "$WEB_ROOT.drushtmp" ] && rm -rf "$WEB_ROOT.drushtmp"
 
 pushd "$WEB_ROOT"
   drush dl -y libraries-1.0 views-3.7 devel
