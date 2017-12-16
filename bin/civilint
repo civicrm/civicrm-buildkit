@@ -51,7 +51,7 @@ function split_files() {
     if [ ! -e "$file" ]; then
       echo "$file" >> "$skipfiles"
 
-    elif [[ "$file" =~ (/?DAO/|/?examples/|/?tools/) ]]; then
+    elif [[ "$file" =~ (/?examples/|/?tools/) ]]; then
       echo "$file" >> "$skipfiles"
 
     elif [[ "$file" =~ Trait\.php$ ]]; then
