@@ -120,6 +120,13 @@ function hydra_create() {
         subsite_dl="wp-content/plugins=$TARFILE"
         ;;
 
+      civicrm-*-wporg.zip|civicrm-*-wporg-*.zip)
+        subsite_name="${HYDRA_PREFIX}wporg"
+        subsite_type="wp-empty"
+        subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}wporg")
+        subsite_dl="wp-content/plugins=$TARFILE"
+        ;;
+
       *)
         echo "Skip $TARFILE"
         continue
@@ -166,6 +173,13 @@ function hydra_show() {
 
       *-wp)
         subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}wp")
+        login_url="$subsite_url/wp-admin/"
+        install_url="$subsite_url/wp-admin/plugins.php"
+        install_blurb=""
+        ;;
+
+      *-wporg)
+        subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}wporg")
         login_url="$subsite_url/wp-admin/"
         install_url="$subsite_url/wp-admin/plugins.php"
         install_blurb=""
