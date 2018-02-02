@@ -6,13 +6,13 @@
 # Creates the default CiviHR users
 function create_default_users() {
   drush -y user-create --password="civihr_staff" --mail="civihr_staff@compucorp.co.uk" "civihr_staff"
-  drush -y user-add-role civihr_staff "civihr_staff"
+  drush -y user-add-role Staff "civihr_staff"
 
   drush -y user-create --password="civihr_manager" --mail="civihr_manager@compucorp.co.uk" "civihr_manager"
-  drush -y user-add-role civihr_manager "civihr_manager"
+  drush -y user-add-role Manager "civihr_manager"
 
   drush -y user-create --password="civihr_admin" --mail="civihr_admin@compucorp.co.uk" "civihr_admin"
-  drush -y user-add-role civihr_admin "civihr_admin"
+  drush -y user-add-role "HR Admin" "civihr_admin"
 }
 
 ##
