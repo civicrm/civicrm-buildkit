@@ -81,16 +81,7 @@ function task_karma() {
 function task_upgrade() {
   ## Run the tests -- DB upgrade tests
   CIVIVER=$(getCiviVer)
-  case "$CIVIVER" in
-    4.3*)    UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.3.0*" ;;
-    4.4*)    UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.3.0* 4.4.0*" ;;
-    4.5*)    UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.3.0* 4.4.0* 4.5.0*" ;;
-    4.6*)    UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.3.0* 4.4.0* 4.5.0* 4.6.0*" ;;
-    4.7*)    UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.4.0* 4.5.0* 4.6.0* 4.7.0*" ;;
-    master*) UTVERS="4.2.9-multilingual_af_bg_en.mysql.bz2 4.4.0* 4.5.0* 4.6.0* 4.7.0*" ;;
-    *)      echo "UpgradeTest failed: Unrecognized version ($CIVIVER)" ; exit 1; ;;
-  esac
-  if  ! $GUARD civibuild upgrade-test $BLDNAME $UTVERS ; then
+  if  ! $GUARD civibuild upgrade-test $BLDNAME 4.2.9-multilingual_af_bg_en* "@4.2..$CIVIVER:10" ; then
     EXITCODES="$EXITCODES upgrade-test"
   fi
   $GUARD cp "$PRJDIR/app/debug/$BLDNAME/civicrm-upgrade-test.xml" "$JUNITDIR/"
