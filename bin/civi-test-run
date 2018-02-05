@@ -38,6 +38,7 @@ function show_help() {
   echo "                        - phpunit-crm"
   echo "                        - phpunit-e2e"
   echo "                        - upgrade"
+  echo "                        - upgrade@4.7.30:10"
   echo
   echo "example: Run the KarmaJS and DB-upgrade tests on D7/Civi-Master build"
   echo "  $PROG -b dmaster -j /tmp/junit-output karma upgrade"
@@ -78,10 +79,11 @@ function task_karma() {
   $GUARD popd
 }
 
+## Execute the upgrade test suite
+## ex: task_upgrade @4.3..4.6.30
 function task_upgrade() {
   ## Run the tests -- DB upgrade tests
-  CIVIVER=$(getCiviVer)
-  if  ! $GUARD civibuild upgrade-test $BLDNAME 4.2.9-multilingual_af_bg_en* "@4.2..$CIVIVER:10" ; then
+  if  ! $GUARD civibuild upgrade-test $BLDNAME $@ ; then
     EXITCODES="$EXITCODES upgrade-test"
   fi
   $GUARD cp "$PRJDIR/app/debug/$BLDNAME/civicrm-upgrade-test.xml" "$JUNITDIR/"
@@ -175,7 +177,8 @@ fi
 for TESTTYPE in $SUITES ; do
   case "$TESTTYPE" in
     karma)  task_karma ;;
-    upgrade)  task_upgrade ;;
+    upgrade)  CIVIVER=$(getCiviVer) ; task_upgrade 4.2.9-multilingual_af_bg_en* "@4.2..$CIVIVER:10" ;;
+    upgrade@*)  task_upgrade $(echo $TESTTYPE | sed s'/^upgrade//' ) ;;
     phpunit-e2e)  task_phpunit E2E_AllTests ;;
     phpunit-crm)  task_phpunit CRM_AllTests ;;
     phpunit-api)  task_phpunit api_v3_AllTests ;;
