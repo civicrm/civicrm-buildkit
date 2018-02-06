@@ -120,6 +120,23 @@ function echo_comment() {
 }
 
 ###############################################################################
+## Ensure that the current user has permission to write to a given folder.
+##
+## This addresses the issue where somone has erroneously executed `composer`
+## or `npm` or `bower` or somesuch as `root`.
+## usage: check_path_ownership <find-args>"
+function check_datafile_ownership() {
+  local tgtuser=$(whoami)
+  local files=$( find "$@" ! -user $tgtuser 2>&1 )
+  if [ -n "$files" ]; then
+    echo "WARNING: The following data-files are not owned by your user, which may lead to permission issues. You may need to delete or chown them." >&2
+    echo "$ find "$@" ! -user $tgtuser"
+    echo "$files"
+    echo ""
+  fi
+}
+
+###############################################################################
 ## Ensure that a command is on the PATH. If missing, then give
 ## advice on possible resolutions and exit.
 ## usage: check_command <command-name> <required|recommended> [<msg>]
@@ -504,6 +521,15 @@ fi
 ## Begin execution
 set -e
 pushd $PRJDIR >> /dev/null
+
+  ## Check that data folders/files are writeable. Since this is expensive, only do it on new systems.
+  if [ -z "$IS_QUIET" -o ! -d vendor -o ! -d node_modules ]; then
+    [ -n "$COMPOSER_CACHE_DIR" ] && check_datafile_ownership "$COMPOSER_CACHE_DIR" || check_datafile_ownership "$HOME/.composer"
+    check_datafile_ownership "$HOME/.cache"
+    check_datafile_ownership "$HOME/.npm"
+    check_datafile_ownership "$HOME/.amp/apache.d"
+  fi
+
   ## Download "composer"
   if [ -z "$IS_FORCE" -a -f "$PRJDIR/bin/composer" ]; then
     echo_comment "[[Composer binary ($PRJDIR/bin/composer) already exists. Skipping.]]"
