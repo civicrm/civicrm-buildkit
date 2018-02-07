@@ -24,6 +24,8 @@ bin/civicrm-upgrade-test.bat
 bin/civistrings
 bin/civistrings.bat
 bin/civix
+bin/_codecept-php5.phar
+bin/_codecept-php7.phar
 bin/composer
 bin/cv
 bin/dbunit

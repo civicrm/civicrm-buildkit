@@ -1,0 +1,24 @@
+#!/bin/bash
+
+## This is a wrapper script for codecept. It selects the build that is compatible with the PHP
+## interpreter.
+##
+## usage: codecept [--php <file-path>] <codecept-args..>
+##
+## Tip: If you're reading this script and don't like having a wrapper... then don't use it!
+## Just download the preferred binary and put it somewhere in the PATH higher precedence.
+
+php_bin=php
+if [ "$1" = "--php" ]; then
+  shift
+  php_bin="$1"
+  shift
+fi
+
+if $php_bin -r 'exit(version_compare(PHP_VERSION, "7", ">=") ? 0 : 1);' ; then
+  codecept_bin=`which _codecept-php7.phar`
+else
+  codecept_bin=`which _codecept-php5.phar`
+fi
+
+exec $php_bin $codecept_bin "$@"
