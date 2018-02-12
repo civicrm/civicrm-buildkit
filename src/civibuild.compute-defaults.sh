@@ -1,4 +1,5 @@
 #!/bin/bash
+
 [ -z "$CACHE_DIR" ]          && CACHE_DIR="$TMPDIR/git-cache"
 [ -z "$WEB_ROOT" ]           && WEB_ROOT="$BLDDIR/$SITE_NAME"
 [ -z "$CMS_ROOT" ]           && CMS_ROOT="$WEB_ROOT"
