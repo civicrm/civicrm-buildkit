@@ -10,7 +10,7 @@
 [ -z "$ADMIN_PASS" ]         && ADMIN_PASS=$(cvutil_makepasswd 12)
 [ -z "$DEMO_PASS" ]          && DEMO_PASS=$(cvutil_makepasswd 12)
 [ -z "$SITE_TYPE" ]          && SITE_TYPE="$SITE_NAME"
-if [[ "$SITE_TYPE" == "." ]] || [[ "$SITE_TYPE" == /?* ]] || [[ "$SITE_TYPE" == ./* ]] ; then
+if [[ "$SITE_TYPE" == /?* ]] || [[ "$SITE_TYPE" == ./?* ]] || [[ "$SITE_TYPE" == ../?* ]] || [[ "$SITE_TYPE" == "." ]]; then
   SITE_CONFIG_DIR=$SITE_TYPE
   SITE_TYPE=$(basename $SITE_TYPE)
 fi
