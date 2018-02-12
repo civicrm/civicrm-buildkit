@@ -254,6 +254,11 @@ function civibuild_parse() {
         shift
         ;;
 
+      --type-dir)
+        SITE_TYPE_DIR="$1"
+        shift
+        ;;
+
       --url)
         CMS_URL="$1"
         shift

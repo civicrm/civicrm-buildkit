@@ -11,11 +11,8 @@
 [ -z "$ADMIN_PASS" ]         && ADMIN_PASS=$(cvutil_makepasswd 12)
 [ -z "$DEMO_PASS" ]          && DEMO_PASS=$(cvutil_makepasswd 12)
 [ -z "$SITE_TYPE" ]          && SITE_TYPE="$SITE_NAME"
-if [[ "$SITE_TYPE" == /?* ]] || [[ "$SITE_TYPE" == ./?* ]] || [[ "$SITE_TYPE" == ../?* ]] || [[ "$SITE_TYPE" == "." ]]; then
-  SITE_CONFIG_DIR=$SITE_TYPE
-  SITE_TYPE=$(basename $SITE_TYPE)
-fi
-[ -z "$SITE_CONFIG_DIR" ]    && SITE_CONFIG_DIR="$PRJDIR/app/config/$SITE_TYPE"
+[ -z "$SITE_TYPE_DIR" ]      && SITE_TYPE_DIR="$PRJDIR/app/config"
+[ -z "$SITE_CONFIG_DIR" ]    && SITE_CONFIG_DIR="$SITE_TYPE_DIR/$SITE_TYPE"
 [ -z "$CMS_TITLE" ]          && CMS_TITLE="$SITE_NAME"
 [ -z "$SNAPSHOT_NAME" ]      && SNAPSHOT_NAME="$SITE_NAME"
 if [ -z "$CMS_URL" ]; then
