@@ -12,7 +12,7 @@
 [ -z "$SITE_TYPE" ]          && SITE_TYPE="$SITE_NAME"
 if [[ "$SITE_TYPE" == "." ]] || [[ "$SITE_TYPE" == /?* ]] || [[ "$SITE_TYPE" == ./* ]] ; then
   SITE_CONFIG_DIR=$SITE_TYPE
-  SITE_TYPE=$(basename $(pwd))
+  SITE_TYPE=$(basename $SITE_TYPE)
 fi
 [ -z "$SITE_CONFIG_DIR" ]    && SITE_CONFIG_DIR="$PRJDIR/app/config/$SITE_TYPE"
 [ -z "$CMS_TITLE" ]          && CMS_TITLE="$SITE_NAME"
