@@ -45,7 +45,7 @@ function civibuild_app_run_optional() {
 function civibuild_app_download() {
   cvutil_assertvars civibuild_app_download WEB_ROOT PRJDIR CACHE_DIR SITE_NAME SITE_TYPE SITE_TYPE_DIR
 
-  echo "[[Download $SITE_NAME (type 'SITE_TYPE_DIR/$SITE_TYPE' in '$WEB_ROOT')]]"
+  echo "[[Download $SITE_NAME (type '$SITE_TYPE_DIR/$SITE_TYPE' in '$WEB_ROOT')]]"
 
   if [ -n "$FORCE_DOWNLOAD" -a -d "$WEB_ROOT" ]; then
     if cvutil_confirm "About to re-download \"$WEB_ROOT\". Are you sure you want destroy existing files? [y/N] " n y; then
