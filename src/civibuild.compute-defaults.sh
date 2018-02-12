@@ -1,5 +1,4 @@
 #!/bin/bash
-
 [ -z "$CACHE_DIR" ]          && CACHE_DIR="$TMPDIR/git-cache"
 [ -z "$WEB_ROOT" ]           && WEB_ROOT="$BLDDIR/$SITE_NAME"
 [ -z "$CMS_ROOT" ]           && CMS_ROOT="$WEB_ROOT"
@@ -11,6 +10,13 @@
 [ -z "$ADMIN_PASS" ]         && ADMIN_PASS=$(cvutil_makepasswd 12)
 [ -z "$DEMO_PASS" ]          && DEMO_PASS=$(cvutil_makepasswd 12)
 [ -z "$SITE_TYPE" ]          && SITE_TYPE="$SITE_NAME"
+if [[ "$SITE_TYPE" == "." ]] || [[ "$SITE_TYPE" == /?* ]] || [[ "$SITE_TYPE" == ./* ]] ; then
+  SITE_CONFIG_DIR=$SITE_TYPE
+  pushd $SITE_TYPE &> /dev/null
+  SITE_TYPE=$(basename $(pwd))
+  popd &> /dev/null
+fi
+[ -z "$SITE_CONFIG_DIR" ]    && SITE_CONFIG_DIR="$PRJDIR/app/config/$SITE_TYPE"
 [ -z "$CMS_TITLE" ]          && CMS_TITLE="$SITE_NAME"
 [ -z "$SNAPSHOT_NAME" ]      && SNAPSHOT_NAME="$SITE_NAME"
 if [ -z "$CMS_URL" ]; then
@@ -33,7 +39,6 @@ else
   [ -z "$CIVI_SQL"  ]        && CIVI_SQL="$SNAPSHOT_DIR/$SNAPSHOT_NAME--$SITE_ID/civi.sql.gz"
   [ -z "$CMS_SQL" ]          && CMS_SQL="$SNAPSHOT_DIR/$SNAPSHOT_NAME--$SITE_ID/cms.sql.gz"
 fi
-[ -z "$SITE_CONFIG_DIR" ]    && SITE_CONFIG_DIR="$PRJDIR/app/config/$SITE_TYPE"
 [ -z "$CIVICRM_GENCODE_DIGEST" ] && CIVICRM_GENCODE_DIGEST="$TMPDIR/$SITE_NAME-gencode.md5"
 [ -z "$SHOW_LAST_SCAN" ]     && SHOW_LAST_SCAN="$TMPDIR/git-scan-${SITE_NAME}-last.json"
 [ -z "$SHOW_NEW_SCAN" ]      && SHOW_NEW_SCAN="$TMPDIR/git-scan-${SITE_NAME}-new.json"
