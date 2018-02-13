@@ -94,7 +94,7 @@ function civibuild_app_download() {
 ## i.e. run them if FORCE_INSTALL or if the
 ## site wasn't previously installed
 function civibuild_app_install() {
-  cvutil_assertvars civibuild_app_install WEB_ROOT PRIVATE_ROOT SITE_NAME SITE_ID SITE_TYPE
+  cvutil_assertvars civibuild_app_install WEB_ROOT PRIVATE_ROOT SITE_NAME SITE_ID SITE_TYPE SITE_TYPE_DIR
 
   echo "[[Install $SITE_NAME/$SITE_ID (type '$SITE_TYPE' in '$WEB_ROOT')]]"
 
