@@ -67,4 +67,3 @@ node_modules/
 vagrant/*/.vagrant
 vendor/
 web/
-./.*
