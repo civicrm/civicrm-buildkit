@@ -62,6 +62,9 @@ function split_files() {
         echo "$file" >> "$skipfiles"
       fi
 
+    elif [[ "$file" =~ (/SchemaStructure\.php|langs\.php) ]]; then
+      echo "$file" >> "$skipfiles"
+
     elif [[ "$file" =~ \.php$ ]]; then
       echo "$file" >> "$phpfiles"
 
