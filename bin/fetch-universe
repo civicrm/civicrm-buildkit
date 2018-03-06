@@ -42,6 +42,9 @@ $core = array(
     'git_url' => 'https://github.com/civicrm/civicrm-backdrop',
     'git_branch' => '1.x-master',
   ),
+  'civicrm-buildkit' => array(
+    'git_url' => 'https://github.com/civicrm/civicrm-buildkit',
+  ),
   'civicrm-drupal-6.x' => array(
     'git_url' => 'https://github.com/civicrm/civicrm-drupal',
     'git_branch' => '6.x-master',
@@ -59,6 +62,9 @@ $core = array(
   ),
   'civicrm-packages' => array(
     'git_url' => 'https://github.com/civicrm/civicrm-packages',
+  ),
+  'civicrm-setup' => array(
+    'git_url' => 'https://github.com/civicrm/civicrm-setup',
   ),
   'civicrm-wordpress' => array(
     'git_url' => 'https://github.com/civicrm/civicrm-wordpress',
