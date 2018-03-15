@@ -309,7 +309,7 @@ function get_system_installer() {
     source /etc/lsb-release
   fi
   case "$DISTRIB_CODENAME" in
-    precise|trusty|jessie|stretch|xenial|yakkety|zesty)
+    precise|trusty|jessie|stretch|xenial|yakkety|zesty|artful)
       echo "do_system_$DISTRIB_CODENAME"
       ;;
     *)
@@ -363,7 +363,6 @@ function do_system_trusty() {
 }
 
 ###############################################################################
-## If this shared function doesn't work, don't add conditionals - copy/paste into a new function.
 function do_system_xenial() {
   set -e
     PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.0-cli php7.0-imap php7.0-ldap php7.0-curl php7.0-mysql php7.0-intl php7.0-gd php7.0-mcrypt php7.0-bcmath php7.0-mbstring php7.0-soap php7.0-zip php7.0-xml apache2 libapache2-mod-php7.0 nodejs-legacy npm"
@@ -400,6 +399,36 @@ function do_system_yakkety() {
 function do_system_zesty() {
   do_system_xenial
 }
+
+###############################################################################
+## If this shared function doesn't work, don't add conditionals - copy/paste into a new function.
+function do_system_artful() {
+  set -e
+    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.1-cli php7.1-imap php7.1-ldap php7.1-curl php7.1-mysql php7.1-intl php7.1-gd php7.1-mcrypt php7.1-bcmath php7.1-mbstring php7.1-soap php7.1-zip php7.1-xml apache2 libapache2-mod-php7.1 nodejs npm"
+    UBUNTU_VERSION=$(lsb_release -ds)
+    echo "Detected $UBUNTU_VERSION."
+    echo ""
+    echo "Task: $PACKAGES"
+    echo ""
+    echo "Warning: This system will not support php-mysql extension"
+    echo ""
+    if cvutil_confirm "Run automated installation? [Y/n] " y y; then
+      sudo apt-get update
+      sudo apt-get -y install $PACKAGES
+      sudo phpenmod bcmath
+      sudo phpenmod curl
+      sudo phpenmod imap
+      sudo phpenmod mcrypt
+      sudo phpenmod xml
+      sudo a2enmod rewrite
+      sudo apache2ctl restart
+    else
+      echo "Aborted" 1>&2
+      exit 1
+    fi
+  set +e
+}
+
 ###############################################################################
 function do_system_jessie() {
   set -e
