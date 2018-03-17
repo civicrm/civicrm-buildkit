@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "8749f8eeb625480c49b265a130922f33",
+    "content-hash": "c040ffee9002608b7d75399243f79a7e",
     "packages": [
         {
             "name": "brianium/habitat",
@@ -106,12 +106,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/civicrm/civicrm-upgrade-test.git",
-                "reference": "df3a5b97a980bd35083824ae382c97de6539bc4d"
+                "reference": "b93207fd28ac90426e9c95d572068f2e907b08e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/df3a5b97a980bd35083824ae382c97de6539bc4d",
-                "reference": "df3a5b97a980bd35083824ae382c97de6539bc4d",
+                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/b93207fd28ac90426e9c95d572068f2e907b08e2",
+                "reference": "b93207fd28ac90426e9c95d572068f2e907b08e2",
                 "shasum": ""
             },
             "bin": [
@@ -130,7 +130,7 @@
             ],
             "description": "Collection of scripts and data-files for testing CiviCRM upgrades",
             "homepage": "https://github.com/civicrm/civicrm-upgrade-test",
-            "time": "2018-03-16T22:07:49+00:00"
+            "time": "2018-03-17T01:00:45+00:00"
         },
         {
             "name": "composer/semver",
