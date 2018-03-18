@@ -117,9 +117,12 @@ function absdirname() {
 
 BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
+BLDDIR="$PRJDIR/build"
 EXITCODES=
 SUITES=
 GUARD=
+
+[ -f "$PRJDIR/app/civibuild.conf" ] && source "$PRJDIR/app/civibuild.conf"
 
 #################################################
 ## Parse inputs
@@ -131,8 +134,7 @@ while [ -n "$1" ] ; do
     case "$OPTION" in
       -b)
         BLDNAME="$1"
-        BLDDIR="$PRJDIR/build/$BLDNAME"
-        pushd "$BLDDIR"
+        pushd "$BLDDIR/$BLDNAME"
           CIVI_CORE=$(cv ev 'echo $GLOBALS["civicrm_root"];')
           ## or: cv path -d '[civicrm.root]'
         popd
