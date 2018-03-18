@@ -58,6 +58,7 @@ function task_phpunit() {
   if ! $GUARD phpunit-each $EXCLUDE_GROUP "$CIVI_CORE" "$JUNITDIR" $SUITE ; then
     EXITCODES="$EXITCODES phpunit"
   fi
+  echo "Found EXITCODES=\"$EXITCODES\""
 
   if [ $SUITE = 'E2E_AllTests' ]; then
       $GUARD civibuild restore "$BLDNAME"
@@ -75,6 +76,7 @@ function task_karma() {
       if ! $GUARD karma start --browsers PhantomJS --single-run --reporters dots,junit ; then
         EXITCODES="$EXITCODES karma"
       fi
+      echo "Found EXITCODES=\"$EXITCODES\""
       $GUARD cp tests/output/karma.xml "$JUNITDIR/"
     fi
   $GUARD popd
@@ -87,6 +89,7 @@ function task_upgrade() {
   if  ! $GUARD civibuild upgrade-test $BLDNAME $@ ; then
     EXITCODES="$EXITCODES upgrade-test"
   fi
+  echo "Found EXITCODES=\"$EXITCODES\""
   $GUARD cp "$PRJDIR/app/debug/$BLDNAME/civicrm-upgrade-test.xml" "$JUNITDIR/"
   $GUARD civibuild restore "$BLDNAME"
 }
@@ -103,6 +106,7 @@ function task_phpunit_drupal() {
   if ! $GUARD phpunit4 --tap --log-junit "$JUNITDIR/phpunit_drupal.xml" $EXCLUDE_GROUP ; then
     EXITCODES="$EXITCODES phpunit-drupal"
   fi
+  echo "Found EXITCODES=\"$EXITCODES\""
 
   phpunit-xml-cleanup "$JUNITDIR"/*.xml
   $GUARD popd
@@ -172,7 +176,7 @@ if [ -z "$SUITES" -o -z "$BLDNAME" -o -z "$JUNITDIR" ]; then
   exit 2
 fi
 
-if [ $SUITES = "all" ]; then
+if [ "$SUITES" = "all" ]; then
   if [ -f "$CIVI_CORE/tests/phpunit/E2E/AllTests.php" ]; then
     SUITES="karma upgrade phpunit-e2e phpunit-crm phpunit-api phpunit-civi"
   else
