@@ -30,6 +30,7 @@ function show_help() {
   echo "  -h                  Display help"
   echo "  -b <build-name>     The name of a local site produced by civibuild (required)"
   echo "  -j <junit-dir>      The path to a folder for storing results in JUnit XML (required)"
+  echo "  --exclude-group <g> Exclude tests with a particular @group"
   echo "  <suites>            A list of one more of the following:"
   echo "                        - all"
   echo "                        - karma"
@@ -54,7 +55,7 @@ function show_help() {
 function task_phpunit() {
   SUITE="$1"
 
-  if ! $GUARD phpunit-each --exclude-group ornery "$CIVI_CORE" "$JUNITDIR" $SUITE ; then
+  if ! $GUARD phpunit-each $EXCLUDE_GROUP "$CIVI_CORE" "$JUNITDIR" $SUITE ; then
     EXITCODES="$EXITCODES phpunit"
   fi
 
@@ -99,7 +100,7 @@ function junit_cleanup() {
 
 function task_phpunit_drupal() {
   $GUARD pushd "$CIVI_CORE/drupal"
-  if ! $GUARD phpunit4 --tap --log-junit "$JUNITDIR/phpunit_drupal.xml" '--exclude-group' 'ornery' ; then
+  if ! $GUARD phpunit4 --tap --log-junit "$JUNITDIR/phpunit_drupal.xml" $EXCLUDE_GROUP ; then
     EXITCODES="$EXITCODES phpunit-drupal"
   fi
 
@@ -120,6 +121,7 @@ PRJDIR=$(dirname "$BINDIR")
 BLDDIR="$PRJDIR/build"
 EXITCODES=
 SUITES=
+EXCLUDE_GROUP=
 GUARD=
 
 [ -f "$PRJDIR/app/civibuild.conf" ] && source "$PRJDIR/app/civibuild.conf"
@@ -127,36 +129,39 @@ GUARD=
 #################################################
 ## Parse inputs
 while [ -n "$1" ] ; do
-  if [ $1 = "-b" ] || [ $1 = "-j" ] ; then
-    OPTION="$1"
-    shift
+  OPTION="$1"
+  shift
 
-    case "$OPTION" in
-      -b)
-        BLDNAME="$1"
-        pushd "$BLDDIR/$BLDNAME"
-          CIVI_CORE=$(cv ev 'echo $GLOBALS["civicrm_root"];')
-          ## or: cv path -d '[civicrm.root]'
-        popd
-        shift
-        ;;
+  case "$OPTION" in
+    -b)
+      BLDNAME="$1"
+      pushd "$BLDDIR/$BLDNAME"
+        CIVI_CORE=$(cv ev 'echo $GLOBALS["civicrm_root"];')
+        ## or: cv path -d '[civicrm.root]'
+      popd
+      shift
+      ;;
 
-      -j)
-        JUNITDIR="$1"
-        junit_cleanup
-        shift
-        ;;
+    -j)
+      JUNITDIR="$1"
+      junit_cleanup
+      shift
+      ;;
 
-    esac
+    --exclude-group)
+      EXCLUDE_GROUP="--exclude-group $1"
+      shift
+      ;;
 
-  elif [ $1 = "-h" ] || [ $1 = "--help" ] || [ $1 = "-?" ] ; then
-    show_help
-    exit 2
+    -h|--help|-?)
+      show_help
+      exit 2
+      ;;
 
-  else
-    SUITES="$SUITES $1"
-    shift
-  fi
+    *)
+      SUITES="$SUITES $OPTION"
+      ;;
+  esac
 done
 
 ## Validate
