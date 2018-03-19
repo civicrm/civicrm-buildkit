@@ -30,6 +30,7 @@ function show_help() {
   echo "  -h                  Display help"
   echo "  -b <build-name>     The name of a local site produced by civibuild (required)"
   echo "  -j <junit-dir>      The path to a folder for storing results in JUnit XML (required)"
+  echo "  --exclude-group <g> Exclude tests with a particular @group"
   echo "  <suites>            A list of one more of the following:"
   echo "                        - all"
   echo "                        - karma"
@@ -54,9 +55,10 @@ function show_help() {
 function task_phpunit() {
   SUITE="$1"
 
-  if ! $GUARD phpunit-each --exclude-group ornery "$CIVI_CORE" "$JUNITDIR" $SUITE ; then
+  if ! $GUARD phpunit-each $EXCLUDE_GROUP "$CIVI_CORE" "$JUNITDIR" $SUITE ; then
     EXITCODES="$EXITCODES phpunit"
   fi
+  echo "Found EXITCODES=\"$EXITCODES\""
 
   if [ $SUITE = 'E2E_AllTests' ]; then
       $GUARD civibuild restore "$BLDNAME"
@@ -74,6 +76,7 @@ function task_karma() {
       if ! $GUARD karma start --browsers PhantomJS --single-run --reporters dots,junit ; then
         EXITCODES="$EXITCODES karma"
       fi
+      echo "Found EXITCODES=\"$EXITCODES\""
       $GUARD cp tests/output/karma.xml "$JUNITDIR/"
     fi
   $GUARD popd
@@ -86,6 +89,7 @@ function task_upgrade() {
   if  ! $GUARD civibuild upgrade-test $BLDNAME $@ ; then
     EXITCODES="$EXITCODES upgrade-test"
   fi
+  echo "Found EXITCODES=\"$EXITCODES\""
   $GUARD cp "$PRJDIR/app/debug/$BLDNAME/civicrm-upgrade-test.xml" "$JUNITDIR/"
   $GUARD civibuild restore "$BLDNAME"
 }
@@ -99,9 +103,10 @@ function junit_cleanup() {
 
 function task_phpunit_drupal() {
   $GUARD pushd "$CIVI_CORE/drupal"
-  if ! $GUARD phpunit4 --tap --log-junit "$JUNITDIR/phpunit_drupal.xml" '--exclude-group' 'ornery' ; then
+  if ! $GUARD phpunit4 --tap --log-junit "$JUNITDIR/phpunit_drupal.xml" $EXCLUDE_GROUP ; then
     EXITCODES="$EXITCODES phpunit-drupal"
   fi
+  echo "Found EXITCODES=\"$EXITCODES\""
 
   phpunit-xml-cleanup "$JUNITDIR"/*.xml
   $GUARD popd
@@ -117,44 +122,50 @@ function absdirname() {
 
 BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
+BLDDIR="$PRJDIR/build"
 EXITCODES=
 SUITES=
+EXCLUDE_GROUP=
 GUARD=
+
+[ -f "$PRJDIR/app/civibuild.conf" ] && source "$PRJDIR/app/civibuild.conf"
 
 #################################################
 ## Parse inputs
 while [ -n "$1" ] ; do
-  if [ $1 = "-b" ] || [ $1 = "-j" ] ; then
-    OPTION="$1"
-    shift
+  OPTION="$1"
+  shift
 
-    case "$OPTION" in
-      -b)
-        BLDNAME="$1"
-        BLDDIR="$PRJDIR/build/$BLDNAME"
-        pushd "$BLDDIR"
-          CIVI_CORE=$(cv ev 'echo $GLOBALS["civicrm_root"];')
-          ## or: cv path -d '[civicrm.root]'
-        popd
-        shift
-        ;;
+  case "$OPTION" in
+    -b)
+      BLDNAME="$1"
+      pushd "$BLDDIR/$BLDNAME"
+        CIVI_CORE=$(cv ev 'echo $GLOBALS["civicrm_root"];')
+        ## or: cv path -d '[civicrm.root]'
+      popd
+      shift
+      ;;
 
-      -j)
-        JUNITDIR="$1"
-        junit_cleanup
-        shift
-        ;;
+    -j)
+      JUNITDIR="$1"
+      junit_cleanup
+      shift
+      ;;
 
-    esac
+    --exclude-group)
+      EXCLUDE_GROUP="--exclude-group $1"
+      shift
+      ;;
 
-  elif [ $1 = "-h" ] || [ $1 = "--help" ] || [ $1 = "-?" ] ; then
-    show_help
-    exit 2
+    -h|--help|-?)
+      show_help
+      exit 2
+      ;;
 
-  else
-    SUITES="$SUITES $1"
-    shift
-  fi
+    *)
+      SUITES="$SUITES $OPTION"
+      ;;
+  esac
 done
 
 ## Validate
@@ -165,7 +176,7 @@ if [ -z "$SUITES" -o -z "$BLDNAME" -o -z "$JUNITDIR" ]; then
   exit 2
 fi
 
-if [ $SUITES = "all" ]; then
+if [ "$SUITES" = "all" ]; then
   if [ -f "$CIVI_CORE/tests/phpunit/E2E/AllTests.php" ]; then
     SUITES="karma upgrade phpunit-e2e phpunit-crm phpunit-api phpunit-civi"
   else
