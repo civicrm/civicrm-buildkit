@@ -15,13 +15,13 @@
     "bin-dir": "bin"
   },
   "require": {
-    "php": ">=5.3.3",
+    "php": ">=5.5",
     "drush/drush": "dev-master#d1d13676f5beacaa9f8619088fe3ae45ea28a6cf",
-    "totten/php-symbol-diff": "dev-master#54f869ca68a3cd75f3386f8490870369733d2c23",
+    "totten/php-symbol-diff": "dev-master",
     "civicrm/upgrade-test": "dev-master#b93207fd28ac90426e9c95d572068f2e907b08e2",
     "drupal/coder": "dev-8.x-2.x-civi#a801890a82d52e23a83c5d820270b6e228843d79",
     "brianium/paratest": "dev-batching as 0.7",
-    "phpunit/phpunit": "3.7.27",
+    "phpunit/phpunit": ">=4",
     "phpunit/dbunit": "1.3.x",
     "phpunit/phpunit-selenium": "1.2.x",
     "squizlabs/PHP_CodeSniffer": ">=2"
@@ -34,6 +34,10 @@
     {
       "type": "git",
       "url": "https://github.com/totten/paratest.git"
+    },
+    {
+      "type": "git",
+      "url": "https://github.com/eileenmcnaughton/php-symbol-diff.git"
     }
   ]
 }
