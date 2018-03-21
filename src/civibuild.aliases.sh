@@ -84,7 +84,7 @@ function civibuild_alias_resolve() {
     bempty)      SITE_TYPE=backdrop-empty   ; CIVI_VERSION=none      ; CMS_TITLE="Backdrop Sandbox"                  ;;
     dempty)      SITE_TYPE=drupal-empty     ; CIVI_VERSION=none      ; CMS_TITLE="Drupal 7 Sandbox"                  ;;
     d7-empty)    SITE_TYPE=drupal-empty     ; CIVI_VERSION=none      ; CMS_TITLE="Drupal 7 Sandbox"                  ;;
-    # TODO: d8-empty)    SITE_TYPE=drupal-empty     ; CIVI_VERSION=none      ; CMS_TITLE="Drupal 8 Sandbox"                  ;;
+    d8-empty)    SITE_TYPE=drupal8-empty    ; CIVI_VERSION=none      ; CMS_TITLE="Drupal 8 Sandbox"                  ;;
     jempty)      SITE_TYPE=joomla-empty     ; CIVI_VERSION=none      ; CMS_TITLE="Joomla Sandbox"                    ;;
     wpempty)     SITE_TYPE=wp-empty         ; CIVI_VERSION=none      ; CMS_TITLE="WordPress Sandbox"                 ;;
     wp-empty)    SITE_TYPE=wp-empty         ; CIVI_VERSION=none      ; CMS_TITLE="WordPress Sandbox"                 ;;
