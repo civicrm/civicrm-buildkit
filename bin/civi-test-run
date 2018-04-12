@@ -163,7 +163,8 @@ while [ -n "$1" ] ; do
       ;;
 
     *)
-      SUITES="$SUITES $OPTION"
+      SUITES=$(echo "$SUITES" "$OPTION" | xargs)
+      # note: xargs strips leading/trailing spaces
       ;;
   esac
 done
@@ -182,6 +183,9 @@ if [ "$SUITES" = "all" ]; then
   else
     SUITES="karma upgrade phpunit-crm phpunit-api phpunit-civi"
   fi
+elif [[ " $SUITES " =~ \ all\  ]]; then
+  echo "The \"all\" target should not be mixed with other targets."
+  exit 3
 fi
 
 ## Main
