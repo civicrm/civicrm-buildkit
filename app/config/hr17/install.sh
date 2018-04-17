@@ -6,7 +6,7 @@
 # Runs the scripts that patches the compucorp's civicrm-core fork on
 # the original core files
 function apply_core_fork_patch() {
-  bash ${CIVI_CORE}/tools/extensions/civihr/bin/apply-core-fork-patch.sh
+  (cd ${CIVI_CORE}/tools/extensions/civihr && bash bin/apply-core-fork-patch.sh)
 }
 
 ##
