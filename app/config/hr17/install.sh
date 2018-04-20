@@ -3,6 +3,13 @@
 ## install.sh -- Create config files and databases; fill the databases
 
 ##
+# Runs the scripts that patches the compucorp's civicrm-core fork on
+# the original core files
+function apply_core_fork_patch() {
+  (cd ${CIVI_CORE}/tools/extensions/civihr && bash bin/apply-core-fork-patch.sh)
+}
+
+##
 # Creates the default CiviHR users
 function create_default_users() {
   drush -y user-create --password="civihr_staff" --mail="civihr_staff@compucorp.co.uk" "civihr_staff"
@@ -137,6 +144,7 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   ## Setup welcome page
   drush -y scr "$SITE_CONFIG_DIR/install-welcome.php"
 
+  apply_core_fork_patch
   install_civihr
 
   drush -y en civicrmtheme \
