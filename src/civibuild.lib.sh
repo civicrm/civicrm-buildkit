@@ -1072,6 +1072,7 @@ function joomla_install() {
     --overwrite \
     --skip-exists-check \
     "$child"
+  amp datadir "$CMS_ROOT/logs" "$CMS_ROOT/tmp"
 }
 
 ###############################################################################
