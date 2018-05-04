@@ -57,6 +57,7 @@ bin/phpcs.bat
 bin/phpunit
 bin/phpunit.bat
 bin/phpunit4
+bin/phpunit5
 bin/protractor
 bin/webdriver-manager
 bin/wp
