@@ -310,7 +310,7 @@ function get_system_installer() {
     source /etc/lsb-release
   fi
   case "$DISTRIB_CODENAME" in
-    precise|trusty|jessie|stretch|xenial|yakkety|zesty|artful)
+    precise|trusty|jessie|stretch|xenial|yakkety|zesty|artful|bionic)
       echo "do_system_$DISTRIB_CODENAME"
       ;;
     *)
@@ -421,6 +421,36 @@ function do_system_artful() {
       sudo phpenmod imap
       sudo phpenmod mcrypt
       sudo phpenmod xml
+      sudo a2enmod rewrite
+      sudo apache2ctl restart
+    else
+      echo "Aborted" 1>&2
+      exit 1
+    fi
+  set +e
+}
+
+###############################################################################
+function do_system_bionic() {
+  set -e
+    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.2-cli php7.2-imap php7.2-ldap php7.2-curl php7.2-mysql php7.2-intl php7.2-gd php7.2-dev php7.2-bcmath php7.2-mbstring php7.2-soap php7.2-zip php7.2-xml apache2 libapache2-mod-php7.2 nodejs npm php-pear libmcrypt-dev libreadline-dev"
+    UBUNTU_VERSION=$(lsb_release -ds)
+    echo "Detected $UBUNTU_VERSION."
+    echo ""
+    echo "Task: $PACKAGES"
+    echo ""
+    echo "Warning: This system will not support php-mysql extension"
+    echo ""
+    if cvutil_confirm "Run automated installation? [Y/n] " y y; then
+      sudo apt-get update
+      sudo apt-get -y install $PACKAGES
+      sudo phpenmod bcmath
+      sudo phpenmod curl
+      sudo phpenmod imap
+      sudo phpenmod xml
+      sudo pecl install mcrypt-1.0.1
+      sudo bash -c "echo extension=/usr/lib/php/20170718/mcrypt.so > /etc/php/7.2/cli/conf.d/mcrypt.ini"
+      sudo bash -c "echo extension=/usr/lib/php/20170718/mcrypt.so > /etc/php/7.2/apache2/conf.d/mcrypt.ini"
       sudo a2enmod rewrite
       sudo apache2ctl restart
     else
