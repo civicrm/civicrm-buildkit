@@ -155,6 +155,7 @@ function parse_archive_url($archiveUrl) {
   }
   else {
     $isDownload = NULL;
+    $fileName = NULL;
   }
 
   if (preg_match('/(\.tar\.gz|\.tgz)$/', $fileName)) {
