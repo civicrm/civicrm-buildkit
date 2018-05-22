@@ -124,6 +124,22 @@ function echo_comment() {
 }
 
 ###############################################################################
+## Make a symlink... gently.
+## usage: make_link <workdir> <from> <to>
+function make_link() {
+  local workdir="$1"
+  local from="$2"
+  local to="$3"
+  pushd "$workdir" >> /dev/null
+    if [ ! -e "$to" ]; then
+      echo_comment "[[Create symlink $to in $workdir]]"
+      ln -s "$from" "$to"
+    fi
+    ## FIXME: ideally, provide a notice if the file-exists and is *not* the expected link
+  popd >> /dev/null
+}
+
+###############################################################################
 ## Ensure that the current user has permission to write to a given folder.
 ##
 ## This addresses the issue where somone has erroneously executed `composer`
@@ -634,6 +650,8 @@ pushd $PRJDIR >> /dev/null
   fi
 
   [ ! -d "$PRJDIR/extern" ] && mkdir "$PRJDIR/extern"
+  [ ! -d "$PRJDIR/extern/phpunit4" ] && mkdir "$PRJDIR/extern/phpunit4"
+  [ ! -d "$PRJDIR/extern/phpunit5" ] && mkdir "$PRJDIR/extern/phpunit5"
 
   ## Cleanup old civix tarballs
   [ -d "$PRJDIR/extern/civix" ] && rm -rf "$PRJDIR/extern/civix"
@@ -641,8 +659,8 @@ pushd $PRJDIR >> /dev/null
   ## download_program_if_changed <url> <out-file> <flag-file>
   download_program_if_changed "$DRUSH8URL" "$PRJDIR/bin/drush8" "$PRJDIR/extern/drush8.txt"
   download_program_if_changed "$CVURL" "$PRJDIR/bin/cv" "$PRJDIR/extern/cv.txt"
-  download_program_if_changed "$PHPUNITURL" "$PRJDIR/bin/phpunit4" "$PRJDIR/extern/phpunit4.txt"
-  download_program_if_changed "$PHPUNIT5URL" "$PRJDIR/bin/phpunit5" "$PRJDIR/extern/phpunit5.txt"
+  download_program_if_changed "$PHPUNITURL" "$PRJDIR/extern/phpunit4/phpunit4.phar" "$PRJDIR/extern/_phpunit4.txt"
+  download_program_if_changed "$PHPUNIT5URL" "$PRJDIR/extern/phpunit5/phpunit5.phar" "$PRJDIR/extern/_phpunit5.txt"
   download_program_if_changed "$WPCLIURL" "$PRJDIR/bin/wp" "$PRJDIR/extern/wp-cli.txt"
   download_program_if_changed "$GITSCANURL" "$PRJDIR/bin/git-scan" "$PRJDIR/extern/git-scan.txt"
   download_program_if_changed "$AMPURL" "$PRJDIR/bin/amp" "$PRJDIR/extern/amp.txt"
@@ -651,6 +669,18 @@ pushd $PRJDIR >> /dev/null
   download_program_if_changed "$JOOMLAURL" "$PRJDIR/bin/joomla" "$PRJDIR/extern/joomla.txt"
   download_program_if_changed "$CODECEPTION_PHP5_URL" "$PRJDIR/bin/_codecept-php5.phar" "$PRJDIR/extern/codecept-php5.txt"
   download_program_if_changed "$CODECEPTION_PHP7_URL" "$PRJDIR/bin/_codecept-php7.phar" "$PRJDIR/extern/codecept-php7.txt"
+
+  ## Cleanup old phpunit files
+  for OLDFILE in "$PRJDIR/bin/phpunit4" "$PRJDIR/bin/phpunit5" "$PRJDIR/extern/phpunit4.txt" "$PRJDIR/extern/phpunit5.txt"; do
+    if [ -f "$OLDFILE" -a ! -L "$OLDFILE" ]; then
+      echo_comment "[[Removing old file $OLDFILE]]"
+      rm -f "$OLDFILE"
+    fi
+  done
+
+  ## Setup phpunit aliases for CLI usage
+  make_link "$PRJDIR/bin" "../extern/phpunit4/phpunit4.phar" "phpunit4"
+  make_link "$PRJDIR/bin" "../extern/phpunit5/phpunit5.phar" "phpunit5"
 
   ## Download "hub"
   touch "$PRJDIR/extern/hub.txt"
