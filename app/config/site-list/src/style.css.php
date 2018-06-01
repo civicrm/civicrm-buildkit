@@ -5,6 +5,10 @@
  * Render any CSS rules
  */ ?>
 
+.about {
+  font-style: italic;
+}
+
 table, tr, td, th {
   border: 0;
 }

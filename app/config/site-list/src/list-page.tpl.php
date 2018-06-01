@@ -22,6 +22,10 @@
 
 <h1><?php echo htmlentities($title); ?></h1>
 
+<?php if (!empty($config['about'])): ?>
+  <p class="about"><?php echo $config['about'];?></p>
+<?php endif; ?>
+
 <?php if (empty($sites)): ?>
   <p>No sites found.</p>
 <?php endif; ?>

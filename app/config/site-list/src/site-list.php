@@ -73,7 +73,8 @@ function sitelist_render($_tpl_file, $_tpl_data = array()) {
  *
  * @return array
  *   A list of config options, such as:
- *   'display': array with an ordered list of options; any of the following
+ *   'about': string, displayable message about this server
+ *   'display': array, with an ordered list of options; any of the following
  *     'ADMIN_USER'
  *     'ALL'
  *     'BUILD_TIME'
