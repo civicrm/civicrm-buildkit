@@ -8,6 +8,8 @@
  *   Site-list UI configuration.
  * @param array $sites
  *   List of site definitions (from the *.sh files)
+ * @param string $filter
+ *   The current filter value.
  */ ?>
 <html>
 
@@ -25,6 +27,11 @@
 <?php if (!empty($config['about'])): ?>
   <p class="about"><?php echo $config['about'];?></p>
 <?php endif; ?>
+
+<?php echo sitelist_render('search-form.tpl.php', [
+  'config' => $config,
+  'filter' => $filter,
+]); ?>
 
 <?php if (empty($sites)): ?>
   <p>No sites found.</p>
