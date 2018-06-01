@@ -85,7 +85,7 @@
   <?php if ($displayOption === 'BUILD_TIME'): ?>
     <div class="site-list-detail">
       <strong>Build Time</strong>:
-      <?php echo date('Y-m-d H:i:s T', $site['BUILD_TIME']); ?>
+      <?php echo date('Y-m-d H:i T', $site['BUILD_TIME']); ?>
     </div>
   <?php endif; ?>
 
