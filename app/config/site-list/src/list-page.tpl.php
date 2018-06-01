@@ -12,7 +12,7 @@
 <html>
 
 <head>
-  <title><?php echo htmlentities($title); ?></title>
+  <title><?php echo htmlentities($config['title']); ?></title>
   <style type="text/css">
     <?php echo sitelist_render('style.css.php'); ?>
   </style>
@@ -20,7 +20,7 @@
 
 <body>
 
-<h1><?php echo htmlentities($title); ?></h1>
+<h1><?php echo htmlentities($config['title']); ?></h1>
 
 <?php if (!empty($config['about'])): ?>
   <p class="about"><?php echo $config['about'];?></p>

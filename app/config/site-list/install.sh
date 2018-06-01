@@ -15,6 +15,8 @@ global \$sitelist;
 //\$sitelist['display'] =  ['ADMIN_USER', 'DEMO_USER', 'WEB_ROOT', 'CIVI_CORE', 'CMS_DB', 'CIVI_DB', 'TEST_DB', 'SITE_TYPE', 'BUILD_TIME'];
 \$sitelist['display'] = ['ADMIN_USER', 'DEMO_USER', 'SITE_TYPE', 'BUILD_TIME'];
 
+//\$sitelist['title'] = 'My local sites';
+
 //\$sitelist['about'] = 'These test sites are produced by the continuous-integration system.';
 //\$sitelist['about'] = 'These are local development sites.';
 EOF

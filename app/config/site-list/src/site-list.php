@@ -12,7 +12,6 @@ function sitelist_main($config, $civibuild) {
 
   if (empty($_GET['filter'])) {
     echo sitelist_render('list-page.tpl.php', [
-      'title' => 'Local Builds',
       'config' => $config,
       'sites' => $sites,
     ]);
@@ -20,7 +19,7 @@ function sitelist_main($config, $civibuild) {
   else {
     $regex = sitelist_create_filter($_GET['filter']);
     echo sitelist_render('list-page.tpl.php', [
-      'title' => 'Local Builds (filter="' . $_GET['filter'] . '")',
+      'filter' => $_GET['filter'],
       'config' => $config,
       'sites' => array_filter($sites, function($key) use ($regex) {
         return (bool) preg_match($regex, $key);
@@ -88,6 +87,7 @@ function sitelist_render($_tpl_file, $_tpl_data = array()) {
  */
 function sitelist_config($values = array()) {
   $defaults = array(
+    'title' => sprintf('Site list (%s)', gethostname()),
     'display' => ['ADMIN_USER', 'DEMO_USER', 'SITE_TYPE', 'BUILD_TIME'],
   );
   global $sitelist;
