@@ -21,9 +21,7 @@ function sitelist_main($config, $civibuild) {
     echo sitelist_render('list-page.tpl.php', [
       'filter' => $_GET['filter'],
       'config' => $config,
-      'sites' => array_filter($sites, function($key) use ($regex) {
-        return (bool) preg_match($regex, $key);
-      }, ARRAY_FILTER_USE_KEY),
+      'sites' => sitelist_preg_grep_key($sites, $regex),
     ]);
   }
 }
@@ -143,4 +141,14 @@ function sitelist_read_all($bldDir) {
     $sites[$name] = sitelist_read_sh($file);
   }
   return $sites;
+}
+
+function sitelist_preg_grep_key($arr, $regex) {
+  $result = array();
+  foreach ($arr as $k => $v) {
+    if (preg_match($regex, $k)) {
+      $result[$k] = $v;
+    }
+  }
+  return $result;
 }
