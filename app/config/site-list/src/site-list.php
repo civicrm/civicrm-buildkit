@@ -134,6 +134,12 @@ function sitelist_read_all($bldDir) {
   $files = (array) glob($bldDir . DIRECTORY_SEPARATOR . '*.sh');
   foreach ($files as $file) {
     $name = preg_replace(';\.sh$;', '', basename($file));
+
+    // Does the site appear to truly exist?
+    if (!file_exists($bldDir . DIRECTORY_SEPARATOR . $name)) {
+      continue;
+    }
+
     $sites[$name] = sitelist_read_sh($file);
   }
   return $sites;
