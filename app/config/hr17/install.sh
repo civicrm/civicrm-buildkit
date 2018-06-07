@@ -126,7 +126,6 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
     masquerade \
     smtp \
     logintoboggan \
-    yoti \
     menu_attributes \
     roles_for_menu
 
