@@ -5,9 +5,8 @@
 ###############################################################################
 
 [ -z "$CMS_VERSION" ] && CMS_VERSION=7.x
-#[ -z "$VOL_VERSION" ] && VOL_VERSION='4.4-1.x'
 [ -z "$VOL_VERSION" ] && VOL_VERSION='master'
-[ -z "$NG_PRFL_VERSION" ] && NG_PRFL_VERSION='v4.6-1.0.2'
+[ -z "$NG_PRFL_VERSION" ] && NG_PRFL_VERSION='master'
 [ -z "$RULES_VERSION" ] && RULES_VERSION='master'
 [ -z "$DISC_VERSION" ] && DISC_VERSION='master'
 

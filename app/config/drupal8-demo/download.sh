@@ -5,8 +5,8 @@
 ###############################################################################
 
 [ -z "$CMS_VERSION" ] && CMS_VERSION=8.x
-[ -z "$VOL_VERSION" ] && VOL_VERSION='4.4-1.x'
-[ -z "$NG_PRFL_VERSION" ] && NG_PRFL_VERSION='v4.6-1.0.1'
+[ -z "$VOL_VERSION" ] && VOL_VERSION='master'
+[ -z "$NG_PRFL_VERSION" ] && NG_PRFL_VERSION='master'
 [ -z "$DISC_VERSION" ] && DISC_VERSION=master
 
 MAKEFILE="${TMPDIR}/${SITE_TYPE}/${SITE_NAME}/${SITE_ID}.make"
