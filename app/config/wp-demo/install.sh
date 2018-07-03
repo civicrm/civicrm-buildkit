@@ -154,3 +154,7 @@ wp cap add civicrm_admin \
   create volunteer projects \
   edit own volunteer projects \
   delete own volunteer projects
+
+## Demo sites always disable email and often disable cron
+wp civicrm api StatusPreference.create ignore_severity=critical name=checkOutboundMail
+wp civicrm api StatusPreference.create ignore_severity=critical name=checkLastCron
