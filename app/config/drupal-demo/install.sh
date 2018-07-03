@@ -116,6 +116,10 @@ EOPERM
   drush -y -u "$ADMIN_USER" cvapi extension.install key=eu.tttp.civisualize debug=1
   drush -y -u "$ADMIN_USER" cvapi extension.install key=org.civicrm.module.cividiscount debug=1
 
+  ## Demo sites always disable email and often disable cron
+  drush cvapi StatusPreference.create ignore_severity=critical name=checkOutboundMail
+  drush cvapi StatusPreference.create ignore_severity=critical name=checkLastCron
+
   ## Setup CiviCRM dashboards
   INSTALL_DASHBOARD_USERS="$ADMIN_USER;$DEMO_USER" drush scr "$SITE_CONFIG_DIR/install-dashboard.php"
 
