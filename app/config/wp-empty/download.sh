@@ -3,8 +3,6 @@
 ## download.sh -- Download WordPress
 
 ###############################################################################
-[ -z "$VOL_VERSION" ] && VOL_VERSION='4.4-1.x'
-
 [ -z "$CMS_VERSION" ] && CMS_VERSION=4.8
 
 echo "[[Download WordPress]]"
