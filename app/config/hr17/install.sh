@@ -23,12 +23,6 @@ function create_default_users() {
 }
 
 ##
-# Creates the "Personal" Location Type
-function create_personal_location_type() {
-  drush cvapi LocationType.create sequential=1 name="Personal" display_name="Personal" vcard_name="PERSONAL" description="Place of Residence"
-}
-
-##
 # Deletes the "Name and address profile"
 function delete_name_and_address_profile() {
   PROFILE_ID=`[[ $(drush cvapi UFGroup.getsingle return="id" title="Name and address") =~ \[id\].+([1-9]) ]] && echo ${BASH_REMATCH[1]}`
@@ -167,7 +161,6 @@ pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   setup_themes
   create_default_users
   disabled_unused_blocks
-  create_personal_location_type
   delete_name_and_address_profile
 
   ## Create My Details and My Emergency Contact forms
