@@ -501,7 +501,7 @@ function do_system_jessie() {
 function do_system_stretch() {
   set -e
     PACKAGES="acl git wget unzip zip mysql-server mysql-client php-cli php-imap php-ldap php-curl php-mysql php-intl php-gd php-mcrypt php-apcu apache2 libapache2-mod-php php-bcmath php-mbstring php-soap php-zip"
-    echo "Detected \"Debian Jessie\"."
+    echo "Detected \"Debian Stretch\"."
     echo ""
     echo "Installing nodejs Debian repository."
     wget -O- https://deb.nodesource.com/setup_8.x | sudo -E bash -
