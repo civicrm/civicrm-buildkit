@@ -40,3 +40,14 @@ see [CiviCRM Developer Guide: Buildkit](https://docs.civicrm.org/dev/en/latest/t
     * [`karma`](http://karma-runner.github.io) (w/[jasmine](http://jasmine.github.io/)) - Unit testing for Javascript.
     * [`paratest`](https://github.com/brianium/paratest) - Parallelized version of PHPUnit.
     * [`phpunit` and `phpunit4`](http://phpunit.de/) - Unit testing for PHP (with Selenium and DB add-ons).
+    
+## Stretch Install
+By default you can login to mysql with no password as root.  To change this:
+```
+sudo mysqld_safe --skip-grant-tables &
+mysql -u root
+use mysql;
+update user set password=PASSWORD("mynewpassword") where User='root';
+update user set plugin="mysql_native_password";
+quit;
+```
