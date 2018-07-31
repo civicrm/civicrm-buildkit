@@ -1,0 +1,29 @@
+{
+    "name": "totten/ext-test",
+    "description": "CLI tool for running the test-suite of a Civi extension",
+    "license": "AGPL-3.0",
+    "authors": [
+        {
+            "name": "Tim Otten",
+            "email": "totten@civicrm.org"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "symfony/console": "~2.8 || ~3.0",
+        "symfony/process": "~2.8 || ~3.0",
+        "symfony/filesystem": "~2.8 || ~3.0",
+        "symfony/finder": "~2.8 || ~3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "ExtTestRun\\": "src/"
+         }
+    },
+    "bin": [
+        "bin/ext-test"
+    ],
+    "config": {
+        "bin-dir": "bin"
+    }
+}
