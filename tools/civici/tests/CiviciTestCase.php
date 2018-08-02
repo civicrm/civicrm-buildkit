@@ -1,12 +1,12 @@
 <?php
-namespace ExtTestRun;
+namespace Civici;
 
-use ExtTestRun\Util\Process as ProcessUtil;
-use ExtTestRun\Application;
+use Civici\Util\Process as ProcessUtil;
+use Civici\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
 
-class ExtTestRunTestCase extends \PHPUnit_Framework_TestCase {
+class CiviciTestCase extends \PHPUnit_Framework_TestCase {
   /**
    * @var string
    */
@@ -96,7 +96,7 @@ class ExtTestRunTestCase extends \PHPUnit_Framework_TestCase {
    * @param string $commit
    */
   public function assertIsCommit($commit) {
-    $this->assertTrue(\ExtTestRun\Util\Commit::isValid($commit));
+    $this->assertTrue(\Civici\Util\Commit::isValid($commit));
   }
 
 }

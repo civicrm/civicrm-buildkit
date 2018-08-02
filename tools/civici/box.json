@@ -11,7 +11,7 @@
         }
     ],
     "git-version": "package_version",
-    "main": "bin/ext-test",
-    "output": "bin/ext-test.phar",
+    "main": "bin/civici",
+    "output": "bin/civici.phar",
     "stub": true
 }

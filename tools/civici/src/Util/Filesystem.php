@@ -1,5 +1,5 @@
 <?php
-namespace ExtTestRun\Util;
+namespace Civici\Util;
 
 class Filesystem extends \Symfony\Component\Filesystem\Filesystem {
   /**

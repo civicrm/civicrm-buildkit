@@ -1,5 +1,5 @@
 <?php
-namespace ExtTestRun\Util;
+namespace Civici\Util;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

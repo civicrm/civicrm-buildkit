@@ -1,7 +1,7 @@
 <?php
-namespace ExtTestRun\Util;
+namespace Civici\Util;
 
-class FilesystemTest extends \ExtTestRun\ExtTestRunTestCase {
+class FilesystemTest extends \Civici\CiviciTestCase {
   public function dataIsDescendent() {
     return array(
       array('/ex', '/ex', FALSE),

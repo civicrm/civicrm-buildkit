@@ -1,5 +1,5 @@
 <?php
-namespace ExtTestRun;
+namespace Civici;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,7 +13,7 @@ class Application extends \Symfony\Component\Console\Application {
    * Primary entry point for execution of the standalone command.
    */
   public static function main($binDir) {
-    $application = new Application('ext-test', '@package_version@');
+    $application = new Application('civici', '@package_version@');
     $application->run();
   }
 
@@ -30,7 +30,7 @@ class Application extends \Symfony\Component\Console\Application {
    */
   public function createCommands() {
     $commands = array();
-    $commands[] = new \ExtTestRun\Command\BuildRunCommand();
+    $commands[] = new \Civici\Command\ExtPrCreateCommand();
     return $commands;
   }
 

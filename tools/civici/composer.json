@@ -1,5 +1,5 @@
 {
-    "name": "totten/ext-test",
+    "name": "totten/civici",
     "description": "CLI tool for running the test-suite of a Civi extension",
     "license": "AGPL-3.0",
     "authors": [
@@ -17,11 +17,11 @@
     },
     "autoload": {
         "psr-4": {
-            "ExtTestRun\\": "src/"
+            "Civici\\": "src/"
          }
     },
     "bin": [
-        "bin/ext-test"
+        "bin/civici"
     ],
     "config": {
         "bin-dir": "bin"

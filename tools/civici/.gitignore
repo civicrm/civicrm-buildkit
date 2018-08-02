@@ -1,5 +1,5 @@
 /vendor
 /.idea
 *~
-/bin/ext-test.phar
+/bin/civici.phar
 /bin/phpunit

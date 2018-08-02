@@ -17,4 +17,4 @@ if (!isset($loader)) {
 }
 
 #### Extra - Register classes in "tests" directory
-$loader->addPsr4('ExtTestRun\\', __DIR__ . DIRECTORY_SEPARATOR);
+$loader->addPsr4('Civici\\', __DIR__ . DIRECTORY_SEPARATOR);

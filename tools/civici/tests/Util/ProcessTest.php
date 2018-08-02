@@ -1,8 +1,8 @@
 <?php
-namespace ExtTestRun\Util;
-use ExtTestRun\Util\Process as ProcessUtil;
+namespace Civici\Util;
+use Civici\Util\Process as ProcessUtil;
 
-class ProcessTest extends \ExtTestRun\ExtTestRunTestCase {
+class ProcessTest extends \Civici\CiviciTestCase {
   public function testRunOk_pass() {
     $process = ProcessUtil::runOk(new \Symfony\Component\Process\Process("echo times were good"));
     $this->assertEquals("times were good", trim($process->getOutput()));
@@ -13,7 +13,7 @@ class ProcessTest extends \ExtTestRun\ExtTestRunTestCase {
       ProcessUtil::runOk(new \Symfony\Component\Process\Process("echo tragedy befell the software > /dev/stderr; exit 1"));
       $this->fail("Failed to generate expected exception");
     }
-    catch (\ExtTestRun\Exception\ProcessErrorException $e) {
+    catch (\Civici\Exception\ProcessErrorException $e) {
       $this->assertEquals("tragedy befell the software", trim($e->getProcess()->getErrorOutput()));
     }
   }

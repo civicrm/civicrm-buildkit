@@ -1,5 +1,5 @@
 <?php
-namespace ExtTestRun\Util;
+namespace Civici\Util;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -47,7 +47,7 @@ class Process {
   public static function runOk(\Symfony\Component\Process\Process $process) {
     self::runDebug($process);
     if (!$process->isSuccessful()) {
-      throw new \ExtTestRun\Exception\ProcessErrorException($process);
+      throw new \Civici\Exception\ProcessErrorException($process);
     }
     return $process;
   }

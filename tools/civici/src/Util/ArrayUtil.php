@@ -1,5 +1,5 @@
 <?php
-namespace ExtTestRun\Util;
+namespace Civici\Util;
 
 class ArrayUtil {
   public static  function collect($array, $index) {

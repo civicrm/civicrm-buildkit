@@ -1,5 +1,5 @@
 <?php
-namespace ExtTestRun\Exception;
+namespace Civici\Exception;
 
 class ProcessErrorException extends \RuntimeException {
   /**

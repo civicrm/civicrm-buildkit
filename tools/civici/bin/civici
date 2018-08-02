@@ -16,4 +16,4 @@ foreach ($autoloaders as $autoloader) {
 if (!$found) {
   die("Failed to find autoloader");
 }
-\ExtTestRun\Application::main(__DIR__);
+\Civici\Application::main(__DIR__);
