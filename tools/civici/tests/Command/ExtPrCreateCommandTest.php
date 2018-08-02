@@ -1,8 +1,6 @@
 <?php
 namespace Civici\Command;
 
-use Civici\Util\ProcessBatch;
-
 class ExtPrCreateCommandTest extends \Civici\CiviciTestCase {
   public function setup() {
     parent::setup();
@@ -21,13 +19,15 @@ class ExtPrCreateCommandTest extends \Civici\CiviciTestCase {
     ));
 
     $linePatterns = [
-      '%Build and execute test for https://github.com/civicrm/org.civicrm.api4/pull/123%',
-      '%Build empty site%',
+      '%Download main codebase \(build=foobar, type=drupal-clean, civi-ver=master\)%',
       '%\$ cd \'.*\'%',
-      '%\$ civibuild download \'foobar\' --type drupal-clean --civi-ver \'master\'%',
-      '%Clone extension%',
+      '%\$ civibuild download \'foobar\' --type \'drupal-clean\' --civi-ver \'master\'%',
+      '%Download extension PR \(https://github.com/civicrm/org.civicrm.api4/pull/123\)%',
       '%\$ cd \'/srv/buildkit/build/foobar\'%',
-      '%\$ git clonepr \'https://github.com/civicrm/org.civicrm.api4/pull/123\' \'sites/default/civicrm/ext/target\' --depth 1%' ,
+      '%\$ git clonepr --merged \'https://github.com/civicrm/org.civicrm.api4/pull/123\' \'sites/default/civicrm/ext/target\' --depth 1%',
+      '%Download extension dependencies%',
+      '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      '%civici ext:dl-dep --info=\'sites/default/civicrm/ext/target\'/info.xml --feed=\'https://civicrm.org/extdir/ver=5.40.0|uf=Bare|status=|ready=/single\'%',
       '%Done%',
       '%%'
     ];
