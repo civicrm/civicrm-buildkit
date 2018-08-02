@@ -68,7 +68,7 @@ class ProcessBatch {
 
       putenv("DEBUG=$oldDebugLevel");
 
-      $output->writeln("<comment>Done.</comment>");
+      $output->writeln("<info>Done.</info>");
     }
     else {
       $output->writeln("<comment>Nothing to do</comment>");
