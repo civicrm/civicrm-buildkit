@@ -42,6 +42,7 @@ class ExtPrCreateCommand extends BaseCommand {
       ->addOption('build', 'b', InputOption::VALUE_REQUIRED, 'Civibuild name. Ex: "exttest"')
       ->addOption('build-root', 'r', InputOption::VALUE_REQUIRED, 'Location of the web root. Ex: /srv/buildkit/build')
       ->addOption('type', NULL, InputOption::VALUE_REQUIRED, 'Civibuild type', 'drupal-clean')
+      ->addOption('ext-dir', NULL, InputOption::VALUE_REQUIRED, 'Relative path to the extension dir', 'sites/default/files/civicrm/ext')
       ->addOption('keep', 'K', InputOption::VALUE_NONE, 'Do not destroy the test build')
       ->addOption('feed', NULL, InputOption::VALUE_REQUIRED, 'The URL which provides available downloads. Ex: \'https://civicrm.org/extdir/ver=5.3.0|cms=Drupal/single\', \'*auto-stable*\', \'*auto-dev*\'', '*auto-dev*')
       ->addOption('force', 'f', InputOption::VALUE_NONE, 'If an extension folder already exists, download it anyway.')
@@ -94,9 +95,9 @@ class ExtPrCreateCommand extends BaseCommand {
       'CIVIVER' => $input->getOption('civi-ver'),
       'TYPE' => $input->getOption('type'),
       'PRURL' => $prUrl,
-      'ABSEXTROOT' => "$myBuildRoot/sites/default/files/civicrm/ext",
-      'RELEXTPATH' => "sites/default/files/civicrm/ext/target",
-      'ABSEXTPATH' => "$myBuildRoot/sites/default/files/civicrm/ext/target",
+      'ABSEXTROOT' => "$myBuildRoot/" . $input->getOption('ext-dir'),
+      'RELEXTPATH' => $input->getOption('ext-dir') . "/target",
+      'ABSEXTPATH' => "$myBuildRoot/" . $input->getOption('ext-dir') . "/target",
       'FEED' => $input->getOption('feed'),
     ];
 
