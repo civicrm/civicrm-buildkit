@@ -42,10 +42,16 @@ Example:
 ')
       ->addOption('dry-run', 'N', InputOption::VALUE_NONE, 'Do not execute')
       ->addOption('info', NULL, InputOption::VALUE_REQUIRED, 'Path of the XML file for the desired extension', getenv('PWD') . DIRECTORY_SEPARATOR . 'info.xml')
+      ->addOption('junit-dir', NULL, InputOption::VALUE_REQUIRED, 'Folder into which JUnit XML files should be placed')
       ->addOption('timeout', NULL, InputOption::VALUE_REQUIRED, 'Max number of seconds to spend on any individual task', 600);
   }
 
   protected function initialize(InputInterface $input, OutputInterface $output) {
+    $junitDir = $input->getOption('junit-dir');
+    if ($junitDir && $junitDir{strlen($junitDir) - 1} !== DIRECTORY_SEPARATOR) {
+      $junitDir .= DIRECTORY_SEPARATOR;
+      $input->setOption('junit-dir', $junitDir);
+    }
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
@@ -70,16 +76,32 @@ Example:
       $targetDir
     );
 
+    $junitDir = $input->getOption('junit-dir');
+
+    if ($junitDir && !file_exists($junitDir)) {
+      $this->fs->mkdir($junitDir);
+    }
+
     if (file_exists("$targetDir/phpunit.xml.dist")) {
+
       $batch->add("<info>Restore database</info>", $restore);
+      $e2eCmd = 'phpunit4 --tap --group e2e';
+      if ($junitDir) {
+        $e2eCmd .= ' --log-junit ' . escapeshellarg("{$junitDir}e2e.xml");
+      }
       $batch->add(
         "<info>Run PHPUnit group</info> (<comment>e2e</comment>)",
-        new \Symfony\Component\Process\Process('phpunit4 --tap --group e2e', $targetDir)
+        new \Symfony\Component\Process\Process($e2eCmd, $targetDir)
       );
+
       $batch->add("<info>Restore database</info>", $restore);
+      $headlessCmd = 'phpunit4 --tap --group headless';
+      if ($junitDir) {
+        $headlessCmd .= ' --log-junit ' . escapeshellarg("{$junitDir}headless.xml");
+      }
       $batch->add(
         "<info>Run PHPUnit group</info> (<comment>headless</comment>)",
-        new \Symfony\Component\Process\Process('phpunit4 --tap --group headless', $targetDir)
+        new \Symfony\Component\Process\Process($headlessCmd, $targetDir)
       );
     }
 

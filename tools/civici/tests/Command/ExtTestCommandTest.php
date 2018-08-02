@@ -16,6 +16,7 @@ class ExtTestCommandTest extends \Civici\CiviciTestCase {
       'command' => 'ext:test',
       '--dry-run' => TRUE,
       '--info' => dirname(dirname(__DIR__)) . '/fixtures/org.example.civixexample/info.xml',
+      '--junit-dir' => '/tmp/myjunit',
     ), ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]);
 
     $linePatterns = [
@@ -28,7 +29,7 @@ class ExtTestCommandTest extends \Civici\CiviciTestCase {
 
       '%Run PHPUnit group \(e2e\)%',
       '%\$ cd \'.*/org.example.civixexample\'%',
-      '%\$ phpunit4 --tap --group e2e%',
+      '%\$ phpunit4 --tap --group e2e --log-junit \'/tmp/myjunit/e2e.xml\'%',
 
       '%Restore database%',
       '%\$ cd \'.*/org.example.civixexample\'%',
@@ -36,7 +37,7 @@ class ExtTestCommandTest extends \Civici\CiviciTestCase {
 
       '%Run PHPUnit group \(headless\)%',
       '%\$ cd \'.*/org.example.civixexample\'%',
-      '%\$ phpunit4 --tap --group headless%',
+      '%\$ phpunit4 --tap --group headless --log-junit \'/tmp/myjunit/headless.xml\'%',
 
       '%Done%',
       '%%'
