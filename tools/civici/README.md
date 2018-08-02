@@ -14,17 +14,20 @@ env DEBUG=1 OFFLINE=1 PATH=$PWD/bin:$PATH \
   --build=foobar \
   --build-root=/srv/buildkit/build
 
-# Download dependencies for an extension
+# Download dependencies for an extension (based on its current info.xml)
 civici ext:dl-dep \
+  --info=/srv/buildkit/build/dmaster/sites/all/modules/civicrm/ext/api4/info.xml \
   --feed='https://civicrm.org/extdir/ver=5.3.0|cms=Drupal/single' \
-  --info=/Users/totten/bknix/build/dmaster/sites/all/modules/civicrm/ext/api4/info.xml \
   --to=sites/all/modules/civicrm/ext
 
-# Download dependencies for an extension
+# Download dependencies for an extension (based on its name)
 civici ext:dl-dep \
-  --feed='https://civicrm.org/extdir/ver=5.3.0|cms=Drupal/single' \
   --key=org.civicrm.api4
+  --feed='https://civicrm.org/extdir/ver=5.3.0|cms=Drupal/single' \
   --to=sites/all/modules/civicrm/ext
+
+# Run any tests in an extension
+civici ext:test --info=/srv/buildkit/build/dmaster/sites/all/modules/civicrm/ext/api4/info.xml
 ```
 
 ## Requirements
