@@ -28,6 +28,14 @@ class ProcessBatch {
     return $this;
   }
 
+  public function getProcesses() {
+    $result = [];
+    foreach ($this->tasks as $task) {
+      $result[] = $task[1];
+    }
+    return $result;
+  }
+
   /**
    * @param \Symfony\Component\Console\Output\OutputInterface $output
    * @param bool $dryRun
