@@ -43,7 +43,7 @@ class ExtPrCreateCommand extends BaseCommand {
       ->addOption('build-root', 'r', InputOption::VALUE_REQUIRED, 'Location of the web root. Ex: /srv/buildkit/build')
       ->addOption('type', NULL, InputOption::VALUE_REQUIRED, 'Civibuild type', 'drupal-clean')
       ->addOption('keep', 'K', InputOption::VALUE_NONE, 'Do not destroy the test build')
-      ->addOption('feed', NULL, InputOption::VALUE_REQUIRED, 'The URL which provides available downloads. Ex: https://civicrm.org/extdir/ver=5.3.0|cms=Drupal/single', '*auto*')
+      ->addOption('feed', NULL, InputOption::VALUE_REQUIRED, 'The URL which provides available downloads. Ex: \'https://civicrm.org/extdir/ver=5.3.0|cms=Drupal/single\', \'*auto-stable*\', \'*auto-dev*\'', '*auto-dev*')
       ->addOption('force', 'f', InputOption::VALUE_NONE, 'If an extension folder already exists, download it anyway.')
       ->addOption('timeout', NULL, InputOption::VALUE_REQUIRED, 'Max number of seconds to spend on any individual task', 600)
       ->addArgument('pr-url', InputArgument::REQUIRED, 'The local base path to search');
@@ -60,9 +60,20 @@ class ExtPrCreateCommand extends BaseCommand {
     }
 
     $feed = $input->getOption('feed');
-    if (empty($feed) || $feed === '*auto*') {
-      $feed = $this->detectFeedUrl($input->getOption('civi-ver'));
-      $input->setOption('feed', $feed);
+    switch ($feed) {
+      case '':
+      case '*auto-stable*':
+        $feed = $this->detectFeedUrl($input->getOption('civi-ver'), FALSE);
+        $input->setOption('feed', $feed);
+        break;
+
+      case '*auto-dev*':
+        $feed = $this->detectFeedUrl($input->getOption('civi-ver'), TRUE);
+        $input->setOption('feed', $feed);
+        break;
+
+      default:
+        break;
     }
   }
 
@@ -166,7 +177,7 @@ class ExtPrCreateCommand extends BaseCommand {
    *   Ex: '5.3.0', '5.3', 'master'
    * @return string
    */
-  protected function detectFeedUrl($civiVer) {
+  protected function detectFeedUrl($civiVer, $includeDev) {
     if ($civiVer === 'master') {
       if (time() < strtotime('2021-08-01')) {
         // We don't know the real value, but (given the way forward compatibility works
@@ -189,7 +200,12 @@ class ExtPrCreateCommand extends BaseCommand {
       throw new \RuntimeException("Cannot autodetect extension feed for --civi-ver=$civiVer. Please specify --feed or a different --civi-ver.");
     }
 
-    return "https://civicrm.org/extdir/ver=$feedVer|uf=Bare|status=|ready=/single";
+    if ($includeDev) {
+      return "https://civicrm.org/extdir/ver=$feedVer|uf=Bare|status=|ready=/single";
+    }
+    else {
+      return "https://civicrm.org/extdir/ver=$feedVer|uf=Bare/single";
+    }
   }
 
 }
