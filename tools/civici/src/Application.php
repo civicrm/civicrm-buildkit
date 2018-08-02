@@ -31,6 +31,7 @@ class Application extends \Symfony\Component\Console\Application {
   public function createCommands() {
     $commands = array();
     $commands[] = new \Civici\Command\ExtPrCreateCommand();
+    $commands[] = new \Civici\Command\ExtDlDepCommand();
     return $commands;
   }
 
