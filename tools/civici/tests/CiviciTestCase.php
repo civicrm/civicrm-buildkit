@@ -78,14 +78,14 @@ class CiviciTestCase extends \PHPUnit_Framework_TestCase {
    * @param array $args must include key "command"
    * @return \Symfony\Component\Console\Tester\CommandTester
    */
-  public function createCommandTester($args) {
+  public function createCommandTester($args, $options = []) {
     if (!isset($args['command'])) {
       throw new \RuntimeException("Missing mandatory argument: command");
     }
     $application = new Application();
     $command = $application->find($args['command']);
     $commandTester = new CommandTester($command);
-    $options = array('interactive' => FALSE);
+    $options = array_merge(array('interactive' => FALSE), $options);
     $commandTester->execute($args, $options);
     return $commandTester;
   }

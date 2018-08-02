@@ -1,6 +1,8 @@
 <?php
 namespace Civici\Command;
 
+use Symfony\Component\Console\Output\OutputInterface;
+
 class ExtTestCommandTest extends \Civici\CiviciTestCase {
   public function setup() {
     parent::setup();
@@ -14,7 +16,7 @@ class ExtTestCommandTest extends \Civici\CiviciTestCase {
       'command' => 'ext:test',
       '--dry-run' => TRUE,
       '--info' => dirname(dirname(__DIR__)) . '/fixtures/org.example.civixexample/info.xml',
-    ));
+    ), ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]);
 
     $linePatterns = [
       '%Parse extension info .*/info.xml%',

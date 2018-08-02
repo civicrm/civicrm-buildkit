@@ -45,18 +45,29 @@ class ProcessBatch {
       if ($this->title) {
         $output->writeln("<comment>{$this->title}</comment>");
       }
+
+      $oldDebugLevel = getenv('DEBUG');
+      if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE) {
+        putenv('DEBUG=1');
+      }
+
       foreach ($this->tasks as $task) {
         list ($label, $command) = $task;
         /** @var \Symfony\Component\Process\Process $command */
         $output->writeln($label);
-        if (!$dryRun) {
-          Process::runOk($command);
-        }
-        else {
+
+        if ($output->getVerbosity() == OutputInterface::VERBOSITY_VERBOSE) {
           $output->writeln("\$ cd " . escapeshellarg($command->getWorkingDirectory()));
           $output->writeln("\$ " . $command->getCommandLine());
         }
+
+        if (!$dryRun) {
+          Process::runOk($command);
+        }
       }
+
+      putenv("DEBUG=$oldDebugLevel");
+
       $output->writeln("<comment>Done.</comment>");
     }
     else {

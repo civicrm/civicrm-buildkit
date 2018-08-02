@@ -1,6 +1,8 @@
 <?php
 namespace Civici\Command;
 
+use Symfony\Component\Console\Output\OutputInterface;
+
 class ExtPrCreateCommandTest extends \Civici\CiviciTestCase {
   public function setup() {
     parent::setup();
@@ -16,7 +18,7 @@ class ExtPrCreateCommandTest extends \Civici\CiviciTestCase {
       '--build' => 'foobar',
       '--build-root' => '/srv/buildkit/build',
       'pr-url' => 'https://github.com/civicrm/org.civicrm.api4/pull/123',
-    ));
+    ), ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]);
 
     $linePatterns = [
       '%Download main codebase \(build=foobar, type=drupal-clean, civi-ver=master\)%',
