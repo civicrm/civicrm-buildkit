@@ -17,7 +17,7 @@ class InfoXml {
   public static function loadFromString($string) {
     list ($xml, $error) = \Civici\Util\Xml::parse($string);
     if ($xml === FALSE) {
-      throw new Exception("Failed to parse info XML\n\n$string\n\n$error");
+      throw new \Exception("Failed to parse info XML\n\n$string\n\n$error");
     }
 
     $instance = new InfoXml();
