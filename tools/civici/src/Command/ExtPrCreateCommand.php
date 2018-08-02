@@ -148,21 +148,21 @@ class ExtPrCreateCommand extends BaseCommand {
       )
     );
 
-    $batch->add(
-      '<comment>Install extension</comment>',
-      new \Symfony\Component\Process\Process(
-        Process::interpolate('cv api extension.install path=@ABSEXTPATH', $commonParams),
-        $myBuildRoot
-      )
-    );
+    //$batch->add(
+    //  '<comment>Install extension</comment>',
+    //  new \Symfony\Component\Process\Process(
+    //    Process::interpolate('cv api extension.install path=@ABSEXTPATH', $commonParams),
+    //    $myBuildRoot
+    //  )
+    //);
 
-    $batch->add(
-      '<comment>Update database snapshot</comment>',
-      new \Symfony\Component\Process\Process(
-        Process::interpolate('civibuild snapshot @BLDNAME', $commonParams),
-        $myBuildRoot
-      )
-    );
+    //$batch->add(
+    //  '<comment>Update database snapshot</comment>',
+    //  new \Symfony\Component\Process\Process(
+    //    Process::interpolate('civibuild snapshot @BLDNAME', $commonParams),
+    //    $myBuildRoot
+    //  )
+    //);
 
     foreach ($batch->getProcesses() as $proc) {
       /** @var \Symfony\Component\Process\Process $proc */

@@ -30,8 +30,9 @@ class Application extends \Symfony\Component\Console\Application {
    */
   public function createCommands() {
     $commands = array();
-    $commands[] = new \Civici\Command\ExtPrCreateCommand();
     $commands[] = new \Civici\Command\ExtDlDepCommand();
+    $commands[] = new \Civici\Command\ExtTestCommand();
+    $commands[] = new \Civici\Command\ExtPrCreateCommand();
     return $commands;
   }
 

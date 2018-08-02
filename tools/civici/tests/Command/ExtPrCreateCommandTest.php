@@ -35,13 +35,13 @@ class ExtPrCreateCommandTest extends \Civici\CiviciTestCase {
       '%\$ cd \'/srv/buildkit/build/foobar\'%',
       '%civibuild install \'foobar\'%',
 
-      '%Install extension%',
-      '%\$ cd \'/srv/buildkit/build/foobar\'%',
-      '%cv api extension.install path=\'/srv/buildkit/build/foobar/sites/default/files/civicrm/ext/target\'%',
+      // '%Install extension%',
+      // '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      // '%cv api extension.install path=\'/srv/buildkit/build/foobar/sites/default/files/civicrm/ext/target\'%',
 
-      '%Update database snapshot%',
-      '%\$ cd \'/srv/buildkit/build/foobar\'%',
-      '%civibuild snapshot \'foobar\'%',
+      // '%Update database snapshot%',
+      // '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      // '%civibuild snapshot \'foobar\'%',
 
       '%Done%',
       '%%'
