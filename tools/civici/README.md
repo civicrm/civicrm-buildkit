@@ -1,13 +1,16 @@
-civici
-============
+# civici
 
-
-Usage
-=====
+## Usage
 
 ```
 # Generate a test site for a given extension PR
 civici extpr:create https://github.com/civicrm/org.civicrm.api4/pull/123 \
+  --build=foobar \
+  --build-root=/srv/buildkit/build
+
+# As above, but enable extra output and minimize downloads
+env DEBUG=1 OFFLINE=1 PATH=$PWD/bin:$PATH \
+  civici extpr:create https://github.com/civicrm/org.civicrm.api4/pull/123 \
   --build=foobar \
   --build-root=/srv/buildkit/build
 
@@ -24,14 +27,12 @@ civici ext:dl-dep \
   --to=sites/all/modules/civicrm/ext
 ```
 
-Requirements
-============
+## Requirements
 
 * `cv`
 * `civibuild`
 
-Development: Build (PHAR)
-=========================
+## Development: Build (PHAR)
 
 If you are developing new changes to `civici` and want to create a new
 build of `civici.phar` from source, you must have
