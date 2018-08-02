@@ -106,7 +106,7 @@ class ExtPrCreateCommand extends BaseCommand {
     if (file_exists($myBuildRoot)) {
       if ($input->getOption('force')) {
         $batch->add(
-          '<info>Destroy existing build)</info> (<comment>' . $input->getOption('build') . ')</comment>',
+          '<info>Destroy existing build</info> (<comment>' . $input->getOption('build') . ')</comment>',
           new \Symfony\Component\Process\Process(
             Process::interpolate('echo y | civibuild destroy @BLDNAME', [
               'BLDNAME' => $input->getOption('build'),

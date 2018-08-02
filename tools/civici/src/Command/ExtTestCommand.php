@@ -53,7 +53,7 @@ Example:
       if (!file_exists($input->getOption('info'))) {
         throw new \RuntimeException("File not found: " . $input->getOption('info'));
       }
-      $output->writeln("<info>Parse extension info <comment>" . $input->getOption('info') . "</comment></info>");
+      $output->writeln("<info>Parse extension info</info> (<comment>" . $input->getOption('info') . "</comment>)");
       $target = InfoXml::loadFromString(file_get_contents($input->getOption('info')));
       $targetDir = dirname($input->getOption('info'));
     }
@@ -61,7 +61,7 @@ Example:
       throw new \RuntimeException("Must specify --info");
     }
 
-    $batch = new ProcessBatch("<info>Found extension <comment>" . $target->key . "</comment></info>");
+    $batch = new ProcessBatch("<info>Found extension</info> (<comment>" . $target->key . "</comment>)");
 
     $restore = new \Symfony\Component\Process\Process(
       Process::interpolate('civibuild restore && cv ext:enable @KEY', [

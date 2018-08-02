@@ -19,8 +19,8 @@ class ExtTestCommandTest extends \Civici\CiviciTestCase {
     ), ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]);
 
     $linePatterns = [
-      '%Parse extension info .*/info.xml%',
-      '%Found extension org.example.civixexample%',
+      '%Parse extension info \(.*/info.xml\)%',
+      '%Found extension \(org.example.civixexample\)%',
 
       '%Restore database%',
       '%\$ cd \'.*/org.example.civixexample\'%',
