@@ -45,6 +45,7 @@ class ExtPrCreateCommand extends BaseCommand {
       ->addOption('keep', 'K', InputOption::VALUE_NONE, 'Do not destroy the test build')
       ->addOption('feed', NULL, InputOption::VALUE_REQUIRED, 'The URL which provides available downloads. Ex: https://civicrm.org/extdir/ver=5.3.0|cms=Drupal/single', '*auto*')
       ->addOption('force', 'f', InputOption::VALUE_NONE, 'If an extension folder already exists, download it anyway.')
+      ->addOption('timeout', NULL, InputOption::VALUE_REQUIRED, 'Max number of seconds to spend on any individual task', 600)
       ->addArgument('pr-url', InputArgument::REQUIRED, 'The local base path to search');
   }
 
@@ -77,11 +78,14 @@ class ExtPrCreateCommand extends BaseCommand {
     $myBuildRoot = $input->getOption('build-root') . $input->getOption('build');
 
     $commonParams = [
-      'BLD' => $input->getOption('build'),
+      'BLDNAME' => $input->getOption('build'),
+      'MYBUILDROOT' => $myBuildRoot,
       'CIVIVER' => $input->getOption('civi-ver'),
       'TYPE' => $input->getOption('type'),
       'PRURL' => $prUrl,
-        'EXTPATH' => 'sites/default/civicrm/ext/target',
+      'ABSEXTROOT' => "$myBuildRoot/sites/default/files/civicrm/ext",
+      'RELEXTPATH' => "sites/default/files/civicrm/ext/target",
+      'ABSEXTPATH' => "$myBuildRoot/sites/default/files/civicrm/ext/target",
       'FEED' => $input->getOption('feed'),
     ];
 
@@ -92,8 +96,8 @@ class ExtPrCreateCommand extends BaseCommand {
         $batch->add(
           '<comment>Destroy existing build (' . $input->getOption('build') . ')</comment>',
           new \Symfony\Component\Process\Process(
-            Process::interpolate('echo y | civibuild destroy @BLD', [
-              'BLD' => $input->getOption('build'),
+            Process::interpolate('echo y | civibuild destroy @BLDNAME', [
+              'BLDNAME' => $input->getOption('build'),
             ])
           )
         );
@@ -105,28 +109,55 @@ class ExtPrCreateCommand extends BaseCommand {
     }
 
     $batch->add(
-      '<comment>Download main codebase (build=' . $input->getOption('build') . ', type=' . $input->getOption('type'). ', civi-ver=' . $input->getOption('civi-ver') .')</comment>',
+      '<comment>Download main codebase (build=' . $input->getOption('build') . ', type=' . $input->getOption('type') . ', civi-ver=' . $input->getOption('civi-ver') . ')</comment>',
       new \Symfony\Component\Process\Process(
-        Process::interpolate('civibuild download @BLD --type @TYPE --civi-ver @CIVIVER', $commonParams)
+        Process::interpolate('civibuild download @BLDNAME --type @TYPE --civi-ver @CIVIVER', $commonParams)
       )
     );
     $batch->add(
       "<comment>Download extension PR ($prUrl)</comment>",
       new \Symfony\Component\Process\Process(
-        Process::interpolate('git clonepr --merged @PRURL @EXTPATH --depth 1', $commonParams),
+        Process::interpolate('git clonepr --merged @PRURL @RELEXTPATH --depth 1', $commonParams),
         $myBuildRoot
       )
     );
     $batch->add(
       '<comment>Download extension dependencies</comment>',
       new \Symfony\Component\Process\Process(
-        Process::interpolate('civici ext:dl-dep --info=@EXTPATH/info.xml --feed=@FEED', $commonParams),
-        $input->getOption('build-root') . $input->getOption('build')
+        Process::interpolate('civici ext:dl-dep --info=@RELEXTPATH/info.xml --feed=@FEED --to=@ABSEXTROOT', $commonParams),
+        $myBuildRoot
       )
     );
 
-    // civibuild install @BLD
-    // cv api extension.install path=@EXTPATH
+    $batch->add(
+      '<comment>Install main database</comment>',
+      new \Symfony\Component\Process\Process(
+        Process::interpolate('civibuild install @BLDNAME', $commonParams),
+        $myBuildRoot
+      )
+    );
+
+    $batch->add(
+      '<comment>Install extension</comment>',
+      new \Symfony\Component\Process\Process(
+        Process::interpolate('cv api extension.install path=@ABSEXTPATH', $commonParams),
+        $myBuildRoot
+      )
+    );
+
+    $batch->add(
+      '<comment>Update database snapshot</comment>',
+      new \Symfony\Component\Process\Process(
+        Process::interpolate('civibuild snapshot @BLDNAME', $commonParams),
+        $myBuildRoot
+      )
+    );
+
+    foreach ($batch->getProcesses() as $proc) {
+      /** @var \Symfony\Component\Process\Process $proc */
+      $proc->setTimeout($input->getOption('timeout'));
+    }
+
     $batch->runAllOk($output, $input->getOption('dry-run'));
   }
 

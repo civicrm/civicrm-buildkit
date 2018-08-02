@@ -22,12 +22,27 @@ class ExtPrCreateCommandTest extends \Civici\CiviciTestCase {
       '%Download main codebase \(build=foobar, type=drupal-clean, civi-ver=master\)%',
       '%\$ cd \'.*\'%',
       '%\$ civibuild download \'foobar\' --type \'drupal-clean\' --civi-ver \'master\'%',
+
       '%Download extension PR \(https://github.com/civicrm/org.civicrm.api4/pull/123\)%',
       '%\$ cd \'/srv/buildkit/build/foobar\'%',
-      '%\$ git clonepr --merged \'https://github.com/civicrm/org.civicrm.api4/pull/123\' \'sites/default/civicrm/ext/target\' --depth 1%',
+      '%\$ git clonepr --merged \'https://github.com/civicrm/org.civicrm.api4/pull/123\' \'sites/default/files/civicrm/ext/target\' --depth 1%',
+
       '%Download extension dependencies%',
       '%\$ cd \'/srv/buildkit/build/foobar\'%',
-      '%civici ext:dl-dep --info=\'sites/default/civicrm/ext/target\'/info.xml --feed=\'https://civicrm.org/extdir/ver=5.40.0|uf=Bare|status=|ready=/single\'%',
+      '%\$ civici ext:dl-dep --info=\'sites/default/files/civicrm/ext/target\'/info.xml --feed=\'https://civicrm.org/extdir/ver=5.40.0\|uf=Bare\|status=\|ready=/single\' --to=\'/srv/buildkit/build/foobar/sites/default/files/civicrm/ext\'$%',
+
+      '%Install main database%',
+      '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      '%civibuild install \'foobar\'%',
+
+      '%Install extension%',
+      '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      '%cv api extension.install path=\'/srv/buildkit/build/foobar/sites/default/files/civicrm/ext/target\'%',
+
+      '%Update database snapshot%',
+      '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      '%civibuild snapshot \'foobar\'%',
+
       '%Done%',
       '%%'
     ];
