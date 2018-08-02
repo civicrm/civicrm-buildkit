@@ -73,12 +73,12 @@ Example:
     if (file_exists("$targetDir/phpunit.xml.dist")) {
       $batch->add("<info>Restore database</info>", $restore);
       $batch->add(
-        "<info>Run PHPUnit group</info> <comment>e2e</comment>",
+        "<info>Run PHPUnit group</info> (<comment>e2e</comment>)",
         new \Symfony\Component\Process\Process('phpunit4 --tap --group e2e', $targetDir)
       );
       $batch->add("<info>Restore database</info>", $restore);
       $batch->add(
-        "<info>Run PHPUnit group</info> <comment>headless</comment>",
+        "<info>Run PHPUnit group</info> (<comment>headless</comment>)",
         new \Symfony\Component\Process\Process('phpunit4 --tap --group headless', $targetDir)
       );
     }

@@ -106,7 +106,7 @@ class ExtPrCreateCommand extends BaseCommand {
     if (file_exists($myBuildRoot)) {
       if ($input->getOption('force')) {
         $batch->add(
-          '<comment>Destroy existing build (' . $input->getOption('build') . ')</comment>',
+          '<info>Destroy existing build)</info> (<comment>' . $input->getOption('build') . ')</comment>',
           new \Symfony\Component\Process\Process(
             Process::interpolate('echo y | civibuild destroy @BLDNAME', [
               'BLDNAME' => $input->getOption('build'),
@@ -121,20 +121,20 @@ class ExtPrCreateCommand extends BaseCommand {
     }
 
     $batch->add(
-      '<comment>Download main codebase (build=' . $input->getOption('build') . ', type=' . $input->getOption('type') . ', civi-ver=' . $input->getOption('civi-ver') . ')</comment>',
+      '<info>Download main codebase</info> (<comment>build=' . $input->getOption('build') . ', type=' . $input->getOption('type') . ', civi-ver=' . $input->getOption('civi-ver') . '</comment>)',
       new \Symfony\Component\Process\Process(
         Process::interpolate('civibuild download @BLDNAME --type @TYPE --civi-ver @CIVIVER', $commonParams)
       )
     );
     $batch->add(
-      "<comment>Download extension PR ($prUrl)</comment>",
+      "<info>Download extension PR</info> (<comment>$prUrl</comment>)",
       new \Symfony\Component\Process\Process(
         Process::interpolate('git clonepr --merged @PRURL @RELEXTPATH --depth 1', $commonParams),
         $myBuildRoot
       )
     );
     $batch->add(
-      '<comment>Download extension dependencies</comment>',
+      '<info>Download extension dependencies</info>',
       new \Symfony\Component\Process\Process(
         Process::interpolate('civici ext:dl-dep --info=@RELEXTPATH/info.xml --feed=@FEED --to=@ABSEXTROOT', $commonParams),
         $myBuildRoot
@@ -142,7 +142,7 @@ class ExtPrCreateCommand extends BaseCommand {
     );
 
     $batch->add(
-      '<comment>Install main database</comment>',
+      '<info>Install main database</info>',
       new \Symfony\Component\Process\Process(
         Process::interpolate('civibuild install @BLDNAME', $commonParams),
         $myBuildRoot

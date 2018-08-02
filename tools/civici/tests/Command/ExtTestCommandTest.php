@@ -24,7 +24,7 @@ class ExtTestCommandTest extends \Civici\CiviciTestCase {
       '%\$ cd \'.*/org.example.civixexample\'%',
       '%\$ civibuild restore && cv ext:enable \'org.example.civixexample\'%',
 
-      '%Run PHPUnit group e2e%',
+      '%Run PHPUnit group \(e2e\)%',
       '%\$ cd \'.*/org.example.civixexample\'%',
       '%\$ phpunit4 --tap --group e2e%',
 
@@ -32,7 +32,7 @@ class ExtTestCommandTest extends \Civici\CiviciTestCase {
       '%\$ cd \'.*/org.example.civixexample\'%',
       '%\$ civibuild restore && cv ext:enable \'org.example.civixexample\'%',
 
-      '%Run PHPUnit group headless%',
+      '%Run PHPUnit group \(headless\)%',
       '%\$ cd \'.*/org.example.civixexample\'%',
       '%\$ phpunit4 --tap --group headless%',
 
