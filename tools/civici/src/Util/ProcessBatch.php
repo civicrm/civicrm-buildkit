@@ -14,7 +14,7 @@ class ProcessBatch {
    * ProcessBatch constructor.
    * @param $title
    */
-  public function __construct($title) {
+  public function __construct($title = NULL) {
     $this->title = $title;
   }
 
@@ -34,7 +34,9 @@ class ProcessBatch {
    */
   public function runAllOk(OutputInterface $output, $dryRun = FALSE) {
     if ($this->tasks) {
-      $output->writeln("<comment>{$this->title}</comment>");
+      if ($this->title) {
+        $output->writeln("<comment>{$this->title}</comment>");
+      }
       foreach ($this->tasks as $task) {
         list ($label, $command) = $task;
         /** @var \Symfony\Component\Process\Process $command */
