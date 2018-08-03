@@ -180,7 +180,7 @@ class ExtPrCreateCommand extends BaseCommand {
    */
   protected function detectFeedUrl($civiVer, $includeDev) {
     if ($civiVer === 'master') {
-      if (time() < strtotime('2021-08-01')) {
+      if (time() < 1627768800 /*'2021-08-01'*/) {
         // We don't know the real value, but (given the way forward compatibility works
         // in the feed) we can just pick something high.
         // Something like 5.99999.0 might be better, but (currently) the feed isn't very efficient
