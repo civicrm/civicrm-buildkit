@@ -13,7 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 
-class ExtShaCreateCommand extends BaseCommand {
+class ExtBuildCommand extends BaseCommand {
 
   /**
    * @var Filesystem
@@ -30,20 +30,24 @@ class ExtShaCreateCommand extends BaseCommand {
 
   protected function configure() {
     $this
-      ->setName('extsha:create')
-      ->setDescription('Given a particular SHA for an extension, prepare a test build.')
-      ->setHelp('Given a particular SHA for an extension, prepare a test build.
+      ->setName('ext:build')
+      ->setDescription('Given a SHA or pull-request for an extension, prepare a test build.')
+      ->setHelp('Given a SHA or pull-request for an extension, prepare a test build.
 
-  Example: civici extsha:create https://github.com/totten/githubtest.git \
-    --rev=4039217e8c1aa9f322aa65dc0e942c5f3880aa86 \
+  Example: civici ext:build --git-url=https://github.com/civicrm/org.civicrm.api4 \
+    --rev=abcd1234 --build-root=/srv/buildkit/build
+  
+  Example: civici ext:build --pr-url=https://github.com/civicrm/org.civicrm.api4/pull/123 \
     --build=pr123 --build-root=/srv/buildkit/build
       ')
       ->useOptions(['build', 'build-root', 'civi-ver', 'dry-run', 'ext-dir', 'force', 'feed', 'keep', 'timeout', 'type'])
+      ->addOption('pr-url', NULL, InputOption::VALUE_REQUIRED, 'The local base path to search')
       ->addOption('rev', NULL, InputOption::VALUE_REQUIRED, 'Extension revision, identified as a git SHA')
-      ->addArgument('git-url', InputArgument::REQUIRED, 'The local base path to search');
+      ->addOption('git-url', NULL, InputOption::VALUE_REQUIRED, 'The local base path to search');
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
+    $prUrl = $input->getOption('pr-url');
     $myBuildRoot = $input->getOption('build-root') . $input->getOption('build');
 
     $commonParams = [
@@ -51,7 +55,8 @@ class ExtShaCreateCommand extends BaseCommand {
       'MYBUILDROOT' => $myBuildRoot,
       'CIVIVER' => $input->getOption('civi-ver'),
       'TYPE' => $input->getOption('type'),
-      'GITURL' => $input->getArgument('git-url'),
+      'PRURL' => $prUrl,
+      'GITURL' => $input->getOption('git-url'),
       'SHA' => $input->getOption('rev'),
       'LOCALBRANCH' => 'target',
       'ABSEXTROOT' => "$myBuildRoot/" . $input->getOption('ext-dir'),
@@ -74,7 +79,8 @@ class ExtShaCreateCommand extends BaseCommand {
         );
       }
       else {
-        throw new \RuntimeException("Build already exists: $myBuildRoot");
+        $output->writeln("<error>Build already exists: $myBuildRoot</error>");
+        return 1;
       }
     }
 
@@ -84,13 +90,38 @@ class ExtShaCreateCommand extends BaseCommand {
         Process::interpolate('civibuild download @BLDNAME --type @TYPE --civi-ver @CIVIVER', $commonParams)
       )
     );
-    $batch->add(
-      "<info>Download extension</info> (<comment>{$input->getArgument('git-url')}</comment> @ <comment>{$input->getOption('rev')}</comment>)",
-      new \Symfony\Component\Process\Process(
-        Process::interpolate('git clone @GITURL @RELEXTPATH --no-checkout --depth 1 && cd @RELEXTPATH && git fetch origin @SHA:@LOCALBRANCH && git checkout @LOCALBRANCH', $commonParams),
-        $myBuildRoot
-      )
-    );
+
+    if ($input->getOption('pr-url')) {
+      $batch->add(
+        "<info>Download extension PR</info> (<comment>$prUrl</comment>)",
+        new \Symfony\Component\Process\Process(
+          Process::interpolate('git clonepr --merged @PRURL @RELEXTPATH --depth 1', $commonParams),
+          $myBuildRoot
+        )
+      );
+    }
+    elseif ($input->getOption('git-url') && $input->getOption('rev')) {
+      $batch->add(
+        "<info>Download extension</info> (<comment>{$input->getOption('git-url')}</comment> @ <comment>{$input->getOption('rev')}</comment>)",
+        new \Symfony\Component\Process\Process(
+          Process::interpolate('git clone @GITURL @RELEXTPATH --no-checkout --depth 1 && cd @RELEXTPATH && git fetch origin @SHA:@LOCALBRANCH && git checkout @LOCALBRANCH', $commonParams),
+          $myBuildRoot
+        )
+      );
+    }
+    elseif ($input->getOption('git-url') && !$input->getOption('rev')) {
+      $batch->add(
+        "<info>Download extension</info> (<comment>{$input->getOption('git-url')}</comment> @ default branch)",
+        new \Symfony\Component\Process\Process(
+          Process::interpolate('git clone @GITURL @RELEXTPATH --depth 1', $commonParams),
+          $myBuildRoot
+        )
+      );
+    }
+    else {
+      throw new \RuntimeException("Must specify --pr-url or --git-url");
+    }
+
     $batch->add(
       '<info>Download extension dependencies</info>',
       new \Symfony\Component\Process\Process(

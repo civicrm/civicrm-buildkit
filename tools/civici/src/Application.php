@@ -32,8 +32,7 @@ class Application extends \Symfony\Component\Console\Application {
     $commands = array();
     $commands[] = new \Civici\Command\ExtDlDepCommand();
     $commands[] = new \Civici\Command\ExtTestCommand();
-    $commands[] = new \Civici\Command\ExtPrCreateCommand();
-    $commands[] = new \Civici\Command\ExtShaCreateCommand();
+    $commands[] = new \Civici\Command\ExtBuildCommand();
     $commands[] = new \Civici\Command\ProbotStatusCommand();
     return $commands;
   }
