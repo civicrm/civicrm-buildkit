@@ -13,7 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 
-class ExtPrCreateCommand extends BaseCommand {
+class ExtShaCreateCommand extends BaseCommand {
 
   /**
    * @var Filesystem
@@ -30,19 +30,20 @@ class ExtPrCreateCommand extends BaseCommand {
 
   protected function configure() {
     $this
-      ->setName('extpr:create')
-      ->setDescription('Given a pull-request for an extension, prepare a test build.')
-      ->setHelp('Given a pull-request for an extension, prepare a test build.
+      ->setName('extsha:create')
+      ->setDescription('Given a particular SHA for an extension, prepare a test build.')
+      ->setHelp('Given a particular SHA for an extension, prepare a test build.
 
-  Example: civici extpr:create https://github.com/civicrm/org.civicrm.api4/pull/123 \
+  Example: civici extsha:create https://github.com/totten/githubtest.git \
+    --rev=4039217e8c1aa9f322aa65dc0e942c5f3880aa86 \
     --build=pr123 --build-root=/srv/buildkit/build
       ')
       ->useOptions(['build', 'build-root', 'civi-ver', 'dry-run', 'ext-dir', 'force', 'feed', 'keep', 'timeout', 'type'])
-      ->addArgument('pr-url', InputArgument::REQUIRED, 'The local base path to search');
+      ->addOption('rev', NULL, InputOption::VALUE_REQUIRED, 'Extension revision, identified as a git SHA')
+      ->addArgument('git-url', InputArgument::REQUIRED, 'The local base path to search');
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
-    $prUrl = $input->getArgument('pr-url');
     $myBuildRoot = $input->getOption('build-root') . $input->getOption('build');
 
     $commonParams = [
@@ -50,7 +51,9 @@ class ExtPrCreateCommand extends BaseCommand {
       'MYBUILDROOT' => $myBuildRoot,
       'CIVIVER' => $input->getOption('civi-ver'),
       'TYPE' => $input->getOption('type'),
-      'PRURL' => $prUrl,
+      'GITURL' => $input->getArgument('git-url'),
+      'SHA' => $input->getOption('rev'),
+      'LOCALBRANCH' => 'target',
       'ABSEXTROOT' => "$myBuildRoot/" . $input->getOption('ext-dir'),
       'RELEXTPATH' => $input->getOption('ext-dir') . "/target",
       'ABSEXTPATH' => "$myBuildRoot/" . $input->getOption('ext-dir') . "/target",
@@ -71,8 +74,7 @@ class ExtPrCreateCommand extends BaseCommand {
         );
       }
       else {
-        $output->writeln("<error>Build already exists: $myBuildRoot</error>");
-        return 1;
+        throw new \RuntimeException("Build already exists: $myBuildRoot");
       }
     }
 
@@ -83,9 +85,9 @@ class ExtPrCreateCommand extends BaseCommand {
       )
     );
     $batch->add(
-      "<info>Download extension PR</info> (<comment>$prUrl</comment>)",
+      "<info>Download extension</info> (<comment>{$input->getArgument('git-url')}</comment> @ <comment>{$input->getOption('rev')}</comment>)",
       new \Symfony\Component\Process\Process(
-        Process::interpolate('git clonepr --merged @PRURL @RELEXTPATH --depth 1', $commonParams),
+        Process::interpolate('git clone @GITURL @RELEXTPATH --no-checkout --depth 1 && cd @RELEXTPATH && git fetch origin @SHA:@LOCALBRANCH && git checkout @LOCALBRANCH', $commonParams),
         $myBuildRoot
       )
     );
