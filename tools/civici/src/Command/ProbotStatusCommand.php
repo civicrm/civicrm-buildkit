@@ -4,6 +4,7 @@ namespace Civici\Command;
 use Civici\GitRepo;
 use Civici\Util\ArrayUtil;
 use Civici\Util\Filesystem;
+use Civici\Util\JUnitLoader;
 use Civici\Util\Process as ProcessUtil;
 use Civici\Util\Process;
 use Civici\Util\ProcessBatch;
@@ -38,11 +39,26 @@ class ProbotStatusCommand extends BaseCommand {
 
 Example: civici probot:status --probot-url="..." --probot-token="..." \
   --state=pending --url=http://foobar.com/build/123 --desc="Test running"
+
+Example: civici probot:status --probot-url="..." --probot-token="..." \
+  --junit-dir="/var/www/workspace/MyTest/junit" \
+  --state="@junitState" \
+  --desc="@junitSummary"
+
+When --junit-xml is specified, the following variables are defined:
+
+  @junitTime      Total execution time
+  @junitTests     Total number of tests
+  @junitErrors    Total number of errors
+  @junitFailures  Total number of failures
+  @junitSummary   English statement combining the above info
+  @junitState     "success" or "failure"
 ')
       ->addOption('dry-run', 'N', InputOption::VALUE_NONE, 'Do not execute')
       ->addOption('desc', NULL, InputOption::VALUE_REQUIRED, 'Status summary', '')
       ->addOption('url', NULL, InputOption::VALUE_REQUIRED, 'URL displaying full status information', '')
       ->addOption('state', NULL, InputOption::VALUE_REQUIRED, 'Current status (error,failure,pending,success)')
+      ->addOption('junit-dir', NULL, InputOption::VALUE_REQUIRED, 'Parse JUnit XML files. If provided, certain variables are available for --state and --desc')
       ->addOption('probot-url', NULL, InputOption::VALUE_REQUIRED, 'Callback URL. Ex: http://user:pass@localhost:3000/probot-civicrm-status/update')
       ->addOption('probot-token', NULL, InputOption::VALUE_REQUIRED, 'Secure token');
   }
@@ -51,6 +67,19 @@ Example: civici probot:status --probot-url="..." --probot-token="..." \
     foreach (['state', 'probot-url', 'probot-token'] as $field) {
       if (!$input->getOption($field)) {
         throw new \Exception("Missing required option: --{$field}");
+      }
+    }
+
+    if ($input->getOption('junit-dir')) {
+      $output->writeln(sprintf("<info>Parsing JUnit XML</info> (<comment>%s</comment>)", $input->getOption('junit-dir')));
+      $junit = new JUnitLoader();
+      $junit->addFolder($input->getOption('junit-dir'));
+      $vars = $junit->getVars();
+      foreach (['state', 'desc'] as $option) {
+        $value = $input->getOption($option);
+        if ($value) {
+          $input->setOption($option, strtr($value, $vars));
+        }
       }
     }
 
