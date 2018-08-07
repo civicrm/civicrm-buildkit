@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Other Suite" tests="2" assertions="2" failures="1" errors="0" time="65.05226">
+    <testsuite name="Widget_Githbtest_FooTest" file="/Users/totten/bknix/build/ext-1/sites/default/files/civicrm/ext/target/tests/phpunit/Widget/Githbtest/FooTest.php" tests="2" assertions="2" failures="1" errors="0" time="0.001226">
+      <testcase name="testWellFormedVersion" class="Widget_Githbtest_FooTest" file="/Users/totten/bknix/build/ext-1/sites/default/files/civicrm/ext/target/tests/phpunit/Widget/Githbtest/FooTest.php" line="43" assertions="1" time="0.000288"/>
+      <testcase name="testWellFormedUF" class="Widget_Githbtest_FooTest" file="/Users/totten/bknix/build/ext-1/sites/default/files/civicrm/ext/target/tests/phpunit/Widget/Githbtest/FooTest.php" line="50" assertions="1" time="0.000938">
+        <failure type="PHPUnit_Framework_ExpectationFailedException">Widget_Githbtest_FooTest::testWellFormedUF
+Failed asserting that 'Ninety-nine' matches expected 99.
+
+/Users/totten/bknix/build/ext-1/sites/default/files/civicrm/ext/target/tests/phpunit/Widget/Githbtest/FooTest.php:51
+/Users/totten/bknix/civicrm-buildkit/extern/phpunit5/phpunit5.phar:598
+</failure>
+      </testcase>
+    </testsuite>
+  </testsuite>
+</testsuites>
