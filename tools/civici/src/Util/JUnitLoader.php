@@ -6,7 +6,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class JUnitLoader {
 
-  private $tests = 0, $failures = 0, $errors = 0, $time = 0.0;
+  private $tests = 0, $failures = 0, $errors = 0, $time = 0.0, $failedXml = FALSE;
 
   /**
    * @param $file
@@ -30,6 +30,10 @@ class JUnitLoader {
   public function addFolder($path) {
     $fs = new Filesystem();
     $files = (array) glob($fs->withTrailingSlash($path) . '*.xml');
+    if (empty($files)) {
+      $this->failedXml = TRUE;
+      return $this;
+    }
     foreach ($files as $file) {
       $this->addFile($file);
     }
@@ -44,11 +48,18 @@ class JUnitLoader {
       '@JUNIT_ERRORS@' => $this->errors,
     ];
 
-    $vars['@JUNIT_STATE@'] = ($vars['@JUNIT_ERRORS@'] + $vars['@JUNIT_FAILURES@'] > 0)
-      ? 'failure'
-      : 'success';
+    if ($this->failedXml) {
+      $vars['@JUNIT_STATE@'] = 'failure';
+      $vars['@JUNIT_SUMMARY@'] = strtr('Failed to load JUnit XML data. Perhaps the test process crashed?', $vars);
+    }
+    else {
+      $vars['@JUNIT_STATE@'] = ($vars['@JUNIT_ERRORS@'] + $vars['@JUNIT_FAILURES@'] > 0)
+        ? 'failure'
+        : 'success';
 
-    $vars['@JUNIT_SUMMARY@'] = strtr('Executed @JUNIT_TESTS@ tests in @JUNIT_TIME@ - @JUNIT_FAILURES@ failure(s), @JUNIT_ERRORS@ error(s)', $vars);
+      $vars['@JUNIT_SUMMARY@'] = strtr('Executed @JUNIT_TESTS@ tests in @JUNIT_TIME@ - @JUNIT_FAILURES@ failure(s), @JUNIT_ERRORS@ error(s)', $vars);
+    }
+
     return $vars;
   }
 
