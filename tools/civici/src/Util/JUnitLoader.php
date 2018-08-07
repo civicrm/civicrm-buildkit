@@ -48,7 +48,7 @@ class JUnitLoader {
       ? 'failure'
       : 'success';
 
-    $vars['@JUNIT_SUMMARY@'] = strtr('Executed @JUNIT_TESTS@ tests in @JUNIT_TIME@: @JUNIT_FAILURES@ failure(s), @JUNIT_ERRORS@ error(s)', $vars);
+    $vars['@JUNIT_SUMMARY@'] = strtr('Executed @JUNIT_TESTS@ tests in @JUNIT_TIME@ - @JUNIT_FAILURES@ failure(s), @JUNIT_ERRORS@ error(s)', $vars);
     return $vars;
   }
 
@@ -56,7 +56,7 @@ class JUnitLoader {
     if ($total > 60) {
       $min = floor($total / 60);
       $sec = $total - ($min * 60); // Preserve decimal
-      return sprintf("%dm %.2fs", $min, $sec);
+      return sprintf("%dm%.2fs", $min, $sec);
     }
     else {
       return sprintf("%.2fs", $total);

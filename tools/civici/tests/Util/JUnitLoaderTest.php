@@ -11,8 +11,8 @@ class JUnitLoaderTeest extends \Civici\CiviciTestCase {
     $this->assertEquals(2, $vars['@JUNIT_FAILURES@']);
     $this->assertEquals(4, $vars['@JUNIT_TESTS@']);
     $this->assertEquals(0, $vars['@JUNIT_ERRORS@']);
-    $this->assertEquals('1m 5.07s', $vars['@JUNIT_TIME@']);
-    $this->assertEquals('Executed 4 tests in 1m 5.07s: 2 failure(s), 0 error(s)', $vars['@JUNIT_SUMMARY@']);
+    $this->assertEquals('1m5.07s', $vars['@JUNIT_TIME@']);
+    $this->assertEquals('Executed 4 tests in 1m5.07s - 2 failure(s), 0 error(s)', $vars['@JUNIT_SUMMARY@']);
   }
 
   public function testLoadTwice() {
@@ -25,7 +25,7 @@ class JUnitLoaderTeest extends \Civici\CiviciTestCase {
     $this->assertEquals(4, $vars['@JUNIT_TESTS@']);
     $this->assertEquals(0, $vars['@JUNIT_ERRORS@']);
     $this->assertEquals('0.04s', $vars['@JUNIT_TIME@']);
-    $this->assertEquals('Executed 4 tests in 0.04s: 2 failure(s), 0 error(s)', $vars['@JUNIT_SUMMARY@']);
+    $this->assertEquals('Executed 4 tests in 0.04s - 2 failure(s), 0 error(s)', $vars['@JUNIT_SUMMARY@']);
   }
 
 }
