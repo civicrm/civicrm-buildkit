@@ -42,17 +42,17 @@ Example: civici probot:status --probot-url="..." --probot-token="..." \
 
 Example: civici probot:status --probot-url="..." --probot-token="..." \
   --junit-dir="/var/www/workspace/MyTest/junit" \
-  --state="@junitState" \
-  --desc="@junitSummary"
+  --state="@JUNIT_STATE@" \
+  --desc="@JUNIT_SUMMARY@"
 
 When --junit-xml is specified, the following variables are defined:
 
-  @junitTime      Total execution time
-  @junitTests     Total number of tests
-  @junitErrors    Total number of errors
-  @junitFailures  Total number of failures
-  @junitSummary   English statement combining the above info
-  @junitState     "success" or "failure"
+  @JUNIT_TIME@      Total execution time
+  @JUNIT_TESTS@     Total number of tests
+  @JUNIT_ERRORS@    Total number of errors
+  @JUNIT_FAILURES@  Total number of failures
+  @JUNIT_SUMMARY@   English statement combining the above info
+  @JUNIT_STATE@     "success" or "failure"
 ')
       ->addOption('dry-run', 'N', InputOption::VALUE_NONE, 'Do not execute')
       ->addOption('desc', NULL, InputOption::VALUE_REQUIRED, 'Status summary', '')

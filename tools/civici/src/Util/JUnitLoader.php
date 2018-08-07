@@ -38,23 +38,22 @@ class JUnitLoader {
 
   public function getVars() {
     $vars = [
-      '@junitTests' => $this->tests,
-      '@junitTime' => $this->formatTime($this->time),
-      '@junitFailures' => $this->failures,
-      '@junitErrors' => $this->errors,
+      '@JUNIT_TESTS@' => $this->tests,
+      '@JUNIT_TIME@' => $this->formatTime($this->time),
+      '@JUNIT_FAILURES@' => $this->failures,
+      '@JUNIT_ERRORS@' => $this->errors,
     ];
 
-    $vars['@junitState'] = ($vars['@junitErrors'] + $vars['@junitFailures'] > 0)
-      ? 'success'
-      : 'failure';
+    $vars['@JUNIT_STATE@'] = ($vars['@JUNIT_ERRORS@'] + $vars['@JUNIT_FAILURES@'] > 0)
+      ? 'failure'
+      : 'success';
 
-    $vars['@junitSummary'] = strtr('Executed @junitTests tests in @junitTime: @junitFailures failure(s), @junitErrors error(s)', $vars);
+    $vars['@JUNIT_SUMMARY@'] = strtr('Executed @JUNIT_TESTS@ tests in @JUNIT_TIME@: @JUNIT_FAILURES@ failure(s), @JUNIT_ERRORS@ error(s)', $vars);
     return $vars;
   }
 
   protected function formatTime($total) {
     if ($total > 60) {
-//      $sec = ($total % 60);
       $min = floor($total / 60);
       $sec = $total - ($min * 60); // Preserve decimal
       return sprintf("%dm %.2fs", $min, $sec);
