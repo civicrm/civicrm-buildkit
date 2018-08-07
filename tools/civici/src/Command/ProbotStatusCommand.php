@@ -43,7 +43,7 @@ Example: civici probot:status --probot-url="..." --probot-token="..." \
       ->addOption('desc', NULL, InputOption::VALUE_REQUIRED, 'Status summary', '')
       ->addOption('url', NULL, InputOption::VALUE_REQUIRED, 'URL displaying full status information', '')
       ->addOption('state', NULL, InputOption::VALUE_REQUIRED, 'Current status (error,failure,pending,success)')
-      ->addOption('probot-url', NULL, InputOption::VALUE_REQUIRED, 'Callback URL. Ex: http://user:pass@localhost:3000/probot-civicrm-ext-test/update-status')
+      ->addOption('probot-url', NULL, InputOption::VALUE_REQUIRED, 'Callback URL. Ex: http://user:pass@localhost:3000/probot-civicrm-status/update')
       ->addOption('probot-token', NULL, InputOption::VALUE_REQUIRED, 'Secure token');
   }
 
