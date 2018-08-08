@@ -111,4 +111,57 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
     }
   }
 
+  /**
+   * Simulate creation of an extension test-build using a Git URL and SHA.
+   */
+  public function testCreateByBaseAndHead() {
+    $commandTester = $this->createCommandTester(array(
+      'command' => 'ext:build',
+      '--dry-run' => TRUE,
+      '--build' => 'foobar',
+      '--build-root' => '/srv/buildkit/build',
+      '--git-url' => 'https://github.com/civicrm/org.civicrm.api4',
+      '--base' => 'abcd1234abcd1234',
+      '--head' => 'fedc4321fedc4321',
+    ), ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]);
+
+    $linePatterns = [
+      '%Download main codebase \(build=foobar, type=drupal-clean, civi-ver=master\)%',
+      '%\$ cd \'.*\'%',
+      '%\$ civibuild download \'foobar\' --type \'drupal-clean\' --civi-ver \'master\'%',
+
+      '%Download extension \(https://github.com/civicrm/org.civicrm.api4 @ abcd1234abcd1234 . fedc4321fedc4321\)%',
+      '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      '%\$ git clonebh \'https://github.com/civicrm/org.civicrm.api4\' \'sites/default/files/civicrm/ext/target\' \'abcd1234abcd1234\' \'fedc4321fedc4321\'%',
+
+      '%Download extension dependencies%',
+      '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      '%\$ civici ext:dl-dep --info=\'sites/default/files/civicrm/ext/target\'/info.xml --feed=\'https://civicrm.org/extdir/ver=5.40.0\|uf=Bare\|status=\|ready=/single\' --to=\'/srv/buildkit/build/foobar/sites/default/files/civicrm/ext\'$%',
+
+      '%Install main database%',
+      '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      '%civibuild install \'foobar\'%',
+
+      // '%Install extension%',
+      // '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      // '%cv api extension.install path=\'/srv/buildkit/build/foobar/sites/default/files/civicrm/ext/target\'%',
+
+      // '%Update database snapshot%',
+      // '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      // '%civibuild snapshot \'foobar\'%',
+
+      '%Done%',
+      '%%'
+    ];
+
+    $allOutput = $commandTester->getDisplay(FALSE);
+    $lines = explode("\n", $allOutput);
+    foreach ($lines as $n => $line) {
+      if (!isset($linePatterns[$n])) {
+        $this->fail("Failed to find pattern for line $n ($line)");
+      }
+      $this->assertRegExp($linePatterns[$n], $line, "Line $n ($line) does not match {$linePatterns[$n]} in output: $allOutput");
+    }
+  }
+
 }

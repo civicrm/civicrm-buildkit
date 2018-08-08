@@ -36,14 +36,35 @@ class ExtBuildCommand extends BaseCommand {
 
   Example: civici ext:build --git-url=https://github.com/civicrm/org.civicrm.api4 \
     --rev=abcd1234 --build-root=/srv/buildkit/build
+
+  Example: civici ext:build --git-url=https://github.com/civicrm/org.civicrm.api4 \
+    --base=abcd1234 --head=abcd1234 --build-root=/srv/buildkit/build
   
   Example: civici ext:build --pr-url=https://github.com/civicrm/org.civicrm.api4/pull/123 \
     --build=pr123 --build-root=/srv/buildkit/build
       ')
       ->useOptions(['build', 'build-root', 'civi-ver', 'dry-run', 'ext-dir', 'force', 'feed', 'keep', 'timeout', 'type'])
       ->addOption('pr-url', NULL, InputOption::VALUE_REQUIRED, 'The local base path to search')
-      ->addOption('rev', NULL, InputOption::VALUE_REQUIRED, 'Extension revision, identified as a git SHA')
+      ->addOption('rev', NULL, InputOption::VALUE_REQUIRED, 'Git SHA/branch/tag')
+      ->addOption('base', NULL, InputOption::VALUE_REQUIRED, 'Base revision -- Git SHA/branch/tag; Combine with --head')
+      ->addOption('head', NULL, InputOption::VALUE_REQUIRED, 'Head revision -- Git SHA/branch/tag; Combine with --base')
       ->addOption('git-url', NULL, InputOption::VALUE_REQUIRED, 'The local base path to search');
+  }
+
+  protected function initialize(InputInterface $input, OutputInterface $output) {
+    parent::initialize($input, $output);
+
+    $impliedRequirements = [
+      'base' => ['head', 'git-url'],
+      'head' => ['base', 'git-url'],
+    ];
+    foreach ($impliedRequirements as $by => $requirements) {
+      foreach ($requirements as $requirement) {
+        if ($input->getOption($by) && !$input->getOption($requirement)) {
+          throw new \RuntimeException("Option --{$by} requires --{$requirement}");
+        }
+      }
+    }
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
@@ -58,6 +79,8 @@ class ExtBuildCommand extends BaseCommand {
       'PRURL' => $prUrl,
       'GITURL' => $input->getOption('git-url'),
       'SHA' => $input->getOption('rev'),
+      'BASE_SHA' => $input->getOption('base'),
+      'HEAD_SHA' => $input->getOption('head'),
       'LOCALBRANCH' => 'target',
       'ABSEXTROOT' => "$myBuildRoot/" . $input->getOption('ext-dir'),
       'RELEXTPATH' => $input->getOption('ext-dir') . "/target",
@@ -109,7 +132,16 @@ class ExtBuildCommand extends BaseCommand {
         )
       );
     }
-    elseif ($input->getOption('git-url') && !$input->getOption('rev')) {
+    elseif ($input->getOption('git-url') && $input->getOption('base') && $input->getOption('head')) {
+      $batch->add(
+        "<info>Download extension</info> (<comment>{$input->getOption('git-url')}</comment> @ {$input->getOption('base')} + {$input->getOption('head')})",
+        new \Symfony\Component\Process\Process(
+          Process::interpolate('git clonebh @GITURL @RELEXTPATH @BASE_SHA @HEAD_SHA', $commonParams),
+          $myBuildRoot
+        )
+      );
+    }
+    elseif ($input->getOption('git-url')) {
       $batch->add(
         "<info>Download extension</info> (<comment>{$input->getOption('git-url')}</comment> @ default branch)",
         new \Symfony\Component\Process\Process(
