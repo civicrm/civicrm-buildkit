@@ -64,6 +64,10 @@ class ProcessBatch {
         if (!$dryRun) {
           Process::runOk($command);
         }
+
+        if ($output->getVerbosity() == OutputInterface::VERBOSITY_VERBOSE) {
+          $output->writeln("");
+        }
       }
 
       putenv("DEBUG=$oldDebugLevel");

@@ -26,18 +26,22 @@ class ExtTestCommandTest extends \Civici\CiviciTestCase {
       '%Restore database%',
       '%\$ cd \'.*/org.example.civixexample\'%',
       '%\$ civibuild restore && cv ext:enable \'org.example.civixexample\'%',
+      '%^\w*$%',
 
       '%Run PHPUnit group \(e2e\)%',
       '%\$ cd \'.*/org.example.civixexample\'%',
       '%\$ phpunit5 --tap --group e2e --log-junit \'/tmp/myjunit/e2e.xml\'%',
+      '%^\w*$%',
 
       '%Restore database%',
       '%\$ cd \'.*/org.example.civixexample\'%',
       '%\$ civibuild restore && cv ext:enable \'org.example.civixexample\'%',
+      '%^\w*$%',
 
       '%Run PHPUnit group \(headless\)%',
       '%\$ cd \'.*/org.example.civixexample\'%',
       '%\$ phpunit5 --tap --group headless --log-junit \'/tmp/myjunit/headless.xml\'%',
+      '%^\w*$%',
 
       '%Done%',
       '%%'
