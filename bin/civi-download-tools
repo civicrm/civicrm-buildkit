@@ -570,7 +570,6 @@ check_php_ext curl required
 check_php_ext date required
 check_php_ext json required
 check_php_ext libxml required
-check_php_ext mcrypt required
 check_php_ext pcre required
 check_php_ext pdo_mysql required
 check_php_ext xml required
