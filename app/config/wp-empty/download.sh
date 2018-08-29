@@ -3,7 +3,7 @@
 ## download.sh -- Download WordPress
 
 ###############################################################################
-[ -z "$CMS_VERSION" ] && CMS_VERSION=4.8
+[ -z "$CMS_VERSION" ] && CMS_VERSION=latest
 
 echo "[[Download WordPress]]"
 mkdir "$WEB_ROOT"

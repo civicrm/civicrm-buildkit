@@ -6,7 +6,7 @@
 [ -z "$VOL_VERSION" ] && VOL_VERSION='master'
 [ -z "$NG_PRFL_VERSION" ] && NG_PRFL_VERSION='master'
 
-[ -z "$CMS_VERSION" ] && CMS_VERSION=4.8
+[ -z "$CMS_VERSION" ] && CMS_VERSION=latest
 
 echo "[[Download WordPress]]"
 mkdir "$WEB_ROOT"
