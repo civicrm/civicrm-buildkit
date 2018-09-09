@@ -604,9 +604,10 @@ pushd $PRJDIR >> /dev/null
   ## Check that data folders/files are writeable. Since this is expensive, only do it on new systems.
   if [ -z "$IS_QUIET" -o ! -d vendor -o ! -d node_modules ]; then
     [ -n "$COMPOSER_CACHE_DIR" ] && check_datafile_ownership "$COMPOSER_CACHE_DIR" || check_datafile_ownership "$HOME/.composer"
-    check_datafile_ownership "$HOME/.cache"
-    check_datafile_ownership "$HOME/.npm"
-    check_datafile_ownership "$HOME/.amp/apache.d"
+    [ -d "$HOME/.cache" ] && check_datafile_ownership "$HOME/.cache"
+    [ -d "$HOME/.npm" ] && check_datafile_ownership "$HOME/.npm"
+    [ -n "$AMPHOME" -a -d "$AMPHOME" ] && check_datafile_ownership "$AMPHOME"
+    [ -z "$AMPHOME" -a -d "$HOME/.amp/apache.d" ] && check_datafile_ownership "$HOME/.amp/apache.d"
   fi
 
   ## Download "composer"
