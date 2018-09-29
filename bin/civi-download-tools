@@ -433,7 +433,7 @@ function do_system_artful() {
 ###############################################################################
 function do_system_bionic() {
   set -e
-    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.2-cli php7.2-imap php7.2-ldap php7.2-curl php7.2-mysql php7.2-intl php7.2-gd php7.2-dev php7.2-bcmath php7.2-mbstring php7.2-soap php7.2-zip php7.2-xml apache2 libapache2-mod-php7.2 nodejs npm php-pear libmcrypt-dev libreadline-dev"
+    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.2-cli php7.2-imap php7.2-ldap php7.2-curl php7.2-mysql php7.2-intl php7.2-gd php7.2-dev php7.2-bcmath php7.2-mbstring php7.2-soap php7.2-zip php7.2-xml apache2 libapache2-mod-php7.2 nodejs php-pear libmcrypt-dev libreadline-dev"
     UBUNTU_VERSION=$(lsb_release -ds)
     echo "Detected $UBUNTU_VERSION."
     echo ""
@@ -442,6 +442,7 @@ function do_system_bionic() {
     echo "Warning: This system will not support php-mysql extension"
     echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
+      sudo curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
       sudo apt-get update
       sudo apt-get -y install $PACKAGES
       sudo phpenmod bcmath
