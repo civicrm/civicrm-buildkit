@@ -146,9 +146,7 @@ wp cap add civicrm_admin \
 
 wp user create "$DEMO_USER" "$DEMO_EMAIL" --role=civicrm_admin --user_pass="$DEMO_PASS"
 
-wp civicrm api extension.install key=org.civicrm.angularprofiles debug=1
-
-wp civicrm api extension.install key=org.civicrm.volunteer debug=1
+cv en api4 angularprofiles volunteer
 
 wp cap add civicrm_admin \
   register to volunteer \

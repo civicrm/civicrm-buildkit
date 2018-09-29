@@ -24,6 +24,7 @@ git_cache_setup "https://github.com/civicrm/civicrm-joomla.git"              "$C
 git_cache_setup "https://github.com/civicrm/civicrm-wordpress.git"           "$CACHE_DIR/civicrm/civicrm-wordpress.git"
 git_cache_setup "https://github.com/civicrm/civicrm-demo-wp.git"             "$CACHE_DIR/civicrm/civicrm-demo-wp.git"
 git_cache_setup "https://github.com/eileenmcnaughton/civicrm_developer.git"  "$CACHE_DIR/eileenmcnaughton/civicrm_developer.git"
+git_cache_setup "https://github.com/civicrm/api4.git"                        "$CACHE_DIR/civicrm/api4.git"
 
 git_cache_setup "https://github.com/civicrm/civivolunteer.git" "$CACHE_DIR/civicrm/civivolunteer.git"
 git_cache_setup "https://github.com/ginkgostreet/org.civicrm.angularprofiles.git" "$CACHE_DIR/ginkgostreet/org.civicrm.angularprofiles.git"
