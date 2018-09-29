@@ -37,6 +37,6 @@ see [CiviCRM Developer Guide: Buildkit](https://docs.civicrm.org/dev/en/latest/t
     * [`wp`](https://wp-cli.org/) (wp-cli) - Administer a WordPress site.
 * Testing
     * [`civicrm-upgrade-test`](https://github.com/civicrm/civicrm-upgrade-test) - Scripts and data files for testing upgrades.
-    * [`karma`](https://karma-runner.github.io) (w/[jasmine](http://jasmine.github.io/)) - Unit testing for Javascript.
+    * [`karma`](https://karma-runner.github.io) (w/[jasmine](https://jasmine.github.io/)) - Unit testing for Javascript.
     * [`paratest`](https://github.com/brianium/paratest) - Parallelized version of PHPUnit.
     * [`phpunit` and `phpunit4`](https://phpunit.de/) - Unit testing for PHP (with Selenium and DB add-ons).
