@@ -21,8 +21,7 @@ LOCKTIMEOUT=90
 CIVIXURL="https://download.civicrm.org/civix/civix.phar-2018-03-15-45a6d258"
 CVURL="https://download.civicrm.org/cv/cv.phar-2018-06-27-dc92b18c"
 HUB_VERSION="2.2.9"
-#DRUSH8URL=http://files.drush.org/drush.phar ## Now returnig 404
-DRUSH8URL=https://github.com/drush-ops/drush/releases/download/8.1.16/drush.phar
+DRUSH8URL=https://github.com/drush-ops/drush/releases/download/8.1.17/drush.phar
 PHPUNITURL=https://phar.phpunit.de/phpunit-4.8.21.phar
 PHPUNIT5URL=https://phar.phpunit.de/phpunit-5.phar
 WPCLIURL=https://github.com/wp-cli/wp-cli/releases/download/v2.0.1/wp-cli-2.0.1.phar
@@ -748,8 +747,8 @@ check_php_ext session recommended
 check_php_ext soap recommended
 check_php_ext zip recommended
 
-check_command node recommended "WARNING: Failed to locate command \"node\". NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
-check_command npm recommended "WARNING: Failed to locate command \"npm\". NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
+check_command node recommended "WARNING: Failed to locate command 'node'. NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
+check_command npm recommended "WARNING: Failed to locate command 'npm'. NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
 
 ##################################################
 ## Cleanup
