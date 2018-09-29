@@ -734,6 +734,7 @@ check_php_ext hash recommended
 check_php_ext imap recommended
 check_php_ext intl recommended
 check_php_ext mbstring recommended
+check_php_ext mcrypt recommended
 if php -r 'exit(version_compare(PHP_VERSION, 7.0, "<") ? 0 : 1);' ; then
   check_php_ext mysql recommended  ## In case you try to install older Civi versions (<= 4.7.11)
 fi
