@@ -747,8 +747,8 @@ check_php_ext session recommended
 check_php_ext soap recommended
 check_php_ext zip recommended
 
-check_command node recommended "WARNING: Failed to locate command \"node\". NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
-check_command npm recommended "WARNING: Failed to locate command \"npm\". NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
+check_command node recommended "WARNING: Failed to locate command 'node'. NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
+check_command npm recommended "WARNING: Failed to locate command 'npm'. NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
 
 ##################################################
 ## Cleanup
