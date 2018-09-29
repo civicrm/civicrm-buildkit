@@ -711,6 +711,30 @@ EOF
 }
 
 ###############################################################################
+## Determine the version# of the CiviCRM codebase
+## usage: civicrm_get_ver <path>
+## ex:    ver=$(civicrm_get_ver .)
+## ex:    ver=$(civicrm_get_ver /var/www/sites/all/modules/civicrm)
+function civicrm_get_ver() {
+  pushd "$1" >> /dev/null
+    if [ -f xml/version.xml ]; then
+      ## Works in any git-based build, even if gencode hasn't run yet.
+      php -r 'echo simplexml_load_file("xml/version.xml")->version_no;'
+    else
+      ## works in any tar-based build.
+      php -r 'require "civicrm-version.php"; $a = civicrmVersion(); echo $a["version"];'
+    fi
+  popd >> /dev/null
+}
+
+###############################################################################
+## usage: civicrm_ext_download_bare <key> <path>
+function civicrm_ext_download_bare() {
+  local civiVer=$(civicrm_get_ver .)
+  cv dl -b "@https://civicrm.org/extdir/ver=$civiVer|cms=Drupal/$1.xml" --to="$2"
+}
+
+###############################################################################
 ## Generate config files and setup database
 function wp_install() {
   cvutil_assertvars wp_install CMS_ROOT CMS_DB_NAME CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_URL ADMIN_USER ADMIN_PASS ADMIN_EMAIL CMS_TITLE
