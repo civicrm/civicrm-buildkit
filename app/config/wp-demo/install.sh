@@ -146,7 +146,7 @@ wp cap add civicrm_admin \
 
 wp user create "$DEMO_USER" "$DEMO_EMAIL" --role=civicrm_admin --user_pass="$DEMO_PASS"
 
-cv en api4 angularprofiles volunteer
+cv en angularprofiles volunteer
 
 wp cap add civicrm_admin \
   register to volunteer \
