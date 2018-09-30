@@ -547,7 +547,7 @@ function civicrm_apply_demo_defaults() {
       ));
 EOPHP
   fi
-  cv en api4
+  cv en --ignore-missing api4
 }
 
 ###############################################################################
