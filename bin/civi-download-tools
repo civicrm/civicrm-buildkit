@@ -458,16 +458,12 @@ function do_system_bionic() {
     echo "Warning: This system will not support php-mysql extension"
     echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
-      sudo curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-      sudo apt-get update
+      sudo curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash - # This runs sudo apt update so there's no point running it twice.
       sudo apt-get -y install $PACKAGES
       sudo phpenmod bcmath
       sudo phpenmod curl
       sudo phpenmod imap
       sudo phpenmod xml
-      sudo pecl install mcrypt-1.0.1
-      sudo bash -c "echo extension=/usr/lib/php/20170718/mcrypt.so > /etc/php/7.2/cli/conf.d/mcrypt.ini"
-      sudo bash -c "echo extension=/usr/lib/php/20170718/mcrypt.so > /etc/php/7.2/apache2/conf.d/mcrypt.ini"
       sudo a2enmod rewrite
       sudo apache2ctl restart
     else
@@ -737,7 +733,7 @@ check_php_ext hash recommended
 check_php_ext imap recommended
 check_php_ext intl recommended
 check_php_ext mbstring recommended
-check_php_ext mcrypt recommended
+check_php_ext mcrypt recommended "WARNING: Failed to locate the PHP \"mcrypt\" extension. Please install this manually to avoid issues with SMTP passwords or older versions of CiviCRM."
 if php -r 'exit(version_compare(PHP_VERSION, 7.0, "<") ? 0 : 1);' ; then
   check_php_ext mysql recommended  ## In case you try to install older Civi versions (<= 4.7.11)
 fi
@@ -747,8 +743,8 @@ check_php_ext session recommended
 check_php_ext soap recommended
 check_php_ext zip recommended
 
-check_command node recommended "WARNING: Failed to locate command 'node'. NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
-check_command npm recommended "WARNING: Failed to locate command 'npm'. NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
+check_command node recommended "WARNING: Failed to locate command \"node\". NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
+check_command npm recommended "WARNING: Failed to locate command \"npm\". NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
 
 ##################################################
 ## Cleanup
