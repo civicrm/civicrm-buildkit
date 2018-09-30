@@ -112,9 +112,7 @@ EOPERM
     add 'register to volunteer'
 EOPERM
 
-  drush -y -u "$ADMIN_USER" cvapi extension.install key=org.civicoop.civirules debug=1
-  drush -y -u "$ADMIN_USER" cvapi extension.install key=eu.tttp.civisualize debug=1
-  drush -y -u "$ADMIN_USER" cvapi extension.install key=org.civicrm.module.cividiscount debug=1
+  cv en civirules civisualize cividiscount
 
   ## Demo sites always disable email and often disable cron
   drush cvapi StatusPreference.create ignore_severity=critical name=checkOutboundMail

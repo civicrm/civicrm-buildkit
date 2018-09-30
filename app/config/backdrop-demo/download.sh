@@ -19,6 +19,7 @@ pushd $WEB_ROOT/modules >> /dev/null
   git clone ${CACHE_DIR}/civicrm/civicrm-core.git      -b "$CIVI_VERSION"     civicrm
   git clone ${CACHE_DIR}/civicrm/civicrm-backdrop.git  -b "1.x-$CIVI_VERSION" civicrm/backdrop
   git clone ${CACHE_DIR}/civicrm/civicrm-packages.git  -b "$CIVI_VERSION"     civicrm/packages
+  git clone ${CACHE_DIR}/civicrm/api4.git              -b "master"            civicrm/ext/api4
 
   git_set_hooks civicrm-drupal      civicrm/backdrop   "../tools/scripts/git"
   git_set_hooks civicrm-core        civicrm            "tools/scripts/git"

@@ -65,6 +65,13 @@ libraries[civicrm_l10n_latest][overwrite] = TRUE
 ; Developer modules
 ; ****************************************
 
+libraries[api4][destination] = libraries
+libraries[api4][directory_name] = civicrm/ext/api4
+libraries[api4][download][type] = git
+libraries[api4][download][url] = %%CACHE_DIR%%/civicrm/api4.git
+libraries[api4][download][branch] = master
+libraries[api4][overwrite] = TRUE
+
 libraries[civivolunteer][destination] = libraries
 libraries[civivolunteer][directory_name] = civicrm/tools/extensions/civivolunteer
 libraries[civivolunteer][download][type] = git
