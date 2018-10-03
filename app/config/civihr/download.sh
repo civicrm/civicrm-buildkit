@@ -8,7 +8,7 @@ git_cache_setup "https://github.com/compucorp/civihr.git" "$CACHE_DIR/compucorp/
 
 [ -z "$CMS_VERSION" ] && CMS_VERSION=7.x
 [ -z "$CIVI_VERSION" ] && CIVI_VERSION=5.3.1
-[ -z "$HR_VERSION" ] && HR_VERSION=staging
+[ -z "$HR_VERSION" ] && HR_VERSION=master
 
 MAKEFILE="${TMPDIR}/${SITE_TYPE}/${SITE_NAME}/${SITE_ID}.make"
 cvutil_makeparent "$MAKEFILE"
