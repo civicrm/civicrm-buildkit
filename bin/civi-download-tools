@@ -397,7 +397,7 @@ function do_system_xenial() {
     echo ""
     echo "Task: $PACKAGES"
     echo ""
-    echo do_php_mysql_warning
+    do_php_mysql_warning
     echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
       sudo apt-get update
@@ -436,7 +436,7 @@ function do_system_artful() {
     echo ""
     echo "Task: $PACKAGES"
     echo ""
-    echo do_php_mysql_warning
+    do_php_mysql_warning
     echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
       sudo apt-get update
@@ -464,7 +464,7 @@ function do_system_bionic() {
     echo ""
     echo "Task: $PACKAGES"
     echo ""
-    echo do_php_mysql_warning
+    do_php_mysql_warning
     echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
       sudo curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash - # This runs sudo apt update so there's no point running it twice.
