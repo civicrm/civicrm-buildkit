@@ -91,6 +91,6 @@ function civibuild_alias_resolve() {
   esac
 
 #  if [ -n "$known" -a "%AUTO%" = "$URL_TEMPLATE" ]; then
-#    URL_TEMPLATE='http://%SITE_NAME%.dev'
+#    URL_TEMPLATE='http://%SITE_NAME%.test'
 #  fi
 }
