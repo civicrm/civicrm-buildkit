@@ -8,12 +8,22 @@
  */
 function sitelist_main($config, $civibuild) {
   $config = sitelist_config((array) $config);
-  $sites = sitelist_read_all($civibuild['BLDDIR']);
+  if (isset($config['bldDirs'])) {
+    $sites = [];
+    foreach ($config['bldDirs'] as $bldDir) {
+      $sites = array_merge($sites, sitelist_read_all($bldDir));
+    }
+    ksort($sites);
+  }
+  else {
+    $sites = sitelist_read_all($civibuild['BLDDIR']);
+  }
 
   if (empty($_GET['filter'])) {
     echo sitelist_render('list-page.tpl.php', [
       'config' => $config,
       'sites' => $sites,
+      'filter' => '',
     ]);
   }
   else {
@@ -123,7 +133,7 @@ function sitelist_read_sh($shFile) {
 /**
  * Read metadata for all available sites.
  *
- * @param string $bldDir
+ * @param string|array $bldDir
  * @return array
  *   Ex: ['dmaster' => ['SITE_TYPE' => 'drupal-demo', ...]].
  */
