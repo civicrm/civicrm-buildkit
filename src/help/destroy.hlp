@@ -3,4 +3,7 @@
 
 [33mArguments:[0m
 [32m  <build-name>[0m           The name of the build to destroy
+
+[33mNB:[0m For more civibuild documentation see https://docs.civicrm.org/dev/en/latest/tools/civibuild/
+
 [0m

@@ -26,4 +26,7 @@ civibuild [options] command
 
   [32mcache-warmup[0m          Proactively update git cache
   [32mupgrade-test[0m          Loads each DB snapshot and runs the current upgrade logic
+
+[33mNB:[0m For more civibuild documentation see https://docs.civicrm.org/dev/en/latest/tools/civibuild/
+
 [0m

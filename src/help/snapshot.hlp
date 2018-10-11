@@ -11,4 +11,7 @@
 [32m  --no-cms[0m               Skip resetting the CMS DB [Optional]
 [32m  --civi-sql <sql-file>[0m  The path to a SQL backup of the CiviCRM DB [Optional]
 [32m  --no-civi[0m              Skip resetting the CiviCRM DB [Optional]
+
+[33mNB:[0m For more civibuild documentation see https://docs.civicrm.org/dev/en/latest/tools/civibuild/
+
 [0m

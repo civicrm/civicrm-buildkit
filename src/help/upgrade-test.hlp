@@ -4,4 +4,7 @@
 [33mArguments:[0m
 [32m  <sql-bz2-files>[0m     One or more *.sql.bz2 files.  [Default path: $UPGRADE_DATA_DIR/]
 
+
+[33mNB:[0m For more civibuild documentation see https://docs.civicrm.org/dev/en/latest/tools/civibuild/
+
 [0m
