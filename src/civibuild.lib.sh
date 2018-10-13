@@ -523,7 +523,7 @@ EOSQL
 ###############################################################################
 ## Appy more default values
 function civicrm_apply_demo_defaults() {
-  if cv ev 'exit(version_compare(CRM_Utils_System::version(), "4.7.0", "<") ?0:1);' ; then
+  if cv ev 'exit(version_compare(CRM_Utils_System::version(), "4.7", "<") ?0:1);' ; then
     cv api setting.create versionCheck=0 debug=1
   fi
   cv api MailSettings.create id=1 is_default=1 domain=example.org debug=1
