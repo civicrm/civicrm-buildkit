@@ -482,7 +482,7 @@ function do_system_jessie() {
     echo "Recommended packages: $PACKAGES"
     echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
-      sudo apt-get update
+      wget -O- https://deb.nodesource.com/setup_8.x | sudo -E bash -
       sudo apt-get -y install $PACKAGES
       sudo php5enmod mcrypt
       sudo php5enmod imap
@@ -498,15 +498,14 @@ function do_system_jessie() {
 function do_system_stretch() {
   set -e
     PACKAGES="acl git wget unzip zip mysql-server mysql-client php-cli php-imap php-ldap php-curl php-mysql php-intl php-gd php-mcrypt php-apcu apache2 libapache2-mod-php php-bcmath php-mbstring php-soap php-zip"
-    echo "Detected \"Debian Jessie\"."
+    echo "Detected \"Debian Stretch\"."
     echo ""
     echo "Installing nodejs Debian repository."
-    wget -O- https://deb.nodesource.com/setup_8.x | sudo -E bash -
     echo ""
     echo "Recommended packages: $PACKAGES"
     echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
-      sudo apt-get update
+      wget -O- https://deb.nodesource.com/setup_8.x | sudo -E bash -
       sudo apt-get -y install $PACKAGES
       sudo phpenmod mcrypt
       sudo phpenmod imap
