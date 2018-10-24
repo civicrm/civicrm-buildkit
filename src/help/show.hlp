@@ -11,4 +11,7 @@
 [32m  --new-scan <file>[0m    A new JSON file which summarizes the git structure
 [32m  --last-scan <file>[0m   An existing JSON file which summarizes the old git structure
 [32m  --full[0m               Show all build options declared
+
+[33mNB:[0m For more civibuild documentation see https://docs.civicrm.org/dev/en/latest/tools/civibuild/
+
 [0m

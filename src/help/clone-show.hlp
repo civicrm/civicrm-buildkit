@@ -10,4 +10,7 @@
 [32m  --clone-id <name>[0m    The name of the specific clone. [Required]
 [32m  --force[0m              If necessary, destroy pre-existing files/directories/DBs
 
+
+[33mNB:[0m For more civibuild documentation see https://docs.civicrm.org/dev/en/latest/tools/civibuild/
+
 [0m
