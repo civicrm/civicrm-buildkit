@@ -170,12 +170,20 @@ function main_sign($versionSpec, $options) {
   //  if (empty($passphrase)) {throw new \Exception("Cannot generate signatures. Please set RELEASE_PASS.");}
   //  $command = sprintf("echo %s | gpg -b --armor --batch --passphrase-fd 0 -u %s --sign %s");
 
-  $file = 'civicrm-' . $versionSpec['version'] . '.MD5SUMS';
+  $md5File = 'civicrm-' . $versionSpec['version'] . '.MD5SUMS';
+  $sha256File = 'civicrm-' . $versionSpec['version'] . '.SHA256SUMS';
+
   util_exec($versionSpec['stagingDir'],
-    sprintf("md5sum *.tar.gz *.tgz *.zip *.json > %s", escapeshellarg($file)));
+    sprintf("md5sum *.tar.gz *.tgz *.zip *.json > %s", escapeshellarg($md5File)));
+  util_exec($versionSpec['stagingDir'],
+    sprintf("sha256sum *.tar.gz *.tgz *.zip *.json > %s", escapeshellarg($sha256File)));
+
   util_exec($versionSpec['stagingDir'],
     sprintf("gpg -b --armor -u %s --sign %s",
-      escapeshellarg($options['gpg-key']), escapeshellarg($file)));
+      escapeshellarg($options['gpg-key']), escapeshellarg($md5File)));
+  util_exec($versionSpec['stagingDir'],
+    sprintf("gpg -b --armor -u %s --sign %s",
+      escapeshellarg($options['gpg-key']), escapeshellarg($sha256File)));
 }
 
 /**
