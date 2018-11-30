@@ -90,6 +90,20 @@ function cvutil_export() {
 }
 
 ###############################################################################
+## Delete a file try, overriding any unwriteable file permissions
+function cvutil_rmrf() {
+  local folder="$1"
+  if [ -z "$folder" ]; then
+    return
+  fi
+  if [ ! -e "$folder" ]; then
+    return
+  fi
+  find "$folder" -type d | xargs -n 20 chmod u+w
+  rm -rf "$folder"
+}
+
+###############################################################################
 ## Summarize the content of key environment variables
 ## usage: cvutil_summary <message> <var1> <var2> ...
 function cvutil_summary() {
