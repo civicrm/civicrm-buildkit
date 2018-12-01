@@ -99,7 +99,7 @@ function cvutil_rmrf() {
   if [ ! -e "$folder" ]; then
     return
   fi
-  find "$folder" -type d | xargs -n 20 chmod u+w
+  find "$folder" -type d -print0 | xargs -0 -n 20 chmod u+w
   rm -rf "$folder"
 }
 
