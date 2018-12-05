@@ -33,7 +33,7 @@ if (!file_exists($basedir) || !is_dir($basedir)) {
 
 
 ########################################################################################
-$exts = json_decode(file_get_contents('https://civicrm.org/extdir/git-urls.json'), 1);
+$exts = json_decode(file_get_contents('https://civicrm.org/extdir/git-urls'), 1);
 $core = array(
   'civicrm-core' => array(
     'git_url' => 'https://github.com/civicrm/civicrm-core',
