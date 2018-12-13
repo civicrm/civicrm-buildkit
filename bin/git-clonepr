@@ -1,0 +1,56 @@
+#!/bin/bash
+
+## This is a quick-and-dirty script to clone a repository and checkout a pull-request.
+##
+## TODO:
+## - Consider rewriting in a different language
+## - Rewrite option parser so ordering is more flexible
+## - If neither -M nor -O is specified, assume -M
+## - Add support for lab.civicrm.org
+## - Support for pool of git caches
+## - Consider leaving working-copy with three available branches: `base`, `proposed`, `merged`
+
+function show_help() {
+  echo "about: Clone a repo and checkout a pull-request"
+  echo "usage: git clonepr [--merged|-M|--original|-O] <pr-url> <out-dir> [...clone options...]"
+  echo "examples:"
+  echo "  git clonepr https://github.com/example/repo/pull/123 myrepo"
+  echo "  git clonepr https://github.com/example/repo/pull/123 myrepo --depth 1"
+}
+
+MODE="$1"
+PR_URL="$2"
+REPO_PATH="$3"
+REPO_URL=$(dirname $(dirname "$PR_URL"))
+PR_NUMBER=$(basename "$PR_URL")
+LOCAL_BRANCH="pr-$PR_NUMBER"
+shift 2
+
+if [ -z "$PR_URL" -o -z "$REPO_PATH" ]; then
+  show_help
+  exit 1
+fi
+
+set -e
+
+case "$MODE" in
+  -M|--merged)
+    git clone -n "$REPO_URL" "$REPO_PATH"
+    pushd "$REPO_PATH" >> /dev/null
+      git fetch origin "pull/$PR_NUMBER/merge":"$LOCAL_BRANCH"
+      git checkout "$LOCAL_BRANCH"
+    popd >> /dev/null
+    ;;
+  -O|--original)
+    git clone "$REPO_URL" "$REPO_PATH"
+    pushd "$REPO_PATH" >> /dev/null
+      git fetch origin "pull/$PR_NUMBER/head":"$LOCAL_BRANCH"
+      git checkout "$LOCAL_BRANCH"
+    popd >> /dev/null
+    ;;
+  *)
+    echo "Unrecognized mode \"$MODE\""
+    show_help
+    exit 1
+    ;;
+esac
