@@ -19,6 +19,7 @@ TMPDIR="$PRJDIR/app/tmp"
 LOCKFILE="$TMPDIR/civi-download-tools.lock"
 LOCKTIMEOUT=90
 CIVIXURL="https://download.civicrm.org/civix/civix.phar-2018-12-04-1d9c1734"
+CIVICIURL="https://download.civicrm.org/civici/civici-0.1.1.phar"
 CVURL="https://download.civicrm.org/cv/cv.phar-2018-12-04-eefce0d0"
 HUB_VERSION="2.2.9"
 DRUSH8URL=https://github.com/drush-ops/drush/releases/download/8.1.17/drush.phar
@@ -662,6 +663,7 @@ pushd $PRJDIR >> /dev/null
   download_program_if_changed "$AMPURL" "$PRJDIR/bin/amp" "$PRJDIR/extern/amp.txt"
   download_program_if_changed "$BOXURL" "$PRJDIR/bin/box" "$PRJDIR/extern/box.txt"
   download_program_if_changed "$CIVIXURL" "$PRJDIR/bin/civix" "$PRJDIR/extern/civix.txt"
+  download_program_if_changed "$CIVICIURL" "$PRJDIR/bin/civici" "$PRJDIR/extern/civici.txt"
   download_program_if_changed "$CIVISTRINGSURL" "$PRJDIR/bin/civistrings" "$PRJDIR/extern/civistrings.txt"
   download_program_if_changed "$JOOMLAURL" "$PRJDIR/bin/joomla" "$PRJDIR/extern/joomla.txt"
   download_program_if_changed "$CODECEPTION_PHP5_URL" "$PRJDIR/bin/_codecept-php5.phar" "$PRJDIR/extern/codecept-php5.txt"
