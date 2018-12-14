@@ -15,6 +15,7 @@ function usage($error = FALSE) {
   echo "    --sign                Generate checksum and GPG signature\n";
   echo "    --tag                 Generate and push git tags\n";
   echo "    --publish             Send build to primary download service\n";
+  echo "    --esr-publish         Send build to ESR download service\n";
   echo "    --clean               Delete any temp files\n";
   echo "  Options:\n";
   echo "     -f                   Force, even if it replaces existing items\n";
@@ -71,6 +72,10 @@ function main($argv) {
 
       case '--publish':
         $tasks[] = 'main_publish';
+        break;
+
+      case '--esr-publish':
+        $tasks[] = 'main_esr_publish';
         break;
 
       case '--clean':
@@ -234,6 +239,20 @@ function main_publish($versionSpec, $options) {
   util_passthru_ok(sprintf("rsync -va $dry %s/ %s/",
     escapeshellarg($versionSpec['stagingDir']),
     escapeshellarg('civicrm@frs.sourceforge.net:/home/frs/project/civicrm/civicrm-stable/' . $versionSpec['version'])
+  ));
+}
+
+/**
+ * Send build to ESR download service.
+ *
+ * @param array $versionSpec
+ */
+function main_esr_publish($versionSpec, $options) {
+  util_info('## Send build to primary download service');
+  $dry = $options['dry-run'] ? '-n' : '';
+  util_passthru_ok(sprintf("gsutil -m rsync $dry %s/ %s/",
+    escapeshellarg($versionSpec['stagingDir']),
+    escapeshellarg('gs://civicrm-private/civicrm-esr/' . $versionSpec['version'])
   ));
 }
 
