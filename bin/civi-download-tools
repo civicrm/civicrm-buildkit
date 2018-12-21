@@ -678,6 +678,7 @@ pushd $PRJDIR >> /dev/null
   done
 
   ## Setup phpunit aliases for CLI usage
+  make_link "$PRJDIR/bin" "drush8" "drush"
   make_link "$PRJDIR/bin" "../extern/phpunit4/phpunit4.phar" "phpunit4"
   make_link "$PRJDIR/bin" "../extern/phpunit5/phpunit5.phar" "phpunit5"
 
