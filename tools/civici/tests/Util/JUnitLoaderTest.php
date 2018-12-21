@@ -28,4 +28,29 @@ class JUnitLoaderTeest extends \Civici\CiviciTestCase {
     $this->assertEquals('Executed 4 tests in 0.04s - 2 failure(s), 0 error(s)', $vars['@JUNIT_SUMMARY@']);
   }
 
+  public function testGenuinelyEmpty() {
+    $junit = new JUnitLoader();
+    $junit->addFile(dirname(__DIR__) . '/junit-examples/empty.xml');
+    $vars = $junit->getVars();
+    $this->assertEquals('success', $vars['@JUNIT_STATE@']);
+    $this->assertEquals(0, $vars['@JUNIT_FAILURES@']);
+    $this->assertEquals(0, $vars['@JUNIT_TESTS@']);
+    $this->assertEquals(0, $vars['@JUNIT_ERRORS@']);
+    $this->assertEquals('0.00s', $vars['@JUNIT_TIME@']);
+    $this->assertEquals('Executed 0 tests in 0.00s - 0 failure(s), 0 error(s)', $vars['@JUNIT_SUMMARY@']);
+  }
+
+  public function testBadExit() {
+    $junit = new JUnitLoader();
+    $junit->addFile(dirname(__DIR__) . '/junit-examples/empty.xml');
+    $junit->setExitCode(1);
+    $vars = $junit->getVars();
+    $this->assertEquals('failure', $vars['@JUNIT_STATE@']);
+    $this->assertEquals(0, $vars['@JUNIT_FAILURES@']);
+    $this->assertEquals(0, $vars['@JUNIT_TESTS@']);
+    $this->assertEquals(0, $vars['@JUNIT_ERRORS@']);
+    $this->assertEquals('0.00s', $vars['@JUNIT_TIME@']);
+    $this->assertEquals('Exited with error. Executed 0 tests in 0.00s - 0 failure(s), 0 error(s)', $vars['@JUNIT_SUMMARY@']);
+  }
+
 }

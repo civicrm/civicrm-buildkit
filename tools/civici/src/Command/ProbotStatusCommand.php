@@ -42,6 +42,7 @@ Example: civici probot:status --probot-url="..." --probot-token="..." \
 
 Example: civici probot:status --probot-url="..." --probot-token="..." \
   --junit-dir="/var/www/workspace/MyTest/junit" \
+  --junit-exit="0" \
   --state="@JUNIT_STATE@" \
   --desc="@JUNIT_SUMMARY@"
 
@@ -59,6 +60,7 @@ When --junit-xml is specified, the following variables are defined:
       ->addOption('url', NULL, InputOption::VALUE_REQUIRED, 'URL displaying full status information', '')
       ->addOption('state', NULL, InputOption::VALUE_REQUIRED, 'Current status (error,failure,pending,success)')
       ->addOption('junit-dir', NULL, InputOption::VALUE_REQUIRED, 'Parse JUnit XML files. If provided, certain variables are available for --state and --desc')
+      ->addOption('junit-exit', NULL, InputOption::VALUE_REQUIRED, 'Optional: Numeric exit code from the JUnit/PHPUnit process')
       ->addOption('probot-url', NULL, InputOption::VALUE_REQUIRED, 'Callback URL. Ex: http://user:pass@localhost:3000/probot-civicrm-status/update')
       ->addOption('probot-token', NULL, InputOption::VALUE_REQUIRED, 'Secure token');
   }
@@ -73,6 +75,7 @@ When --junit-xml is specified, the following variables are defined:
     if ($input->getOption('junit-dir')) {
       $output->writeln(sprintf("<info>Parsing JUnit XML</info> (<comment>%s</comment>)", $input->getOption('junit-dir')));
       $junit = new JUnitLoader();
+      $junit->setExitCode($input->hasOption('junit-exit') ? $input->getOption('junit-exit') : 0);
       $junit->addFolder($input->getOption('junit-dir'));
       $vars = $junit->getVars();
       foreach (['state', 'desc'] as $option) {
