@@ -61,7 +61,7 @@ $ php -dphar.readonly=0 /usr/local/bin/box build
 ## Publish
 
 ```
-git tag X.Y.Z
+git tag vX.Y.Z
 php -dphar.readonly=0 `which box` build
 gsutil cp bin/civici.phar gs://civicrm/civici/civici-X.Y.Z.phar
 ```
