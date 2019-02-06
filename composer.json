@@ -20,7 +20,7 @@
     "totten/php-symbol-diff": "dev-master#54f869ca68a3cd75f3386f8490870369733d2c23",
     "civicrm/upgrade-test": "dev-master#b93207fd28ac90426e9c95d572068f2e907b08e2",
     "drupal/coder": "dev-8.x-2.x-civi#a801890a82d52e23a83c5d820270b6e228843d79",
-    "squizlabs/PHP_CodeSniffer": ">=2"
+    "squizlabs/php_codesniffer": ">=2"
   },
   "repositories": [
     {
