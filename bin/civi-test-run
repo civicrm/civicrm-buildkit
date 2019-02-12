@@ -192,7 +192,7 @@ fi
 for TESTTYPE in $SUITES ; do
   case "$TESTTYPE" in
     karma)  task_karma ;;
-    upgrade)  CIVIVER=$(getCiviVer) ; task_upgrade 4.2.9-multilingual_af_bg_en* "@4.2..$CIVIVER:10" ;;
+    upgrade)  CIVIVER=$(getCiviVer) ; task_upgrade 4.2.9-multilingual_af_bg_en* "@4.3..$CIVIVER:10" ;;
     upgrade@*)  task_upgrade $(echo $TESTTYPE | sed s'/^upgrade//' ) ;;
     phpunit-e2e)  task_phpunit E2E_AllTests ;;
     phpunit-crm)  task_phpunit CRM_AllTests ;;
