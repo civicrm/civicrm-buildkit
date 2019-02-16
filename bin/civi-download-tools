@@ -663,7 +663,7 @@ pushd $PRJDIR >> /dev/null
   [ -d "$PRJDIR/extern/civix" ] && rm -rf "$PRJDIR/extern/civix"
 
   ## download_program_if_changed <url> <out-file> <flag-file>
-  download_program_if_changed "$DRUSH8URL" "$PRJDIR/bin/drush8" "$PRJDIR/extern/drush8.txt"
+  download_program_if_changed "$DRUSH8URL" "$PRJDIR/extern/drush8.phar" "$PRJDIR/extern/drush8.txt"
   download_program_if_changed "$CVURL" "$PRJDIR/bin/cv" "$PRJDIR/extern/cv.txt"
   download_program_if_changed "$PHPUNITURL" "$PRJDIR/extern/phpunit4/phpunit4.phar" "$PRJDIR/extern/_phpunit4.txt"
   download_program_if_changed "$PHPUNIT5URL" "$PRJDIR/extern/phpunit5/phpunit5.phar" "$PRJDIR/extern/_phpunit5.txt"
@@ -685,6 +685,12 @@ pushd $PRJDIR >> /dev/null
       rm -f "$OLDFILE"
     fi
   done
+
+  if [ -z "$IS_QUIET" -o ! -f "$PRJDIR/bin/drush8" ]; then
+    ## drush8 was previously downloaded directly. This "cp" ensures we overwrite without git conflicts.
+    echo "[[drush8 ($PRJDIR/bin/drush8): Generate wrapper]]"
+    cp "$PRJDIR/src/drush/drush8.tmpl" "$PRJDIR/bin/drush8"
+  fi
 
   ## Setup phpunit aliases for CLI usage
   make_link "$PRJDIR/bin" "drush8" "drush"
