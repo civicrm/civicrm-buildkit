@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+BINDIR=$(dirname $0)
+PRJDIR=$(dirname "$BINDIR")
+
+export CACHE_PREFIX=$PRJDIR/app/tmp/drush
+[ ! -d "$CACHE_PREFIX" ] && mkdir -p "$CACHE_PREFIX"
+if [ "$PWD" == "$BINDIR" ]; then
+  echo "Error: Cannot run drush from the bin dir. Please navigate to a site dir." >&2
+  exit 1
+fi
+exec "$PRJDIR/extern/drush8.phar" "$@"
