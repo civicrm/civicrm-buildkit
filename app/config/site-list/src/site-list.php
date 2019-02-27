@@ -278,15 +278,8 @@ function sitelist_get_token() {
 function sitelist_fetch_all($siteList) {
   $sites = [];
   foreach ($siteList as $site => $siteToken) {
-    $context = stream_context_create([
-      "http" => [
-        'method' => 'POST',
-        'header'  => 'Content-type: application/x-www-form-urlencoded',
-        'content' => http_build_query(['token' => $siteToken]),
-      ]
-    ]);
-    $url = "$site/index.php?format=application/json";
-    $json = file_get_contents($url, FALSE, $context);
+    $json = sitelist_send_http_post("$site/index.php?format=application/json", ['token' => $siteToken]);
+
     if (empty($json)) {
       throw new \RuntimeException("Failed to fetch list from $site: no response");
     }
@@ -298,4 +291,20 @@ function sitelist_fetch_all($siteList) {
   }
 
   return $sites;
+}
+
+/**
+ * @param $url
+ * @param $postParams
+ * @return mixed
+ */
+function sitelist_send_http_post($url, $postParams) {
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_POST, 1);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postParams));
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+  $json = curl_exec($ch);
+  curl_close($ch);
+  return $json;
 }
