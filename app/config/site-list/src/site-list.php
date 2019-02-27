@@ -3,6 +3,15 @@
 /**
  * Render the main page.
  *
+ * Example: Show all sites in HTML
+ * /index.php
+ *
+ * Example: Show all sites in JSON
+ * /index.php?format=application/json
+ *
+ * Example: Show all details of all sites in JSON (authentication required)
+ * /index.php?format=application/json&token=abcd1234
+ *
  * @param array|NULL $config
  * @param array $civibuild
  */
@@ -13,14 +22,22 @@ function sitelist_main($config, $civibuild) {
     foreach ($config['bldDirs'] as $bldDir) {
       $sites = array_merge($sites, sitelist_read_all($bldDir));
     }
-    ksort($sites);
   }
   else {
     $sites = sitelist_read_all($civibuild['BLDDIR']);
   }
 
+  if (!empty($config['more_sites'])) {
+    $remotes = sitelist_fetch_all($config['more_sites']);
+    $sites = array_merge($sites, $remotes);
+  }
+
+  ksort($sites);
+
+  $view = sitelist_pick_view($_GET);
+
   if (empty($_GET['filter'])) {
-    echo sitelist_render('list-page.tpl.php', [
+    $view([
       'config' => $config,
       'sites' => $sites,
       'filter' => '',
@@ -28,12 +45,77 @@ function sitelist_main($config, $civibuild) {
   }
   else {
     $regex = sitelist_create_filter($_GET['filter']);
-    echo sitelist_render('list-page.tpl.php', [
+    $view([
       'filter' => $_GET['filter'],
       'config' => $config,
       'sites' => sitelist_preg_grep_key($sites, $regex),
     ]);
   }
+}
+
+function sitelist_is_authenticated($token, $config) {
+  if ($token === NULL) {
+    return FALSE;
+  }
+
+  global $civibuild;
+  if ($civibuild['SITE_TOKEN'] === $token) {
+    return TRUE;
+  }
+
+  if (isset($config['site_token']) && $config['site_token'] === $token) {
+    return TRUE;
+  }
+
+  throw new \RuntimeException("Incorrect token token");
+}
+
+/**
+ * @return mixed
+ */
+function sitelist_pick_view($get) {
+  if (empty($get['format'])) {
+    return 'sitelist_view_html';
+  }
+
+  if ($get['format'] === 'text/html') {
+    return 'sitelist_view_html';
+  }
+
+  if ($get['format'] === 'application/json') {
+    return 'sitelist_view_json';
+  }
+
+  throw new \RuntimeException("Malformed format");
+}
+
+/**
+ * Display the list as HTML.
+ *
+ * @param $p
+ */
+function sitelist_view_html($p) {
+  echo sitelist_render('list-page.tpl.php', $p);
+}
+
+/**
+ * Display the list as JSON.
+ *
+ * @param $p
+ */
+function sitelist_view_json($p) {
+  header("Content-type: application/json");
+
+  if (sitelist_is_authenticated(sitelist_get_token(), $p['config'])) {
+    $sites = $p['sites'];
+  }
+  else {
+    $sites = array_map(function ($site) use ($p) {
+      return sitelist_array_subset($site, $p['config']['display']);
+    }, $p['sites']);
+  }
+
+  echo json_encode($sites);
 }
 
 /**
@@ -97,6 +179,7 @@ function sitelist_config($values = array()) {
   $defaults = array(
     'title' => sprintf('Site list (%s)', gethostname()),
     'display' => ['ADMIN_USER', 'DEMO_USER', 'SITE_TYPE', 'BUILD_TIME'],
+    'more_sites' => [],
   );
   global $sitelist;
   return array_merge($defaults, (array) $sitelist);
@@ -148,7 +231,9 @@ function sitelist_read_all($bldDir) {
       continue;
     }
 
-    $sites[$name] = sitelist_read_sh($file);
+    $site = sitelist_read_sh($file);
+    $domain = parse_url($site['CMS_URL'], PHP_URL_HOST);
+    $sites[$domain] = $site;
   }
   return $sites;
 }
@@ -161,4 +246,56 @@ function sitelist_preg_grep_key($arr, $regex) {
     }
   }
   return $result;
+}
+
+function sitelist_array_subset($array, $keys) {
+  $r = [];
+  foreach ($keys as $key) {
+    if (isset($array[$key])) {
+      $r[$key] = $array[$key];
+    }
+  }
+  return $r;
+}
+
+/**
+ * @return string|null
+ */
+function sitelist_get_token() {
+  if (!empty($_REQUEST['token'])) {
+    return $_REQUEST['token'];
+  }
+
+  return NULL;
+}
+
+/**
+ * @param array $siteList
+ *   Array(string $siteUrl => string $siteToken).
+ * @return array
+ *   Array(string $siteDomain => array $siteDetails).
+ */
+function sitelist_fetch_all($siteList) {
+  $sites = [];
+  foreach ($siteList as $site => $siteToken) {
+    $context = stream_context_create([
+      "http" => [
+        'method' => 'POST',
+        'header'  => 'Content-type: application/x-www-form-urlencoded',
+        'content' => http_build_query(['token' => $siteToken]),
+      ]
+    ]);
+    $url = "$site/index.php?format=application/json";
+    $json = file_get_contents($url, FALSE, $context);
+    if (empty($json)) {
+      throw new \RuntimeException("Failed to fetch list from $site: no response");
+    }
+    $remote = json_decode($json, 1);
+    if ($remote === NULL) {
+      throw new \RuntimeException("Failed to fetch list from $site: malformed json ($json)");
+    }
+    $sites = array_merge($sites, $remote);
+  }
+
+  return $sites;
 }
