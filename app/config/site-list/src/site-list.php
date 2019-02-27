@@ -233,6 +233,9 @@ function sitelist_read_all($bldDir) {
 
     $site = sitelist_read_sh($file);
     $domain = parse_url($site['CMS_URL'], PHP_URL_HOST);
+    if ($port = parse_url($site['CMS_URL'], PHP_URL_PORT)) {
+      $domain .= ':' . $port;
+    }
     $sites[$domain] = $site;
   }
   return $sites;
