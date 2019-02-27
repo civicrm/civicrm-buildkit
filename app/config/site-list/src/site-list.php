@@ -27,8 +27,8 @@ function sitelist_main($config, $civibuild) {
     $sites = sitelist_read_all($civibuild['BLDDIR']);
   }
 
-  if (!empty($config['more_sites'])) {
-    $remotes = sitelist_fetch_all($config['more_sites']);
+  if (!empty($config['moreSites'])) {
+    $remotes = sitelist_fetch_all($config['moreSites']);
     $sites = array_merge($sites, $remotes);
   }
 
@@ -179,7 +179,7 @@ function sitelist_config($values = array()) {
   $defaults = array(
     'title' => sprintf('Site list (%s)', gethostname()),
     'display' => ['ADMIN_USER', 'DEMO_USER', 'SITE_TYPE', 'BUILD_TIME'],
-    'more_sites' => [],
+    'moreSites' => [],
   );
   global $sitelist;
   return array_merge($defaults, (array) $sitelist);
