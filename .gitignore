@@ -64,6 +64,7 @@ bin/protractor
 bin/webdriver-manager
 bin/wp
 bin/wp.bat
+bin/yarn
 build/
 extern/
 node_modules/
