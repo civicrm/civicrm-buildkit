@@ -73,6 +73,9 @@ $core = array(
     'git_url' => 'https://github.com/civicrm/civihr',
     'git_branch' => 'staging',
   ),
+  'com.webaccessglobal.module.civimobile' => array(
+    'git_url' => 'https://github.com/webaccess/com.webaccessglobal.module.civimobile',
+  ),
   'civix' => array(
     'git_url' => 'https://github.com/totten/civix',
   ),
@@ -111,9 +114,9 @@ $subRepos = array(
   'l10n',
 );
 foreach ($subRepos as $subRepo) {
-  $core[$subRepo] = array(
-    'git_url' => 'https://github.com/civicrm/' . $subRepo,
-  );
+#  $core[$subRepo] = array(
+#    'git_url' => 'https://github.com/civicrm/' . $subRepo,
+#  );
 }
 
 $deprecated = array('civicrm-drupal');
