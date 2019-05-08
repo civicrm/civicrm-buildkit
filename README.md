@@ -4,8 +4,7 @@ Buildkit is a collection of ~20 tools for developing and testing CiviCRM.
 
 ## Documentation
 
-For installation instructions and other documentation,
-see [CiviCRM Developer Guide: Buildkit](https://docs.civicrm.org/dev/en/latest/tools/buildkit/).
+For installation instructions and other documentation, see [CiviCRM Developer Guide: Buildkit](https://docs.civicrm.org/dev/en/latest/tools/buildkit/).
 
 ## Bundled tools
 
