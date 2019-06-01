@@ -668,7 +668,7 @@ pushd $PRJDIR >> /dev/null
   download_program_if_changed "$CVURL" "$PRJDIR/bin/cv" "$PRJDIR/extern/cv.txt"
   download_program_if_changed "$PHPUNITURL" "$PRJDIR/extern/phpunit4/phpunit4.phar" "$PRJDIR/extern/_phpunit4.txt"
   download_program_if_changed "$PHPUNIT5URL" "$PRJDIR/extern/phpunit5/phpunit5.phar" "$PRJDIR/extern/_phpunit5.txt"
-  download_program_if_changed "$PHPUNIT6URL" "$PRJDIR/extern/phpunit5/phpunit6.phar" "$PRJDIR/extern/_phpunit6.txt"
+  download_program_if_changed "$PHPUNIT6URL" "$PRJDIR/extern/phpunit6/phpunit6.phar" "$PRJDIR/extern/_phpunit6.txt"
   download_program_if_changed "$WPCLIURL" "$PRJDIR/bin/wp" "$PRJDIR/extern/wp-cli.txt"
   download_program_if_changed "$GITSCANURL" "$PRJDIR/bin/git-scan" "$PRJDIR/extern/git-scan.txt"
   download_program_if_changed "$AMPURL" "$PRJDIR/bin/amp" "$PRJDIR/extern/amp.txt"
@@ -698,7 +698,7 @@ pushd $PRJDIR >> /dev/null
   make_link "$PRJDIR/bin" "drush8" "drush"
   make_link "$PRJDIR/bin" "../extern/phpunit4/phpunit4.phar" "phpunit4"
   make_link "$PRJDIR/bin" "../extern/phpunit5/phpunit5.phar" "phpunit5"
-  make_link "$PRJDIR/bin" "../extern/phpunit5/phpunit6.phar" "phpunit6"
+  make_link "$PRJDIR/bin" "../extern/phpunit6/phpunit6.phar" "phpunit6"
 
   ## Download "hub"
   touch "$PRJDIR/extern/hub.txt"
