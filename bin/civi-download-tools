@@ -25,6 +25,7 @@ HUB_VERSION="2.2.9"
 DRUSH8URL=https://github.com/drush-ops/drush/releases/download/8.1.18/drush.phar
 PHPUNITURL=https://phar.phpunit.de/phpunit-4.8.21.phar
 PHPUNIT5URL=https://phar.phpunit.de/phpunit-5.phar
+PHPUNIT6URL=https://phar.phpunit.de/phpunit-6.phar
 WPCLIURL=https://github.com/wp-cli/wp-cli/releases/download/v2.0.1/wp-cli-2.0.1.phar
 GITSCANURL="https://download.civicrm.org/git-scan/git-scan.phar-2019-04-08-24bd3fa1"
 AMPURL="https://download.civicrm.org/amp/amp.phar-2018-09-29-73136a8b"
@@ -667,6 +668,7 @@ pushd $PRJDIR >> /dev/null
   download_program_if_changed "$CVURL" "$PRJDIR/bin/cv" "$PRJDIR/extern/cv.txt"
   download_program_if_changed "$PHPUNITURL" "$PRJDIR/extern/phpunit4/phpunit4.phar" "$PRJDIR/extern/_phpunit4.txt"
   download_program_if_changed "$PHPUNIT5URL" "$PRJDIR/extern/phpunit5/phpunit5.phar" "$PRJDIR/extern/_phpunit5.txt"
+  download_program_if_changed "$PHPUNIT6URL" "$PRJDIR/extern/phpunit5/phpunit6.phar" "$PRJDIR/extern/_phpunit6.txt"
   download_program_if_changed "$WPCLIURL" "$PRJDIR/bin/wp" "$PRJDIR/extern/wp-cli.txt"
   download_program_if_changed "$GITSCANURL" "$PRJDIR/bin/git-scan" "$PRJDIR/extern/git-scan.txt"
   download_program_if_changed "$AMPURL" "$PRJDIR/bin/amp" "$PRJDIR/extern/amp.txt"
@@ -696,6 +698,7 @@ pushd $PRJDIR >> /dev/null
   make_link "$PRJDIR/bin" "drush8" "drush"
   make_link "$PRJDIR/bin" "../extern/phpunit4/phpunit4.phar" "phpunit4"
   make_link "$PRJDIR/bin" "../extern/phpunit5/phpunit5.phar" "phpunit5"
+  make_link "$PRJDIR/bin" "../extern/phpunit5/phpunit6.phar" "phpunit6"
 
   ## Download "hub"
   touch "$PRJDIR/extern/hub.txt"
