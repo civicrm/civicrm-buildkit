@@ -659,6 +659,7 @@ pushd $PRJDIR >> /dev/null
   [ ! -d "$PRJDIR/extern" ] && mkdir "$PRJDIR/extern"
   [ ! -d "$PRJDIR/extern/phpunit4" ] && mkdir "$PRJDIR/extern/phpunit4"
   [ ! -d "$PRJDIR/extern/phpunit5" ] && mkdir "$PRJDIR/extern/phpunit5"
+  [ ! -d "$PRJDIR/extern/phpunit6" ] && mkdir "$PRJDIR/extern/phpunit6"
 
   ## Cleanup old civix tarballs
   [ -d "$PRJDIR/extern/civix" ] && rm -rf "$PRJDIR/extern/civix"
