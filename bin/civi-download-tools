@@ -428,6 +428,14 @@ function do_system_zesty() {
   do_system_xenial
 }
 
+function do_system_cosmic() {
+  do_system_bionic
+}
+
+function do_system_disco() {
+  do_system_bionic
+}
+
 ###############################################################################
 ## If this shared function doesn't work, don't add conditionals - copy/paste into a new function.
 function do_system_artful() {
