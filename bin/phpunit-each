@@ -11,7 +11,16 @@ $hasError = 0;
 
 chdir("$srcDir/tools");
 foreach ($args as $test) {
-  $cmd = sprintf("./scripts/phpunit --tap --log-junit %s %s %s",
+  if (file_exists("../Civi/Test/TAP.php")) {
+    $printCMD = "--printer '\Civi\Test\TAP'";
+  }
+  elseif (class_exists('PHPUnit_Util_Log_TAP')) {
+    $printCMD = "--tap";
+  }
+  else {
+    $printCMD = "--debug";
+  }
+  $cmd = sprintf("./scripts/phpunit {$printCMD} --log-junit %s %s %s",
     escapeshellarg("$xmlDir/$test.xml"),
     $options,
     escapeshellarg($test)
