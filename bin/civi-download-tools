@@ -460,7 +460,7 @@ function do_system_artful() {
 ###############################################################################
 function do_system_bionic() {
   set -e
-    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.2-cli php7.2-imap php7.2-ldap php7.2-curl php7.2-mysql php7.2-intl php7.2-gd php7.2-dev php7.2-bcmath php7.2-mbstring php7.2-soap php7.2-zip php7.2-xml apache2 libapache2-mod-php7.2 nodejs php-pear libmcrypt-dev libreadline-dev"
+    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.2-cli php7.2-imap php7.2-ldap php7.2-curl php7.2-mysql php7.2-intl php7.2-gd php7.2-dev php7.2-bcmath php7.2-mbstring php7.2-soap php7.2-zip php7.2-xml apache2 libapache2-mod-php7.2 nodejs php-pear libmcrypt-dev libreadline-dev curl"
     UBUNTU_VERSION=$(lsb_release -ds)
     echo "Detected $UBUNTU_VERSION."
     echo ""
@@ -489,7 +489,29 @@ function do_system_cosmic() {
 }
 
 function do_system_disco() {
-  do_system_bionic
+  set -e
+    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.2-cli php7.2-imap php7.2-ldap php7.2-curl php7.2-mysql php7.2-intl php7.2-gd php7.2-dev php7.2-bcmath php7.2-mbstring php7.2-soap php7.2-zip php7.2-xml apache2 libapache2-mod-php7.2 nodejs php-pear libmcrypt-dev libreadline-dev curl"
+    UBUNTU_VERSION=$(lsb_release -ds)
+    echo "Detected $UBUNTU_VERSION."
+    echo ""
+    echo "Task: $PACKAGES"
+    echo ""
+    do_php_mysql_warning
+    echo ""
+    if cvutil_confirm "Run automated installation? [Y/n] " y y; then
+      sudo curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash - # This runs sudo apt update so there's no point running it twice.
+      sudo apt-get -y install $PACKAGES
+      sudo phpenmod bcmath
+      sudo phpenmod curl
+      sudo phpenmod imap
+      sudo phpenmod xml
+      sudo a2enmod rewrite
+      sudo apache2ctl restart
+    else
+      echo "Aborted" 1>&2
+      exit 1
+    fi
+  set +e
 }
 
 ###############################################################################
