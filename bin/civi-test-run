@@ -38,6 +38,8 @@ function show_help() {
   echo "                        - phpunit-civi"
   echo "                        - phpunit-crm"
   echo "                        - phpunit-e2e"
+  echo "                        - phpunit-drupal"
+  echo "                        - phpunit-wordpress"
   echo "                        - upgrade"
   echo "                        - upgrade@4.7.30:10"
   echo
@@ -105,6 +107,17 @@ function task_phpunit_drupal() {
   $GUARD pushd "$CIVI_CORE/drupal"
   if ! $GUARD phpunit4 --tap --log-junit "$JUNITDIR/phpunit_drupal.xml" $EXCLUDE_GROUP ; then
     EXITCODES="$EXITCODES phpunit-drupal"
+  fi
+  echo "Found EXITCODES=\"$EXITCODES\""
+
+  phpunit-xml-cleanup "$JUNITDIR"/*.xml
+  $GUARD popd
+}
+
+function task_phpunit_wordpress() {
+  $GUARD pushd "$CIVI_CORE/.."
+  if ! $GUARD phpunit5 --tap --log-junit "$JUNITDIR/phpunit_wordpress.xml" $EXCLUDE_GROUP ; then
+    EXITCODES="$EXITCODES phpunit-wordpress"
   fi
   echo "Found EXITCODES=\"$EXITCODES\""
 
@@ -199,6 +212,7 @@ for TESTTYPE in $SUITES ; do
     phpunit-api)  task_phpunit api_v3_AllTests ;;
     phpunit-civi)  task_phpunit 'Civi\AllTests' ;;
     phpunit-drupal) task_phpunit_drupal ;;
+    phpunit-wordpress) task_phpunit_wordpress ;;
     *) echo "unrecognized suite: $TESTTYPE"; exit 2 ;;
   esac
 done
