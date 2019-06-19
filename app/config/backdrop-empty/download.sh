@@ -10,4 +10,5 @@ git_cache_setup "https://github.com/backdrop/backdrop.git" "$CACHE_DIR/backdrop/
 [ -z "$CIVI_VERSION" ] && CIVI_VERSION=none
 
 echo "[[Download Backdrop]]"
-git clone "$CACHE_DIR/backdrop/backdrop.git" "$WEB_ROOT"
+mkdir "$WEB_ROOT"
+git clone "$CACHE_DIR/backdrop/backdrop.git" "$WEB_ROOT/web"
