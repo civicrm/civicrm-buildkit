@@ -10,11 +10,12 @@ git_cache_setup "https://github.com/backdrop/backdrop.git" "$CACHE_DIR/backdrop/
 [ -z "$CIVI_VERSION" ] && CIVI_VERSION=master
 
 echo "[[Download Backdrop]]"
-git clone "$CACHE_DIR/backdrop/backdrop.git" "$WEB_ROOT"
+mkdir "$WEB_ROOT"
+git clone "$CACHE_DIR/backdrop/backdrop.git" "$WEB_ROOT/web"
 
 echo "[[Download CiviCRM]]"
-[ ! -d "$WEB_ROOT/modules" ] && mkdir -p "$WEB_ROOT/modules"
-pushd $WEB_ROOT/modules >> /dev/null
+[ ! -d "$WEB_ROOT/web/modules" ] && mkdir -p "$WEB_ROOT/web/modules"
+pushd "$WEB_ROOT/web/modules" >> /dev/null
 
   git clone ${CACHE_DIR}/civicrm/civicrm-core.git      -b "$CIVI_VERSION"     civicrm
   git clone ${CACHE_DIR}/civicrm/civicrm-backdrop.git  -b "1.x-$CIVI_VERSION" civicrm/backdrop
