@@ -9,8 +9,8 @@
 [ -z "$CMS_VERSION" ] && CMS_VERSION=latest
 
 echo "[[Download WordPress]]"
-mkdir "$WEB_ROOT"
-pushd "$WEB_ROOT" >> /dev/null
+mkdir "$WEB_ROOT" "$WEB_ROOT/web"
+pushd "$WEB_ROOT/web" >> /dev/null
   "$PRJDIR/bin/wp" core download --version=$CMS_VERSION
   if [ ! -e "wp-cli.yml" ]; then
     cp -a "$SITE_CONFIG_DIR/wp-cli.yml" "wp-cli.yml"
@@ -18,8 +18,8 @@ pushd "$WEB_ROOT" >> /dev/null
 popd >> /dev/null
 
 echo "[[Download CiviCRM]]"
-[ ! -d "$WEB_ROOT/wp-content/plugins" ] && mkdir -p "$WEB_ROOT/wp-content/plugins"
-pushd $WEB_ROOT/wp-content/plugins >> /dev/null
+[ ! -d "$WEB_ROOT/web/wp-content/plugins" ] && mkdir -p "$WEB_ROOT/web/wp-content/plugins"
+pushd "$WEB_ROOT/web/wp-content/plugins" >> /dev/null
 
   git clone ${CACHE_DIR}/civicrm/civicrm-wordpress.git                -b "$CIVI_VERSION" civicrm
   git clone ${CACHE_DIR}/civicrm/civicrm-core.git                     -b "$CIVI_VERSION" civicrm/civicrm
