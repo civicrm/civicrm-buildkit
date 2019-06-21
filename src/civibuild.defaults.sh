@@ -223,6 +223,10 @@ CLONE_ROOT=
 CLONE_DIR=
 
 ###############################################################################
+## PHPUnit Info variables
+PHPUNIT_TGT_EXT=
+
+###############################################################################
 ## Upgrade-testing variables
 
 ## Directory which stores the normal snapshots for upgrade-testing
@@ -275,6 +279,7 @@ DECLARED_ACTIONS="
   edit
   install reinstall
   list
+  phpunit-info
   show
   snapshot snapshots
   restore restore-all

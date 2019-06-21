@@ -254,6 +254,10 @@ function civibuild_parse() {
         shift
         ;;
 
+      --test-ext)
+        PHPUNIT_TGT_EXT="$1"
+        ;;
+
       --url)
         CMS_URL="$1"
         shift

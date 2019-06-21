@@ -23,8 +23,9 @@ civibuild [options] command
   [32mclone-create[0m          Create a database clone based on a build or snapshot
   [32mclone-show[0m            Display a database clone's DSN settings
   [32mclone-destroy[0m         Destroy a database clone
-
+ [33mOther[0m
   [32mcache-warmup[0m          Proactively update git cache
+  [32mphpunit-info[0m          Show configuration tips on using PHPUnit
   [32mupgrade-test[0m          Loads each DB snapshot and runs the current upgrade logic
 
 [33mNB:[0m For more civibuild documentation see https://docs.civicrm.org/dev/en/latest/tools/civibuild/
