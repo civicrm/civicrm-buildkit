@@ -90,14 +90,14 @@ function hydra_create() {
         subsite_name="${HYDRA_PREFIX}drupal"
         subsite_type="drupal-empty"
         subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}drupal")
-        subsite_dl="sites/all/modules=$TARFILE"
+        subsite_dl="web/sites/all/modules=$TARFILE"
         ;;
 
       civicrm-*-backdrop.tar.gz|civicrm-*-backdrop-*.tar.gz)
         subsite_name="${HYDRA_PREFIX}backdrop"
         subsite_type="backdrop-empty"
         subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}backdrop")
-        subsite_dl="modules=$TARFILE"
+        subsite_dl="web/modules=$TARFILE"
         ;;
 
       civicrm-*-joomla-alt*)
@@ -117,14 +117,14 @@ function hydra_create() {
         subsite_name="${HYDRA_PREFIX}wp"
         subsite_type="wp-empty"
         subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}wp")
-        subsite_dl="wp-content/plugins=$TARFILE"
+        subsite_dl="web/wp-content/plugins=$TARFILE"
         ;;
 
       civicrm-*-wporg.zip|civicrm-*-wporg-*.zip)
         subsite_name="${HYDRA_PREFIX}wporg"
         subsite_type="wp-empty"
         subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}wporg")
-        subsite_dl="wp-content/plugins=$TARFILE"
+        subsite_dl="web/wp-content/plugins=$TARFILE"
         ;;
 
       *)
