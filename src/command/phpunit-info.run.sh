@@ -181,6 +181,6 @@ if [ -z "$PHPUNIT_TGT_EXT" ]; then
   echo "The above instructions are for testing civicrm-core."
   echo "For an extension, specify the name of the extension, e.g."
   echo
-  echo_cmd "civibuild phpunit-info --test-ext api4"
+  echo_cmd "civibuild phpunit-info $SITE_NAME --test-ext api4"
   echo
 fi
