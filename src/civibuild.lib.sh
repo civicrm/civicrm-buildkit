@@ -750,6 +750,26 @@ function civicrm_ext_download_bare() {
 }
 
 ###############################################################################
+## usage: Convert a CiviCRM version branch/tag expression to a composer version expression
+## example: civicrm_composer_ver master ==> "dev-master"
+function civicrm_composer_ver() {
+  local branchTag="$1"
+  if [[ "$branchTag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    ## Specific tag versions don't need to be changed.
+    echo "$branchTag"
+  elif [[ "$branchTag" =~ ^[0-9]+\.[0-9]+$ ]]; then
+    ## Numeric branches get a dev suffix
+    echo "$branchTag.x-dev"
+  elif [[ "$branchTag" =~ dev ]]; then
+    ## "dev-" indicates that the caller has already put into composer notation.
+    echo "$branchTag"
+  else
+    ## Non-numeric branches get a dev prefix
+    echo "dev-$branchTag"
+  fi
+}
+
+###############################################################################
 ## Generate config files and setup database
 function wp_install() {
   cvutil_assertvars wp_install CMS_ROOT CMS_DB_NAME CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_URL ADMIN_USER ADMIN_PASS ADMIN_EMAIL CMS_TITLE
