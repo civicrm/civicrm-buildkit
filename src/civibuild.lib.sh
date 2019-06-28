@@ -90,6 +90,13 @@ function cvutil_export() {
 }
 
 ###############################################################################
+##  usage: cvutil-fatal <message>
+function cvutil_fatal() {
+  echo "$@" >&2
+  exit 90
+}
+
+###############################################################################
 ## Delete a file try, overriding any unwriteable file permissions
 function cvutil_rmrf() {
   local folder="$1"
