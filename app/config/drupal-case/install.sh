@@ -2,6 +2,10 @@
 
 ## install.sh -- Create config files and databases; fill the databases
 
+## Transition: Old builds don't have "web/" folder. New builds do.
+## TODO: Simplify sometime after Dec 2019
+[ -d "$WEB_ROOT/web" ] && CMS_ROOT="$WEB_ROOT/web"
+
 ###############################################################################
 ## Create virtual-host and databases
 
@@ -18,9 +22,9 @@ drupal_install
 DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
 CIVI_DOMAIN_NAME="Demonstrators Anonymous"
 CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
-CIVI_CORE="${WEB_ROOT}/sites/all/modules/civicrm"
-CIVI_SETTINGS="${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}/civicrm.settings.php"
-CIVI_FILES="${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}/files/civicrm"
+CIVI_CORE="${CMS_ROOT}/sites/all/modules/civicrm"
+CIVI_SETTINGS="${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}/civicrm.settings.php"
+CIVI_FILES="${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}/files/civicrm"
 CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
 CIVI_UF="Drupal"
 
@@ -28,7 +32,7 @@ civicrm_install
 
 ###############################################################################
 ## Extra configuration
-pushd "${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
+pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   drush -y updatedb
   drush -y en civicrm toolbar locale seven login_destination userprotect
