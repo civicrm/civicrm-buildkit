@@ -13,4 +13,4 @@ cat "$SITE_CONFIG_DIR/drush.make.tmpl" \
   | sed "s;%%CMS_VERSION%%;${CMS_VERSION};" \
   > "$MAKEFILE"
 
-drush -y make --working-copy "$MAKEFILE" "$WEB_ROOT"
+drush -y make --working-copy "$MAKEFILE" "$WEB_ROOT/web"

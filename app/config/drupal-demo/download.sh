@@ -10,12 +10,11 @@
 [ -z "$RULES_VERSION" ] && RULES_VERSION='master'
 [ -z "$DISC_VERSION" ] && DISC_VERSION='master'
 
-[ -d "$WEB_ROOT.drushtmp" ] && rm -rf "$WEB_ROOT.drushtmp"
-drush8 -y dl drupal-${CMS_VERSION} --destination="$WEB_ROOT.drushtmp" --drupal-project-rename
-mv "$WEB_ROOT.drushtmp/drupal" "$WEB_ROOT"
-[ -d "$WEB_ROOT.drushtmp" ] && rm -rf "$WEB_ROOT.drushtmp"
+mkdir "$WEB_ROOT"
+drush8 -y dl drupal-${CMS_VERSION} --destination="$WEB_ROOT" --drupal-project-rename
+mv "$WEB_ROOT/drupal" "$WEB_ROOT/web"
 
-pushd "$WEB_ROOT"
+pushd "$WEB_ROOT/web"
   drush8 dl -y libraries-1 redirect-1 webform-4 options_element-1 webform_civicrm-4 views-3 login_destination-1 userprotect-1 devel-1 civicrm_error-2.x-dev
 
   pushd sites/all/modules

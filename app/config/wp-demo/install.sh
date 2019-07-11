@@ -2,6 +2,10 @@
 
 ## install.sh -- Create config files and databases; fill the databases
 
+## Transition: Old builds don't have "web/" folder. New builds do.
+## TODO: Simplify sometime after Dec 2019
+[ -d "$WEB_ROOT/web" ] && CMS_ROOT="$WEB_ROOT/web"
+
 ###############################################################################
 ## Create virtual-host and databases
 
@@ -15,19 +19,18 @@ wp_install
 ###############################################################################
 ## Setup CiviCRM (config files, database tables)
 
-
 CIVI_DOMAIN_NAME="Demonstrators Anonymous"
 CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
-CIVI_CORE="${WEB_ROOT}/wp-content/plugins/civicrm/civicrm"
+CIVI_CORE="${CMS_ROOT}/wp-content/plugins/civicrm/civicrm"
 
 if [[ "$CIVI_VERSION" =~ ^4.[0123456](\.([0-9]|alpha|beta)+)?$ ]] ; then
-  CIVI_SETTINGS="${WEB_ROOT}/wp-content/plugins/civicrm/civicrm.settings.php"
-  CIVI_FILES="${WEB_ROOT}/wp-content/plugins/files/civicrm"
-  CIVI_EXT_DIR="${WEB_ROOT}/wp-content/plugins/files/civicrm/ext"
+  CIVI_SETTINGS="${CMS_ROOT}/wp-content/plugins/civicrm/civicrm.settings.php"
+  CIVI_FILES="${CMS_ROOT}/wp-content/plugins/files/civicrm"
+  CIVI_EXT_DIR="${CMS_ROOT}/wp-content/plugins/files/civicrm/ext"
   CIVI_EXT_URL="${CMS_URL}/wp-content/plugins/files/civicrm/ext"
 else
-  CIVI_SETTINGS="${WEB_ROOT}/wp-content/uploads/civicrm/civicrm.settings.php"
-  CIVI_FILES="${WEB_ROOT}/wp-content/uploads/civicrm"
+  CIVI_SETTINGS="${CMS_ROOT}/wp-content/uploads/civicrm/civicrm.settings.php"
+  CIVI_FILES="${CMS_ROOT}/wp-content/uploads/civicrm"
   ## civicrm-core v4.7+ sets default ext dir; for older versions, we'll set our own.
 fi
 CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
@@ -37,6 +40,8 @@ civicrm_install
 
 ###############################################################################
 ## Extra configuration
+
+pushd "$CMS_ROOT" >> /dev/null
 
 ## Clear out default content. Load real content.
 TZ=$(php --info |grep 'Default timezone' |sed s/' => '/:/ |cut -d':' -f2)
@@ -158,3 +163,5 @@ wp cap add civicrm_admin \
 ## Demo sites always disable email and often disable cron
 wp civicrm api StatusPreference.create ignore_severity=critical name=checkOutboundMail
 wp civicrm api StatusPreference.create ignore_severity=critical name=checkLastCron
+
+popd >> /dev/null

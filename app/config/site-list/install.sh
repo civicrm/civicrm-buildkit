@@ -1,11 +1,15 @@
 #!/bin/bash
 
+## Transition: Old builds don't have "web/" folder. New builds do.
+## TODO: Simplify sometime after Dec 2019
+[ -d "$WEB_ROOT/web" ] && CMS_ROOT="$WEB_ROOT/web"
+
 amp_install
 
-#echo "<?php" > "$WEB_ROOT/site-list.settings.php"
-#echo "\$civibuild['BLDDIR'] = '$BLDDIR';" >> "$WEB_ROOT/site-list.settings.php"
+#echo "<?php" > "$CMS_ROOT/site-list.settings.php"
+#echo "\$civibuild['BLDDIR'] = '$BLDDIR';" >> "$CMS_ROOT/site-list.settings.php"
 
-cat > "$WEB_ROOT/site-list.settings.php" << EOF
+cat > "$CMS_ROOT/site-list.settings.php" << EOF
 <?php
 \$civibuild['BLDDIR'] = '$BLDDIR';
 
@@ -21,4 +25,4 @@ global \$sitelist;
 //\$sitelist['about'] = 'These are local development sites.';
 EOF
 
-cvutil_inject_settings "$WEB_ROOT/site-list.settings.php" "site-list.settings.d"
+cvutil_inject_settings "$CMS_ROOT/site-list.settings.php" "site-list.settings.d"

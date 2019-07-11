@@ -90,6 +90,13 @@ function cvutil_export() {
 }
 
 ###############################################################################
+##  usage: cvutil-fatal <message>
+function cvutil_fatal() {
+  echo "$@" >&2
+  exit 90
+}
+
+###############################################################################
 ## Delete a file try, overriding any unwriteable file permissions
 function cvutil_rmrf() {
   local folder="$1"
@@ -747,6 +754,26 @@ function civicrm_get_ver() {
 function civicrm_ext_download_bare() {
   local civiVer=$(civicrm_get_ver .)
   cv dl -b "@https://civicrm.org/extdir/ver=$civiVer|cms=Drupal/$1.xml" --to="$2"
+}
+
+###############################################################################
+## usage: Convert a CiviCRM version branch/tag expression to a composer version expression
+## example: civicrm_composer_ver master ==> "dev-master"
+function civicrm_composer_ver() {
+  local branchTag="$1"
+  if [[ "$branchTag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    ## Specific tag versions don't need to be changed.
+    echo "$branchTag"
+  elif [[ "$branchTag" =~ ^[0-9]+\.[0-9]+$ ]]; then
+    ## Numeric branches get a dev suffix
+    echo "$branchTag.x-dev"
+  elif [[ "$branchTag" =~ dev ]]; then
+    ## "dev-" indicates that the caller has already put into composer notation.
+    echo "$branchTag"
+  else
+    ## Non-numeric branches get a dev prefix
+    echo "dev-$branchTag"
+  fi
 }
 
 ###############################################################################

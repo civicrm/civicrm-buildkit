@@ -152,7 +152,7 @@ while [ -n "$1" ] ; do
   case "$OPTION" in
     -b)
       BLDNAME="$1"
-      pushd "$BLDDIR/$BLDNAME"
+      [ -d "$BLDDIR/$BLDNAME/web" ] && pushd "$BLDDIR/$BLDNAME/web" || pushd "$BLDDIR/$BLDNAME"
         CIVI_CORE=$(cv ev 'echo $GLOBALS["civicrm_root"];')
         ## or: cv path -d '[civicrm.root]'
       popd

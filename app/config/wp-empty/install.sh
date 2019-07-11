@@ -2,6 +2,10 @@
 
 ## install.sh -- Create config files and databases; fill the databases
 
+## Transition: Old builds don't have "web/" folder. New builds do.
+## TODO: Simplify sometime after Dec 2019
+[ -d "$WEB_ROOT/web" ] && CMS_ROOT="$WEB_ROOT/web"
+
 ###############################################################################
 ## Create virtual-host and databases
 
@@ -14,6 +18,8 @@ wp_install
 
 ###############################################################################
 ## Extra configuration
+
+pushd "$CMS_ROOT" >> /dev/null
 
 ## Clear out default content. Load real content.
 TZ=$(php --info |grep 'Default timezone' |sed s/' => '/:/ |cut -d':' -f2)
@@ -28,3 +34,5 @@ wp user create "$DEMO_USER" "$DEMO_EMAIL" --user_pass="$DEMO_PASS"
 
 wp plugin install gutenberg
 wp plugin install gutenberg-ramp --activate
+
+popd >> /dev/null
