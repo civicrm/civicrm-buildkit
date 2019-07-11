@@ -38,8 +38,12 @@ SITE_ID=default
 ## (default: random)
 SITE_TOKEN=
 
-## Root directory where the site's code will be installed
+## Root directory where civibuild should put all downloaded code/files for this build
 ## (default: BLDDIR/SITE_NAME)
+##
+## Counter-intuitively, WEB_ROOT can be -- but is not necessarily -- the HTTP document root.  The
+## the HTTP document root may be a subdir (e.g.  "./web" or "./htdocs"). That folder is
+## specifically identified as CMS_ROOT.
 WEB_ROOT=
 
 ## Root directory where the site can put private (unpublished) data files
@@ -119,8 +123,13 @@ URL_TEMPLATE='%AUTO%'
 ## (suggested: autogenerate via amp)
 CMS_URL=
 
-## Path to the base of the CMS
+## Path to the CMS's public-facing web content -- i.e. the HTTP document root.
 ## (default: WEB_ROOT)
+## (suggested: WEB_ROOT/web)
+##
+## The CMS_ROOT can be -- but is not necessarily -- the root folder into which all files were
+## downloaded.  The HTTP document root may be a subdir (e.g.  "./web" or "./htdocs").
+## If you specifically need the folder into which code was downloaded, see WEB_ROOT.
 CMS_ROOT=
 
 ## DB credentials for CMS
