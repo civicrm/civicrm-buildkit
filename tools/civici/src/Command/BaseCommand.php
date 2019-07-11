@@ -42,7 +42,7 @@ class BaseCommand extends Command {
           break;
 
         case 'ext-dir':
-          $this->addOption('ext-dir', NULL, InputOption::VALUE_REQUIRED, 'Relative path to the extension dir', 'sites/default/files/civicrm/ext');
+          $this->addOption('ext-dir', NULL, InputOption::VALUE_REQUIRED, 'Relative path to the extension dir', 'web/sites/default/files/civicrm/ext');
           break;
 
         case 'feed':

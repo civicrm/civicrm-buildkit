@@ -28,12 +28,12 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
 
       '%Download extension PR \(https://github.com/civicrm/org.civicrm.api4/pull/123\)%',
       '%\$ cd \'/srv/buildkit/build/foobar\'%',
-      '%\$ git clonepr --merged \'https://github.com/civicrm/org.civicrm.api4/pull/123\' \'sites/default/files/civicrm/ext/target\' --depth 1%',
+      '%\$ git clonepr --merged \'https://github.com/civicrm/org.civicrm.api4/pull/123\' \'web/sites/default/files/civicrm/ext/target\' --depth 1%',
       '%^\w*$%',
 
       '%Download extension dependencies%',
       '%\$ cd \'/srv/buildkit/build/foobar\'%',
-      '%\$ civici ext:dl-dep --info=\'sites/default/files/civicrm/ext/target\'/info.xml --feed=\'https://civicrm.org/extdir/ver=5.40.0\|uf=Bare\|status=\|ready=/single\' --to=\'/srv/buildkit/build/foobar/sites/default/files/civicrm/ext\'$%',
+      '%\$ civici ext:dl-dep --info=\'web/sites/default/files/civicrm/ext/target\'/info.xml --feed=\'https://civicrm.org/extdir/ver=5.40.0\|uf=Bare\|status=\|ready=/single\' --to=\'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext\'$%',
       '%^\w*$%',
 
       '%Install main database%',
@@ -43,7 +43,7 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
 
       // '%Install extension%',
       // '%\$ cd \'/srv/buildkit/build/foobar\'%',
-      // '%cv api extension.install path=\'/srv/buildkit/build/foobar/sites/default/files/civicrm/ext/target\'%',
+      // '%cv api extension.install path=\'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext/target\'%',
       // '%^\w*$%',
 
       // '%Update database snapshot%',
@@ -86,12 +86,12 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
 
       '%Download extension \(https://github.com/civicrm/org.civicrm.api4 @ abcd1234abcd1234\)%',
       '%\$ cd \'/srv/buildkit/build/foobar\'%',
-      '%\$ git clone \'https://github.com/civicrm/org.civicrm.api4\' \'sites/default/files/civicrm/ext/target\' --no-checkout --depth 1 && cd \'sites/default/files/civicrm/ext/target\' && git fetch origin \'abcd1234abcd1234\':\'target\' && git checkout \'target\'%',
+      '%\$ git clone \'https://github.com/civicrm/org.civicrm.api4\' \'web/sites/default/files/civicrm/ext/target\' --no-checkout --depth 1 && cd \'web/sites/default/files/civicrm/ext/target\' && git fetch origin \'abcd1234abcd1234\':\'target\' && git checkout \'target\'%',
       '%^\w*$%',
 
       '%Download extension dependencies%',
       '%\$ cd \'/srv/buildkit/build/foobar\'%',
-      '%\$ civici ext:dl-dep --info=\'sites/default/files/civicrm/ext/target\'/info.xml --feed=\'https://civicrm.org/extdir/ver=5.40.0\|uf=Bare\|status=\|ready=/single\' --to=\'/srv/buildkit/build/foobar/sites/default/files/civicrm/ext\'$%',
+      '%\$ civici ext:dl-dep --info=\'web/sites/default/files/civicrm/ext/target\'/info.xml --feed=\'https://civicrm.org/extdir/ver=5.40.0\|uf=Bare\|status=\|ready=/single\' --to=\'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext\'$%',
       '%^\w*$%',
 
       '%Install main database%',
@@ -101,7 +101,7 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
 
       // '%Install extension%',
       // '%\$ cd \'/srv/buildkit/build/foobar\'%',
-      // '%cv api extension.install path=\'/srv/buildkit/build/foobar/sites/default/files/civicrm/ext/target\'%',
+      // '%cv api extension.install path=\'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext/target\'%',
 
       // '%Update database snapshot%',
       // '%\$ cd \'/srv/buildkit/build/foobar\'%',
@@ -143,12 +143,12 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
 
       '%Download extension \(https://github.com/civicrm/org.civicrm.api4 @ abcd1234abcd1234 . fedc4321fedc4321\)%',
       '%\$ cd \'/srv/buildkit/build/foobar\'%',
-      '%\$ git clonebh \'https://github.com/civicrm/org.civicrm.api4\' \'sites/default/files/civicrm/ext/target\' \'abcd1234abcd1234\' \'fedc4321fedc4321\'%',
+      '%\$ git clonebh \'https://github.com/civicrm/org.civicrm.api4\' \'web/sites/default/files/civicrm/ext/target\' \'abcd1234abcd1234\' \'fedc4321fedc4321\'%',
       '%^\w*$%',
 
       '%Download extension dependencies%',
       '%\$ cd \'/srv/buildkit/build/foobar\'%',
-      '%\$ civici ext:dl-dep --info=\'sites/default/files/civicrm/ext/target\'/info.xml --feed=\'https://civicrm.org/extdir/ver=5.40.0\|uf=Bare\|status=\|ready=/single\' --to=\'/srv/buildkit/build/foobar/sites/default/files/civicrm/ext\'$%',
+      '%\$ civici ext:dl-dep --info=\'web/sites/default/files/civicrm/ext/target\'/info.xml --feed=\'https://civicrm.org/extdir/ver=5.40.0\|uf=Bare\|status=\|ready=/single\' --to=\'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext\'$%',
       '%^\w*$%',
 
       '%Install main database%',
@@ -158,7 +158,7 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
 
       // '%Install extension%',
       // '%\$ cd \'/srv/buildkit/build/foobar\'%',
-      // '%cv api extension.install path=\'/srv/buildkit/build/foobar/sites/default/files/civicrm/ext/target\'%',
+      // '%cv api extension.install path=\'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext/target\'%',
       // '%^\w*$%',
 
       // '%Update database snapshot%',
