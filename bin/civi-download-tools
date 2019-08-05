@@ -337,7 +337,7 @@ function get_system_installer() {
     source /etc/lsb-release
   fi
   case "$DISTRIB_CODENAME" in
-    precise|trusty|buster|stretch|xenial|yakkety|zesty|artful|bionic|cosmic|disco)
+    precise|trusty|jessie|stretch|buster|xenial|yakkety|zesty|artful|bionic|cosmic|disco)
       echo "do_system_$DISTRIB_CODENAME"
       ;;
     *)
@@ -515,16 +515,18 @@ function do_system_disco() {
 }
 
 ###############################################################################
-function do_system_buster() {
+function do_system_jessie() {
   set -e
-    PACKAGES="acl git wget unzip zip default-mysql-server default-mysql-client php-cli php-imap php-ldap php-curl php-mysql php-intl php-gd php-apcu apache2 libapache2-mod-php php-bcmath php-mbstring php-soap php-zip php-xml php-curl nodejs npm"
+    PACKAGES="acl git wget unzip zip mysql-server mysql-client php5-cli php5-imap php5-ldap php5-curl php5-mysql php5-intl php5-gd php5-mcrypt php-apc apache2 libapache2-mod-php5 nodejs-legacy npm"
     echo "Detected \"Debian Jessie\"."
     echo ""
     echo "Recommended packages: $PACKAGES"
     echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
+      wget -O- https://deb.nodesource.com/setup_8.x | sudo -E bash -
       sudo apt-get -y install $PACKAGES
-      sudo phpenmod imap
+      sudo php5enmod mcrypt
+      sudo php5enmod imap
       sudo a2enmod rewrite
       sudo apache2ctl restart
     else
@@ -547,6 +549,26 @@ function do_system_stretch() {
       wget -O- https://deb.nodesource.com/setup_8.x | sudo -E bash -
       sudo apt-get -y install $PACKAGES
       sudo phpenmod mcrypt
+      sudo phpenmod imap
+      sudo a2enmod rewrite
+      sudo apache2ctl restart
+    else
+      echo "Aborted" 1>&2
+      exit 1
+    fi
+  set +e
+}
+
+###############################################################################
+function do_system_buster() {
+  set -e
+    PACKAGES="acl git wget unzip zip default-mysql-server default-mysql-client php-cli php-imap php-ldap php-curl php-mysql php-intl php-gd php-apcu apache2 libapache2-mod-php php-bcmath php-mbstring php-soap php-zip php-xml php-curl nodejs npm"
+    echo "Detected \"Debian Jessie\"."
+    echo ""
+    echo "Recommended packages: $PACKAGES"
+    echo ""
+    if cvutil_confirm "Run automated installation? [Y/n] " y y; then
+      sudo apt-get -y install $PACKAGES
       sudo phpenmod imap
       sudo a2enmod rewrite
       sudo apache2ctl restart
