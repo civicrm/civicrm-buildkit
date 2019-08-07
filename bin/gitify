@@ -15,8 +15,8 @@ function absdirname() {
 
 BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
-TMPDIR="$PRJDIR/app/tmp"
-BLDDIR="$PRJDIR/build"
+[ -z "$CIVIBUILD_HOME" ] && TMPDIR="$PRJDIR/app/tmp" || TMPDIR="$CIVIBUILD_HOME/.civibuild/tmp"
+[ -z "$CIVIBUILD_HOME" ] && BLDDIR="$PRJDIR/build" || BLDDIR="$CIVIBUILD_HOME"
 
 source "$PRJDIR/src/civibuild.lib.sh"
 source "$PRJDIR/src/civibuild.aliases.sh"
@@ -223,7 +223,8 @@ set -e
 
 source "$PRJDIR/src/civibuild.defaults.sh"
 [ -f "$PRJDIR/app/civibuild.conf" ] && source "$PRJDIR/app/civibuild.conf"
-cvutil_mkdir "$TMPDIR" "$BLDDIR" "$PRJDIR/app/private"
+cvutil_mkdir "$TMPDIR" "$BLDDIR"
+[ -z "$CIVIBUILD_HOME" ] && cvutil_mkdir "$PRJDIR/app/private"
 
 source "$PRJDIR/src/civibuild.compute-defaults.sh"
 
