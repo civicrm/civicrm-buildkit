@@ -1,0 +1,96 @@
+#!/bin/bash
+
+set -e
+
+######################################################
+## Bootstrap
+
+## Determine the absolute path of the directory with the file
+## usage: absdirname <file-path>
+function absdirname() {
+  pushd $(dirname $0) >> /dev/null
+    pwd
+  popd >> /dev/null
+}
+
+BINDIR=$(absdirname "$0")
+PRJDIR=$(dirname "$BINDIR")
+[ -z "$CIVIBUILD_HOME" ] && TMPDIR="$PRJDIR/app/tmp" || TMPDIR="$CIVIBUILD_HOME/.civibuild/tmp"
+[ -z "$CIVIBUILD_HOME" ] && BLDDIR="$PRJDIR/build" || BLDDIR="$CIVIBUILD_HOME"
+
+source "$PRJDIR/src/civibuild.lib.sh"
+source "$PRJDIR/src/civibuild.aliases.sh"
+
+source "$PRJDIR/src/civibuild.defaults.sh"
+[ -f "$PRJDIR/app/civibuild.conf" ] && source "$PRJDIR/app/civibuild.conf"
+cvutil_mkdir "$TMPDIR" "$BLDDIR"
+[ -z "$CIVIBUILD_HOME" ] && cvutil_mkdir "$PRJDIR/app/private"
+
+source "$PRJDIR/src/civibuild.compute-defaults.sh"
+
+######################################################
+## Utilities
+
+function show_help() {
+  PROG=$(basename "$0")
+  echo "Generate a table, reporting on various branches/tags across the Civi repos"
+  echo
+  echo "usage:   $PROG [--fetch] <branch-or-tag>..."
+  echo "example: $PROG --fetch master 5.17 5.16 5.16.0"
+}
+
+function show_head() {
+  local repoPath="$1"
+  local remote="$2"
+  local ref="$3"
+
+  pushd "$repoPath" >> /dev/null
+    if [ -n "$DO_FETCH" ]; then
+      git fetch "$remote" "$ref" 2>/dev/null >> /dev/null || echo "(Error fetching $ref)"
+    fi
+
+    local log=$( git log "$ref" -1 --date=format:%Y-%m-%d\ %H:%M --pretty=format:'(%cd) %h %s' 2>/dev/null )
+    printf "%-24s %-12s %s\n" $(basename "$repoPath") "$ref" "$log"
+
+  popd >> /dev/null
+}
+
+function show_grid() {
+  local vers="$1"
+  local tgts="$2"
+
+  for tgt in $tgts ; do
+    echo
+    for ver in $vers ; do
+
+      local repoName=$(echo "$tgt" | cut -f1 -d: )
+      local prefix=$(echo "$tgt" | cut -f2 -d: )
+      local repoPath="$CACHE_DIR/civicrm/civicrm-$repoName.git"
+      local remote="origin"
+
+      show_head "$repoPath" "$remote" "$prefix$ver"
+    done
+  done
+}
+
+######################################################
+if [ -z "$1" ]; then
+  show_help
+  exit
+fi
+
+VERSIONS=""
+DO_FETCH=
+for PARAM in "$@" ; do
+  case "$PARAM" in
+    --fetch)
+      DO_FETCH=1
+      ;;
+    *)
+      VERSIONS="$VERSIONS $PARAM"
+      ;;
+  esac
+done
+
+show_grid "$VERSIONS" "backdrop:1.x- core: drupal:6.x- drupal:7.x- drupal-8: joomla: packages: wordpress:"
+#show_grid "$VERSIONS" "backdrop:1.x- core:"
