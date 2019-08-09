@@ -9,10 +9,14 @@
 ## The location of the civicrm-buildkit binaries
 # BINDIR=
 
-## A place to store temp files (PRJDIR/app/tmp)
+## A place to store temp files
+## (default-git: PRJDIR/app/tmp)
+## (default-sys: CIVIBUILD_HOME/.civibuild/tmp
 # TMPDIR=
 
-## A place to put sites that we build (PRJDIR/build)
+## A place to put sites that we build
+## (default-git: PRJDIR/build)
+## (default-sys: CIVIBUILD_HOME)
 # BLDDIR=
 
 ###############################################################################
@@ -47,11 +51,13 @@ SITE_TOKEN=
 WEB_ROOT=
 
 ## Root directory where the site can put private (unpublished) data files
-## (default: app/private/SITE_NAME)
+## (default-git: app/private/SITE_NAME )
+## (default-sys: WEB_ROOT/.civibuild/private)
 PRIVATE_ROOT=
 
 ## Root directory where we store cached copies of git repositories
-## (default: TMPDIR/git-cache)
+## (default-git: TMPDIR/git-cache)
+## (default-sys: CIVIBUILD_HOME/.civibuild/cache)
 CACHE_DIR=
 
 ## Time to wait before allowing updates to git/svn caches (seconds)
@@ -196,7 +202,9 @@ TEST_DB_PERM=super
 ## snapshot-related variables
 ## (also used for cloning)
 
-## Path to the directory which stores snapshots (default: PRJDIR/app/snapshot) [non-persistent]
+## Path to the directory which stores snapshots
+## (default-git: PRJDIR/app/snapshot) [non-persistent]
+## (default-sys: CIVIBUILD_HOME/.civibuild/snapshot) [non-persistent]
 SNAPSHOT_DIR=
 
 ## Name of the subdirectory containing the snapshot (default: SITE_NAME) [non-persistent]
@@ -224,7 +232,8 @@ TEST_SQL_SKIP=
 CLONE_ID=
 
 ## Base directory in whch we store clones metadata
-## [default: app/clone/$SITE_NAME/$SITE_ID ]
+## (default-git: app/clone/$SITE_NAME/$SITE_ID)
+## (default-sys: WEB_ROOT/.civibuild/clone/$SITE_ID)
 CLONE_ROOT=
 
 ## Directory storing the activty clone's metadata
@@ -251,11 +260,13 @@ UPGRADE_LOG_DIR=
 SHOW_HTML=
 
 ## Path to the last git summary file (from "git scan export")
-## (Default: TMPDIR/git-scan-$SITE_NAME-last.json)
+## (default-git: TMPDIR/git-scan-$SITE_NAME-last.json)
+## (default-sys: WEB_ROOT/.civibuild/git-scan-last.json)
 SHOW_LAST_SCAN=
 
 ## Path to which we will write a new git summary file (using "git scan export")
-## (Default: TMPDIR/git-scan-$SITE_NAME-new.json)
+## (default-git: TMPDIR/git-scan-$SITE_NAME-new.json)
+## (default-sys: WEB_ROOT/.civibuild/git-scan-new.json)
 SHOW_NEW_SCAN=
 
 ###############################################################################

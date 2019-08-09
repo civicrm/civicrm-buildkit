@@ -15,7 +15,7 @@ function absdirname() {
 
 BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
-TMPDIR="$PRJDIR/app/tmp"
+[ -z "$CIVIBUILD_HOME" ] && TMPDIR="$PRJDIR/app/tmp" || TMPDIR="$CIVIBUILD_HOME/.civibuild/tmp"
 LOCKFILE="$TMPDIR/civi-download-tools.lock"
 LOCKTIMEOUT=90
 CIVIXURL="https://download.civicrm.org/civix/civix.phar-2019-06-19-ed25c04b"
@@ -68,7 +68,7 @@ while [ -n "$1" ] ; do
           PRJDIR=$(pwd)
         popd >> /dev/null
         BINDIR="$PRJDIR/bin"
-        TMPDIR="$PRJDIR/app/tmp"
+        [ -z "$CIVIBUILD_HOME" ] && TMPDIR="$PRJDIR/app/tmp" || TMPDIR="$CIVIBUILD_HOME/.civibuild/tmp"
         LOCKFILE="$TMPDIR/civi-download-tools.lock"
       set +e
       shift
@@ -739,7 +739,7 @@ pushd $PRJDIR >> /dev/null
     fi
   done
 
-  if [ -z "$IS_QUIET" -o ! -f "$PRJDIR/bin/drush8" ]; then
+  if [ ! -f "$PRJDIR/bin/drush8" -o "$PRJDIR/src/drush/drush8.tmpl" -nt  "$PRJDIR/bin/drush8" ]; then
     ## drush8 was previously downloaded directly. This "cp" ensures we overwrite without git conflicts.
     echo "[[drush8 ($PRJDIR/bin/drush8): Generate wrapper]]"
     cp "$PRJDIR/src/drush/drush8.tmpl" "$PRJDIR/bin/drush8"

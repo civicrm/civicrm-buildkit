@@ -20,8 +20,8 @@ function absdirname() {
 
 BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
-TMPDIR="$PRJDIR/app/tmp"
-BLDDIR="$PRJDIR/build"
+[ -z "$CIVIBUILD_HOME" ] && TMPDIR="$PRJDIR/app/tmp" || TMPDIR="$CIVIBUILD_HOME/.civibuild/tmp"
+[ -z "$CIVIBUILD_HOME" ] && BLDDIR="$PRJDIR/build" || BLDDIR="$CIVIBUILD_HOME"
 export RELEASE_TMPDIR="$TMPDIR/releaser"
 
 source "$PRJDIR/src/civibuild.lib.sh"
