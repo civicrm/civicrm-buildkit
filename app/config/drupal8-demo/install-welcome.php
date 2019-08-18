@@ -30,8 +30,8 @@ Just login with...
 <h3>New to CiviCRM?</h3>
 <ul>
 <li>Learn about how you can use CiviCRM from our new <strong><a href="https://docs.civicrm.org/user/en/stable/" target="_blank" title="Opens Understanding CiviCRM book in a new window">online book</a></strong>.</li>
-<li>Check out  <strong><a href="http://civicrm.org">CiviCRM.org</a></strong> for an overview of the project, blogs, professional services listings and other resources and links.</li>
-<li>Browse the <strong><a href="http://forum.civicrm.org">Community Forum</a></strong> to see what folks in the CiviCRM community are talking about.</li>
+<li>Check out  <strong><a href="https://civicrm.org">CiviCRM.org</a></strong> for an overview of the project, blogs, professional services listings and other resources and links.</li>\
+<li>Join the <strong><a href="https://chat.civicrm/.org">Mattermost</a></strong> chat to see what folks in the CiviCRM community are talking about.</li>
 </ul>
 ';
 $node->body[$node->language][0]['summary'] = text_summary($node->body[$node->language][0]['value']);
