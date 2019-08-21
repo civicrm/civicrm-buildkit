@@ -18,7 +18,7 @@ PRJDIR=$(dirname "$BINDIR")
 [ -z "$CIVIBUILD_HOME" ] && TMPDIR="$PRJDIR/app/tmp" || TMPDIR="$CIVIBUILD_HOME/.civibuild/tmp"
 LOCKFILE="$TMPDIR/civi-download-tools.lock"
 LOCKTIMEOUT=90
-CIVIXURL="https://download.civicrm.org/civix/civix.phar-2019-06-19-ed25c04b"
+CIVIXURL="https://download.civicrm.org/civix/civix.phar-2019-08-21-cf6cefcd"
 CIVICIURL="https://download.civicrm.org/civici/civici-0.1.3.phar"
 CVURL="https://download.civicrm.org/cv/cv.phar-2019-08-20-14fe9da8"
 HUB_VERSION="2.2.9"
