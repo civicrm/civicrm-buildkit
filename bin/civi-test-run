@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+PHPUNIT=phpunit5
 
 #################################################
 ## Helpers
@@ -105,7 +106,7 @@ function junit_cleanup() {
 
 function task_phpunit_drupal() {
   $GUARD pushd "$CIVI_CORE/drupal"
-  if ! $GUARD phpunit4 --tap --log-junit "$JUNITDIR/phpunit_drupal.xml" $EXCLUDE_GROUP ; then
+  if ! $GUARD $PHPUNIT --tap --log-junit "$JUNITDIR/phpunit_drupal.xml" $EXCLUDE_GROUP ; then
     EXITCODES="$EXITCODES phpunit-drupal"
   fi
   echo "Found EXITCODES=\"$EXITCODES\""
@@ -116,7 +117,7 @@ function task_phpunit_drupal() {
 
 function task_phpunit_wordpress() {
   $GUARD pushd "$CIVI_CORE/.."
-  if ! $GUARD phpunit5 --tap --log-junit "$JUNITDIR/phpunit_wordpress.xml" $EXCLUDE_GROUP ; then
+  if ! $GUARD $PHPUNIT --tap --log-junit "$JUNITDIR/phpunit_wordpress.xml" $EXCLUDE_GROUP ; then
     EXITCODES="$EXITCODES phpunit-wordpress"
   fi
   echo "Found EXITCODES=\"$EXITCODES\""
