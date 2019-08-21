@@ -34,6 +34,7 @@ CIVISTRINGSURL="https://download.civicrm.org/civistrings/civistrings.phar-2018-0
 JOOMLAURL="https://download.civicrm.org/joomlatools-console/joomla.phar-2017-06-19-62ff6a9df"
 CODECEPTION_PHP5_URL="http://codeception.com/releases/2.3.6/php54/codecept.phar"
 CODECEPTION_PHP7_URL="http://codeception.com/releases/2.3.6/codecept.phar"
+DRUSH_BD_URL="https://github.com/backdrop-contrib/drush/archive/1.0.0.zip"
 IS_QUIET=
 IS_FORCE=
 IS_FULL=
@@ -750,6 +751,21 @@ pushd $PRJDIR >> /dev/null
   make_link "$PRJDIR/bin" "../extern/phpunit4/phpunit4.phar" "phpunit4"
   make_link "$PRJDIR/bin" "../extern/phpunit5/phpunit5.phar" "phpunit5"
   make_link "$PRJDIR/bin" "../extern/phpunit6/phpunit6.phar" "phpunit6"
+
+  ## Download "drush" addons
+  if [ -z "$IS_FORCE" -a -e "$PRJDIR/extern/drush-lib/backdrop" -a "$(cat $PRJDIR/extern/drush-lib-backdrop.txt)" == "$DRUSH_BD_URL" ]; then
+    echo_comment "[[drush-backdrop ($PRJDIR/extern/drush-lib/backdrop) already exists. Skipping.]]"
+  else
+    download_url "$DRUSH_BD_URL" "$TMPDIR/drush-backdrop.zip"
+    [ -d "$PRJDIR/extern/drush-lib/backdrop" ] && rm -rf "$PRJDIR/extern/drush-lib/backdrop"
+    mkdir -p "$PRJDIR/extern/drush-lib/backdrop"
+    pushd "$PRJDIR/extern/drush-lib/backdrop" >> /dev/null
+    #  touch created-by-me
+      unzip "$TMPDIR/drush-backdrop.zip"
+    popd >> /dev/null
+    rm -f  "$TMPDIR/drush-backdrop.zip"
+    echo "$DRUSH_BD_URL" > "$PRJDIR/extern/drush-lib-backdrop.txt"
+  fi
 
   ## Download "hub"
   touch "$PRJDIR/extern/hub.txt"
