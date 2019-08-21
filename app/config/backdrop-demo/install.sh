@@ -34,4 +34,11 @@ civicrm_install
 pushd "$CMS_ROOT" >> /dev/null
   php "$SITE_CONFIG_DIR/module-enable.php" civicrm
   civicrm_apply_demo_defaults
+
+  ## Setup demo user
+  #drush -y en civicrm_webtest
+  drush -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
+  ##FIXME: drush -y user-add-role civicrm_webtest_user "$DEMO_USER"
+  #echo 'INSERT IGNORE INTO users_roles (uid,role) SELECT uid, "civicrm_webtest_user" FROM users WHERE name = @ENV[DEMO_USER];' \
+  #  | env DEMO_USER="$DEMO_USER" amp sql -Ncms -e
 popd >> /dev/null

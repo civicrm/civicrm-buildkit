@@ -10,4 +10,4 @@ if [ "$PWD" == "$BINDIR" ]; then
   echo "Error: Cannot run drush from the bin dir. Please navigate to a site dir." >&2
   exit 1
 fi
-exec "$PRJDIR/extern/drush8.phar" "$@"
+exec "$PRJDIR/extern/drush8.phar" --include="$PRJDIR/extern/drush-lib" "$@"
