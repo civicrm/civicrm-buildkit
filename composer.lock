@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ef49c3663a3aed4bde4dda4ca071626c",
+    "content-hash": "5e8af866f409e76958c4695d734b8316",
     "packages": [
         {
             "name": "civicrm/composer-downloads-plugin",
-            "version": "v2.0.0",
+            "version": "v2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/civicrm/composer-downloads-plugin.git",
-                "reference": "869b7a12f57b2d912f0ea77d5c33c1518b8de27d"
+                "reference": "f6df00fff1392602467783952bbedad0bdef6c42"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/civicrm/composer-downloads-plugin/zipball/869b7a12f57b2d912f0ea77d5c33c1518b8de27d",
-                "reference": "869b7a12f57b2d912f0ea77d5c33c1518b8de27d",
+                "url": "https://api.github.com/repos/civicrm/composer-downloads-plugin/zipball/f6df00fff1392602467783952bbedad0bdef6c42",
+                "reference": "f6df00fff1392602467783952bbedad0bdef6c42",
                 "shasum": ""
             },
             "require": {
@@ -55,7 +55,7 @@
                 }
             ],
             "description": "Composer plugin for downloading additional files within any composer package.",
-            "time": "2019-08-22T10:56:51+00:00"
+            "time": "2019-08-27T23:04:20+00:00"
         },
         {
             "name": "civicrm/upgrade-test",
