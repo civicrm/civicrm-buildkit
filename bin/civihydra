@@ -110,7 +110,7 @@ function hydra_create() {
         subsite_name="${HYDRA_PREFIX}joomla"
         subsite_type="joomla-empty"
         subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}joomla")
-        subsite_dl="tmp=$TARFILE"
+        subsite_dl="web/tmp=$TARFILE"
         ;;
 
       civicrm-*-wordpress.zip|civicrm-*-wordpress-*.zip)
@@ -168,7 +168,7 @@ function hydra_show() {
         subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}joomla")
         login_url="$subsite_url/administrator/"
         install_url="$subsite_url/administrator/index.php?option=com_installer"
-        install_blurb="Choose 'Install from Folder' and enter $BLDDIR/$subsite_name/tmp/com_civicrm"
+        install_blurb="Choose 'Install from Folder' and enter $BLDDIR/$subsite_name/web/tmp/com_civicrm"
         ;;
 
       *-wp)

@@ -4,7 +4,7 @@
 
 ###############################################################################
 
-pushd "$WEB_ROOT" >> /dev/null
+pushd "$WEB_ROOT/web" >> /dev/null
   [ -d .installation.bak ] && mv .installation.bak installation
   [ -d .git.bak ]          && mv .git.bak .git
   [ -f configuration.php ] && rm -f configuration.php
