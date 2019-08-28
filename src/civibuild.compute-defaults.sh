@@ -16,6 +16,14 @@
 [ -z "$WEB_ROOT" ]           && WEB_ROOT="$BLDDIR/$SITE_NAME"
 [ -z "$CMS_ROOT" ]           && CMS_ROOT="$WEB_ROOT"
 
+# Check whether the extra site config dir is set and whether the site type
+# exists in that directory.
+if [ -n  "$EXTRA_SITE_CONFIG_DIR" ]; then
+  if [ -d "$EXTRA_SITE_CONFIG_DIR/$SITE_TYPE" ]; then
+    SITE_CONFIG_DIR="$EXTRA_SITE_CONFIG_DIR/$SITE_TYPE"
+  fi
+fi
+
 [ -z "$SITE_CONFIG_DIR" ]    && SITE_CONFIG_DIR="$PRJDIR/app/config/$SITE_TYPE"
 
 if [ -z "$CMS_URL" ]; then
