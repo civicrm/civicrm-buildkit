@@ -287,6 +287,7 @@ function main_clean($versionSpec, $options) {
 function main_tag_plan($versionSpec, $versionJson) {
   $repoPaths = array(
     "civicrm-drupal" => $versionSpec['gitDir'] . "/drupal",
+    "civicrm-drupal-8" => $versionSpec['gitDir'] . "/drupal-8",
     "civicrm-backdrop" => $versionSpec['gitDir'] . "/backdrop",
     "civicrm-core" => $versionSpec['gitDir'],
     "civicrm-packages" => $versionSpec['gitDir'] . "/packages",
