@@ -1,5 +1,6 @@
 *~
 .idea
+.composer-downloads
 app/AMPHOME/
 app/cache/
 app/civibuild.conf
