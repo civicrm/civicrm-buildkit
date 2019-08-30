@@ -37,6 +37,21 @@ function cvutil_assertvars() {
 }
 
 ###############################################################################
+## Find the location of <item> in a list of paths.
+## usage: cvutil_path_search <item> <parent1>:<parent2>:...
+## example: cvutil_path_search ls /usr/local/bin:/usr/bin:/bin
+function cvutil_path_search() {
+  local search_target="$1"
+  local search_paths="$2"
+  printf %s "$search_paths" | awk 'BEGIN {RS=":"}; 1' | while read candidate ; do
+    if [ -n "$candidate" -a -e "$candidate/$search_target" ]; then
+      echo "$candidate/$search_target"
+      break
+    fi
+  done
+}
+
+###############################################################################
 ## Prompt user for confirmation
 ## (In automated scripts or blank response, use default)
 ##
