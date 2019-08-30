@@ -20,6 +20,18 @@
 # BLDDIR=
 
 ###############################################################################
+## External variables (inherited from user's shell environment)
+
+## Location of all mutable files (site-builds, logs, tmp data, etc).
+## If blank/omitted, then use a default file structure relative to `civibuild`'s bin.
+# CIVIBUILD_HOME=
+
+## When looking for instructions to do a build, search this list of folders.
+## (example: $HOME/.civibuild/types:/etc/civibuild/types:/usr/share/buildkit/app/config)
+## (note: The built-in folder "$PRJDIR/app/config" is automatically appended.)
+# CIVIBUILD_PATH=
+
+###############################################################################
 ## Common variables
 
 ## The name of on-going action (eg "create" or "reset")
@@ -31,7 +43,7 @@ SITE_NAME=
 ## Codename for the build scripts (default: $SITE_NAME)
 SITE_TYPE=
 
-## Location of the build scripts (default: app/config/$SITE_TYPE)
+## Location of the build scripts (default: search $CIVIBUILD_PATH for $SITE_TYPE)
 SITE_CONFIG_DIR=
 
 ## Optional identifier to distinguish subsites in a multi-site build
