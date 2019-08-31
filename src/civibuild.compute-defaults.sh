@@ -16,7 +16,8 @@
 [ -z "$WEB_ROOT" ]           && WEB_ROOT="$BLDDIR/$SITE_NAME"
 [ -z "$CMS_ROOT" ]           && CMS_ROOT="$WEB_ROOT"
 
-[ -z "$SITE_CONFIG_DIR" ]    && SITE_CONFIG_DIR="$PRJDIR/app/config/$SITE_TYPE"
+CIVIBUILD_PATH="$CIVIBUILD_PATH:$PRJDIR/app/config"
+[ -z "$SITE_CONFIG_DIR" ]    && SITE_CONFIG_DIR=$(cvutil_path_search "$SITE_TYPE" "$CIVIBUILD_PATH")
 
 if [ -z "$CMS_URL" ]; then
   if [ "%AUTO%" == "$URL_TEMPLATE" ]; then
