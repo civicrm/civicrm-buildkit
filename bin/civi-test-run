@@ -212,8 +212,10 @@ if [ "$SUITES" = "all" ]; then
     else
       SUITES="karma upgrade phpunit-e2e phpunit-crm phpunit-api3 phpunit-civi"
     fi
-  else
+  elif [ -f "$CIVI_CORE/tests/phpunit/api/v4/AllTests.php" ]; then
     SUITES="karma upgrade phpunit-crm phpunit-api3 phpunit-api4 phpunit-civi"
+  else
+    SUITES="karma upgrade phpunit-crm phpunit-api3 phpunit-civi"
   fi
 elif [[ " $SUITES " =~ \ all\  ]]; then
   echo "The \"all\" target should not be mixed with other targets."
