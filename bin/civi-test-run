@@ -35,7 +35,8 @@ function show_help() {
   echo "  <suites>            A list of one more of the following:"
   echo "                        - all"
   echo "                        - karma"
-  echo "                        - phpunit-api"
+  echo "                        - phpunit-api3"
+  echo "                        - phpunit-api4"
   echo "                        - phpunit-civi"
   echo "                        - phpunit-crm"
   echo "                        - phpunit-e2e"
@@ -126,6 +127,17 @@ function task_phpunit_wordpress() {
   $GUARD popd
 }
 
+function task_phpunit_backdrop() {
+  $GUARD pushd "$CIVI_CORE/backdrop"
+  if ! $GUARD $PHPUNIT --tap --log-junit "$JUNITDIR/phpunit_backdrop.xml" $EXCLUDE_GROUP ; then
+    EXITCODES="$EXITCODES phpunit-backdrop"
+  fi
+  echo "Found EXITCODES=\"$EXITCODES\""
+
+  phpunit-xml-cleanup "$JUNITDIR"/*.xml
+  $GUARD popd
+}
+
 ## Determine the absolute path of the directory with the file
 ## absdirname <file-path>
 function absdirname() {
@@ -194,7 +206,7 @@ fi
 
 if [ "$SUITES" = "all" ]; then
   if [ -f "$CIVI_CORE/tests/phpunit/E2E/AllTests.php" ]; then
-    SUITES="karma upgrade phpunit-e2e phpunit-crm phpunit-api phpunit-civi"
+    SUITES="karma upgrade phpunit-e2e phpunit-crm phpunit-api3 phpunit-api4 phpunit-civi"
   else
     SUITES="karma upgrade phpunit-crm phpunit-api phpunit-civi"
   fi
@@ -211,10 +223,14 @@ for TESTTYPE in $SUITES ; do
     upgrade@*)  task_upgrade $(echo $TESTTYPE | sed s'/^upgrade//' ) ;;
     phpunit-e2e)  task_phpunit E2E_AllTests ;;
     phpunit-crm)  task_phpunit CRM_AllTests ;;
+    # Handle legacy call for phpunit-api being equivilant to phpunit-api3
     phpunit-api)  task_phpunit api_v3_AllTests ;;
+    phpunit-api3) task phpunit api_v3_AllTests ;;
+    phpunit-api4) task_phpunit api_v4_AllTests ;;
     phpunit-civi)  task_phpunit 'Civi\AllTests' ;;
     phpunit-drupal) task_phpunit_drupal ;;
     phpunit-wordpress) task_phpunit_wordpress ;;
+    phpunit-backdrop) task_phpunit_backdrop ;;
     *) echo "unrecognized suite: $TESTTYPE"; exit 2 ;;
   esac
 done
@@ -232,6 +248,21 @@ for TESTTYPE in $SUITES ; do
   fi
   if  [ $TESTTYPE = "phpunit-api" ] || [ $TESTTYPE = "all" ] ; then
     [ ! -f "$JUNITDIR/api_v3_AllTests.xml" ] && fatal "Missing XML: api_v3_AllTests.xml"
+  fi
+  if  [ $TESTTYPE = "phpunit-api3" ] || [ $TESTTYPE = "all" ] ; then
+    [ ! -f "$JUNITDIR/api_v3_AllTests.xml" ] && fatal "Missing XML: api_v3_AllTests.xml"
+  fi
+  if  [ $TESTTYPE = "phpunit-api4" ] || [ $TESTTYPE = "all" ] ; then
+    [ ! -f "$JUNITDIR/api_v4_AllTests.xml" ] && fatal "Missing XML: api_v4_AllTests.xml"
+  fi
+  if  [ $TESTTYPE = "phpunit-drupal" ] ; then
+    [ ! -f "$JUNITDIR/phpunit-drupal.xml" ] && fatal "Missing XML: phpunit-drupal.xml"
+  fi
+  if  [ $TESTTYPE = "phpunit-wordpress" ] ; then
+    [ ! -f "$JUNITDIR/phpunit-wordpress.xml" ] && fatal "Missing XML: phpunit-wordpress.xml"
+  fi
+  if  [ $TESTTYPE = "phpunit-backdrop" ] ; then
+    [ ! -f "$JUNITDIR/phpunit-backdrop.xml" ] && fatal "Missing XML: phpunit-backdrop.xml"
   fi
   if  [ $TESTTYPE = "phpunit-civi" ] || [ $TESTTYPE = "all" ] ; then
     [ ! -f "$JUNITDIR/Civi\\AllTests.xml" ] && fatal "Missing XML: Civi\\AllTests.xml"
