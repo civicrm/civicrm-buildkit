@@ -207,7 +207,11 @@ fi
 
 if [ "$SUITES" = "all" ]; then
   if [ -f "$CIVI_CORE/tests/phpunit/E2E/AllTests.php" ]; then
-    SUITES="karma upgrade phpunit-e2e phpunit-crm phpunit-api3 phpunit-api4 phpunit-civi"
+    if [ -f "$CIVI_CORE/tests/phpunit/api/v4/AllTests.php" ]; then
+      SUITES="karma upgrade phpunit-e2e phpunit-crm phpunit-api3 phpunit-api4 phpunit-civi"
+    else
+      SUITES="karma upgrade phpunit-e2e phpunit-crm phpunit-api3 phpunit-civi"
+    fi
   else
     SUITES="karma upgrade phpunit-crm phpunit-api3 phpunit-api4 phpunit-civi"
   fi
