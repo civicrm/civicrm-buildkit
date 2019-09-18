@@ -530,10 +530,11 @@ function api4_download_conditional() {
   fi
 
   case "$CIVI_VERSION" in
-    ## api4@4.5 is roughly same timeframe as core@5.17 and 5.18 (and early-5.19.alpha)
-    ## api4@4.4 sounds plausiblish for slightly older things
-    5.17*|5.18*|5.19*) git clone "${CACHE_DIR}/civicrm/api4.git" -b "4.5" "$api4_path" ;;
-    5.14*|5.15*) git clone "${CACHE_DIR}/civicrm/api4.git" -b "4.4" "$api4_path" ;;
+    ## Circa v5.16 (3e20c1acb397d6dfe?), api4+core got into a bidrectional dependency, and api4@~4.5
+    ## seems to be the closest release that corresponds to the dev-periods of 5.16-5.18.
+    ## Circa v5.19.alpha1 (#15309), api4 should be merged into core.
+    5.16*|5.17*|5.18*|5.19*) git clone "${CACHE_DIR}/civicrm/api4.git" -b "4.5" "$api4_path" ;;
+    # 5.14*|5.15*) git clone "${CACHE_DIR}/civicrm/api4.git" -b "4.4" "$api4_path" ;;
     *) echo -n ;; ## Shrug
       ##EXTCIVIVER=$( php -r '$x=simplexml_load_file("civicrm/xml/version.xml"); echo $x->version_no;' )
       ##cv dl -b "@https://civicrm.org/extdir/ver=$EXTCIVIVER|cms=Drupal|status=|ready=/org.civicrm.api4.xml" --to="$WEB_ROOT/web/sites/all/modules/civicrm/ext/api4" --dev
