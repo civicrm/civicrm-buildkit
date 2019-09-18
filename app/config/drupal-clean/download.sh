@@ -18,10 +18,7 @@ pushd "$WEB_ROOT/web"
     git clone "${CACHE_DIR}/civicrm/civicrm-drupal.git"                      -b "7.x-$CIVI_VERSION"  civicrm/drupal
     git clone "${CACHE_DIR}/civicrm/civicrm-packages.git"                    -b "$CIVI_VERSION"      civicrm/packages
     git clone "${CACHE_DIR}/eileenmcnaughton/civicrm_developer.git"          -b master               civicrm_developer
-
-    ## The API test suite now supports a dual-version mode (i.e. if APIv3 and APIv4 are both present, it runs some tests against both).
-    ## At time of writing, for several recent versions of core, api_v3_AllTests won't pass unless API4 v4.5 is installed.
-    git clone "${CACHE_DIR}/civicrm/api4.git"                                -b "master"             civicrm/ext/api4
+    api4_download_conditional civicrm                                                                civicrm/ext/api4
 
     extract-url --cache-ttl 172800 civicrm=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
     ## or https://raw.github.com/civicrm/l10n/master/po/fr_CA/civicrm.mo => civicrm/l10n/fr_CA/LC_MESSAGES/
