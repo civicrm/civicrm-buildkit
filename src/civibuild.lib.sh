@@ -509,6 +509,38 @@ function amp_uninstall() {
 }
 
 ###############################################################################
+## Download APIv4, if it's not built into the target version of Civi
+## usage: api4_download_conditional <civicrm-path> <api4-path>
+function api4_download_conditional() {
+  cvutil_assertvars api4_download_conditional CIVI_VERSION CACHE_DIR
+  local civi_path="$1"
+  local api4_path="$2"
+
+  if [ -z "$api4_path" -o -z "$civi_path" ]; then
+    cvutil_fatal "Cannot download api4: Target path not specified"
+  fi
+
+  if [ ! -e "$civi_path" ]; then
+    cvutil_fatal "Cannot download api4: Must download civicrm-core first"
+  fi
+
+  if [ -e "$civi_path/Civi/Api4" ]; then
+    ## Circa 5.19.alpha, api4 is merged into core.
+    return;
+  fi
+
+  case "$CIVI_VERSION" in
+    ## api4@4.5 is roughly same timeframe as core@5.17 and 5.18 (and early-5.19.alpha)
+    ## api4@4.4 sounds plausiblish for slightly older things
+    5.17*|5.18*|5.19*) git clone "${CACHE_DIR}/civicrm/api4.git" -b "4.5" "$api4_path" ;;
+    5.14*|5.15*) git clone "${CACHE_DIR}/civicrm/api4.git" -b "4.4" "$api4_path" ;;
+    *) echo -n ;; ## Shrug
+      ##EXTCIVIVER=$( php -r '$x=simplexml_load_file("civicrm/xml/version.xml"); echo $x->version_no;' )
+      ##cv dl -b "@https://civicrm.org/extdir/ver=$EXTCIVIVER|cms=Drupal|status=|ready=/org.civicrm.api4.xml" --to="$WEB_ROOT/web/sites/all/modules/civicrm/ext/api4" --dev
+  esac
+}
+
+###############################################################################
 ## Generate config files and setup database
 function civicrm_install() {
   cvutil_assertvars civicrm_install CIVI_CORE CIVI_FILES CIVI_TEMPLATEC CIVI_DOMAIN_NAME CIVI_DOMAIN_EMAIL
