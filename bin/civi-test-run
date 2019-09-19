@@ -256,13 +256,13 @@ for TESTTYPE in $SUITES ; do
     [ ! -f "$JUNITDIR/api_v4_AllTests.xml" ] && fatal "Missing XML: api_v4_AllTests.xml"
   fi
   if  [ $TESTTYPE = "phpunit-drupal" ] ; then
-    [ ! -f "$JUNITDIR/phpunit-drupal.xml" ] && fatal "Missing XML: phpunit-drupal.xml"
+    [ ! -f "$JUNITDIR/phpunit_drupal.xml" ] && fatal "Missing XML: phpunit_drupal.xml"
   fi
   if  [ $TESTTYPE = "phpunit-wordpress" ] ; then
-    [ ! -f "$JUNITDIR/phpunit-wordpress.xml" ] && fatal "Missing XML: phpunit-wordpress.xml"
+    [ ! -f "$JUNITDIR/phpunit_wordpress.xml" ] && fatal "Missing XML: phpunit_wordpress.xml"
   fi
   if  [ $TESTTYPE = "phpunit-backdrop" ] ; then
-    [ ! -f "$JUNITDIR/phpunit-backdrop.xml" ] && fatal "Missing XML: phpunit-backdrop.xml"
+    [ ! -f "$JUNITDIR/phpunit_backdrop.xml" ] && fatal "Missing XML: phpunit_backdrop.xml"
   fi
   if  [ $TESTTYPE = "phpunit-civi" ] || [ $TESTTYPE = "all" ] ; then
     [ ! -f "$JUNITDIR/Civi\\AllTests.xml" ] && fatal "Missing XML: Civi\\AllTests.xml"
