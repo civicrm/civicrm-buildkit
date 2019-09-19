@@ -225,7 +225,7 @@ for TESTTYPE in $SUITES ; do
     phpunit-crm)  task_phpunit CRM_AllTests ;;
     # Handle legacy call for phpunit-api being equivilant to phpunit-api3
     phpunit-api)  task_phpunit api_v3_AllTests ;;
-    phpunit-api3) task phpunit api_v3_AllTests ;;
+    phpunit-api3) task_phpunit api_v3_AllTests ;;
     phpunit-api4) task_phpunit api_v4_AllTests ;;
     phpunit-civi)  task_phpunit 'Civi\AllTests' ;;
     phpunit-drupal) task_phpunit_drupal ;;
