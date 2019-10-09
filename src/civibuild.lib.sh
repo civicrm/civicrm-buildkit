@@ -617,7 +617,9 @@ function civicrm_apply_demo_defaults() {
       ));
 EOPHP
   fi
-  cv en --ignore-missing api4
+  if cv ev 'exit(version_compare(CRM_Utils_System::version(), "5.19", "<") ?0:1);' ; then 
+    cv en --ignore-missing api4
+  fi
 }
 
 ###############################################################################
