@@ -306,7 +306,7 @@ function get_system_installer() {
     source /etc/lsb-release
   fi
   case "$DISTRIB_CODENAME" in
-    precise|trusty|jessie|stretch|buster|xenial|yakkety|zesty|artful|bionic|cosmic|disco)
+    (jessie|stretch|buster|xenial|bionic|cosmic|disco)
       echo "do_system_$DISTRIB_CODENAME"
       ;;
     *)
@@ -316,92 +316,9 @@ function get_system_installer() {
 }
 
 ###############################################################################
-function do_system_precise() {
-  set -e
-    PACKAGES="acl git wget unzip zip mysql-server mysql-client php5-cli php5-imap php5-ldap php5-curl php5-mysql php5-intl php5-gd php5-mcrypt php-apc apache2 libapache2-mod-php5 nodejs"
-    echo "Detected \"Ubuntu Precise 12.04\"."
-    echo ""
-    echo "Recommended packages: $PACKAGES"
-    echo ""
-    if cvutil_confirm "Run automated installation? [Y/n] " y y; then
-      curl -sL https://deb.nodesource.com/setup_0.12 | sudo -E bash -
-      sudo apt-get -y install $PACKAGES
-      sudo a2enmod rewrite
-      sudo apache2ctl restart
-    else
-      echo "Aborted" 1>&2
-      exit 1
-    fi
-  set +e
-}
-
-###############################################################################
-function do_system_trusty() {
-  set -e
-    PACKAGES="acl curl git wget unzip zip mysql-server mysql-client php5-cli php5-imap php5-ldap php5-curl php5-mysql php5-intl php5-gd php5-mcrypt php-apc apache2 libapache2-mod-php5"
-    echo "Detected \"Ubuntu Trusty 14.04\"."
-    echo ""
-    echo "Recommended packages: $PACKAGES"
-    echo ""
-    if cvutil_confirm "Run automated installation? [Y/n] " y y; then
-      sudo apt-get update
-      sudo apt-get -y install $PACKAGES
-      sudo curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -
-      sudo apt-get install -y nodejs
-      sudo php5enmod mcrypt
-      sudo php5enmod imap
-      sudo a2enmod rewrite
-      sudo apache2ctl restart
-    else
-      echo "Aborted" 1>&2
-      exit 1
-    fi
-  set +e
-}
-
-###############################################################################
 function do_system_xenial() {
   set -e
     PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.0-cli php7.0-imap php7.0-ldap php7.0-curl php7.0-mysql php7.0-intl php7.0-gd php7.0-mcrypt php7.0-bcmath php7.0-mbstring php7.0-soap php7.0-zip php7.0-xml apache2 libapache2-mod-php7.0 nodejs-legacy npm"
-    UBUNTU_VERSION=$(lsb_release -ds)
-    echo "Detected $UBUNTU_VERSION."
-    echo ""
-    echo "Task: $PACKAGES"
-    echo ""
-    do_php_mysql_warning
-    echo ""
-    if cvutil_confirm "Run automated installation? [Y/n] " y y; then
-      sudo apt-get update
-      sudo apt-get -y install $PACKAGES
-      sudo phpenmod bcmath
-      sudo phpenmod curl
-      sudo phpenmod imap
-      sudo phpenmod mcrypt
-      sudo phpenmod xml
-      sudo a2enmod rewrite
-      sudo apache2ctl restart
-    else
-      echo "Aborted" 1>&2
-      exit 1
-    fi
-  set +e
-}
-
-###############################################################################
-function do_system_yakkety() {
-  do_system_xenial
-}
-
-###############################################################################
-function do_system_zesty() {
-  do_system_xenial
-}
-
-###############################################################################
-## If this shared function doesn't work, don't add conditionals - copy/paste into a new function.
-function do_system_artful() {
-  set -e
-    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.1-cli php7.1-imap php7.1-ldap php7.1-curl php7.1-mysql php7.1-intl php7.1-gd php7.1-mcrypt php7.1-bcmath php7.1-mbstring php7.1-soap php7.1-zip php7.1-xml apache2 libapache2-mod-php7.1 nodejs npm"
     UBUNTU_VERSION=$(lsb_release -ds)
     echo "Detected $UBUNTU_VERSION."
     echo ""
@@ -456,6 +373,8 @@ function do_system_bionic() {
 function do_system_cosmic() {
   do_system_bionic
 }
+
+###############################################################################
 
 function do_system_disco() {
   set -e
@@ -551,10 +470,12 @@ function do_system_buster() {
 function do_system_unknown() {
   echo "ERROR: Could not identify the required system packages."
   echo ""
+  echo "System specific install steps are removed when an OS release is marked as end-of-life. (Ubuntu/Debian)"
+  echo ""
   echo "If you want to add support for a new system, update 'get_system_installer()'"
   echo "and add a new 'do_system_*()' function."
   echo ""
-  echo "If you are running Debian, install lsb-release package."
+  echo "If you are running Debian you may need to install the lsb-release package."
   exit 1
 }
 
