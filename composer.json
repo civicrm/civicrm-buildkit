@@ -41,7 +41,7 @@
       "civix": {"version": "2019-10-23-c1af1098", "url": "https://download.civicrm.org/civix/civix.phar-{$version}", "path": "bin/civix", "type": "phar"},
       "codecept-php5": {"version": "2.3.6", "url": "https://codeception.com/releases/{$version}/php54/codecept.phar", "path": "bin/_codecept-php5.phar", "type": "phar"},
       "codecept-php7": {"version": "2.3.6", "url": "https://codeception.com/releases/{$version}/codecept.phar", "path": "bin/_codecept-php7.phar", "type": "phar"},
-      "cv": {"version": "2019-08-20-14fe9da8", "url": "https://download.civicrm.org/cv/cv.phar-{$version}", "path": "bin/cv", "type": "phar"},
+      "cv": {"version": "2019-11-04-915c4cbf", "url": "https://download.civicrm.org/cv/cv.phar-{$version}", "path": "bin/cv", "type": "phar"},
       "drush8": {"version": "8.1.18", "url": "https://github.com/drush-ops/drush/releases/download/{$version}/drush.phar", "path": "extern/drush8.phar", "type": "phar"},
       "drush-backdrop": {"version": "1.0.0", "url": "https://github.com/backdrop-contrib/drush/archive/{$version}.zip", "path": "extern/drush-lib/backdrop"},
       "git-scan": {"version": "2019-11-01-13944585", "url": "https://download.civicrm.org/git-scan/git-scan.phar-{$version}", "path": "bin/git-scan", "type": "phar"},
