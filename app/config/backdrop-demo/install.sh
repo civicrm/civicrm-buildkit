@@ -34,16 +34,16 @@ civicrm_install
 pushd "$CMS_ROOT" >> /dev/null
   php "$SITE_CONFIG_DIR/module-enable.php" civicrm
   civicrm_apply_demo_defaults
-  FIXEDCIVIVER=$( php -r '$x=simplexml_load_file("xml/version.xml"); echo version_compare($x->version_no, "5.19", ">");' )
-  popd
-  if [ $FIXEDCIVIVER ]; then
+  ver=$(civicrm_get_ver "$CIVI_CORE")
+  phpversioncheck=$(php -r "echo version_compare('$ver', '5.19', '>=');")
+  if [ $phpversioncheck ]; then
     php "$SITE_CONFIG_DIR/module-enable.php" civicrm_webtest
   fi
 
   ## Setup demo user
   #drush -y en civicrm_webtest
   drush -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
-  if [ $FIXEDCIVIVER ];
+  if [ $phpversioncheck ];
     #drush -y user-add-role civicrm_webtest_user "$DEMO_USER"
     echo 'INSERT IGNORE INTO users_roles (uid,role) SELECT uid, "civicrm_webtest_user" FROM users WHERE name = @ENV[DEMO_USER];' \
      | env DEMO_USER="$DEMO_USER" amp sql -Ncms -e
