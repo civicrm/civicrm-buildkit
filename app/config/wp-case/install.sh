@@ -42,6 +42,7 @@ wp theme install twentythirteen --activate
 wp eval '$home = get_page_by_title("Welcome to CiviCRM with WordPress"); update_option("page_on_front", $home->ID); update_option("show_on_front", "page");'
 
 wp plugin activate civicrm
+wp eval '$c=[civi_wp(), "add_wpload_setting"]; if (is_callable($c)) $c();' ## Temporary workaround, init wpLoadPhp
 wp plugin activate civicrm-demo-wp
 
 echo '{"enable_components":["CiviMail","CiviReport","CiviCase"]}' | cv api setting.create --in=json
