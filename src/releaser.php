@@ -230,6 +230,12 @@ function main_tag($versionSpec, $options) {
  * @param array $versionSpec
  */
 function main_publish($versionSpec, $options) {
+  // Get missing info before doing anything
+  util_info('## This will be uploaded to sf.net. To mark it as the default download on sf.net, one needs an api_key.');
+  util_info('## (To skip, leave blank.)');
+  $sfApiKey = util_password('Enter sf.net api_key: ');
+
+  // Execute, such as it is
   util_info('## Send build to primary download service');
   $dry = $options['dry-run'] ? '-n' : '';
   util_passthru_ok(sprintf("gsutil rsync $dry %s/ %s/",
@@ -240,6 +246,25 @@ function main_publish($versionSpec, $options) {
     escapeshellarg($versionSpec['stagingDir']),
     escapeshellarg('civicrm@frs.sourceforge.net:/home/frs/project/civicrm/civicrm-stable/' . $versionSpec['version'])
   ));
+
+  if ($sfApiKey) {
+    // See also: https://sourceforge.net/p/forge/documentation/Using%20the%20Release%20API/
+    $project = 'civicrm';
+    $defaultDownloadFile = sprintf('civicrm-stable/%s/civicrm-%s-drupal.tar.gz', $versionSpec['version'], $versionSpec['version']);
+    $defaultDownloadUrl = "https://sourceforge.net/projects/{$project}/files/{$defaultDownloadFile}";
+    util_info(sprintf('## Mark "%s" as default download', $defaultDownloadFile));
+    $curlCmd = sprintf('%s --fail -H %s -X PUT -d %s -d %s %s',
+      ($options['dry-run'] ? 'echo curl' : 'curl'),
+      escapeshellarg("Accept: application/json"),
+      escapeshellarg("default=windows&default=mac&default=linux&default=bsd&default=solaris&default=others"),
+      escapeshellarg("api_key=$sfApiKey"),
+      escapeshellarg($defaultDownloadUrl)
+    );
+    util_passthru_ok($curlCmd);
+  }
+  else {
+    util_info("## Do not update sf.net default download");
+  }
 }
 
 /**
@@ -396,6 +421,25 @@ function util_passthru_ok($command, &$result = NULL) {
   }
 }
 
+/**
+ * Prompt the user for a password
+ *
+ * @param string $prompt
+ * @return string|NULL
+ */
+function util_password($prompt) {
+  $command = "/usr/bin/env bash -c 'echo OK'";
+  if (rtrim(shell_exec($command)) !== 'OK') {
+    trigger_error("Can't invoke bash");
+    return;
+  }
+  $command = "/usr/bin/env bash -c 'read -s -p \""
+    . addslashes($prompt)
+    . "\" mypassword && echo \$mypassword'";
+  $password = rtrim(shell_exec($command));
+  echo "\n";
+  return $password;
+}
 
 function util_info($message) {
   echo "$message\n";
