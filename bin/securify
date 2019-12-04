@@ -1,62 +1,12 @@
 #!/bin/bash
 
-## Register the security remotes across each civi repo.
-## Of course, you need access to the repos (i.e. as a member of secteam...).
+echo "------------------------------------------" >&2
+echo "DEPRECATD: use forkify instead of securify" >&2
+echo "------------------------------------------" >&2
 
-############################################################################
-## Usage: do_repo <add-remotes|set-remotes|fetch> <relpath-to-repo> <remote-name> <gitlab-project-name>
-function do_repo() {
-  local ACTION="$1"
-  local RELDIR="$2"
-  local REMOTE="$3"
-  local GL_PROJECT="$4"
-
-  if [ ! -d "$RELDIR" ]; then
-    echo "($RELDIR) Skip"
-    return
-  fi
-
-  pushd "$RELDIR" >> /dev/null
-
-  case "$ACTION" in
-    add-remotes)
-      echo "($RELDIR) Add remote \"$REMOTE\" for \"${GL_BASE}${GL_PROJECT}.git\""
-      git remote add "$REMOTE" "${GL_BASE}${GL_PROJECT}.git"
-      ;;
-
-    set-remotes)
-      echo "($RELDIR) Set remote \"$REMOTE\" to use \"${GL_BASE}${GL_PROJECT}.git\""
-      git remote set-url "$REMOTE" "${GL_BASE}${GL_PROJECT}.git"
-      ;;
-
-    fetch)
-      echo "($RELDIR) Fetch remote \"$REMOTE\""
-      git fetch "$REMOTE"
-      ;;
-
-    *)
-      echo "Unrecognized action: $ACTION" >&2
-      exit 1
-  esac
-
-  popd >> /dev/null
-}
-
-############################################################################
-
-GL_BASE="git@lab.civicrm.org:"
-#GL_BASE="https://lab.civicrm.org/"
-ACTION="$1"
-
-if [ -z "$ACTION" ]; then
+if [ -n "$1" ]; then
+  forkify "$1" security 'git@lab.civicrm.org:security/'
+else
   echo "usage: $0 <add-remotes | set-remotes | fetch>" >&2
   exit 1
 fi
-
-do_repo "$ACTION" .          security  security/core
-do_repo "$ACTION" WordPress  security  security/wordpress
-do_repo "$ACTION" backdrop   security  security/backdrop
-do_repo "$ACTION" drupal     security  security/drupal
-do_repo "$ACTION" drupal-8   security  security/drupal-8
-do_repo "$ACTION" joomla     security  security/joomla
-do_repo "$ACTION" packages   security  security/packages
