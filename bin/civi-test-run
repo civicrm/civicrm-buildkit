@@ -1,6 +1,14 @@
 #!/bin/bash
 set -e
-PHPUNIT=phpunit5
+
+function getPhpunitVer() {
+  CIVIVER=$(getCiviVer)
+  if [ $(php -r "echo version_compare('$CIVIVER', '5.21', '>=');") ]; then
+    echo "phpunit6 --printer \Civi\Test\TAP"
+  else
+    echo 'phpunit5 --tap'
+  fi
+}
 
 #################################################
 ## Helpers
@@ -108,7 +116,7 @@ function junit_cleanup() {
 
 function task_phpunit_drupal() {
   $GUARD pushd "$CIVI_CORE/drupal"
-  if ! $GUARD $PHPUNIT --tap --log-junit "$JUNITDIR/phpunit_drupal.xml" $EXCLUDE_GROUP ; then
+  if ! $GUARD $(getPhpunitVer) --log-junit "$JUNITDIR/phpunit_drupal.xml" $EXCLUDE_GROUP ; then
     EXITCODES="$EXITCODES phpunit-drupal"
   fi
   echo "Found EXITCODES=\"$EXITCODES\""
@@ -119,7 +127,7 @@ function task_phpunit_drupal() {
 
 function task_phpunit_wordpress() {
   $GUARD pushd "$CIVI_CORE/.."
-  if ! $GUARD $PHPUNIT --tap --log-junit "$JUNITDIR/phpunit_wordpress.xml" $EXCLUDE_GROUP ; then
+  if ! $GUARD $(getPhpunitVer) --log-junit "$JUNITDIR/phpunit_wordpress.xml" $EXCLUDE_GROUP ; then
     EXITCODES="$EXITCODES phpunit-wordpress"
   fi
   echo "Found EXITCODES=\"$EXITCODES\""
@@ -130,7 +138,7 @@ function task_phpunit_wordpress() {
 
 function task_phpunit_backdrop() {
   $GUARD pushd "$CIVI_CORE/backdrop"
-  if ! $GUARD $PHPUNIT --tap --log-junit "$JUNITDIR/phpunit_backdrop.xml" $EXCLUDE_GROUP ; then
+  if ! $GUARD $(getPhpunitVer) --log-junit "$JUNITDIR/phpunit_backdrop.xml" $EXCLUDE_GROUP ; then
     EXITCODES="$EXITCODES phpunit-backdrop"
   fi
   echo "Found EXITCODES=\"$EXITCODES\""
