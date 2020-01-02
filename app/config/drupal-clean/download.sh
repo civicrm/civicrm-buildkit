@@ -6,9 +6,7 @@
 
 [ -z "$CMS_VERSION" ] && CMS_VERSION=7.x
 
-mkdir "$WEB_ROOT"
-drush8 -y dl drupal-${CMS_VERSION} --destination="$WEB_ROOT" --drupal-project-rename
-mv "$WEB_ROOT/drupal" "$WEB_ROOT/web"
+drupal_download
 
 pushd "$WEB_ROOT/web"
   drush dl -y libraries-1.0 views-3.7 devel

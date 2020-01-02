@@ -917,6 +917,19 @@ function backdrop_uninstall() {
   fi
 }
 
+###############################################################################
+## Drupal - Download drupal core version and apply patch for MySQL 8 as required
+function drupal_download() {
+  mkdir "$WEB_ROOT"
+  drush8 -y dl drupal-${CMS_VERSION} --destination="$WEB_ROOT" --drupal-project-rename
+  mv "$WEB_ROOT/drupal" "$WEB_ROOT/web"
+
+  if [ ${CMS_VERSION} == "7.x" ]; then
+    pushd "$WEB_ROOT/web/includes/database/mysql"
+      patch database.inc < "$PRJDIR/app/drupal-patches/mysql8-drupal.patch"
+    popd
+  fi
+}
 
 ###############################################################################
 ## Drupal -- Generate config files and setup database
