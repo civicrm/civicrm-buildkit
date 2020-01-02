@@ -10,9 +10,7 @@
 [ -z "$RULES_VERSION" ] && RULES_VERSION='master'
 [ -z "$DISC_VERSION" ] && DISC_VERSION='master'
 
-mkdir "$WEB_ROOT"
-drush8 -y dl drupal-${CMS_VERSION} --destination="$WEB_ROOT" --drupal-project-rename
-mv "$WEB_ROOT/drupal" "$WEB_ROOT/web"
+drupal_download
 
 pushd "$WEB_ROOT/web"
   drush8 dl -y libraries-1 redirect-1 webform-4 options_element-1 webform_civicrm-4 views-3 login_destination-1 userprotect-1 devel-1 civicrm_error-2.x-dev

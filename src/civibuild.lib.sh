@@ -918,6 +918,18 @@ function backdrop_uninstall() {
 }
 
 ###############################################################################
+## Backdrop - Download drupal core version and apply patch for MySQL 8 as required
+function backdrop_download() {
+  echo "[[Download Backdrop]]"
+  mkdir "$WEB_ROOT"
+  git clone "$CACHE_DIR/backdrop/backdrop.git" "$WEB_ROOT/web"
+
+  pushd "$WEB_ROOT/web/core/includes/database/mysql"
+    patch database.inc < "$PRJDIR/app/drupal-patches/mysql8-drupal.patch"
+  popd
+}
+
+###############################################################################
 ## Drupal - Download drupal core version and apply patch for MySQL 8 as required
 function drupal_download() {
   mkdir "$WEB_ROOT"
