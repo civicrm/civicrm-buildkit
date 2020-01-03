@@ -28,7 +28,7 @@ pushd "$WEB_ROOT/web"
     git clone "${CACHE_DIR}/civicrm/org.civicoop.civirules.git"              -b "$RULES_VERSION"     civicrm/tools/extensions/org.civicoop.civirules
     git clone "${CACHE_DIR}/TechToThePeople/civisualize.git"                 -b "master"             civicrm/tools/extensions/civisualize
     git clone "${CACHE_DIR}/dlobo/org.civicrm.module.cividiscount.git"       -b "$DISC_VERSION"      civicrm/tools/extensions/cividiscount
-    git clone "${CACHE_DIR}/colemanw/exportui.git                    "       -b "master"             civicrm/tools/extensions/exportui
+    git clone "${CACHE_DIR}/colemanw/exportui.git"       -b "master"             civicrm/tools/extensions/exportui
     extract-url --cache-ttl 172800 civicrm=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
     ## or https://raw.github.com/civicrm/l10n/master/po/fr_CA/civicrm.mo => civicrm/l10n/fr_CA/LC_MESSAGES/
   popd
