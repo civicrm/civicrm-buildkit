@@ -1,0 +1,28 @@
+diff --git a/includes/database/mysql/database.inc b/includes/database/mysql/database.inc
+index 356e039f..c803207d 100644
+--- a/includes/database/mysql/database.inc
++++ b/includes/database/mysql/database.inc
+@@ -87,7 +87,7 @@ class DatabaseConnection_mysql extends DatabaseConnection {
+       'init_commands' => array(),
+     );
+     $connection_options['init_commands'] += array(
+-      'sql_mode' => "SET sql_mode = 'REAL_AS_FLOAT,PIPES_AS_CONCAT,ANSI_QUOTES,IGNORE_SPACE,STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER'",
++      'sql_mode' => "SET sql_mode = 'REAL_AS_FLOAT,PIPES_AS_CONCAT,ANSI_QUOTES,IGNORE_SPACE,STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO'",
+     );
+     // Execute initial commands.
+     foreach ($connection_options['init_commands'] as $sql) {
+@@ -101,6 +101,14 @@ class DatabaseConnection_mysql extends DatabaseConnection {
+     }
+   }
+ 
++  public function query($query, array $args = array(), $options = array()) {
++    $query = preg_replace('/{([^}]+)}/', '`\1`', $query);
++    // This to make Drush work
++    $query = str_replace(' system.', ' `system`.', $query);
++    $query = str_replace('`system` system', '`system` `system`', $query);
++    return parent::query($query, $args, $options);
++  }
++
+   public function queryRange($query, $from, $count, array $args = array(), array $options = array()) {
+     return $this->query($query . ' LIMIT ' . (int) $from . ', ' . (int) $count, $args, $options);
+   }
