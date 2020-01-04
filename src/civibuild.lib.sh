@@ -918,25 +918,29 @@ function backdrop_uninstall() {
 }
 
 ###############################################################################
-## Backdrop - Download drupal core version and apply patch for MySQL 8 as required
+## Backdrop - Download to WEB_ROOT/web. Apply core patches (eg for MySQL 8) as required.
 function backdrop_download() {
+  cvutil_assertvars backdrop_download WEB_ROOT CMS_VERSION PRJDIR CACHE_DIR
   echo "[[Download Backdrop]]"
   mkdir "$WEB_ROOT"
-  git clone "$CACHE_DIR/backdrop/backdrop.git" "$WEB_ROOT/web"
+  git clone "$CACHE_DIR/backdrop/backdrop.git" "$WEB_ROOT/web" -b "$CMS_VERSION"
 
+  # See: https://github.com/backdrop/backdrop/pull/3018
   pushd "$WEB_ROOT/web/core/includes/database/mysql"
     patch database.inc < "$PRJDIR/app/drupal-patches/mysql8-drupal.patch"
   popd
 }
 
 ###############################################################################
-## Drupal - Download drupal core version and apply patch for MySQL 8 as required
+## Drupal - Download to WEB_ROOT/web. Apply core patches (eg for MySQL 8) as required.
 function drupal_download() {
+  cvutil_assertvars drupal_download WEB_ROOT CMS_VERSION PRJDIR
   mkdir "$WEB_ROOT"
   drush8 -y dl drupal-${CMS_VERSION} --destination="$WEB_ROOT" --drupal-project-rename
   mv "$WEB_ROOT/drupal" "$WEB_ROOT/web"
 
   if [ ${CMS_VERSION} == "7.x" ]; then
+    # See: https://www.drupal.org/project/drupal/issues/2978575
     pushd "$WEB_ROOT/web/includes/database/mysql"
       patch database.inc < "$PRJDIR/app/drupal-patches/mysql8-drupal.patch"
     popd
