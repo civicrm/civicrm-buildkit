@@ -167,10 +167,11 @@ while [ -n "$1" ] ; do
   case "$OPTION" in
     -b)
       BLDNAME="$1"
-      [ -d "$BLDDIR/$BLDNAME/web" ] && pushd "$BLDDIR/$BLDNAME/web" || pushd "$BLDDIR/$BLDNAME"
+      [ -d "$BLDDIR/$BLDNAME/web" ] && CMS_ROOT="$BLDDIR/$BLDNAME/web" || CMS_ROOT="$BLDDIR/$BLDNAME"
+      pushd "$CMS_ROOT" >> /dev/null
         CIVI_CORE=$(cv ev 'echo $GLOBALS["civicrm_root"];')
         ## or: cv path -d '[civicrm.root]'
-      popd
+      popd >> /dev/null
       shift
       ;;
 
@@ -206,10 +207,26 @@ if [ -z "$SUITES" -o -z "$BLDNAME" -o -z "$JUNITDIR" ]; then
 fi
 
 if [ "$SUITES" = "all" ]; then
-  SUITES="karma upgrade phpunit-e2e phpunit-crm phpunit-api3 phpunit-civi"
-  if [ -f "$CIVI_CORE/tests/phpunit/api/v4/AllTests.php" ]; then
-    SUITES="$SUITES phpunit-api4"
-  fi
+  pushd "$CIVI_CORE" >> /dev/null
+    SUITES="upgrade"
+    if [ -f "karma.conf.js" ]; then
+      SUITES="karma $SUITES"
+    else
+      echo "Skip unavailable suite: karma"
+    fi
+
+    if [ -f "tests/phpunit/E2E/AllTests.php" ]; then
+      SUITES="$SUITES phpunit-e2e"
+    else
+      echo "Skip unavailable suite: phpunit-e2e"
+    fi
+
+    SUITES="$SUITES phpunit-crm phpunit-api3 phpunit-civi"
+
+    if [ -f "tests/phpunit/api/v4/AllTests.php" ]; then
+      SUITES="$SUITES phpunit-api4"
+    fi
+  popd >> /dev/null
 elif [[ " $SUITES " =~ \ all\  ]]; then
   echo "The \"all\" target should not be mixed with other targets."
   exit 3
