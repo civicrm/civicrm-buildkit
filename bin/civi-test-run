@@ -167,10 +167,11 @@ while [ -n "$1" ] ; do
   case "$OPTION" in
     -b)
       BLDNAME="$1"
-      [ -d "$BLDDIR/$BLDNAME/web" ] && pushd "$BLDDIR/$BLDNAME/web" || pushd "$BLDDIR/$BLDNAME"
+      [ -d "$BLDDIR/$BLDNAME/web" ] && CMS_ROOT="$BLDDIR/$BLDNAME/web" || CMS_ROOT="$BLDDIR/$BLDNAME"
+      pushd "$CMS_ROOT" >> /dev/null
         CIVI_CORE=$(cv ev 'echo $GLOBALS["civicrm_root"];')
         ## or: cv path -d '[civicrm.root]'
-      popd
+      popd >> /dev/null
       shift
       ;;
 
@@ -206,7 +207,7 @@ if [ -z "$SUITES" -o -z "$BLDNAME" -o -z "$JUNITDIR" ]; then
 fi
 
 if [ "$SUITES" = "all" ]; then
-  pushd "$CIVI_CORE"
+  pushd "$CIVI_CORE" >> /dev/null
     SUITES="upgrade"
     if [ -f "karma.conf.js" ]; then
       SUITES="karma $SUITES"
@@ -225,7 +226,7 @@ if [ "$SUITES" = "all" ]; then
     if [ -f "tests/phpunit/api/v4/AllTests.php" ]; then
       SUITES="$SUITES phpunit-api4"
     fi
-  popd
+  popd >> /dev/null
 elif [[ " $SUITES " =~ \ all\  ]]; then
   echo "The \"all\" target should not be mixed with other targets."
   exit 3
