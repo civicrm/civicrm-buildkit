@@ -206,10 +206,26 @@ if [ -z "$SUITES" -o -z "$BLDNAME" -o -z "$JUNITDIR" ]; then
 fi
 
 if [ "$SUITES" = "all" ]; then
-  SUITES="karma upgrade phpunit-e2e phpunit-crm phpunit-api3 phpunit-civi"
-  if [ -f "$CIVI_CORE/tests/phpunit/api/v4/AllTests.php" ]; then
-    SUITES="$SUITES phpunit-api4"
-  fi
+  pushd "$CIVI_CORE"
+    SUITES="upgrade"
+    if [ -f "karma.conf.js" ]; then
+      SUITES="karma $SUITES"
+    else
+      echo "Skip unavailable suite: karma"
+    fi
+
+    if [ -f "tests/phpunit/E2E/AllTests.php" ]; then
+      SUITES="$SUITES phpunit-e2e"
+    else
+      echo "Skip unavailable suite: phpunit-e2e"
+    fi
+
+    SUITES="$SUITES phpunit-crm phpunit-api3 phpunit-civi"
+
+    if [ -f "tests/phpunit/api/v4/AllTests.php" ]; then
+      SUITES="$SUITES phpunit-api4"
+    fi
+  popd
 elif [[ " $SUITES " =~ \ all\  ]]; then
   echo "The \"all\" target should not be mixed with other targets."
   exit 3
