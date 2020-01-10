@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4302da7daf18a5359341ac27ade6adee",
+    "content-hash": "ce328af014ecbee8fe2529f7e0f0e8b6",
     "packages": [
         {
             "name": "civicrm/composer-downloads-plugin",
@@ -474,12 +474,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/config.git",
-                "reference": "84c0c150c1520995f09ea9e47e817068b353cb0f"
+                "reference": "cfd510c047359b6a48197f3bc08c9d260e68a108"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/config/zipball/84c0c150c1520995f09ea9e47e817068b353cb0f",
-                "reference": "84c0c150c1520995f09ea9e47e817068b353cb0f",
+                "url": "https://api.github.com/repos/symfony/config/zipball/cfd510c047359b6a48197f3bc08c9d260e68a108",
+                "reference": "cfd510c047359b6a48197f3bc08c9d260e68a108",
                 "shasum": ""
             },
             "require": {
@@ -711,7 +711,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "backendtea@gmail.com"
+                    "email": "BackEndTea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
@@ -886,9 +886,6 @@
             "require": {
                 "nikic/php-parser": "^1.4"
             },
-            "require-dev": {
-                "phpunit/phpunit": "3.7.*"
-            },
             "bin": [
                 "bin/php-symbol-diff",
                 "bin/git-php-symbol-diff"
@@ -945,13 +942,13 @@
             "authors": [
                 {
                     "name": "James Logsdon",
-                    "email": "jlogsdon@php.net",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "jlogsdon@php.net"
                 },
                 {
                     "name": "Daniel Bachhuber",
-                    "email": "daniel@handbuilt.co",
-                    "role": "Maintainer"
+                    "role": "Maintainer",
+                    "email": "daniel@handbuilt.co"
                 }
             ],
             "description": "Console utilities for PHP",
