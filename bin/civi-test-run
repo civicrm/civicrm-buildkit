@@ -3,7 +3,7 @@ set -e
 
 function getPhpunitVer() {
   CIVIVER=$(getCiviVer)
-  if [ $(php -r "echo version_compare('$CIVIVER', '5.21', '>=');") ]; then
+  if [ $(php -r "echo version_compare('$CIVIVER', '5.22', '>=');") ]; then
     echo "phpunit6 --printer \Civi\Test\TAP"
   else
     echo 'phpunit5 --tap'
