@@ -1004,7 +1004,8 @@ function drupal8_install() {
   DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
   CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
   pushd "$CMS_ROOT" >> /dev/null
-    [ -f "sites/$DRUPAL_SITE_DIR/settings.php" ] && rm -f "sites/$DRUPAL_SITE_DIR/settings.php"
+    [ -d "sites/$DRUPAL_SITE_DIR" ] && chmod u+w "sites/$DRUPAL_SITE_DIR"
+    [ -f "sites/$DRUPAL_SITE_DIR/settings.php" ] && chmod u+w "sites/$DRUPAL_SITE_DIR/settings.php" && rm -f "sites/$DRUPAL_SITE_DIR/settings.php"
 
     drush8 site-install -y "$@" \
       --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOSTPORT}/${CMS_DB_NAME}" \
