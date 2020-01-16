@@ -27,9 +27,13 @@ pushd "$WEB_ROOT/web"
   composer require civicrm/civicrm-asset-plugin:'dev-master-relative' civicrm/civicrm-setup:'dev-master-misc as 0.2.99'
   composer require civicrm/civicrm-{core,packages,drupal-8}:$(civicrm_composer_ver "$CIVI_VERSION") --prefer-source
 
-  ## FIXME: Remove this
+  ## Port over patches from totten/5.21-packages. Use cherry-pick to allow multi-version support.
+  ## FIXME: Remove this once patches are merged.
   pushd vendor/civicrm/civicrm-core >> /dev/null
-    patch -p1 < "$SITE_CONFIG_DIR/classloader-packages.patch"
+    git remote add totten 'https://github.com/totten/civicrm-core.git'
+    git fetch totten 5.21-packages
+    git checkout -b local-patches
+    git cherry-pick $( git log --reverse --format=%h origin/5.21..totten/5.21-packages )
   popd >> /dev/null
 
   #composer require roundearth/civicrm-composer-plugin civicrm/civicrm-setup:'dev-master as 0.2.1' civicrm/civicrm-{core,drupal-8}:~${CIVI_VERSION}.0 pear/pear_exception:'1.0.1 as 1.0.0'
