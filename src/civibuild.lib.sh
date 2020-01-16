@@ -592,8 +592,10 @@ function civicrm_install_cv() {
     cvutil_fatal "Failed to locate valid civi root: $CIVI_CORE"
   fi
 
-  ## FIXME: Support NO_SAMPLE_DATA
-  cv core:install -f --cms-base-url="$CMS_URL" --db="$CIVI_DB_DSN" -m "siteKey=$CIVI_SITE_KEY"
+  local loadGenOpt
+  [ -n "$NO_SAMPLE_DATA" ] && loadGenOpt="" || loadGenOpt="-m loadGenerated=1"
+
+  cv core:install -f --cms-base-url="$CMS_URL" --db="$CIVI_DB_DSN" -m "siteKey=$CIVI_SITE_KEY" $loadGenOpt
   local settings=$( cv ev 'echo CIVICRM_SETTINGS_PATH;' )
   cvutil_inject_settings "$settings" "civicrm.settings.d"
   civicrm_update_domain
