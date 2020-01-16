@@ -23,11 +23,11 @@ popd >> /dev/null
 
 #CIVI_DOMAIN_NAME="Demonstrators Anonymous"
 #CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
-#CIVI_CORE="${WEB_ROOT}/libraries/civicrm"
+CIVI_CORE="${CMS_ROOT}/vendor/civicrm/civicrm-core"
 #CIVI_SETTINGS="${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}/civicrm.settings.php"
 #CIVI_FILES="${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}/files/civicrm"
 #CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
-#CIVI_UF="Drupal8"
+CIVI_UF="Drupal8"
 #civicrm_install
 
 pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
@@ -37,6 +37,10 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   ## FIXME: is it needed to enable? doesn't core:install handle that now?
   drush8 -y en civicrm
+
+  ## Allow developers to run `./bin/setup.sh`
+  civicrm_make_setup_conf
+  echo "export GENCODE_CONFIG_TEMPLATE=${CMS_ROOT}/modules/contrib/civicrm/civicrm.config.php.drupal" >> "$CIVI_CORE/bin/setup.conf"
 popd >> /dev/null
 
 
