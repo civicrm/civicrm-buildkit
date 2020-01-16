@@ -591,6 +591,8 @@ function civicrm_install_cv() {
 
   ## FIXME: Support NO_SAMPLE_DATA
   cv core:install -f --cms-base-url="$CMS_URL" --db="$CIVI_DB_DSN" -m "siteKey=$CIVI_SITE_KEY"
+  local settings=$( cv ev 'echo CIVICRM_SETTINGS_PATH;' )
+  cvutil_inject_settings "$settings" "civicrm.settings.d"
   civicrm_update_domain
 
   ## Enable development
