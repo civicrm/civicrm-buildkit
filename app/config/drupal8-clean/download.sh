@@ -11,15 +11,13 @@ mkdir "$WEB_ROOT"
 drush8 -y dl drupal-${CMS_VERSION} --destination="$WEB_ROOT" --drupal-project-rename
 mv "$WEB_ROOT/drupal" "$WEB_ROOT/web"
 
-## Some things that aren't published yet
+## FIXME: Some things that aren't published yet
 mkdir "$WEB_ROOT/repo"
 git clone https://lab.civicrm.org/dev/civicrm-asset-plugin "$WEB_ROOT/repo/civicrm-asset-plugin" -b master-relative
-#git clone https://github.com/civicrm/civicrm-setup/ "$WEB_ROOT/repo/civicrm-setup"
 git clone https://github.com/totten/civicrm-setup/ "$WEB_ROOT/repo/civicrm-setup" -b master-misc
 
 pushd "$WEB_ROOT/web"
   drush8 dl -y devel-1 libraries userprotect
-  ## TODO /civicrm/civicrm-drupal-8.git /civicrm/civicrm-core.git /civicrm/civicrm-packages.git http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
 
   composer config repositories.local path "$WEB_ROOT/repo/*"
   sed -i.bak 's;"require-dev": \[\],;;' composer.json  ## WTF
@@ -36,5 +34,5 @@ pushd "$WEB_ROOT/web"
     git cherry-pick $( git log --reverse --format=%h origin/5.21..totten/5.21-packages )
   popd >> /dev/null
 
-  #composer require roundearth/civicrm-composer-plugin civicrm/civicrm-setup:'dev-master as 0.2.1' civicrm/civicrm-{core,drupal-8}:~${CIVI_VERSION}.0 pear/pear_exception:'1.0.1 as 1.0.0'
+  ## TODO http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
 popd
