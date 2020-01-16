@@ -33,9 +33,7 @@ popd >> /dev/null
 pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   cv core:install -f --cms-base-url="$CMS_URL" \
     --db="$CIVI_DB_DSN" \
-    -m "settings.userFrameworkResourceURL=[cms.root]/libraries/civicrm" \
     -m "siteKey=$CIVI_SITE_KEY"
-  ## FIXME: userFrameworkResourceURL shouldn't be needed?
 
   ## FIXME: is it needed to enable? doesn't core:install handle that now?
   drush8 -y en civicrm
