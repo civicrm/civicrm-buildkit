@@ -206,13 +206,14 @@ function cvutil_parse_site_name_id() {
 
 ###############################################################################
 ## Append the civibuild settings directives to a file
-## usage: cvutil_inject_settings <php-file> <settings-dir-name>
+## usage: cvutil_inject_settings <php-file> <settings-dir-name> [<preamble>]
 ## example: cvutil_inject_settings "/var/www/build/drupal/sites/foo/civicrm.settings.php" "civicrm.settings.d"
-## example: cvutil_inject_settings "/var/www/build/drupal/sites/foo/settings.php" "drupal.settings.d"
+## example: cvutil_inject_settings "/var/www/build/drupal/sites/foo/settings.php" "drupal.settings.d" 'global $settings;'
 function cvutil_inject_settings() {
   local FILE="$1"
   local NAME="$2"
-  cvutil_assertvars cvutil_inject_settings PRJDIR SITE_NAME SITE_TYPE SITE_CONFIG_DIR SITE_ID SITE_TOKEN PRIVATE_ROOT FILE NAME
+  local PREAMBLE="$3"
+  cvutil_assertvars cvutil_inject_settings PRJDIR SITE_NAME SITE_TYPE SITE_CONFIG_DIR SITE_ID SITE_TOKEN PRIVATE_ROOT FILE NAME CMS_VERSION
 
   ## Prepare temp file
   local TMPFILE="${TMPDIR}/${SITE_TYPE}/${SITE_NAME}/${SITE_ID}.settings.tmp"
@@ -231,6 +232,8 @@ function cvutil_inject_settings() {
     \$civibuild['PRIVATE_ROOT'] = '$PRIVATE_ROOT';
     \$civibuild['WEB_ROOT'] = '$WEB_ROOT';
     \$civibuild['CMS_ROOT'] = '$CMS_ROOT';
+    \$civibuild['CMS_VERSION'] = '$CMS_VERSION';
+    $PREAMBLE
 
     if (file_exists(\$civibuild['PRJDIR'].'/src/civibuild.settings.php')) {
       require_once \$civibuild['PRJDIR'].'/src/civibuild.settings.php';
@@ -1047,7 +1050,7 @@ function drupal8_install() {
       --sites-subdir="$DRUPAL_SITE_DIR"
     chmod u+w "sites/$DRUPAL_SITE_DIR"
     chmod u+w "sites/$DRUPAL_SITE_DIR/settings.php"
-    cvutil_inject_settings "$CMS_ROOT/sites/$DRUPAL_SITE_DIR/settings.php" "drupal.settings.d"
+    cvutil_inject_settings "$CMS_ROOT/sites/$DRUPAL_SITE_DIR/settings.php" "drupal.settings.d" "global \$settings; \$civibuild['DRUPAL_SITE_DIR'] = '$DRUPAL_SITE_DIR';"
     chmod u-w "sites/$DRUPAL_SITE_DIR/settings.php"
 
     ## Setup extra directories
