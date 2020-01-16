@@ -23,28 +23,15 @@ popd >> /dev/null
 ###############################################################################
 ## Setup CiviCRM (config files, database tables)
 
-#CIVI_DOMAIN_NAME="Demonstrators Anonymous"
-#CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
+CIVI_DOMAIN_NAME="Demonstrators Anonymous"
+CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
 CIVI_CORE="${WEB_ROOT}/vendor/civicrm/civicrm-core"
-#CIVI_SETTINGS="${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}/civicrm.settings.php"
-#CIVI_FILES="${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}/files/civicrm"
-#CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
 CIVI_UF="Drupal8"
-#civicrm_install
+GENCODE_CONFIG_TEMPLATE="${CMS_ROOT}/modules/contrib/civicrm/civicrm.config.php.drupal"
 
 pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
-  cv core:install -f --cms-base-url="$CMS_URL" \
-    --db="$CIVI_DB_DSN" \
-    -m "siteKey=$CIVI_SITE_KEY"
-
-  ## FIXME: is it needed to enable? doesn't core:install handle that now?
-  drush8 -y en civicrm
-
-  ## Allow developers to run `./bin/setup.sh`
-  civicrm_make_setup_conf
-  echo "export GENCODE_CONFIG_TEMPLATE=${CMS_ROOT}/modules/contrib/civicrm/civicrm.config.php.drupal" >> "$CIVI_CORE/bin/setup.conf"
+  civicrm_install_cv
 popd >> /dev/null
-
 
 ###############################################################################
 ## Extra configuration

@@ -545,11 +545,10 @@ function api4_download_conditional() {
 ###############################################################################
 ## Generate config files and setup database
 function civicrm_install() {
-  cvutil_assertvars civicrm_install CIVI_CORE CIVI_FILES CIVI_TEMPLATEC CIVI_DOMAIN_NAME CIVI_DOMAIN_EMAIL
+  cvutil_assertvars civicrm_install CIVI_CORE CIVI_FILES CIVI_TEMPLATEC
 
   if [ ! -d "$CIVI_CORE/bin" -o ! -d "$CIVI_CORE/CRM" ]; then
-    echo "Failed to locate valid civi root: $CIVI_CORE"
-    exit 1
+    cvutil_fatal "Failed to locate valid civi root: $CIVI_CORE"
   fi
 
   ## Create CiviCRM data dirs
@@ -578,6 +577,31 @@ function civicrm_install() {
     fi
   popd >> /dev/null
 
+  civicrm_update_domain
+}
+
+###############################################################################
+## Generate config files and setup database (via cv)
+function civicrm_install_cv() {
+  cvutil_assertvars civicrm_install CIVI_CORE CIVI_DB_DSN CMS_URL CIVI_SITE_KEY
+
+  if [ ! -d "$CIVI_CORE/bin" -o ! -d "$CIVI_CORE/CRM" ]; then
+    cvutil_fatal "Failed to locate valid civi root: $CIVI_CORE"
+  fi
+
+  ## FIXME: Support NO_SAMPLE_DATA
+  cv core:install -f --cms-base-url="$CMS_URL" --db="$CIVI_DB_DSN" -m "siteKey=$CIVI_SITE_KEY"
+  civicrm_update_domain
+
+  ## Enable development
+  civicrm_make_setup_conf
+  civicrm_make_test_settings_php
+}
+
+###############################################################################
+## Update the CiviCRM domain's name+email
+function civicrm_update_domain() {
+  cvutil_assertvars civicrm_install CIVI_DOMAIN_NAME CIVI_DOMAIN_EMAIL
   amp sql -Ncivi --root="$CMS_ROOT" <<EOSQL
     UPDATE civicrm_domain SET name = '$CIVI_DOMAIN_NAME';
     SELECT @option_group_id := id
@@ -713,6 +737,11 @@ function civicrm_make_setup_conf() {
     # DBADD=
     GENCODE_CMS="$CIVI_UF"
 EOF
+
+  if [ -n "$GENCODE_CONFIG_TEMPLATE" ]; then
+    echo "GENCODE_CONFIG_TEMPLATE=\"$GENCODE_CONFIG_TEMPLATE\"" >> "$CIVI_CORE/bin/setup.conf"
+    echo "export GENCODE_CONFIG_TEMPLATE" >> "$CIVI_CORE/bin/setup.conf"
+  fi
 }
 
 ###############################################################################
