@@ -1,175 +1,155 @@
-#!/usr/bin/env php
 <?php
+#!require clippy/std: ~0.2.1
+#!require clippy/container: '~1.2'
 
 ###############################################################################
 ## Bootstrap
-ini_set('display_errors', 1);
+namespace Clippy;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+
+$c = clippy()->register(plugins());
 
 ###############################################################################
+## Services / computed data
 
-function usage($error = FALSE) {
-  echo "about: Publish a release.\n";
-  echo "usage: releaser <json-url> [tasks] [options]\n";
-  echo "  Tasks:\n";
-  echo "    --get                 Download an RC or nightly build\n";
-  echo "    --sign                Generate checksum and GPG signature\n";
-  echo "    --tag                 Generate and push git tags\n";
-  echo "    --publish             Send build to primary download service\n";
-  echo "    --esr-publish         Send build to ESR download service\n";
-  echo "    --clean               Delete any temp files\n";
-  echo "  Options:\n";
-  echo "     -f                   Force, even if it replaces existing items\n";
-  echo "     -n                   No pushing. Dry-run.\n";
-  echo "     --git-remote <n>     Name of the git remote (Default: origin)\n";
-  echo "     --gpg-key <n>        Name of the GPG signing key (Default: 7A1E75CB)\n";
-  echo "example: releaser gs://civicrm-build/4.7.19-rc/civicrm-4.7.19-201705020430.json --get --sign\n";
-  if ($error) {
-    echo "error: $error\n";
-  }
-}
-
-###############################################################################
-
-/**
- * @param array $argv
- *   List of command line arguments.
- * @return int
- *   Exit code
- */
-function main($argv) {
-  array_shift($argv);
-
+$c['versionSpec'] = function (InputInterface $input) {
   $stagingBaseDir = getenv('RELEASE_TMPDIR');
-  if (!$stagingBaseDir || !file_exists($stagingBaseDir)) {
-    usage('Environment variable RELEASE_TMPDIR should reference a local data dir');
-    return 1;
-  }
+  assertThat($stagingBaseDir && file_exists($stagingBaseDir), 'Environment variable RELEASE_TMPDIR should reference a local data dir');
 
-  $tasks = array();
-  $versionSpecs = array();
-  $options = array(
-    'force' => FALSE,
-    'git-remote' => 'origin',
-    'gpg-key' => '7A1E75CB',
-    'dry-run' => FALSE,
+  $jsonUrl = $input->getArgument('json-url');
+  assertThat(preg_match(';^(gs://civicrm-build/.*)/civicrm-(.+)-([0-9]+)\.json;', $jsonUrl, $m), "Malformed JSON URL");
+  return array(
+    'json' => $jsonUrl,
+    'stagingDir' => $stagingBaseDir . '/' . md5($jsonUrl) . '/' . $m[2],
+    'gitDir' => getcwd(),
+    'prefix' => $m[1],
+    'version' => $m[2],
+    'timestamp' => $m[3],
   );
+};
 
-  while (!empty($argv)) {
-    $expr = array_shift($argv);
+$c['runner'] = $c->autowiredObject(new class() {
 
-    switch ($expr) {
-      case '--get':
-        $tasks[] = 'main_get';
-        break;
+  /** @var \Symfony\Component\Console\Style\SymfonyStyle */
+  protected $io;
 
-      case '--tag':
-        $tasks[] = 'main_tag';
-        break;
-
-      case '--sign':
-        $tasks[] = 'main_sign';
-        break;
-
-      case '--publish':
-        $tasks[] = 'main_publish';
-        break;
-
-      case '--esr-publish':
-        $tasks[] = 'main_esr_publish';
-        break;
-
-      case '--clean':
-        $tasks[] = 'main_clean';
-        break;
-
-      case '-f':
-        $options['force'] = TRUE;
-        break;
-
-      case '-n':
-        $options['dry-run'] = TRUE;
-        break;
-
-      case '--git-remote':
-        $options['git-remote'] = array_shift($argv);
-        break;
-
-      case '--gpg-key':
-        $options['gpg-key'] = array_shfit($argv);
-        break;
-
-      default:
-        if (preg_match(';^(gs://civicrm-build/.*)/civicrm-(.+)-([0-9]+)\.json;',
-          $expr, $matches)) {
-          $versionSpecs[] = array(
-            'json' => $expr,
-            'stagingDir' => $stagingBaseDir . '/' . md5($expr) . '/' . $matches[2],
-            'gitDir' => getcwd(),
-            'prefix' => $matches[1],
-            'version' => $matches[2],
-            'timestamp' => $matches[3],
-          );
-        }
-        else {
-          usage("Unrecognized option or URL: $expr");
-          return 2;
-        }
-        break;
+  public function exec($cwd, $command, &$lines = NULL, &$result = NULL) {
+    if ($cwd) {
+      $this->io->writeln("<comment>\$</comment> $command <comment>[[in $cwd]]</comment>", OutputInterface::VERBOSITY_VERBOSE);
+      $oldCwd = getcwd();
+      chdir($cwd);
+      exec($command, $lines, $result);
+      chdir($oldCwd);
+    }
+    else {
+      $this->io->writeln("<comment>\$</comment> $command", OutputInterface::VERBOSITY_VERBOSE);
+      exec($command, $lines, $result);
     }
   }
 
-  if (empty($versionSpecs) || empty($tasks)) {
-    usage('Must specify at least one task and one JSON URL');
-    return 3;
-  }
-
-  foreach ($versionSpecs as $versionSpec) {
-    util_info(sprintf("# Processing v%s (%s)", $versionSpec['version'],
-      $versionSpec['json']));
-    util_info(sprintf("# Staging directory is %s", $versionSpec['stagingDir']));
-    util_info(sprintf("# Local git tree is %s", $versionSpec['gitDir']));
-    if (!file_exists($versionSpec['stagingDir'])) {
-      util_info('## Make temp dir: ' . $versionSpec['stagingDir']);
-      mkdir($versionSpec['stagingDir'], 0777, TRUE);
-    }
-    foreach ($tasks as $task) {
-      $task($versionSpec, $options);
+  public function passthruOk($command, &$result = NULL) {
+    $this->io->writeln("<comment>\$</comment> $command", OutputInterface::VERBOSITY_VERBOSE);
+    passthru($command, $result);
+    if ($result !== 0) {
+      throw new \Exception("Command failed: \"$command\"");
     }
   }
 
-  return 0;
-}
+});
 
-###############################################################################
+$c['gsutil'] = $c->autowiredObject(new class() {
+
+  /** @var \Symfony\Component\Console\Input\InputInterface */
+  protected $input;
+
+  /** @var \Symfony\Component\Console\Style\SymfonyStyle */
+  protected $io;
+
+  protected $runner;
+
+  public function list($arg) {
+    $command = "gsutil ls " . escapeshellarg($arg);
+    $this->runner->exec(NULL, $command, $lines, $result);
+    if ($result !== 0) {
+      throw new \Exception("Command failed: \"$command\": " .
+        implode("\n", $lines));
+    }
+    foreach ($lines as $line) {
+      if (!preg_match(';^gs://;', $line)) {
+        throw new \Exception("Command \"$command\" returned invalid line \"$line\"");
+      }
+    }
+    return $lines;
+  }
+
+  public function copy($src, $dest) {
+    $this->io->writeln("Copy <comment>$src</comment> to <comment>$dest</comment>");
+    $command = sprintf("gsutil cp %s %s", escapeshellarg($src),
+      escapeshellarg($dest));
+    $this->runner->exec(NULL, $command, $lines, $result);
+    if ($result !== 0) {
+      throw new \Exception("Command failed: \"$command\": " . implode("\n",
+          $lines));
+    }
+  }
+
+});
 
 /**
- * Get the RC or nightly build
+ * Call a git subcommand.
+ *
+ * @param string $path
+ *   Ex: /var/www/sites/all/modules/civicrm.
+ * @param string $command
+ *   Ex: git fetch origin
+ * @throws \Exception
+ */
+$c['git()'] = function ($path, $command, $runner) {
+  $result = NULL;
+  $runner->exec($path, $command, $lines, $result);
+
+  if ($result !== 0) {
+    throw new \Exception("Command failed in \"$path\": \"$command\": " .
+      implode("\n", $lines));
+  }
+};
+
+###############################################################################
+## Tasks
+
+/**
+ * Download the prepared tarballs.
  *
  * @param array $versionSpec
+ * @param \Symfony\Component\Console\Input\InputInterface $input
+ * @param \Symfony\Component\Console\Style\SymfonyStyle $io
  */
-function main_get($versionSpec, $options) {
-  util_info('## Get the RC or nightly build');
-  $fileUrls = gsutil_ls($versionSpec['prefix'] . '/civicrm-*' . $versionSpec['version'] . '*' . $versionSpec['timestamp'] . '*');
+$c['task_get()'] = function (array $versionSpec, $input, $io, $gsutil) {
+  $io->section('Get the RC or nightly build');
+  $fileUrls = $gsutil->list($versionSpec['prefix'] . '/civicrm-*' . $versionSpec['version'] . '*' . $versionSpec['timestamp'] . '*');
   foreach ($fileUrls as $fileUrl) {
-    $filePath = $versionSpec['stagingDir'] . '/' . str_replace('-' . $versionSpec['timestamp'],
-        '', basename($fileUrl));
+    $filePath = $versionSpec['stagingDir'] . '/' . str_replace('-' . $versionSpec['timestamp'], '', basename($fileUrl));
     if (file_exists($filePath)) {
-      if (empty($options['force'])) {
-        util_warn("[[Skipped item: $filePath already exists]]");
+      if (!$input->getOption('force')) {
+        $io->writeln("Skipped item: <comment>$filePath</comment> already exists");
         continue;
       }
-      util_warn("[[Overwrite $filePath]]");
+      $io->writeln("Overwrite <comment>$filePath</comment>");
     }
-    gsutil_cp($fileUrl, $filePath);
+    $gsutil->copy($fileUrl, $filePath);
   }
-}
+};
 
 /**
  * Generate checksum and GPG signature
  * @param array $versionSpec
+ * @param \Symfony\Component\Console\Input\InputInterface $input
+ * @param \Symfony\Component\Console\Style\SymfonyStyle $io
  */
-function main_sign($versionSpec, $options) {
-  util_info('## Generate checksum and GPG signature');
+$c['task_sign()'] = function (array $versionSpec, $input, $io, $runner) {
+  $io->section('Generate checksum and GPG signature');
+  $gpgKey = $input->getOption('gpg-key');
 
   //  $passphrase = getenv('RELEASE_PASS');
   //  if (empty($passphrase)) {throw new \Exception("Cannot generate signatures. Please set RELEASE_PASS.");}
@@ -178,71 +158,76 @@ function main_sign($versionSpec, $options) {
   $md5File = 'civicrm-' . $versionSpec['version'] . '.MD5SUMS';
   $sha256File = 'civicrm-' . $versionSpec['version'] . '.SHA256SUMS';
 
-  util_exec($versionSpec['stagingDir'],
+  $runner->exec($versionSpec['stagingDir'],
     sprintf("md5sum *.tar.gz *.tgz *.zip *.json > %s", escapeshellarg($md5File)));
-  util_exec($versionSpec['stagingDir'],
+  $runner->exec($versionSpec['stagingDir'],
     sprintf("sha256sum *.tar.gz *.tgz *.zip *.json > %s", escapeshellarg($sha256File)));
 
-  util_exec($versionSpec['stagingDir'],
+  $runner->exec($versionSpec['stagingDir'],
     sprintf("gpg -b --armor -u %s --sign %s",
-      escapeshellarg($options['gpg-key']), escapeshellarg($md5File)));
-  util_exec($versionSpec['stagingDir'],
+      escapeshellarg($gpgKey), escapeshellarg($md5File)));
+  $runner->exec($versionSpec['stagingDir'],
     sprintf("gpg -b --armor -u %s --sign %s",
-      escapeshellarg($options['gpg-key']), escapeshellarg($sha256File)));
-}
+      escapeshellarg($gpgKey), escapeshellarg($sha256File)));
+};
 
 /**
  * Generate and push git tags.
  *
  * @param array $versionSpec
+ * @param \Symfony\Component\Console\Input\InputInterface $input
+ * @param \Symfony\Component\Console\Style\SymfonyStyle $io
  */
-function main_tag($versionSpec, $options) {
-  util_info('## Generate and push git tags');
+$c['task_tag()'] = function (array $versionSpec, $input, $io, $git) {
+  $io->section('Generate and push git tags');
   $jsonFile = sprintf("%s/civicrm-%s.json",
     $versionSpec['stagingDir'], $versionSpec['version']);
   $versionJson = json_decode(file_get_contents($jsonFile), 1);
-  $newTags = main_tag_plan($versionSpec, $versionJson);
-  $force = $options['force'] ? '-f' : '';
+  $newTags = task_tag_plan($versionSpec, $versionJson);
+  $force = $input->getOption('force') ? '-f' : '';
+  $gitRemote = $input->getOption('git-remote');
 
   // Do all the local ops first. Progress toward more risky/enduring.
 
   foreach ($newTags as $todo) {
-    git($todo['path'],
-      sprintf("git fetch %s", escapeshellarg($options['git-remote'])));
+    $git($todo['path'], sprintf("git fetch %s", escapeshellarg($gitRemote)));
   }
 
   foreach ($newTags as $todo) {
-    git($todo['path'],
+    $git($todo['path'],
       sprintf("git tag %s %s %s", $force,
         escapeshellarg($todo['tag']), escapeshellarg($todo['commit'])));
   }
 
-  if (empty($options['dry-run'])) {
+  if (!$input->getOption('dry-run')) {
     foreach ($newTags as $todo) {
-      git($todo['path'], sprintf("git push %s %s %s", escapeshellarg($options['git-remote']), $force, escapeshellarg($todo['tag'])));
+      $git($todo['path'], sprintf("git push %s %s %s", escapeshellarg($gitRemote), $force, escapeshellarg($todo['tag'])));
     }
   }
-}
+};
 
 /**
  * Send build to primary download service.
  *
  * @param array $versionSpec
+ * @param \Symfony\Component\Console\Input\InputInterface $input
+ * @param \Symfony\Component\Console\Style\SymfonyStyle $io
  */
-function main_publish($versionSpec, $options) {
+$c['task_publish()'] = function (array $versionSpec, $input, $io, $runner) {
+  $io->section('Publish tarballs to primary download service');
+
   // Get missing info before doing anything
-  util_info('## This will be uploaded to sf.net. To mark it as the default download on sf.net, one needs an api_key.');
-  util_info('## (To skip, leave blank.)');
-  $sfApiKey = util_password('Enter sf.net api_key: ');
+  $io->writeln('This will be uploaded to sf.net. To mark it as the default download on sf.net, one needs an api_key. (To skip, leave blank.)');
+  $sfApiKey = $io->askHidden('Enter sf.net api_key: ', function($pass){ return $pass; });
 
   // Execute, such as it is
-  util_info('## Send build to primary download service');
-  $dry = $options['dry-run'] ? '-n' : '';
-  util_passthru_ok(sprintf("gsutil rsync $dry %s/ %s/",
+  $io->writeln('Send build to primary download service');
+  $dry = $input->getOption('dry-run') ? '-n' : '';
+  $runner->passthruOk(sprintf("gsutil rsync $dry %s/ %s/",
     escapeshellarg($versionSpec['stagingDir']),
     escapeshellarg('gs://civicrm/civicrm-stable/' . $versionSpec['version'])
   ));
-  util_passthru_ok(sprintf("rsync -va $dry %s/ %s/",
+  $runner->passthruOk(sprintf("rsync -va $dry %s/ %s/",
     escapeshellarg($versionSpec['stagingDir']),
     escapeshellarg('civicrm@frs.sourceforge.net:/home/frs/project/civicrm/civicrm-stable/' . $versionSpec['version'])
   ));
@@ -252,48 +237,97 @@ function main_publish($versionSpec, $options) {
     $project = 'civicrm';
     $defaultDownloadFile = sprintf('civicrm-stable/%s/civicrm-%s-drupal.tar.gz', $versionSpec['version'], $versionSpec['version']);
     $defaultDownloadUrl = "https://sourceforge.net/projects/{$project}/files/{$defaultDownloadFile}";
-    util_info(sprintf('## Mark "%s" as default download', $defaultDownloadFile));
+    $io->writeln(sprintf('Mark "%s" as default download', $defaultDownloadFile));
     $curlCmd = sprintf('%s --fail -H %s -X PUT -d %s -d %s %s',
-      ($options['dry-run'] ? 'echo curl' : 'curl'),
+      ($input->getOption('dry-run') ? 'echo curl' : 'curl'),
       escapeshellarg("Accept: application/json"),
       escapeshellarg("default=windows&default=mac&default=linux&default=bsd&default=solaris&default=others"),
       escapeshellarg("api_key=$sfApiKey"),
       escapeshellarg($defaultDownloadUrl)
     );
-    util_passthru_ok($curlCmd);
+    $runner->passthruOk($curlCmd);
   }
   else {
-    util_info("## Do not update sf.net default download");
+    $io->warning('Could not update default download on sourceforge.net');
   }
-}
+};
 
 /**
  * Send build to ESR download service.
  *
  * @param array $versionSpec
+ * @param \Symfony\Component\Console\Input\InputInterface $input
+ * @param \Symfony\Component\Console\Style\SymfonyStyle $io
  */
-function main_esr_publish($versionSpec, $options) {
-  util_info('## Send build to primary download service');
-  $dry = $options['dry-run'] ? '-n' : '';
-  util_passthru_ok(sprintf("gsutil -m rsync $dry %s/ %s/",
+$c['task_esr_publish()'] = function (array $versionSpec, $input, $io, $runner) {
+  $io->section('Publish tarballs to primary download service (ESR)');
+  $dry = $input->getOption('dry-run') ? '-n' : '';
+  $runner->passthruOk(sprintf("gsutil -m rsync $dry %s/ %s/",
     escapeshellarg($versionSpec['stagingDir']),
     escapeshellarg('gs://civicrm-private/civicrm-esr/' . $versionSpec['version'])
   ));
-}
+};
 
 /**
  * Delete any temp files.
  *
  * @param array $versionSpec
+ * @param \Symfony\Component\Console\Input\InputInterface $input
+ * @param \Symfony\Component\Console\Style\SymfonyStyle $io
  */
-function main_clean($versionSpec, $options) {
-  util_info('## Delete any temp files');
+$c['task_clean()'] = function ($versionSpec, $input, $io, $runner) {
+  $io->section('Cleanup temp files');
   if (file_exists($versionSpec['stagingDir'])) {
     $parentDir = dirname($versionSpec['stagingDir']);
     $childDir = basename($versionSpec['stagingDir']);
-    util_exec($parentDir, sprintf("rm -rf %s", escapeshellarg($childDir)));
+    $dry = $input->getOption('dry-run') ? 'echo ' : '';
+    $runner->exec($parentDir, sprintf("%s rm -rf %s", $dry, escapeshellarg($childDir)));
   }
-}
+};
+
+/**
+ * @param array $versionSpec
+ * @param \Symfony\Component\Console\Style\SymfonyStyle $io
+ */
+$c['task_debug()'] = function(array $versionSpec, $io) use ($c) {
+  $io->section('Debug: Version spec');
+  $vsRows = [];
+  foreach ($versionSpec as $k => $v) {
+    $vsRows[] = [$k, $v];
+  }
+  $io->table(['key', 'value'], $vsRows);
+
+  $io->section('Debug: Services');
+  $io->table(['service id'], array_map(
+    function($key){ return [$key];},
+    $c->keys()
+  ));
+};
+
+###############################################################################
+## Main
+// FIXME: Help should show an example, echo "example: releaser gs://civicrm-build/4.7.19-rc/civicrm-4.7.19-201705020430.json --get --sign\n";
+// FIXME: Help should show a task list
+$c['app']->main('[-f|--force] [-N|--dry-run] [--git-remote=] [--gpg-key=] json-url tasks*', function($tasks, InputInterface $input) use ($c) {
+  $defaults = ['git-remote' => 'origin', 'gpg-key' => '7A1E75CB'];
+  foreach ($defaults as $option => $value) {
+    if (!$input->getOption($option)) {
+      $input->setOption($option, $value);
+    }
+  }
+
+  $tasks = array_map(function ($t) {
+    return str_replace('-', '_', $t);
+  }, $tasks);
+
+  foreach ($tasks as $task) {
+    assertThat($c->has('task_' . $task), "Unrecognized task: $task");
+  }
+
+  foreach ($tasks as $task) {
+    $c['task_' . $task]();
+  }
+});
 
 ###############################################################################
 
@@ -309,7 +343,7 @@ function main_clean($versionSpec, $options) {
  *     - commit: string, git sha1 hash
  * @throws \Exception
  */
-function main_tag_plan($versionSpec, $versionJson) {
+function task_tag_plan($versionSpec, $versionJson) {
   $repoPaths = array(
     "civicrm-drupal" => $versionSpec['gitDir'] . "/drupal",
     "civicrm-drupal-8" => $versionSpec['gitDir'] . "/drupal-8",
@@ -348,106 +382,3 @@ function main_tag_plan($versionSpec, $versionJson) {
   }
   return $todos;
 }
-
-###############################################################################
-
-function gsutil_ls($arg) {
-  $command = "gsutil ls " . escapeshellarg($arg);
-  util_exec(NULL, $command, $lines, $result);
-  if ($result !== 0) {
-    throw new \Exception("Command failed: \"$command\": " .
-      implode("\n", $lines));
-  }
-  foreach ($lines as $line) {
-    if (!preg_match(';^gs://;', $line)) {
-      throw new \Exception("Command \"$command\" returned invalid line \"$line\"");
-    }
-  }
-  return $lines;
-}
-
-function gsutil_cp($src, $dest) {
-  util_info("Copy \"$src\" to \"$dest\"");
-  $command = sprintf("gsutil cp %s %s", escapeshellarg($src),
-    escapeshellarg($dest));
-  util_exec(NULL, $command, $lines, $result);
-  if ($result !== 0) {
-    throw new \Exception("Command failed: \"$command\": " . implode("\n",
-        $lines));
-  }
-}
-
-###############################################################################
-
-/**
- * Call a git subcommand.
- *
- * @param string $path
- *   Ex: /var/www/sites/all/modules/civicrm.
- * @param string $command
- *   Ex: git fetch origin
- * @throws \Exception
- */
-function git($path, $command) {
-  util_exec($path, $command, $lines, $result);
-
-  if ($result !== 0) {
-    throw new \Exception("Command failed in \"$path\": \"$command\": " .
-      implode("\n", $lines));
-  }
-}
-
-###############################################################################
-
-function util_exec($cwd, $command, &$lines = NULL, &$result = NULL) {
-  if ($cwd) {
-    util_info("\$ $command [[in $cwd]]");
-    $oldCwd = getcwd();
-    chdir($cwd);
-    exec($command, $lines, $result);
-    chdir($oldCwd);
-  }
-  else {
-    util_info("\$ $command");
-    exec($command, $lines, $result);
-  }
-}
-
-function util_passthru_ok($command, &$result = NULL) {
-  util_info("\$ $command");
-  passthru($command, $result);
-  if ($result !== 0) {
-    throw new \Exception("Command failed: \"$command\"");
-  }
-}
-
-/**
- * Prompt the user for a password
- *
- * @param string $prompt
- * @return string|NULL
- */
-function util_password($prompt) {
-  $command = "/usr/bin/env bash -c 'echo OK'";
-  if (rtrim(shell_exec($command)) !== 'OK') {
-    trigger_error("Can't invoke bash");
-    return;
-  }
-  $command = "/usr/bin/env bash -c 'read -s -p \""
-    . addslashes($prompt)
-    . "\" mypassword && echo \$mypassword'";
-  $password = rtrim(shell_exec($command));
-  echo "\n";
-  return $password;
-}
-
-function util_info($message) {
-  echo "$message\n";
-}
-
-function util_warn($message) {
-  fwrite(STDERR, "WARNING: $message\n");
-}
-
-###############################################################################
-exit(main($argv));
