@@ -28,5 +28,4 @@ source "$PRJDIR/src/civibuild.lib.sh"
 source "$PRJDIR/src/civibuild.aliases.sh"
 cvutil_mkdir "$RELEASE_TMPDIR"
 
-PATH="$HOME/src/pogo/bin:$PATH"
 exec pogo --run-mode=local --dl="$TMPDIR/releaser-deps" -- "$PRJDIR/src/releaser.php" "$@"
