@@ -37,4 +37,10 @@ EOSETTING
 pushd "$WEB_ROOT" >> /dev/null
   composer install
   ./app/console doctrine:schema:create
+  command -v msgfmt > /dev/null || cvutil_fatal "Failed to locate msgfmt. Please ensure gettext is installed."
+  pushd l10n >> /dev/null
+    for i in *_*; do
+      msgfmt "$i/LC_MESSAGES/alerts.po" -o "$i/LC_MESSAGES/alerts.mo"
+    done
+  popd >> /dev/null
 popd >> /dev/null
