@@ -29,6 +29,10 @@ pushd "$WEB_ROOT/web/wp-content/plugins" >> /dev/null
   git clone ${CACHE_DIR}/civicrm/civivolunteer.git                    -b "$VOL_VERSION"  civicrm/civicrm/tools/extensions/civivolunteer
   git clone ${CACHE_DIR}/ginkgostreet/org.civicrm.angularprofiles.git -b "$NG_PRFL_VERSION" civicrm/civicrm/tools/extensions/org.civicrm.angularprofiles
 
+  cd civicrm
+  extract-url --cache-ttl 172800 civicrm=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
+  cd -
+
   git_set_hooks civicrm-wordpress   civicrm                    "../civicrm/tools/scripts/git"
   git_set_hooks civicrm-core        civicrm/civicrm            "../tools/scripts/git"
   git_set_hooks civicrm-packages    civicrm/civicrm/packages   "../../tools/scripts/git"

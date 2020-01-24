@@ -19,6 +19,8 @@ pushd "$WEB_ROOT/web/modules" >> /dev/null
   git clone ${CACHE_DIR}/civicrm/civicrm-backdrop.git  -b "1.x-$CIVI_VERSION" civicrm/backdrop
   git clone ${CACHE_DIR}/civicrm/civicrm-packages.git  -b "$CIVI_VERSION"     civicrm/packages
 
+  extract-url --cache-ttl 172800 civicrm=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
+
   git_set_hooks civicrm-drupal      civicrm/backdrop   "../tools/scripts/git"
   git_set_hooks civicrm-core        civicrm            "tools/scripts/git"
   git_set_hooks civicrm-packages    civicrm/packages   "../tools/scripts/git"
