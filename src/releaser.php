@@ -306,10 +306,8 @@ $c['task_debug()'] = function(array $versionSpec, $io) use ($c) {
 
 ###############################################################################
 ## Main
-// FIXME : dry-run -n changed to -N. Updated docs.
-// FIXME: Tasks no longer have dashes. Update docs.
 // FIXME: Help should show an example, echo "example: releaser gs://civicrm-build/4.7.19-rc/civicrm-4.7.19-201705020430.json --get --sign\n";
-// FIXME: Help should sow a task list
+// FIXME: Help should show a task list
 $c['app']->main('[-f|--force] [-N|--dry-run] [--git-remote=] [--gpg-key=] json-url tasks*', function($tasks, InputInterface $input) use ($c) {
   $defaults = ['git-remote' => 'origin', 'gpg-key' => '7A1E75CB'];
   foreach ($defaults as $option => $value) {
