@@ -206,13 +206,14 @@ function cvutil_parse_site_name_id() {
 
 ###############################################################################
 ## Append the civibuild settings directives to a file
-## usage: cvutil_inject_settings <php-file> <settings-dir-name>
+## usage: cvutil_inject_settings <php-file> <settings-dir-name> [<preamble>]
 ## example: cvutil_inject_settings "/var/www/build/drupal/sites/foo/civicrm.settings.php" "civicrm.settings.d"
-## example: cvutil_inject_settings "/var/www/build/drupal/sites/foo/settings.php" "drupal.settings.d"
+## example: cvutil_inject_settings "/var/www/build/drupal/sites/foo/settings.php" "drupal.settings.d" 'global $settings;'
 function cvutil_inject_settings() {
   local FILE="$1"
   local NAME="$2"
-  cvutil_assertvars cvutil_inject_settings PRJDIR SITE_NAME SITE_TYPE SITE_CONFIG_DIR SITE_ID SITE_TOKEN PRIVATE_ROOT FILE NAME
+  local PREAMBLE="$3"
+  cvutil_assertvars cvutil_inject_settings PRJDIR SITE_NAME SITE_TYPE SITE_CONFIG_DIR SITE_ID SITE_TOKEN PRIVATE_ROOT FILE NAME CMS_VERSION
 
   ## Prepare temp file
   local TMPFILE="${TMPDIR}/${SITE_TYPE}/${SITE_NAME}/${SITE_ID}.settings.tmp"
@@ -231,6 +232,8 @@ function cvutil_inject_settings() {
     \$civibuild['PRIVATE_ROOT'] = '$PRIVATE_ROOT';
     \$civibuild['WEB_ROOT'] = '$WEB_ROOT';
     \$civibuild['CMS_ROOT'] = '$CMS_ROOT';
+    \$civibuild['CMS_VERSION'] = '$CMS_VERSION';
+    $PREAMBLE
 
     if (file_exists(\$civibuild['PRJDIR'].'/src/civibuild.settings.php')) {
       require_once \$civibuild['PRJDIR'].'/src/civibuild.settings.php';
@@ -545,11 +548,10 @@ function api4_download_conditional() {
 ###############################################################################
 ## Generate config files and setup database
 function civicrm_install() {
-  cvutil_assertvars civicrm_install CIVI_CORE CIVI_FILES CIVI_TEMPLATEC CIVI_DOMAIN_NAME CIVI_DOMAIN_EMAIL
+  cvutil_assertvars civicrm_install CIVI_CORE CIVI_FILES CIVI_TEMPLATEC
 
   if [ ! -d "$CIVI_CORE/bin" -o ! -d "$CIVI_CORE/CRM" ]; then
-    echo "Failed to locate valid civi root: $CIVI_CORE"
-    exit 1
+    cvutil_fatal "Failed to locate valid civi root: $CIVI_CORE"
   fi
 
   ## Create CiviCRM data dirs
@@ -578,6 +580,35 @@ function civicrm_install() {
     fi
   popd >> /dev/null
 
+  civicrm_update_domain
+}
+
+###############################################################################
+## Generate config files and setup database (via cv)
+function civicrm_install_cv() {
+  cvutil_assertvars civicrm_install CIVI_CORE CIVI_DB_DSN CMS_URL CIVI_SITE_KEY
+
+  if [ ! -d "$CIVI_CORE/bin" -o ! -d "$CIVI_CORE/CRM" ]; then
+    cvutil_fatal "Failed to locate valid civi root: $CIVI_CORE"
+  fi
+
+  local loadGenOpt
+  [ -n "$NO_SAMPLE_DATA" ] && loadGenOpt="" || loadGenOpt="-m loadGenerated=1"
+
+  cv core:install -f --cms-base-url="$CMS_URL" --db="$CIVI_DB_DSN" -m "siteKey=$CIVI_SITE_KEY" $loadGenOpt
+  local settings=$( cv ev 'echo CIVICRM_SETTINGS_PATH;' )
+  cvutil_inject_settings "$settings" "civicrm.settings.d"
+  civicrm_update_domain
+
+  ## Enable development
+  civicrm_make_setup_conf
+  civicrm_make_test_settings_php
+}
+
+###############################################################################
+## Update the CiviCRM domain's name+email
+function civicrm_update_domain() {
+  cvutil_assertvars civicrm_install CIVI_DOMAIN_NAME CIVI_DOMAIN_EMAIL
   amp sql -Ncivi --root="$CMS_ROOT" <<EOSQL
     UPDATE civicrm_domain SET name = '$CIVI_DOMAIN_NAME';
     SELECT @option_group_id := id
@@ -588,6 +619,16 @@ function civicrm_install() {
       WHERE option_group_id = @option_group_id
       AND value = '1';
 EOSQL
+}
+
+###############################################################################
+## Get a list of default permissions for anonymous users
+function civicrm_apply_d8_perm_defaults() {
+  ## FIXME: The lists need a better home.
+  drush8 -y role-create demoadmin
+  drush8 -y role-add-perm anonymous "access CiviMail subscribe/unsubscribe pages,access all custom data,access uploaded files,make online contributions,profile create,profile view,register for events"
+  drush8 -y role-add-perm demoadmin "access AJAX API,access all custom data,access CiviContribute,access CiviCRM,access CiviEvent,access CiviMail,access CiviMail subscribe/unsubscribe pages,access CiviMember,access CiviReport,access Contact Dashboard,access contact reference fields,access deleted contacts,access Report Criteria,save Report Criteria,access uploaded files,add contacts,administer CiviCRM,administer dedupe rules,administer Reports,administer reserved groups,administer reserved reports,administer reserved tags,administer Tagsets,delete activities,delete contacts,delete in CiviContribute,delete in CiviEvent,delete in CiviMail,delete in CiviMember,edit all contacts,view my contact,edit my contact,edit all events,edit contributions,edit event participants,edit message templates,edit groups,edit memberships,import contacts,make online contributions,manage tags,merge duplicate contacts,profile create,profile edit,profile listings,profile listings and forms,profile view,register for events,translate CiviCRM,view all activities,view all contacts,view all notes,view event info,view event participants,view public CiviMail content,administer payment processors,create manual batch,edit own manual batches,edit all manual batches,view own manual batches,view all manual batches,delete own manual batches,delete all manual batches,export own manual batches,export all manual batches"
+  drush8 -y role-add-perm demoadmin "access toolbar"
 }
 
 ###############################################################################
@@ -704,6 +745,11 @@ function civicrm_make_setup_conf() {
     # DBADD=
     GENCODE_CMS="$CIVI_UF"
 EOF
+
+  if [ -n "$GENCODE_CONFIG_TEMPLATE" ]; then
+    echo "GENCODE_CONFIG_TEMPLATE=\"$GENCODE_CONFIG_TEMPLATE\"" >> "$CIVI_CORE/bin/setup.conf"
+    echo "export GENCODE_CONFIG_TEMPLATE" >> "$CIVI_CORE/bin/setup.conf"
+  fi
 }
 
 ###############################################################################
@@ -995,7 +1041,8 @@ function drupal8_install() {
   DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
   CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
   pushd "$CMS_ROOT" >> /dev/null
-    [ -f "sites/$DRUPAL_SITE_DIR/settings.php" ] && rm -f "sites/$DRUPAL_SITE_DIR/settings.php"
+    [ -d "sites/$DRUPAL_SITE_DIR" ] && chmod u+w "sites/$DRUPAL_SITE_DIR"
+    [ -f "sites/$DRUPAL_SITE_DIR/settings.php" ] && chmod u+w "sites/$DRUPAL_SITE_DIR/settings.php" && rm -f "sites/$DRUPAL_SITE_DIR/settings.php"
 
     drush8 site-install -y "$@" \
       --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOSTPORT}/${CMS_DB_NAME}" \
@@ -1006,7 +1053,7 @@ function drupal8_install() {
       --sites-subdir="$DRUPAL_SITE_DIR"
     chmod u+w "sites/$DRUPAL_SITE_DIR"
     chmod u+w "sites/$DRUPAL_SITE_DIR/settings.php"
-    cvutil_inject_settings "$CMS_ROOT/sites/$DRUPAL_SITE_DIR/settings.php" "drupal.settings.d"
+    cvutil_inject_settings "$CMS_ROOT/sites/$DRUPAL_SITE_DIR/settings.php" "drupal.settings.d" "global \$settings; \$civibuild['DRUPAL_SITE_DIR'] = '$DRUPAL_SITE_DIR';"
     chmod u-w "sites/$DRUPAL_SITE_DIR/settings.php"
 
     ## Setup extra directories

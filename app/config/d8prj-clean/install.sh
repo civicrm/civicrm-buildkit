@@ -1,7 +1,9 @@
 #!/bin/bash
 
+## Transition: Old builds don't have "web/" folder. New builds do.
+## TODO: Simplify sometime after Dec 2019
 ## install.sh -- Create config files and databases; fill the databases
-CMS_ROOT="$WEB_ROOT/web"
+[ -d "$WEB_ROOT/web" ] && CMS_ROOT="$WEB_ROOT/web"
 
 ###############################################################################
 ## Create virtual-host and databases
@@ -23,7 +25,7 @@ popd >> /dev/null
 
 CIVI_DOMAIN_NAME="Demonstrators Anonymous"
 CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
-CIVI_CORE="${CMS_ROOT}/vendor/civicrm/civicrm-core"
+CIVI_CORE="${WEB_ROOT}/vendor/civicrm/civicrm-core"
 CIVI_UF="Drupal8"
 GENCODE_CONFIG_TEMPLATE="${CMS_ROOT}/modules/contrib/civicrm/civicrm.config.php.drupal"
 

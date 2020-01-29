@@ -30,6 +30,11 @@ if [ -z "$CMS_URL" ]; then
   fi
 fi
 
+if [ -z "$COMPOSER_MEMORY_LIMIT" ]; then
+  COMPOSER_MEMORY_LIMIT=-1
+  export COMPOSER_MEMORY_LIMIT
+fi
+
 ###############################################################################
 ## Defaults for traditional file-structure, in which user clones repo and
 ## data is written to "./app" and "./build"
