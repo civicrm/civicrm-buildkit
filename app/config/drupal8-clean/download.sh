@@ -20,7 +20,7 @@ pushd "$WEB_ROOT/web" >> /dev/null
   case "$CIVI_VERSION" in
     5.21*) git scan -N am https://github.com/civicrm/civicrm-core/pull/16328 ; ;; ## Issue: Patches needed in 5.21
     5.22*) git scan -N am https://github.com/civicrm/civicrm-core/pull/16413 ; ;; ## Issue: Patches needed in 5.22 have one trivial difference
-    master) git scan -N am https://github.com/civicrm/civicrm-core/pull/{16403,16405,16406,16407,16408,16409} ; ;; ## Issue: This list may be volatile as PRs are getting reviewed.
+    master) git scan -N am https://github.com/civicrm/civicrm-core/pull/{16403,16405,16406,16407,16409} ; ;; ## Issue: This list may be volatile as PRs are getting reviewed.
     *) cvutil_fatal "This build type is temporarily limited to branch which have a corresponding patchset." ; ;;
   esac
   extract-url --cache-ttl 172800 vendor/civicrm/civicrm-core/l10n=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz ## Issue: Don't write directly into vendor tree
