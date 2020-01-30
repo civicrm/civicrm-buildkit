@@ -20,9 +20,9 @@ pushd "$WEB_ROOT/web" >> /dev/null
   composer require "cache/integration-tests:dev-master#b97328797ab199f0ac933e39842a86ab732f21f9" ## Issue: it's a require-dev in civicrm-core for E2E/Cache/*; how do we pull in civi require-dev without all other require-dev?
   case "$CIVI_VERSION" in
     5.21*) git scan -N am https://github.com/civicrm/civicrm-core/pull/16328 ; ;; ## Issue: Patches needed in 5.21
-    5.22*) git scan -N am https://github.com/civicrm/civicrm-core/pull/16413 ; ;; ## Issue: Patches needed in 5.22 have one trivial difference
+    5.22*) git scan -N am https://github.com/civicrm/civicrm-core/pull/16413 ; ;; ## Issue: Patches needed in 5.22 (One trivial difference vs 5.21...)
     master) git scan -N am https://github.com/civicrm/civicrm-core/pull/{16403,16405,16406,16407,16409} ; ;; ## Issue: This list may be volatile as PRs are getting reviewed.
     *) cvutil_fatal "This build type is temporarily limited to branch which have a corresponding patchset." ; ;;
   esac
-  extract-url --cache-ttl 172800 vendor/civicrm/civicrm-core/l10n=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz ## Issue: Don't write directly into vendor tree
+  extract-url --cache-ttl 172800 vendor/civicrm/civicrm-core=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz ## Issue: Don't write directly into vendor tree
 popd >> /dev/null
