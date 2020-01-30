@@ -12,16 +12,24 @@ composer create-project drupal-composer/drupal-project:"$CMS_VERSION" "$WEB_ROOT
 
 pushd "$WEB_ROOT" >> /dev/null
   composer require drupal/{devel,libraries,userprotect}
-  composer require civicrm/civicrm-asset-plugin:'~1.0.0' civicrm/civicrm-setup:'0.4.0 as 0.2.99' civicrm/civicrm-{core,packages,drupal-8}:"$CIVI_VERSION_COMP" pear/pear_exception:'1.0.1 as 1.0.0' --prefer-source
 
-  ## FIXME: All of the following should be removed/replaced as things get cleaner.
-  composer require "cache/integration-tests:dev-master#b97328797ab199f0ac933e39842a86ab732f21f9" ## Issue: it's a require-dev in civicrm-core for E2E/Cache/*; how do we pull in civi require-dev without all other require-dev?
+  #### Ideally...
+  ## composer require civicrm/civicrm-asset-plugin:'~1.0.0' civicrm/civicrm-{core,packages,drupal-8}:"$CIVI_VERSION_COMP" --prefer-source
+  #### But actually...
+
+  EXTRA_COMPOSER=()
+  EXTRA_PATCH=()
   case "$CIVI_VERSION" in
-    5.21*) git scan -N am https://github.com/civicrm/civicrm-core/pull/16328 ; ;; ## Issue: Patches needed in 5.21
-    5.22*) git scan -N am https://github.com/civicrm/civicrm-core/pull/16413 ; ;; ## Issue: Patches needed in 5.22 (One trivial difference vs 5.21...)
-    5.23*) echo "No patches to apply" ; ;;
-    master) echo "No patches to apply" ; ;;
-    *) cvutil_fatal "This build type is temporarily limited to branch which have a corresponding patchset." ; ;;
+    5.21*) EXTRA_COMPOSER+=( "civicrm/civicrm-setup:0.4.0 as 0.2.99" ) ; EXTRA_PATCH+=( "https://github.com/civicrm/civicrm-core/pull/16328" ); ;;
+    5.22*) EXTRA_COMPOSER+=( "civicrm/civicrm-setup:0.4.0 as 0.2.99" ) ; EXTRA_PATCH+=( "https://github.com/civicrm/civicrm-core/pull/16413" ); ;;
+    5.23*) echo "ok" ; ;;
+    master) echo "ok" ; ;;
+    *) cvutil_fatal "This build type is temporarily limited to branches which have a corresponding patchset." ; ;;
   esac
+  EXTRA_COMPOSER+=( 'cache/integration-tests:dev-master#b97328797ab199f0ac933e39842a86ab732f21f9' )
+  EXTRA_COMPOSER+=( 'pear/pear_exception:1.0.1 as 1.0.0') ## weird conflict in drupal-project
+
+  composer require civicrm/civicrm-asset-plugin:'~1.0.0' "${EXTRA_COMPOSER[@]}" civicrm/civicrm-{core,packages,drupal-8}:"$CIVI_VERSION_COMP" --prefer-source
+  [ -n "$EXTRA_PATCH" ] && git scan am -N "${EXTRA_PATCH[@]}"
   extract-url --cache-ttl 172800 vendor/civicrm/civicrm-core=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz ## Issue: Don't write directly into vendor tree
 popd >> /dev/null
