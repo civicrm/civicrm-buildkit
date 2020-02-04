@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## install.sh -- Create config files and databases; fill the databases
-CMS_ROOT="$WEB_ROOT/web"
+[ -d "$WEB_ROOT/web" ] && CMS_ROOT="$WEB_ROOT/web"
 
 ###############################################################################
 ## Create virtual-host and databases

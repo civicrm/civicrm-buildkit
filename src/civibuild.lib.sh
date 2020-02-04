@@ -546,6 +546,44 @@ function api4_download_conditional() {
 }
 
 ###############################################################################
+## Download CiviCRM (via composer, into an existing D8/composer project)
+##
+## This function shouldn't be necessary in the long-term; but for testing
+## right now across different versions, we need some hackery/backporting,
+## and this allows one to avoid copy-pasting those fiddly bits.
+##
+## Be sure to "cd" into the root of the composer project, then call `civicrm_download_composer_d8`
+function civicrm_download_composer_d8() {
+  cvutil_assertvars civicrm_download_composer_d8 CIVI_VERSION
+
+  local CIVI_VERSION_COMP=$(civicrm_composer_ver "$CIVI_VERSION")
+  local EXTRA_COMPOSER=()
+  local EXTRA_PATCH=()
+
+  case "$CIVI_VERSION" in
+    5.21*) EXTRA_COMPOSER+=( "civicrm/civicrm-setup:0.4.0 as 0.2.99" ) ; EXTRA_PATCH+=( "https://github.com/civicrm/civicrm-core/pull/16328" ); ;;
+    5.22*) EXTRA_COMPOSER+=( "civicrm/civicrm-setup:0.4.0 as 0.2.99" ) ; EXTRA_PATCH+=( "https://github.com/civicrm/civicrm-core/pull/16413" ); ;;
+    5.23*) echo "No extra patches required" ; ;;
+    master) echo "No extra patches required" ; ;;
+    *) cvutil_fatal "This build type is temporarily limited to branches which have a corresponding patchset." ; ;;
+  esac
+  EXTRA_COMPOSER+=( 'cache/integration-tests:dev-master#b97328797ab199f0ac933e39842a86ab732f21f9' )
+  EXTRA_COMPOSER+=( 'pear/pear_exception:1.0.1 as 1.0.0') ## weird conflict in drupal-composer/drupal-project
+
+  composer require civicrm/civicrm-asset-plugin:'~1.0.0' "${EXTRA_COMPOSER[@]}" civicrm/civicrm-{core,packages,drupal-8}:"$CIVI_VERSION_COMP" --prefer-source
+  [ -n "$EXTRA_PATCH" ] && git scan am -N "${EXTRA_PATCH[@]}"
+
+  local civicrm_version_php=$(find -name civicrm-version.php)
+  if [ -f "$civicrm_version_php" ]; then
+    local civi_root=$(dirname "$civicrm_version_php")
+    #extract-url --cache-ttl 172800 vendor/civicrm/civicrm-core=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz ## Issue: Don't write directly into vendor tree
+    extract-url --cache-ttl 172800 "$civi_root=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz" ## Issue: Don't write directly into vendor tree
+  else
+    cvutil_fatal "Cannot download l10n data - failed to locate civicrm-core"
+  fi
+}
+
+###############################################################################
 ## Generate config files and setup database
 function civicrm_install() {
   cvutil_assertvars civicrm_install CIVI_CORE CIVI_FILES CIVI_TEMPLATEC
