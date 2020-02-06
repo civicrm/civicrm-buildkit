@@ -16,8 +16,9 @@ pushd "$WEB_ROOT/web" >> /dev/null
   composer update psr/log ## Some D8 builds are too specific
   ## Some D8 builds include a specific revision of phpunit, but Civi uses standalone phpunit (PHAR)
   if composer info | grep -q ^phpunit/phpunit\ ; then
+    composer config "discard-changes" true ## Weird. phpcs has changes which interfere with other work.
     composer remove phpunit/phpunit
-    composer install --no-dev
+    composer install --no-dev --no-interaction
   fi
   civicrm_download_composer_d8
 popd >> /dev/null
