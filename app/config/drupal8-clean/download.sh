@@ -13,5 +13,6 @@ mv "$WEB_ROOT/drupal" "$WEB_ROOT/web"
 
 pushd "$WEB_ROOT/web" >> /dev/null
   drush8 dl -y devel-1 libraries userprotect
+  composer update psr/log ## Some D8 builds are too specific
   civicrm_download_composer_d8
 popd >> /dev/null
