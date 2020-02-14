@@ -306,7 +306,7 @@ function get_system_installer() {
     source /etc/lsb-release
   fi
   case "$DISTRIB_CODENAME" in
-    jessie|stretch|buster|xenial|bionic|cosmic|disco)
+    jessie|stretch|buster|xenial|bionic|disco)
       echo "do_system_$DISTRIB_CODENAME"
       ;;
     *)
@@ -368,10 +368,6 @@ function do_system_bionic() {
       exit 1
     fi
   set +e
-}
-
-function do_system_cosmic() {
-  do_system_bionic
 }
 
 ###############################################################################
