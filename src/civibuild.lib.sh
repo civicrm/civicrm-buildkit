@@ -213,7 +213,8 @@ function cvutil_inject_settings() {
   local FILE="$1"
   local NAME="$2"
   local PREAMBLE="$3"
-  cvutil_assertvars cvutil_inject_settings PRJDIR SITE_NAME SITE_TYPE SITE_CONFIG_DIR SITE_ID SITE_TOKEN PRIVATE_ROOT FILE NAME CMS_VERSION
+  cvutil_assertvars cvutil_inject_settings PRJDIR SITE_NAME SITE_TYPE SITE_CONFIG_DIR SITE_ID SITE_TOKEN PRIVATE_ROOT FILE NAME
+  # Note: CMS_VERSION ought to be defined for use in $civibuild['CMS_VERSION'], but it hasn't always been, and for most build-types its absence would be non-fatal.
 
   ## Prepare temp file
   local TMPFILE="${TMPDIR}/${SITE_TYPE}/${SITE_NAME}/${SITE_ID}.settings.tmp"
