@@ -80,6 +80,21 @@ function task_phpunit() {
   $GUARD phpunit-xml-cleanup "$JUNITDIR"/*.xml
 }
 
+function task_phpunit_core_extension() {
+
+ EXTENSION="$1"
+ EXTPATH="$2"
+
+ pushd "$CIVI_CORE/CoreExtensions/$EXTPATH/$EXTENSION"
+ if ! $GUARD phpunit6 --printer='Civi\Test\TAP' --log-junit="$JUNITDIR/junit-$EXTENSION.xml" ; then
+   EXITCODES="$EXITCODES $EXTENSION"
+ fi
+ echo "Found EXITCODES=\"$EXITCODES\""
+
+ $GUARD phpunit-xml-cleanup "$JUNITDIR"/*.xml
+
+}
+
 function task_karma() {
   $GUARD pushd "$CIVI_CORE"
     ## Work-around: ensure pradmin user has sa contact
@@ -256,6 +271,7 @@ for TESTTYPE in $SUITES ; do
     phpunit-drupal) task_phpunit_drupal ;;
     phpunit-wordpress) task_phpunit_wordpress ;;
     phpunit-backdrop) task_phpunit_backdrop ;;
+    phpunit-creditnotes) task_phpunit_core_extension sequentialcreditnotes Financial ;;
     *) echo "unrecognized suite: $TESTTYPE"; exit 2 ;;
   esac
 done
