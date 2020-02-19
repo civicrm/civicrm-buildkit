@@ -555,7 +555,9 @@ function api4_download_conditional() {
 ## Be sure to "cd" into the root of the composer project, then call `civicrm_download_composer_d8`
 function civicrm_download_composer_d8() {
   cvutil_assertvars civicrm_download_composer_d8 CIVI_VERSION
-  php $PRJDIR/src/civibuild.patching.php
+
+  composer config 'extra.enable-patching' true
+
   local CIVI_VERSION_COMP=$(civicrm_composer_ver "$CIVI_VERSION")
   local EXTRA_COMPOSER=()
   local EXTRA_PATCH=()
