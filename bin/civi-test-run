@@ -51,6 +51,7 @@ function show_help() {
   echo "                        - phpunit-drupal"
   echo "                        - phpunit-wordpress"
   echo "                        - phpunit-backdrop"
+  echo "                        - phpunit-creditnotes"
   echo "                        - upgrade"
   echo "                        - upgrade@4.7.30:10"
   echo
@@ -249,6 +250,12 @@ if [ "$SUITES" = "all" ]; then
     if [ -f "tests/phpunit/api/v4/AllTests.php" ]; then
       SUITES="$SUITES phpunit-api4"
     fi
+
+    if [ -e "CoreExtensions/Financial/sequentialcreditnotes" ]; then
+      SUITES="$SUITES phpunit-creditnotes"
+    fi
+
+    echo "ALL: $SUITES" ; exit 1
   popd >> /dev/null
 elif [[ " $SUITES " =~ \ all\  ]]; then
   echo "The \"all\" target should not be mixed with other targets."
