@@ -106,3 +106,6 @@ wp cap add civicrm_admin \
   view_public_civimail_content
 
 wp user create "$DEMO_USER" "$DEMO_EMAIL" --role=civicrm_admin --user_pass="$DEMO_PASS"
+
+## Ceate anonymous user role
+wp eval '$c=[civi_wp()->users->set_wp_user_capabilities()];if (is_callable($c)) $c();'
