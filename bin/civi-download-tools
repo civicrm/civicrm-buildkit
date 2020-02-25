@@ -525,7 +525,7 @@ fi
 
 ##################################################
 ## Only allow one concurrent process
-if php $BINDIR/pidlockfile.php "$LOCKFILE" $$ 5 ; then
+if php -d xdebug.remote_enable=off $BINDIR/pidlockfile.php "$LOCKFILE" $$ 5 ; then
   ## we acquired lock quickly; no need to bug user with output
   true
 else

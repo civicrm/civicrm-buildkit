@@ -37,6 +37,16 @@ function cvutil_assertvars() {
 }
 
 ###############################################################################
+## Run a PHP program and explicitly disable debugging.
+## usage: cvutil_php_nodbg <program name> [<args>...]
+function cvutil_php_nodbg() {
+  local cmd=$(which "$1")
+  [ -z "$cmd" ] && cvutil_fatal "Failed to locate $cmd"
+  shift
+  php -d xdebug.remote_enable=off "$cmd" "$@"
+}
+
+###############################################################################
 ## Find the location of <item> in a list of paths.
 ## usage: cvutil_path_search <item> <parent1>:<parent2>:...
 ## example: cvutil_path_search ls /usr/local/bin:/usr/bin:/bin
@@ -300,7 +310,7 @@ function http_cache_setup() {
   fi
 
   cvutil_makeparent "$lock"
-  if pidlockfile.php "$lock" $$ $CACHE_LOCK_WAIT ; then
+  if cvutil_php_nodbg pidlockfile.php "$lock" $$ $CACHE_LOCK_WAIT ; then
     php -r 'echo time();' > $lastrun
     if [ ! -f "$cachefile" -o -z "$OFFLINE" ]; then
       echo "[[Update HTTP cache: $url => $cachefile]]"
@@ -329,14 +339,14 @@ function amp_install() {
 function _amp_install_cms() {
   echo "[[Setup MySQL and HTTP for CMS]]"
   cvutil_assertvars _amp_install_cms CMS_ROOT SITE_NAME SITE_ID TMPDIR
-  local amp_vars_file_path=$(mktemp.php ampvar)
+  local amp_vars_file_path=$(cvutil_php_nodbg mktemp.php ampvar)
   local amp_name="cms$SITE_ID"
   [ "$SITE_ID" == "default" ] && amp_name=cms
 
   if [ -n "$CMS_URL" ]; then
-    amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=CMS_ --url="$CMS_URL" --output-file="$amp_vars_file_path" --perm="$CMS_DB_PERM"
+    cvutil_php_nodbg amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=CMS_ --url="$CMS_URL" --output-file="$amp_vars_file_path" --perm="$CMS_DB_PERM"
   else
-    amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=CMS_ --output-file="$amp_vars_file_path" --perm="$CMS_DB_PERM"
+    cvutil_php_nodbg amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=CMS_ --output-file="$amp_vars_file_path" --perm="$CMS_DB_PERM"
   fi
 
   source "$amp_vars_file_path"
@@ -346,11 +356,11 @@ function _amp_install_cms() {
 function _amp_install_civi() {
   echo "[[Setup MySQL for Civi]]"
   cvutil_assertvars _amp_install_civi CMS_ROOT SITE_NAME SITE_ID TMPDIR
-  local amp_vars_file_path=$(mktemp.php ampvar)
+  local amp_vars_file_path=$(cvutil_php_nodbg mktemp.php ampvar)
   local amp_name="civi$SITE_ID"
   [ "$SITE_ID" == "default" ] && amp_name=civi
 
-  amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=CIVI_ --skip-url --output-file="$amp_vars_file_path" --perm="$CIVI_DB_PERM"
+  cvutil_php_nodbg amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=CIVI_ --skip-url --output-file="$amp_vars_file_path" --perm="$CIVI_DB_PERM"
 
   source "$amp_vars_file_path"
   rm -f "$amp_vars_file_path"
@@ -359,11 +369,11 @@ function _amp_install_civi() {
 function _amp_install_test() {
   echo "[[Setup MySQL for Test]]"
   cvutil_assertvars _amp_install_test CMS_ROOT SITE_NAME SITE_ID TMPDIR
-  local amp_vars_file_path=$(mktemp.php ampvar)
+  local amp_vars_file_path=$(cvutil_php_nodbg mktemp.php ampvar)
   local amp_name="test$SITE_ID"
   [ "$SITE_ID" == "default" ] && amp_name=test
 
-  amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=TEST_ --skip-url --output-file="$amp_vars_file_path" --perm="$TEST_DB_PERM"
+  cvutil_php_nodbg amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=TEST_ --skip-url --output-file="$amp_vars_file_path" --perm="$TEST_DB_PERM"
 
   source "$amp_vars_file_path"
   rm -f "$amp_vars_file_path"
@@ -376,8 +386,8 @@ function _amp_install_test() {
 function _amp_install_clone() {
   echo "[[Setup MySQL for \"$2\"]]"
   cvutil_assertvars _amp_install_cms CLONE_DIR SITE_NAME SITE_ID TMPDIR
-  local amp_vars_file_path=$(mktemp.php ampvar)
-  amp create -f --root="$CLONE_DIR" --name=$1 --prefix=$2_ --skip-url --output-file="$amp_vars_file_path" --perm="$CIVI_DB_PERM"
+  local amp_vars_file_path=$(cvutil_php_nodbg mktemp.php ampvar)
+  cvutil_php_nodbg amp create -f --root="$CLONE_DIR" --name=$1 --prefix=$2_ --skip-url --output-file="$amp_vars_file_path" --perm="$CIVI_DB_PERM"
   source "$amp_vars_file_path"
   rm -f "$amp_vars_file_path"
 }
@@ -387,8 +397,8 @@ function _amp_install_clone() {
 ## example: _amp_imprt /var/www/build/myproject civi CIVI
 function _amp_import() {
   cvutil_assertvars _amp_import SITE_NAME SITE_ID TMPDIR
-  local amp_vars_file_path=$(mktemp.php ampvar)
-  amp export --root="$1" --name=$2 --prefix=$3_ --output-file="$amp_vars_file_path"
+  local amp_vars_file_path=$(cvutil_php_nodbg mktemp.php ampvar)
+  cvutil_php_nodbg amp export --root="$1" --name=$2 --prefix=$3_ --output-file="$amp_vars_file_path"
   source "$amp_vars_file_path"
   rm -f "$amp_vars_file_path"
 }
@@ -402,14 +412,14 @@ function amp_snapshot_create() {
     echo "[[Save CMS DB ($CMS_DB_NAME) to file ($CMS_SQL)]]"
     cvutil_assertvars amp_snapshot_create CMS_SQL CMS_DB_ARGS CMS_DB_NAME
     cvutil_makeparent "$CMS_SQL"
-    amp sql:dump --root="$CMS_ROOT" -Ncms | gzip > "$CMS_SQL"
+    cvutil_php_nodbg amp sql:dump --root="$CMS_ROOT" -Ncms | gzip > "$CMS_SQL"
   fi
 
   if [ -z "$CIVI_SQL_SKIP" ]; then
     echo "[[Save Civi DB ($CIVI_DB_NAME) to file ($CIVI_SQL)]]"
     cvutil_assertvars amp_snapshot_create CIVI_SQL CIVI_DB_ARGS CIVI_DB_NAME
     cvutil_makeparent "$CIVI_SQL"
-    amp sql:dump --root="$CMS_ROOT" -Ncivi | gzip > "$CIVI_SQL"
+    cvutil_php_nodbg amp sql:dump --root="$CMS_ROOT" -Ncivi | gzip > "$CIVI_SQL"
   fi
 }
 
@@ -502,7 +512,7 @@ function _amp_snapshot_restore() {
     echo "Missing SQL file: $sql_file" 1>&2
     exit 1
   fi
-  gunzip --stdout "$sql_file" | amp sql --root="$db_root" --name="$db_name"
+  gunzip --stdout "$sql_file" | cvutil_php_nodbg amp sql --root="$db_root" --name="$db_name"
 }
 
 
@@ -1238,7 +1248,7 @@ function git_cache_setup() {
   fi
 
   cvutil_makeparent "$lock"
-  if pidlockfile.php "$lock" $$ $CACHE_LOCK_WAIT ; then
+  if cvutil_php_nodbg pidlockfile.php "$lock" $$ $CACHE_LOCK_WAIT ; then
     php -r 'echo time();' > $lastrun
     if [ ! -d "$cachedir" ]; then
       ## clone
@@ -1339,7 +1349,7 @@ function svn_cache_setup() {
   fi
 
   cvutil_makeparent "$lock"
-  if pidlockfile.php "$lock" $$ $CACHE_LOCK_WAIT ; then
+  if cvutil_php_nodbg pidlockfile.php "$lock" $$ $CACHE_LOCK_WAIT ; then
     php -r 'echo time();' > $lastrun
     if [ ! -d "$cachedir" ]; then
       ## clone
