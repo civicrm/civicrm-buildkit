@@ -84,9 +84,8 @@ function task_phpunit() {
 function task_phpunit_core_extension() {
 
  EXTENSION="$1"
- EXTPATH="$2"
 
- pushd "$CIVI_CORE/CoreExtensions/$EXTPATH/$EXTENSION"
+ pushd "$CIVI_CORE/ext/$EXTENSION"
  if ! $GUARD phpunit6 --printer='Civi\Test\TAP' --log-junit="$JUNITDIR/junit-$EXTENSION.xml" ; then
    EXITCODES="$EXITCODES $EXTENSION"
  fi
@@ -251,11 +250,10 @@ if [ "$SUITES" = "all" ]; then
       SUITES="$SUITES phpunit-api4"
     fi
 
-    if [ -e "CoreExtensions/Financial/sequentialcreditnotes" ]; then
+    if [ -e "ext/sequentialcreditnotes" ]; then
       SUITES="$SUITES phpunit-creditnotes"
     fi
 
-    echo "ALL: $SUITES" ; exit 1
   popd >> /dev/null
 elif [[ " $SUITES " =~ \ all\  ]]; then
   echo "The \"all\" target should not be mixed with other targets."
@@ -278,7 +276,7 @@ for TESTTYPE in $SUITES ; do
     phpunit-drupal) task_phpunit_drupal ;;
     phpunit-wordpress) task_phpunit_wordpress ;;
     phpunit-backdrop) task_phpunit_backdrop ;;
-    phpunit-creditnotes) task_phpunit_core_extension sequentialcreditnotes Financial ;;
+    phpunit-creditnotes) task_phpunit_core_extension sequentialcreditnotes ;;
     *) echo "unrecognized suite: $TESTTYPE"; exit 2 ;;
   esac
 done
