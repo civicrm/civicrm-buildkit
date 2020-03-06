@@ -155,7 +155,7 @@ function cvutil_summary() {
 ###############################################################################
 ## usage: cvutil_makepasswd <strlen>
 function cvutil_makepasswd() {
-  php $PRJDIR/bin/mkpasswd.php $1
+  cvutil_php_nodbg mkpasswd.php "$@"
 }
 
 ###############################################################################
@@ -605,9 +605,9 @@ function civicrm_install() {
   fi
 
   ## Create CiviCRM data dirs
-  amp datadir "$CIVI_FILES" "$CIVI_TEMPLATEC"
+  cvutil_php_nodbg amp datadir "$CIVI_FILES" "$CIVI_TEMPLATEC"
   if [ -n "$CIVI_EXT_DIR" ]; then
-    amp datadir "$CIVI_EXT_DIR"
+    cvutil_php_nodbg amp datadir "$CIVI_EXT_DIR"
   fi
 
   ## Create CiviCRM config files
@@ -622,9 +622,9 @@ function civicrm_install() {
     elif [ -e "xml" -a -e "bin/setup.sh" -a -z "$NO_SAMPLE_DATA" ]; then
       env SITE_ID="$SITE_ID" bash ./bin/setup.sh
     elif [ -e "sql/civicrm.mysql" -a -e "sql/civicrm_generated.mysql" -a -z "$NO_SAMPLE_DATA" ]; then
-      cat sql/civicrm.mysql sql/civicrm_generated.mysql | amp sql -Ncivi --root="$CMS_ROOT"
+      cat sql/civicrm.mysql sql/civicrm_generated.mysql | cvutil_php_nodbg amp sql -Ncivi --root="$CMS_ROOT"
     elif [ -e "sql/civicrm.mysql" -a -e "sql/civicrm_data.mysql" -a -n "$NO_SAMPLE_DATA" ]; then
-      cat sql/civicrm.mysql sql/civicrm_data.mysql | amp sql -Ncivi --root="$CMS_ROOT"
+      cat sql/civicrm.mysql sql/civicrm_data.mysql | cvutil_php_nodbg amp sql -Ncivi --root="$CMS_ROOT"
     else
       echo "Failed to locate civi SQL files"
     fi
@@ -645,7 +645,7 @@ function civicrm_install_cv() {
   local loadGenOpt
   [ -n "$NO_SAMPLE_DATA" ] && loadGenOpt="" || loadGenOpt="-m loadGenerated=1"
 
-  cv core:install -f --cms-base-url="$CMS_URL" --db="$CIVI_DB_DSN" -m "siteKey=$CIVI_SITE_KEY" $loadGenOpt
+  cv core:install -vv -f --cms-base-url="$CMS_URL" --db="$CIVI_DB_DSN" -m "siteKey=$CIVI_SITE_KEY" $loadGenOpt
   local settings=$( cv ev 'echo CIVICRM_SETTINGS_PATH;' )
   cvutil_inject_settings "$settings" "civicrm.settings.d"
   civicrm_update_domain
@@ -659,7 +659,7 @@ function civicrm_install_cv() {
 ## Update the CiviCRM domain's name+email
 function civicrm_update_domain() {
   cvutil_assertvars civicrm_install CIVI_DOMAIN_NAME CIVI_DOMAIN_EMAIL
-  amp sql -Ncivi --root="$CMS_ROOT" <<EOSQL
+  cvutil_php_nodbg amp sql -Ncivi --root="$CMS_ROOT" <<EOSQL
     UPDATE civicrm_domain SET name = '$CIVI_DOMAIN_NAME';
     SELECT @option_group_id := id
       FROM civicrm_option_group n
@@ -957,7 +957,7 @@ PHP
 
     ## Create WP data dirs
     cvutil_mkdir "wp-content/plugins/modules"
-    amp datadir "wp-content/plugins/files" "wp-content/uploads/"
+    cvutil_php_nodbg amp datadir "wp-content/plugins/files" "wp-content/uploads/"
 
     cvutil_inject_settings "wp-config.php" "wp-config.d"
   popd >> /dev/null
@@ -980,7 +980,7 @@ function wp_uninstall() {
 function backdrop_install() {
   cvutil_assertvars backdrop_install CMS_ROOT SITE_ID CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS CMS_URL
   pushd "$CMS_ROOT" >> /dev/null
-    amp datadir "files" "${PRIVATE_ROOT}/"
+    cvutil_php_nodbg amp datadir "files" "${PRIVATE_ROOT}/"
 
     CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
     ./core/scripts/install.sh "$@" \
@@ -1075,7 +1075,7 @@ function drupal7_install() {
     chmod u-w "sites/$DRUPAL_SITE_DIR/settings.php"
 
     ## Setup extra directories
-    amp datadir "sites/${DRUPAL_SITE_DIR}/files" "${PRIVATE_ROOT}/${DRUPAL_SITE_DIR}"
+    cvutil_php_nodbg amp datadir "sites/${DRUPAL_SITE_DIR}/files" "${PRIVATE_ROOT}/${DRUPAL_SITE_DIR}"
     cvutil_mkdir "sites/${DRUPAL_SITE_DIR}/modules"
     drush vset --yes file_private_path "${PRIVATE_ROOT}/${DRUPAL_SITE_DIR}"
     [ -n "$APACHE_VHOST_ALIAS" ] && cvutil_ed .htaccess '# RewriteBase /$' 's;# RewriteBase /$;RewriteBase /;'
@@ -1107,7 +1107,7 @@ function drupal8_install() {
     chmod u-w "sites/$DRUPAL_SITE_DIR/settings.php"
 
     ## Setup extra directories
-    amp datadir "sites/${DRUPAL_SITE_DIR}/files" "${PRIVATE_ROOT}/${DRUPAL_SITE_DIR}"
+    cvutil_php_nodbg amp datadir "sites/${DRUPAL_SITE_DIR}/files" "${PRIVATE_ROOT}/${DRUPAL_SITE_DIR}"
     cvutil_mkdir "sites/${DRUPAL_SITE_DIR}/modules"
     [ -n "$APACHE_VHOST_ALIAS" ] && cvutil_ed .htaccess '# RewriteBase /$' 's;# RewriteBase /$;RewriteBase /;'
   popd >> /dev/null
@@ -1315,7 +1315,7 @@ function joomla_install() {
     --overwrite \
     --skip-exists-check \
     "$child"
-  amp datadir "$CMS_ROOT/logs" "$CMS_ROOT/tmp"
+  cvutil_php_nodbg amp datadir "$CMS_ROOT/logs" "$CMS_ROOT/tmp"
 }
 
 ###############################################################################
