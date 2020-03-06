@@ -577,6 +577,10 @@ function civicrm_download_composer_d8() {
     5.21*) EXTRA_COMPOSER+=( "civicrm/civicrm-setup:0.4.0 as 0.2.99" ) ; EXTRA_COMPOSER+=( 'cache/integration-tests:dev-master#b97328797ab199f0ac933e39842a86ab732f21f9' ) ; EXTRA_PATCH+=( "https://github.com/civicrm/civicrm-core/pull/16328" ); ;;
     5.22*) EXTRA_COMPOSER+=( "civicrm/civicrm-setup:0.4.0 as 0.2.99" ) ; EXTRA_COMPOSER+=( 'cache/integration-tests:dev-master#b97328797ab199f0ac933e39842a86ab732f21f9' ) ; EXTRA_PATCH+=( "https://github.com/civicrm/civicrm-core/pull/16413" ); ;;
     5.23*) EXTRA_COMPOSER+=( 'cache/integration-tests:dev-master#b97328797ab199f0ac933e39842a86ab732f21f9' ); ;;
+    5.24*) echo "No extra patches required" ; ;;
+    5.25*) echo "No extra patches required" ; ;;
+    5.26*) echo "No extra patches required" ; ;;
+    ## Need 5.27? Maybe it's time to remove all this...
     master) echo "No extra patches required" ; ;;
     *) cvutil_fatal "This build type is temporarily limited to branches which have a corresponding patchset." ; ;;
   esac
