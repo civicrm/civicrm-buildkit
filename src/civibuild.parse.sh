@@ -20,7 +20,7 @@ function civibuild_parse_unnamed_params() {
       continue
     fi
 
-    if [ `echo "$ACTION" | egrep -c 'snapshots|restore-all|list|cache-warmup'` -eq 1 ]; then
+    if [ `echo "$ACTION" | egrep -c 'snapshots|restore-all|list|cache-warmup|env-info'` -eq 1 ]; then
       # dont parse site-name
       break
     fi
@@ -30,7 +30,7 @@ function civibuild_parse_unnamed_params() {
 
   [ -z "$ACTION" ] && civibuild_app_usage
 
-  if [ `echo "$ACTION" | egrep -c 'snapshots|restore-all|list|cache-warmup'` -eq 0 ]; then
+  if [ `echo "$ACTION" | egrep -c 'snapshots|restore-all|list|cache-warmup|env-info'` -eq 0 ]; then
 
     if [ -z "$SITE_NAME" ]; then
       civibuild_detect_site_name

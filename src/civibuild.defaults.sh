@@ -309,6 +309,7 @@ DECLARED_ACTIONS="
   destroy
   download dl
   edit
+  env-info
   install reinstall
   list
   phpunit-info

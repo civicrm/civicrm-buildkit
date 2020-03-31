@@ -25,6 +25,7 @@ civibuild [options] command
   [32mclone-destroy[0m         Destroy a database clone
  [33mOther[0m
   [32mcache-warmup[0m          Proactively update git cache
+  [32menv-info[0m              Summarize the local build environment
   [32mphpunit-info[0m          Show configuration tips on using PHPUnit
   [32mupgrade-test[0m          Loads each DB snapshot and runs the current upgrade logic
 
