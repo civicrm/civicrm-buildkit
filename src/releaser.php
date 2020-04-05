@@ -5,6 +5,7 @@
 ###############################################################################
 ## Bootstrap
 namespace Clippy;
+
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -31,7 +32,9 @@ $c['versionSpec'] = function (InputInterface $input) {
 
 $c['runner'] = $c->autowiredObject(new class() {
 
-  /** @var \Symfony\Component\Console\Style\SymfonyStyle */
+  /**
+   * @var \Symfony\Component\Console\Style\SymfonyStyle
+   */
   protected $io;
 
   public function exec($cwd, $command, &$lines = NULL, &$result = NULL) {
@@ -60,10 +63,14 @@ $c['runner'] = $c->autowiredObject(new class() {
 
 $c['gsutil'] = $c->autowiredObject(new class() {
 
-  /** @var \Symfony\Component\Console\Input\InputInterface */
+  /**
+   * @var \Symfony\Component\Console\Input\InputInterface
+   */
   protected $input;
 
-  /** @var \Symfony\Component\Console\Style\SymfonyStyle */
+  /**
+   * @var \Symfony\Component\Console\Style\SymfonyStyle
+   */
   protected $io;
 
   protected $runner;
@@ -218,7 +225,12 @@ $c['task_publish()'] = function (array $versionSpec, $input, $io, $runner) {
 
   // Get missing info before doing anything
   $io->writeln('This will be uploaded to sf.net. To mark it as the default download on sf.net, one needs an api_key. (To skip, leave blank.)');
-  $sfApiKey = $io->askHidden('Enter sf.net api_key: ', function($pass){ return $pass; });
+  $sfApiKey = $io->askHidden('Enter sf.net api_key: ', function($pass) {
+    return $pass;
+  });
+  if (empty($sfApiKey)) {
+    $io->warning('No api_key specified. Will not update default download on sourceforge.net.');
+  }
 
   // Execute, such as it is
   $io->writeln('Send build to primary download service');
@@ -246,9 +258,6 @@ $c['task_publish()'] = function (array $versionSpec, $input, $io, $runner) {
       escapeshellarg($defaultDownloadUrl)
     );
     $runner->passthruOk($curlCmd);
-  }
-  else {
-    $io->warning('Could not update default download on sourceforge.net');
   }
 };
 
@@ -299,7 +308,9 @@ $c['task_debug()'] = function(array $versionSpec, $io) use ($c) {
 
   $io->section('Debug: Services');
   $io->table(['service id'], array_map(
-    function($key){ return [$key];},
+    function($key) {
+      return [$key];
+    },
     $c->keys()
   ));
 };
