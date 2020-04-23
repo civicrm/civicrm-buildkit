@@ -46,22 +46,25 @@ $c['fmtNames()'] = function($ppl, $ids, $extras, SymfonyStyle $io) {
  * @param callable $fmtNames
  */
 $c['app']->main('[yamlFile]', function(SymfonyStyle $io, $yamlFile, $fmtNames) {
-  $io->writeln("Build a list of contributor names");
+  $io->title(basename(__FILE__) . ": Build a list of contributor names");
+  $io->section("Load contributor index");
   $yamlFile = $yamlFile ?? 'contributor-key.yml';
+  $io->note("Parse $yamlFile");
   $ppl = \Symfony\Component\Yaml\Yaml::parseFile($yamlFile);
-  $io->writeln("Parsed $yamlFile");
+  $io->note(sprintf("Found %d contributor records", count($ppl)));
   $labels = [];
   foreach ($ppl as $id => &$person) {
     $labels[] = sprintf('%s (%s at %s) <#%d>', $person['github'] ?? '', $person['name'] ?? '', $person['organization'] ?? '', $id);
     $labels[] = sprintf('%s at %s (github %s) <#%d>', $person['name'] ?? '', $person['organization'] ?? '', $person['github'] ?? '', $id);
   }
 
+  $io->section("Choose contributor names");
   $idFlags = [];
   $extras = [];
   do {
     $names = $fmtNames($ppl, array_keys($idFlags), $extras);
     $io->writeln(implode(";\n", $names));
-    $question = new Question('Add a name (blank to quit)');
+    $question = new Question('Add a name (blank to finish)');
     $question->setAutocompleterValues($labels);
     $value = $io->askQuestion($question);
     if (preg_match(';\<#([0-9]+)\>;', $value, $m)) {
@@ -73,6 +76,7 @@ $c['app']->main('[yamlFile]', function(SymfonyStyle $io, $yamlFile, $fmtNames) {
   } while ($value);
 
   $names = $fmtNames($ppl, array_keys($idFlags), $extras);
+  $io->section("Final list");
   $io->writeln(wordwrap(
     implode("; ", array_reverse($names)),
     100
