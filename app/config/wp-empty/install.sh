@@ -33,6 +33,6 @@ wp theme install twentythirteen --activate
 wp user create "$DEMO_USER" "$DEMO_EMAIL" --user_pass="$DEMO_PASS"
 
 wp plugin install gutenberg
-wp plugin install gutenberg-ramp --activate
+wp plugin install classic-editor --activate
 
 popd >> /dev/null

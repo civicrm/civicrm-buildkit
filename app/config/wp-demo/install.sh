@@ -61,7 +61,7 @@ wp eval '$c=[civi_wp(), "add_wpload_setting"]; if (is_callable($c)) $c();' ## Te
 wp plugin activate civicrm-demo-wp
 wp plugin install civicrm-admin-utilities
 wp plugin install gutenberg
-wp plugin install gutenberg-ramp --activate
+wp plugin install classic-editor --activate
 
 civicrm_apply_demo_defaults
 cv ev 'if(is_callable(array("CRM_Core_BAO_CMSUser","synchronize"))){CRM_Core_BAO_CMSUser::synchronize(FALSE);}else{CRM_Utils_System::synchronizeUsers();}'
