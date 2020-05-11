@@ -402,7 +402,7 @@ function do_system_disco() {
 
 function do_system_focal() {
   set -e
-    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.3-cli php7.3-imap php7.3-ldap php7.3-curl php7.3-mysql php7.3-intl php7.3-gd php7.3-dev php7.3-bcmath php7.3-mbstring php7.3-soap php7.3-zip php7.3-xml apache2 libapache2-mod-php7.3 nodejs php-pear libmcrypt-dev libreadline-dev curl"
+    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.3-cli php7.3-imap php7.3-ldap php7.3-curl php7.3-mysql php7.3-intl php7.3-gd php7.3-dev php7.3-bcmath php7.3-mbstring php7.3-soap php7.3-zip php7.3-xml apache2 libapache2-mod-php7.3 nodejs php-pear libreadline-dev curl"
     UBUNTU_VERSION=$(lsb_release -ds)
     echo "Detected $UBUNTU_VERSION."
     echo ""
