@@ -357,7 +357,7 @@ function do_system_bionic() {
     echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
       sudo add-apt-repository -y ppa:ondrej/php
-      sudo curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash - # This runs sudo apt update so there's no point running it twice.
+      sudo curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash - # This runs sudo apt update so there's no point running it twice.
       sudo apt-get -y install $PACKAGES
       sudo phpenmod bcmath
       sudo phpenmod curl
@@ -444,7 +444,7 @@ function do_system_jessie() {
       sudo apt install ca-certificates apt-transport-https wget
       wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
       sudo echo "deb https://packages.sury.org/php/ jessie main" | tee /etc/apt/sources.list.d/php.list
-      wget -O- https://deb.nodesource.com/setup_8.x | sudo -E bash -
+      wget -O- https://deb.nodesource.com/setup_10.x | sudo -E bash -
       sudo apt-get -y install $PACKAGES
       sudo php5enmod imap
       sudo a2enmod rewrite
@@ -471,7 +471,7 @@ function do_system_stretch() {
       sudo apt install ca-certificates apt-transport-https wget
       wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
       sudo echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
-      wget -O- https://deb.nodesource.com/setup_8.x | sudo -E bash -
+      wget -O- https://deb.nodesource.com/setup_10.x | sudo -E bash -
       sudo apt-get -y install $PACKAGES
       sudo phpenmod imap
       sudo a2enmod rewrite
