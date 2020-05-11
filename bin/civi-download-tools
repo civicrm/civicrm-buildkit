@@ -412,6 +412,7 @@ function do_system_focal() {
     echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
       sudo curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash - # This runs sudo apt update so there's no point running it twice.
+      sudo add-apt-repository -y ppa:ondrej/php # Focal ships with PHP 7.4 - we'll use Ondrej's repositories for 7.3.
       sudo apt-get -y install $PACKAGES
       sudo phpenmod bcmath
       sudo phpenmod curl
