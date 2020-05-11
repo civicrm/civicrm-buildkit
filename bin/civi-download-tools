@@ -441,7 +441,7 @@ function do_system_jessie() {
     do_php_mysql_warning
     echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
-      sudo apt install ca-certificates apt-transport-https
+      sudo apt install ca-certificates apt-transport-https wget
       wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
       sudo echo "deb https://packages.sury.org/php/ jessie main" | tee /etc/apt/sources.list.d/php.list
       wget -O- https://deb.nodesource.com/setup_8.x | sudo -E bash -
@@ -468,7 +468,7 @@ function do_system_stretch() {
     do_php_mysql_warning
     echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
-      sudo apt install ca-certificates apt-transport-https
+      sudo apt install ca-certificates apt-transport-https wget
       wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
       sudo echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
       wget -O- https://deb.nodesource.com/setup_8.x | sudo -E bash -
@@ -492,7 +492,7 @@ function do_system_buster() {
     echo "Recommended packages: $PACKAGES"
     echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
-      sudo apt install ca-certificates apt-transport-https
+      sudo apt install ca-certificates apt-transport-https wget
       wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
       sudo echo "deb https://packages.sury.org/php/ buster main" | tee /etc/apt/sources.list.d/php.list
       sudo apt-get -y install $PACKAGES
