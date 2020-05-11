@@ -318,7 +318,7 @@ function get_system_installer() {
 ###############################################################################
 function do_system_xenial() {
   set -e
-    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.1-cli php7.1-imap php7.1-ldap php7.1-curl php7.1-mysql php7.1-intl php7.1-gd php7.1-mcrypt php7.1-bcmath php7.1-mbstring php7.1-soap php7.1-zip php7.1-xml apache2 libapache2-mod-php7.1 nodejs-legacy npm"
+    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.1-cli php7.1-imap php7.1-ldap php7.1-curl php7.1-mysql php7.1-intl php7.1-gd php7.1-mcrypt php7.1-bcmath php7.1-mbstring php7.1-soap php7.1-zip php7.1-xml apache2 libapache2-mod-php7.1 nodejs"
     UBUNTU_VERSION=$(lsb_release -ds)
     echo "Detected $UBUNTU_VERSION."
     echo ""
@@ -328,12 +328,12 @@ function do_system_xenial() {
     echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
       sudo add-apt-repository -y ppa:ondrej/php
+      sudo curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash - # This runs sudo apt update so there's no point running it twice.
       sudo apt-get update
       sudo apt-get -y install $PACKAGES
       sudo phpenmod bcmath
       sudo phpenmod curl
       sudo phpenmod imap
-      sudo phpenmod mcrypt
       sudo phpenmod xml
       sudo a2enmod rewrite
       sudo apache2ctl restart
@@ -433,7 +433,7 @@ function do_system_focal() {
 ###############################################################################
 function do_system_jessie() {
   set -e
-    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.2-cli php7.2-imap php7.2-ldap php7.2-curl php7.2-mysql php7.2-intl php7.2-gd php7.2-dev php7.2-bcmath php7.2-mbstring php7.2-soap php7.2-zip php7.2-xml apache2 libapache2-mod-php7.2 nodejs npm"
+    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.2-cli php7.2-imap php7.2-ldap php7.2-curl php7.2-mysql php7.2-intl php7.2-gd php7.2-dev php7.2-bcmath php7.2-mbstring php7.2-soap php7.2-zip php7.2-xml apache2 libapache2-mod-php7.2 nodejs"
     echo "Detected \"Debian Jessie\"."
     echo ""
     echo "Recommended packages: $PACKAGES"
@@ -458,7 +458,7 @@ function do_system_jessie() {
 ###############################################################################
 function do_system_stretch() {
   set -e
-    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.2-cli php7.2-imap php7.2-ldap php7.2-curl php7.2-mysql php7.2-intl php7.2-gd php7.2-dev php7.2-bcmath php7.2-mbstring php7.2-soap php7.2-zip php7.2-xml apache2 libapache2-mod-php7.2 nodejs npm"
+    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.2-cli php7.2-imap php7.2-ldap php7.2-curl php7.2-mysql php7.2-intl php7.2-gd php7.2-dev php7.2-bcmath php7.2-mbstring php7.2-soap php7.2-zip php7.2-xml apache2 libapache2-mod-php7.2 nodejs"
     echo "Detected \"Debian Stretch\"."
     echo ""
     echo "Installing nodejs Debian repository."
