@@ -260,6 +260,15 @@ elif [[ " $SUITES " =~ \ all\  ]]; then
   exit 3
 fi
 
+## dev/core#1781: Some tests exhibit flakiness due to the timing/pacing/happenstance of execution. TIME_FUNC helps to deterministically simulate some of this variation.
+if [ -n "$TIME_FUNC" ]; then
+  echo "(Clock simulation) Tests will use inherited option TIME_FUNC=$TIME_FUNC"
+else
+  TIME_FUNC=$( php -r '$a=$argv; array_shift($a); shuffle($a); echo $a[0];' natural natural frozen linear:500 linear:1250 prng:500 prng:666 prng:1000 prng:1500 )
+  echo "(Clock simulation) No TIME_FUNC was specified. Using TIME_FUNC=$TIME_FUNC"
+fi
+export TIME_FUNC
+
 ## Main
 for TESTTYPE in $SUITES ; do
   case "$TESTTYPE" in
