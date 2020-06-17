@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+
+## For systems which use `bin/install-ci.sh` to setup multiple services, this
+## helper script allows you to configure your shell to use one of those services.
+##
+## Examples:
+##   eval $(use-bknix min)
+##   eval $(use-bknix max)
+##   eval $(use-bknix dfl)
+
+###########################################################
+## Constants
+
+TXT_RESET='\[\033[0m\]'
+TXT_BLACK='\[\033[0;30m\]'
+TXT_RED='\[\033[0;31m\]'
+TXT_GREEN='\[\033[0;32m\]'
+TXT_YELLOW='\033[0;33m\]'
+TXT_BLUE='\[\033[0;34m\]'
+TXT_PURPLE='\[\033[0;35m\]'
+TXT_CYAN='\[\033[0;36m\]'
+TXT_WHITE='\[\033[0;37m\]'
+
+###########################################################
+## Input parsing
+
+MODE=env
+
+if [ -z "$OWNER" ]; then
+  OWNER=$USER
+fi
+
+PROFILE="$1"
+
+for BASEDIR in "/nix/var/nix/profiles/per-user/$OWNER" "/nix/var/nix/profiles" ;do
+  PRFDIR="$BASEDIR/bknix-$PROFILE"
+  if [ -d "$PRFDIR" ]; then
+    break
+  fi
+done
+
+case "$2" in
+  -s|--shell) MODE=shell ; ;;
+  -e|--env) MODE=env ; ;;
+  *) MODE=env ; ;;
+esac
+
+###########################################################
+## Validation/help
+if [ -z "$PROFILE" -o ! -d "$PRFDIR" ]; then
+  echo "The specified profile does not correspond to an actual profile"
+  echo
+  echo "usage: $0 <profile> [-e|--env|-s|--shell]"
+  echo ""
+  echo "options:"
+  echo "  -e|--env    Display environment variables for the profile"
+  echo "  -s|--shell  Open a subshell with the profile"
+  echo ""
+  echo "example: Generate environment variables for \"dfl\" profile"
+  echo "  $0 dfl"
+  echo "example: Open subshell for \"min\" profile"
+  echo "  $0 min -s"
+  echo ""
+  exit 1
+fi
+
+###########################################################
+## Main
+
+export PATH="$PRFDIR/bin:$PATH"
+
+## FIXME: The OWNER thing probably shouldn't exist. Easier to just use HOME and USER. But removing it requires other updates/verification.
+for CANDIDATE in "/home/$OWNER/bknix" "/home/$OWNER/bknix-$PROFILE" "/Users/$OWNER/bknix" "/Users/$OWNER/bknix-$PROFILE" ; do
+  if [ -d "$CANDIDATE" ]; then
+    export BKNIXDIR="$CANDIDATE"
+  fi
+done
+if [ ! -d "$BKNIXDIR" ]; then
+  echo "WARNING: The BKNIXDIR ($BKNIXDIR) does not exist. If it was initialized by another user, try setting OWNER first." >&2
+fi
+
+case "$MODE" in
+  env)
+    CODE=`cd "$BKNIXDIR" && loco env --export`
+    echo "$CODE"
+    eval "$CODE"
+    ## "bknix env" doesn't add itself to PATH - so we add everything
+    ## FIXME: when loco.yml supports recursive variables, remove some of these
+    echo "export PATH='$PRFDIR/bin:$LOCO_PRJ/civicrm-buildkit/bin:$LOCO_PRJ/civicrm-buildkit/node_modules/.bin':\"\$PATH\" ;"
+    echo "export PS1=\"[${TXT_CYAN}bknix-$PROFILE${TXT_RESET}:${TXT_GREEN}\w${TXT_RESET}] \" ;"
+    ## Newer versions of nix's glibc (for linux) require extra env-var for l10n
+    if [ -e "$PRFDIR/lib/locale/locale-archive" ]; then
+      echo "export LOCALE_ARCHIVE='$PRFDIR/lib/locale/locale-archive'"
+    fi
+    if [ -f "$BKNIXDIR/etc/bashrc.local" ]; then
+      echo "source \"$BKNIXDIR/etc/bashrc.local\""
+    fi
+    echo
+    ;;
+  shell)
+    ## We will can ourselves in --env mode and use that as the bash --rcfile.
+
+    ## Bash v4(?) would support '--rcfile <( ...some command ... )'; but for
+    ## backward compat, we explicitly make a temp file.
+
+    ## Note: "mktemp" in BSD and GNU work differently, but this formulation seems close enough to be portable.
+    TMPFILE=$(mktemp -t .use-bknix.XXXXXXXX)
+    function cleanup_bashrc() {
+      rm -f "$TMPFILE"
+    }
+    trap cleanup_bashrc EXIT
+
+    "$0" "$PROFILE" --env > "$TMPFILE"
+    bash --rcfile "$TMPFILE" -i
+    ;;
+esac
