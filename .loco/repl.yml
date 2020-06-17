@@ -43,7 +43,7 @@ environment:
  # CLI applications should use our stuff
  - AMPHOME=$LOCO_VAR.keep/amp
  - CIVIBUILD_HOME=$HTTPD_VDROOT
- - BKIT=$LOCO_PRJ/civicrm-buildkit
+ - BKIT=$LOCO_PRJ
  - MYSQL_HOME=$LOCO_VAR/mysql/conf
  #- MYSQL_HOME=$LOCO_VAR/mysql-1/conf
  #FIXME# - NODE_PATH=$BKIT/node_modules:$NODE_PATH

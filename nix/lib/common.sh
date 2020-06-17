@@ -166,7 +166,7 @@ function install_profile_systemd() {
   function locogen() {
     set -ex
     eval $(bknix-profile env)
-    cd "$BKIT/bknix"
+    cd "$BKIT"
     local YAML=".loco/$OWNER-$PROFILE.yml"
     loco init -c "$YAML"
     loco export -c "$YAML" --app="$1" --out="$2"

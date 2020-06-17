@@ -89,7 +89,7 @@ fi
 
 case "$MODE" in
   env)
-    CODE=`cd "$BKIT/bknix" && loco env -c ".loco/$OWNER-$PROFILE.yml" --export`
+    CODE=`cd "$BKIT" && loco env -c ".loco/$OWNER-$PROFILE.yml" --export`
     echo "$CODE"
     eval "$CODE"
     echo "export PS1=\"[${TXT_CYAN}bknix-$PROFILE${TXT_RESET}:${TXT_GREEN}\w${TXT_RESET}] \" ;"
