@@ -224,15 +224,13 @@ function install_user() {
 function download_buildkit() {
   set -ex
   local PROFILE="$1"
-  local WORKDIR="$HOME/bknix-$1"
+  local DEST="$HOME/bknix-$1"
   cd "$HOME"
 
-  if [ ! -d "$WORKDIR" ]; then
-    git clone https://github.com/civicrm/civicrm-buildkit -bmaster "$WORKDIR"
-    git clone https://github.com/totten/bknix -b loco-ci "$WORKDIR/bknix"
+  if [ ! -d "$DEST" ]; then
+    git clone https://github.com/totten/civicrm-buildkit -b loco-ci "$DEST"
   else
-    pushd "$WORKDIR" ; git pull ; popd
-    pushd "$WORKDIR/bknix" ; git pull ; popd
+    pushd "$DEST" ; git pull ; popd
   fi
 }
 
