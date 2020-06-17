@@ -10,7 +10,7 @@ set -e
 ## Utils
 
 function get_svcs() {
-  for svc in bknix{,-publisher}-{dfl,min,max,old,edge}{,-mysqld} ; do
+  for svc in bknix{,-jenkins,-publisher}-{dfl,min,max,old,edge}{,-apache-vdr,-buildkit,-mailcatcher,-mysql,-mysqld,-php-fpm,-redis} ; do
     if [ -f "/etc/systemd/system/$svc.service" ]; then
       echo -n " $svc"
     fi
@@ -18,7 +18,7 @@ function get_svcs() {
 }
 
 function get_ramdisk_svcs() {
-  for svc in mnt-mysql-jenkins.mount mnt-mysql-publisher.mount ; do
+  for svc in mnt-mysql-jenkins.mount mnt-mysql-publisher.mount 'home-jenkins-.bknix\x2dvar.mount' 'home-publisher-.bknix\x2dvar.mount'; do
     if [ -f "/etc/systemd/system/$svc" ]; then
       echo -n " $svc"
     fi
@@ -42,7 +42,7 @@ RAMDISKS=$(get_ramdisk_svcs)
 echo "Stopping services:$SVCS"
 systemctl stop $SVCS
 
-## This is slightly aggressive, but the scripts in `pkgs/launcher` don't seem to do a good job of shutting down php-fpm.
+## This is slightly aggressive...
 set +e
   killall php-fpm
   killall mysqld
@@ -57,6 +57,10 @@ systemctl stop $RAMDISKS
 
 echo "Reinstalling profiles"
 FORCE_INIT=-f ./bin/install-ci.sh "$BKNIX_CI_TEMPLATE"
+
+echo "Re-scanning service names"
+SVCS=$(get_svcs)
+RAMDISKS=$(get_ramdisk_svcs)
 
 echo "Starting ramdisks:$RAMDISKS"
 systemctl start $RAMDISKS
