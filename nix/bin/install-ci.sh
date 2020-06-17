@@ -23,6 +23,9 @@
 # Example: Install (or upgrade) all the profiles, overwriting any local config files
 #   FORCE_INIT=-f ./bin/install-ci.sh
 #
+# Example:
+#   NO_SYSTEMD=1 ./bin/install-ci.sh
+#
 # After installation, an automated script can use a statement like:
 #    eval $(use-bknix min)
 #    eval $(use-bknix max)
@@ -35,8 +38,17 @@ set -e
 BINDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source "$BINDIR/../lib/common.sh"
 
+if [ -z "$1" -o ! -d "$PWD/examples/$1" ]; then
+  echo "usage: ./bin/install-ci.sh <template-name>"
+  echo "The <template-name> should correspond to a folder in examples/"
+  exit 1
+else
+  BKNIX_CI_TEMPLATE="$PWD/examples/$1"
+fi
+
 check_reqs
 install_warmup
+init_folder "$PWD/examples/$BKNIX_CI_TEMPLATE" /etc/bknix-ci
 install_bin bin/use-bknix.arrbuk /usr/local/bin/use-bknix
 install_all_jenkins
 install_all_publisher

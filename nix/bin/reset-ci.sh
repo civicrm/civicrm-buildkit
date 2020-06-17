@@ -6,6 +6,9 @@
 
 set -e
 
+###########################################################
+## Utils
+
 function get_svcs() {
   for svc in bknix{,-publisher}-{dfl,min,max,old,edge}{,-mysqld} ; do
     if [ -f "/etc/systemd/system/$svc.service" ]; then
@@ -21,6 +24,17 @@ function get_ramdisk_svcs() {
     fi
   done
 }
+
+###########################################################
+## Main
+
+if [ -z "$1" -o ! -d "$PWD/examples/$1" ]; then
+  echo "usage: ./bin/reset-ci.sh <template-name>"
+  echo "The <template-name> should correspond to a folder in examples/"
+  exit 1
+else
+  BKNIX_CI_TEMPLATE="$PWD/examples/$1"
+fi
 
 SVCS=$(get_svcs)
 RAMDISKS=$(get_ramdisk_svcs)
@@ -42,7 +56,7 @@ echo "Stopping ramdisks:$RAMDISKS"
 systemctl stop $RAMDISKS
 
 echo "Reinstalling profiles"
-FORCE_INIT=-f ./bin/install-ci.sh
+FORCE_INIT=-f ./bin/install-ci.sh "$BKNIX_CI_TEMPLATE"
 
 echo "Starting ramdisks:$RAMDISKS"
 systemctl start $RAMDISKS
