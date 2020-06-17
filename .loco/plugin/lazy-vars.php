@@ -1,6 +1,7 @@
 <?php
 /**
  * The lazy-vars plugin allows you to lazily (on-demand) evaluate expensive variables.
+ *
  * For example, on Google Cloud VMs, you can determine the external IP by making a web-service call.
  * This call should only run if you're actually on a Google Cloud VM where the configuration needs the external IP.
  *
@@ -15,6 +16,14 @@ use Loco\Loco;
 
 // --------------------------------------------------------------
 // Define list of lazy variables
+
+$GLOBALS['lazyVars']['HOSTNAME'] = function() {
+  return trim(`hostname`);
+};
+
+$GLOBALS['lazyVars']['HOSTNAME_FQDN'] = function() {
+  return trim(`hostname -f`);
+};
 
 $GLOBALS['lazyVars']['FAKE_IP'] = function () {
   // echo "Compute a fake IP!\n";
