@@ -33,14 +33,14 @@ if [ -z "$1" -o ! -d "$PWD/examples/$1" ]; then
   echo "The <template-name> should correspond to a folder in examples/"
   exit 1
 else
-  BKNIX_CI_TEMPLATE="$PWD/examples/$1"
+  BKNIX_CI_TEMPLATE="$1"
 fi
 
 SVCS=$(get_svcs)
 RAMDISKS=$(get_ramdisk_svcs)
 
 echo "Stopping services:$SVCS"
-systemctl stop $SVCS
+[ -n "$SVCS" ] && systemctl stop $SVCS
 
 ## This is slightly aggressive...
 set +e
@@ -53,7 +53,7 @@ echo "Waiting"
 sleep 5
 
 echo "Stopping ramdisks:$RAMDISKS"
-systemctl stop $RAMDISKS
+[ -n "$RAMDISKS" ] && systemctl stop $RAMDISKS
 
 echo "Clearing old service definitions"
 for SVC in $SVCS ; do rm -f "/etc/systemd/system/$SVC.service" ; done

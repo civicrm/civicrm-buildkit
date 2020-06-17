@@ -43,7 +43,7 @@ if [ -z "$1" -o ! -d "$PWD/examples/$1" ]; then
   echo "The <template-name> should correspond to a folder in examples/"
   exit 1
 else
-  BKNIX_CI_TEMPLATE="$PWD/examples/$1"
+  BKNIX_CI_TEMPLATE="$1"
 fi
 
 check_reqs
