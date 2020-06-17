@@ -55,6 +55,10 @@ sleep 5
 echo "Stopping ramdisks:$RAMDISKS"
 systemctl stop $RAMDISKS
 
+echo "Clearing old service definitions"
+for SVC in $SVCS ; do rm -f "/etc/systemd/system/$SVC.service" ; done
+for SVC in $RAMDISKS ; do rm -f "/etc/systemd/system/$SVC" ; done
+
 echo "Reinstalling profiles"
 FORCE_INIT=-f ./bin/install-ci.sh "$BKNIX_CI_TEMPLATE"
 
