@@ -37,6 +37,9 @@ cd ~/buildkit/nix
 ./bin/install-nix.sh
 ```
 
+After running the script, you will need to re-initialize bash (i.e.  close
+the shell and open a new one).
+
 ## General knowledge requirements
 
 Additionally, you should have some basic understanding of the tools/systems involved:
