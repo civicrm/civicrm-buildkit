@@ -43,9 +43,8 @@ environment:
  - CIVIBUILD_HOME=$HTTPD_VDROOT
  - BKIT=$LOCO_PRJ
  - MYSQL_HOME=$LOCO_VAR/mysql/conf
- #- MYSQL_HOME=$LOCO_VAR/mysql-1/conf
- #FIXME# - NODE_PATH=$BKIT/node_modules:$NODE_PATH
- #FIXME# - PATH=$BKIT/bin:$PATH
+ - NODE_PATH=$BKIT/node_modules:$NODE_PATH
+ - PATH=$BKIT/bin:$BKIT/node_modules/.bin:$LOCO_PRJ/.loco/bin:$PATH
 
 volume:
   ramdisk: $RAMDISK_SIZE
