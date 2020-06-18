@@ -5,25 +5,8 @@
 ## NOTE: reset-ci.sh and reset-gcloud.sh should be kept in sync. TODO: DRY
 
 set -e
-
-###########################################################
-## Utils
-
-function get_svcs() {
-  for svc in bknix{,-jenkins,-publisher}-{dfl,min,max,old,edge}{,-apache-vdr,-buildkit,-mailcatcher,-mysql,-mysqld,-php-fpm,-redis} ; do
-    if [ -f "/etc/systemd/system/$svc.service" ]; then
-      echo -n " $svc"
-    fi
-  done
-}
-
-function get_ramdisk_svcs() {
-  for svc in mnt-mysql-jenkins.mount mnt-mysql-publisher.mount 'home-jenkins-.bknix\x2dvar.mount' 'home-publisher-.bknix\x2dvar.mount'; do
-    if [ -f "/etc/systemd/system/$svc" ]; then
-      echo -n " $svc"
-    fi
-  done
-}
+BINDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+source "$BINDIR/../lib/common.sh"
 
 ###########################################################
 ## Main

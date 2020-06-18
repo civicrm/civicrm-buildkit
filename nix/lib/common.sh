@@ -280,3 +280,33 @@ function template_render() {
     | sed "s/%%OWNER%%/$OWNER/g" \
     | sed "s/%%PROFILE%%/$PROFILE/g"
 }
+
+###########################################################
+## Scanners
+
+function get_svcs() {
+  for svc in bknix{,-jenkins,-publisher}-{dfl,min,max,old,edge}{,-apache-vdr,-buildkit,-mailcatcher,-mysql,-mysqld,-php-fpm,-redis} ; do
+    if [ -f "/etc/systemd/system/$svc.service" ]; then
+      echo -n " $svc"
+    fi
+  done
+}
+
+function get_ramdisk_svcs() {
+  for svc in mnt-mysql-jenkins.mount mnt-mysql-publisher.mount 'home-jenkins-.bknix\x2dvar.mount' 'home-publisher-.bknix\x2dvar.mount'; do
+    if [ -f "/etc/systemd/system/$svc" ]; then
+      echo -n " $svc"
+    fi
+  done
+}
+
+function get_bkits_by_user() {
+  local OWNER="$1"
+  for SUBDIR in bknix-old bknix-min bknix-dfl bknix-max bknix-edge ; do
+    for DIR in "/home/$OWNER/$SUBDIR" "/Users/$OWNER/$FOLDER" ; do
+      if [ -d "$DIR" ]; then
+        echo $DIR
+      fi
+    done
+  done
+}
