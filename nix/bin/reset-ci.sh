@@ -44,7 +44,7 @@ for SVC in $SVCS ; do rm -f "/etc/systemd/system/$SVC.service" ; done
 for SVC in $RAMDISKS ; do rm -f "/etc/systemd/system/$SVC" ; done
 
 echo "Reinstalling profiles"
-FORCE_INIT=-f ./bin/install-ci.sh "$BKNIX_CI_TEMPLATE"
+FORCE_INIT=-f "$BINDIR"/install-ci.sh "$BKNIX_CI_TEMPLATE"
 
 echo "Re-scanning service names"
 SVCS=$(get_svcs)
@@ -57,7 +57,7 @@ echo "Starting services:$SVCS"
 systemctl start $SVCS
 
 echo "Updating buildkit"
-./bin/update-ci-buildkit.sh
+"$BINDIR"/update-ci-buildkit.sh
 
 echo "Warming up caches"
-./bin/cache-warmup.sh
+"$BINDIR"/cache-warmup.sh
