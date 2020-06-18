@@ -34,10 +34,10 @@ default_environment:
 #### Mandatory environment settings
 environment:
  # For multiprofile CI, data is split
- - LOCO_VAR=$HOME/.bknix-var/min
+ - LOCO_VAR=$HOME/_bknix/ramdisk/min
 
  # CLI applications should use our stuff
- - AMPHOME=$LOCO_VAR.keep/amp
+ - AMPHOME=$HOME/_bknix/keep/min
  - CIVIBUILD_HOME=$HTTPD_VDROOT
  - BKIT=$LOCO_PRJ
  - MYSQL_HOME=$LOCO_VAR/mysql/conf

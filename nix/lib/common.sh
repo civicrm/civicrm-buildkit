@@ -104,8 +104,8 @@ function install_warmup() {
 ## Setup all services for user "jenkins"
 function install_all_jenkins() {
   OWNER=jenkins
-  RAMDISK="/home/$OWNER/.bknix-var"
-  RAMDISKSVC=$(systemd-escape "home/$OWNER/.bknix-var")
+  RAMDISK="/home/$OWNER/_bknix/ramdisk"
+  RAMDISKSVC=$(systemd-escape "home/$OWNER/_bknix/ramdisk")
   RAMDISKSIZE=8G
   PROFILES=${PROFILES:-dfl min max}
   HTTPD_DOMAIN=$(hostname -f)
@@ -125,8 +125,8 @@ function install_all_jenkins() {
 ## Setup all services for user "publisher"
 function install_all_publisher() {
   OWNER=publisher
-  RAMDISK="/home/$OWNER/.bknix-var"
-  RAMDISKSVC=$(systemd-escape "home/$OWNER/.bknix-var")
+  RAMDISK="/home/$OWNER/_bknix/ramdisk"
+  RAMDISKSVC=$(systemd-escape "home/$OWNER/_bknix/ramdisk")
   RAMDISKSIZE=500M
   PROFILES=""
   HTTPD_DOMAIN=$(hostname -f)
@@ -263,6 +263,7 @@ function install_ramdisk() {
   else
     echo "Skip: Creating systemd ramdisk \"$RAMDISK\" ($RAMDISKSVC)"
   fi
+  mkdir -p "$RAMDISK"
 }
 
 ## Create the user, $OWNER
@@ -350,7 +351,7 @@ function get_svcs() {
 }
 
 function get_ramdisk_svcs() {
-  for svc in mnt-mysql-jenkins.mount mnt-mysql-publisher.mount 'home-jenkins-.bknix\x2dvar.mount' 'home-publisher-.bknix\x2dvar.mount'; do
+  for svc in mnt-mysql-jenkins.mount mnt-mysql-publisher.mount 'home-jenkins-.bknix\x2dvar.mount' 'home-publisher-.bknix\x2dvar.mount' home-jenkins-_bknix-ramdisk home-publisher-_bknix-ramdisk; do
     if [ -f "/etc/systemd/system/$svc" ]; then
       echo -n " $svc"
     fi
