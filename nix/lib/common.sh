@@ -12,6 +12,7 @@ NIX_INSTALLER_URL="https://nixos.org/releases/nix/nix-2.0.4/install"
 
 function install_nix_interactive() {
   if [ -d /nix ]; then
+    echo "The /nix folder is already installed."
     return
   fi
 
