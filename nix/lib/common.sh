@@ -94,8 +94,10 @@ function install_warmup() {
     fi
   fi
   echo "Setup binary cache"
-  nix-env -iA cachix -f https://cachix.org/api/v1/install
-  cachix use bknix
+  local SUDO
+  [ "$USER" == "root" ] && SUDO='' || SUDO='sudo -i'
+  $SUDO nix-env -iA cachix -f https://cachix.org/api/v1/install
+  $SUDO cachix use bknix
 }
 
 ## Setup all services for user "jenkins"
