@@ -113,6 +113,7 @@ function install_all_jenkins() {
   [ -f /etc/bknix-ci/install_all_jenkins.sh ] && source /etc/bknix-ci/install_all_jenkins.sh
 
   install_user "$OWNER"
+  sudo -u "$OWNER" mkdir -p "/home/$OWNER/_bknix"
   install_ramdisk
 
   for PROFILE in $PROFILES ; do
@@ -134,6 +135,7 @@ function install_all_publisher() {
   [ -f /etc/bknix-ci/install_all_publisher.sh ] && source /etc/bknix-ci/install_all_publisher.sh
 
   install_user "$OWNER"
+  sudo -u "$OWNER" mkdir -p "/home/$OWNER/_bknix"
   install_ramdisk
 
   for PROFILE in $PROFILES ; do
@@ -203,7 +205,7 @@ function install_profile_binaries() {
   fi
 
   echo "Creating profile \"$PRFDIR\""
-  nix-env -i -p "$PRFDIR" -f . -E "f: f.profiles.$PROFILE"
+  nix-env -i -p "$PRFDIR" -f "$BKNIXSRC" -E "f: f.profiles.$PROFILE"
 }
 
 ## Install a full copy of buildkit.
@@ -263,7 +265,6 @@ function install_ramdisk() {
   else
     echo "Skip: Creating systemd ramdisk \"$RAMDISK\" ($RAMDISKSVC)"
   fi
-  mkdir -p "$RAMDISK"
 }
 
 ## Create the user, $OWNER
@@ -351,7 +352,7 @@ function get_svcs() {
 }
 
 function get_ramdisk_svcs() {
-  for svc in mnt-mysql-jenkins.mount mnt-mysql-publisher.mount 'home-jenkins-.bknix\x2dvar.mount' 'home-publisher-.bknix\x2dvar.mount' home-jenkins-_bknix-ramdisk home-publisher-_bknix-ramdisk; do
+  for svc in mnt-mysql-jenkins.mount mnt-mysql-publisher.mount 'home-jenkins-.bknix\x2dvar.mount' 'home-publisher-.bknix\x2dvar.mount' home-jenkins-_bknix-ramdisk.mount home-publisher-_bknix-ramdisk.mount ; do
     if [ -f "/etc/systemd/system/$svc" ]; then
       echo -n " $svc"
     fi
