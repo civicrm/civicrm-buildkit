@@ -10,7 +10,7 @@ NIX_INSTALLER_URL="https://nixos.org/releases/nix/nix-2.0.4/install"
 ###########################################################
 ## Primary install routines
 
-function install_nix_single() {
+function install_nix_interactive() {
   if [ -d /nix ]; then
     return
   fi
@@ -20,11 +20,65 @@ function install_nix_single() {
     exit 1
   fi
 
-  echo "Creating /nix ( https://nixos.org/nix/about.html ). This folder will store any new software in separate folder:"
-  echo "This will be installed in single-user mode to allow the easiest administration."
+  if [ "$USER" == "root" ]; then
+    echo "This command must run as a regular user - not as root!" 1>&2
+    exit 1
+  fi
+
+  echo "==== Installing nix ===="
+  echo ""
+  echo "'nix' is a package manager for Unix-style software."
+  echo ""
+  echo "It is open-source, multi-platform, multi-user, and reproducible. It allows multiple"
+  echo "versions of any package to coexist, and it does not interfere with your regular package"
+  echo "manager. For more background, see https://nixos.org/nix/about.html"
+  echo ""
+  echo "The nix installer will create a folder, /nix. It may run in a few modes:"
+  echo ""
+  echo "1. Single-user mode"
+  echo "   - Suitable for Linux and older macOS."
+  echo "   - The regular console user can directly edit files in /nix."
+  echo "2. Single-user mode with Darwin volume (APFS)"
+  echo "   - Suitable for newer macOS (Catalina 10.15+)."
+  echo "   - The /nix folder will be stored in a separate volume."
+  echo "   - The regular console user can directly edit files in /nix."
+  echo "3. Multi-user mode"
+  echo "   - Suitable for Linux. Requires systemd."
+  echo "   - The /nix folder is restricted. It is managed transparently/securely by nix-daemon."
+  echo ""
+  echo "For more details and for more advanced options, see https://nixos.org/nix/manual/"
+  echo ""
+  echo "To continue, please choose 1, 2, or 3. To abort, enter a blank value."
+
+  read -p'> ' BK_NIX_INSTALL_MODE
+
+  case "$BK_NIX_INSTALL_MODE" in
+    1) BK_NIX_OPT="--no-daemon" ;;
+    2) BK_NIX_OPT="--no-daemon --darwin-use-unencrypted-nix-store-volume" ;;
+    3) BK_NIX_OPT="--daemon" ;;
+    *)
+      echo "Aborting"
+      exit 1
+      ;;
+  esac
+
+  echo ""
+  echo "Which version of nix would like to install?"
+  echo ""
+  echo "Examples: 2.0.4, 2.2.1, 2.3.5"
+  echo "To use the current stable, leave this blank."
+  read -p '> ' BK_NIX_VERSION
+
+  if [ -n "$BK_NIX_VERSION" ]; then
+    BK_NIX_URL="https://nixos.org/releases/nix/nix-${BK_NIX_VERSION}/install"
+  else
+    BK_NIX_URL=https://nixos.org/nix/install
+  fi
+
   echo
-  echo "Running: sh <(curl $NIX_INSTALLER_URL) --no-daemon"
-  sh <(curl $NIX_INSTALLER_URL) --no-daemon
+  ## Quirky "" prevents execution...
+  echo "Running: sh <""(""curl $BK_NIX_URL"") $BK_NIX_OPT"
+  sh <(curl $BK_NIX_URL) $BK_NIX_OPT
 
   if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
     . "$HOME/.nix-profile/etc/profile.d/nix.sh"

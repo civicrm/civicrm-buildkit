@@ -32,7 +32,7 @@ source "$BINDIR/../lib/common.sh"
 
 PROFILES=${PROFILES:-min max dfl}
 
-install_nix_single
+install_nix_interactive
 check_reqs
 install_warmup
 install_bin bin/use-bknix.loco /usr/local/bin/use-bknix
