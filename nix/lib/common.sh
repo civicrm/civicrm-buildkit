@@ -96,7 +96,7 @@ function install_warmup() {
   fi
   echo "Setup binary cache"
   local SUDO
-  [ "$USER" == "root" ] && SUDO='' || SUDO='sudo -i'
+  [ "$(stat -c '%U' /nix)" == "$USER" ] && SUDO='' || SUDO='sudo -i'
   $SUDO nix-env -iA cachix -f https://cachix.org/api/v1/install
   $SUDO cachix use bknix
 }
