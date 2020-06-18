@@ -6,4 +6,10 @@ set -e
 BINDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source "$BINDIR/../lib/common.sh"
 
+echo "[install-nix.sh] Starting"
+
 install_nix_interactive
+check_reqs
+install_warmup
+
+echo "[install-nix.sh] Finished"
