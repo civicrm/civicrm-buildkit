@@ -63,9 +63,10 @@ services:
     pid_file: '$LOCO_SVC_VAR/php-fpm.pid'
     message: 'PHP-FPM is running on "<comment>$LOCALHOST:$PHPFPM_PORT</comment>"'
 
-  mailcatcher:
-    run: 'mailcatcher --ip "$LOCALHOST" --smtp-port "$MAIL_SMTP_PORT" --http-port "$MAIL_HTTP_PORT" -f'
-    message: 'Mailcatcher is running on "<comment>smtp://$LOCALHOST:$MAIL_SMTP_PORT</comment>" and "<comment>http://$LOCALHOST:$MAIL_HTTP_PORT</comment>"'
+  # To enable in CI, need to either set LOCALHOST to a public IP, or setup some kind of reverse proxy.
+  #mailcatcher:
+  #  run: 'mailcatcher --ip "$LOCALHOST" --smtp-port "$MAIL_SMTP_PORT" --http-port "$MAIL_HTTP_PORT" -f'
+  #  message: 'Mailcatcher is running on "<comment>smtp://$LOCALHOST:$MAIL_SMTP_PORT</comment>" and "<comment>http://$LOCALHOST:$MAIL_HTTP_PORT</comment>"'
 
   ## apache-vdr uses a "virtual document root" to host a wildcard domain;
   ## Formula: "http://{SUBDOMAIN}.{HTTPD_DOMAIN}:{HTTPD_PORT}/" <==> "./build/{SUBDOMAIN}/"
