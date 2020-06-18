@@ -10,17 +10,16 @@ let
     mkCliDerivation = profileName: packageList: stdenv.mkDerivation rec {
       name = "bknix";
       buildInputs = packageList ++ [ pkgs.makeWrapper ];
-      bknixDepsStr = builtins.concatStringsSep ":" packageList;
-      buildCommand = ''
-        mkdir "$out" "$out/bin"
-        makeWrapper "${bkpkgs.launcher}/bin/bknix" $out/bin/bknix --prefix BKNIX_DEPS : "${bknixDepsStr}"
-      '';
       shellHook = ''
-        [ -z "$BKNIXDIR" ] && export BKNIXDIR="$PWD"
-        eval $(bknix env)
+        if [ ! -f ".loco/loco.yml" -a -f "../.loco/loco.yml" ]; then
+          cd ..
+        fi
 
-        if [ -f "$BKNIXDIR/etc/bashrc.local" ]; then
-          source "$BKNIXDIR/etc/bashrc.local"
+        if [ -f ".loco/loco.yml" ]; then
+          eval $(loco env)
+          [ -f "./etc/bashrc.local" ] && source "./etc/bashrc.local"
+        else
+          echo "WARNING: The .loco/loco.yml not found. Environment may not be fully initialized. Please run nix-shell in the buildkit folder." 1>&2
         fi
     '';
     };
