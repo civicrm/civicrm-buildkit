@@ -17,11 +17,11 @@ from your host operating system (Ubuntu, RedHat, OSX, etc).
 The conventional install process is to construct a command like ONE of these:
 
 ```
-sh <(curl https://nixos.org/nix/install) --daemon
+sh <(curl -L https://nixos.org/nix/install) --daemon
 
-sh <(curl https://nixos.org/nix/install) --no-daemon
+sh <(curl -L https://nixos.org/nix/install) --no-daemon
 
-sh <(curl https://nixos.org/nix/install) --no-daemon --darwin-use-unencrypted-nix-store-volume
+sh <(curl -L https://nixos.org/nix/install) --no-daemon --darwin-use-unencrypted-nix-store-volume
 ```
 
 The exact command depends on the operating system and use-case.  For a more

@@ -78,8 +78,8 @@ function install_nix_interactive() {
 
   echo
   ## Quirky "" prevents execution...
-  echo "Running: sh <""(""curl $BK_NIX_URL"") $BK_NIX_OPT"
-  sh <(curl $BK_NIX_URL) $BK_NIX_OPT
+  echo "Running: sh <""(""curl -L $BK_NIX_URL"") $BK_NIX_OPT"
+  sh <(curl -L $BK_NIX_URL) $BK_NIX_OPT
 
   if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
     . "$HOME/.nix-profile/etc/profile.d/nix.sh"
