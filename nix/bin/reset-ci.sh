@@ -6,12 +6,13 @@
 
 set -e
 BINDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+BKNIXSRC=$(dirname "$BINDIR")
 source "$BINDIR/../lib/common.sh"
 
 ###########################################################
 ## Main
 
-if [ -z "$1" -o ! -d "$PWD/examples/$1" ]; then
+if [ -z "$1" -o ! -d "$BKNIXSRC/examples/$1" ]; then
   echo "usage: ./bin/reset-ci.sh <template-name>"
   echo "The <template-name> should correspond to a folder in examples/"
   exit 1

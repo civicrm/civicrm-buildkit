@@ -22,7 +22,7 @@ function install_warmup_service() {
   SYSTEMSVC=bknix-warmup
 
   echo "Creating systemd service \"$SYSTEMSVC\""
-  template_render examples/systemd-warmup.service > "/etc/systemd/system/${SYSTEMSVC}.service"
+  template_render "$BKNIXSRC"/examples/systemd-warmup.service > "/etc/systemd/system/${SYSTEMSVC}.service"
 
   echo "Activating systemd services \"$SYSTEMSVC\""
   systemctl daemon-reload

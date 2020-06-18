@@ -256,7 +256,7 @@ function install_profile_systemd() {
 function install_ramdisk() {
   if [ -z "$NO_SYSTEMD" ]; then
     echo "Creating systemd ramdisk \"$RAMDISK\" ($RAMDISKSVC)"
-    template_render examples/systemd.mount > "/etc/systemd/system/${RAMDISKSVC}.mount"
+    template_render "$BKNIXSRC/"examples/systemd.mount > "/etc/systemd/system/${RAMDISKSVC}.mount"
     systemctl daemon-reload
     systemctl start "$RAMDISKSVC.mount"
     systemctl enable "$RAMDISKSVC.mount"

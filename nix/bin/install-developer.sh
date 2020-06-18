@@ -28,6 +28,7 @@
 
 set -e
 BINDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+BKNIXSRC=$(dirname "$BINDIR")
 source "$BINDIR/../lib/common.sh"
 
 PROFILES=${PROFILES:-min max dfl}
@@ -35,7 +36,7 @@ PROFILES=${PROFILES:-min max dfl}
 install_nix_interactive
 check_reqs
 install_warmup
-install_bin bin/use-bknix.loco /usr/local/bin/use-bknix
+install_bin "$BINDIR"/use-bknix.loco /usr/local/bin/use-bknix
 for PROFILE in $PROFILES ; do 
   install_profile_binaries "$PROFILE" "/nix/var/nix/profiles/per-user/$USER/bknix-$PROFILE"
 done

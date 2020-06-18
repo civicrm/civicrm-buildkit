@@ -36,9 +36,10 @@
 
 set -e
 BINDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+BKNIXSRC=$(dirname "$BINDIR")
 source "$BINDIR/../lib/common.sh"
 
-if [ -z "$1" -o ! -d "$PWD/examples/$1" ]; then
+if [ -z "$1" -o ! -d "$BKNIXSRC/examples/$1" ]; then
   echo "usage: ./bin/install-ci.sh <template-name>"
   echo "The <template-name> should correspond to a folder in examples/"
   exit 1
@@ -48,7 +49,7 @@ fi
 
 check_reqs
 install_warmup
-init_folder "$PWD/examples/$BKNIX_CI_TEMPLATE" /etc/bknix-ci
-install_bin bin/use-bknix.arrbuk /usr/local/bin/use-bknix
+init_folder "$BKNIXSRC/examples/$BKNIX_CI_TEMPLATE" /etc/bknix-ci
+install_bin "$BINDIR"/use-bknix.arrbuk /usr/local/bin/use-bknix
 install_all_jenkins
 install_all_publisher

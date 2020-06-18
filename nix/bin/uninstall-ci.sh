@@ -2,6 +2,7 @@
 
 set -e
 BINDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+BKNIXSRC=$(dirname "$BINDIR")
 source "$BINDIR/../lib/common.sh"
 
 OWNER=${OWNER:-jenkins}
