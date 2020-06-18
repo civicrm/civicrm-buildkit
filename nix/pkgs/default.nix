@@ -25,6 +25,10 @@ in rec {
    php74 = import ./php74/default.nix;
    transifexClient = import ./transifexClient/default.nix;
    ramdisk = callPackage (fetchTarball https://github.com/totten/ramdisk/archive/v0.1.1.tar.gz) {};
-   loco = callPackage (fetchTarball https://github.com/totten/loco/archive/v0.4.2.tar.gz) {};
+
+   # On entirely new worker-node, loco doesn't want to build from tarball. *hrm*. Workaround: Get a prebuilt PHAR.
+   # loco = callPackage (fetchTarball https://github.com/totten/loco/archive/v0.4.2.tar.gz) {};
    # loco = callPackage /PATH/TO/src/loco {};
+   # loco = buildPhar { name = loco; src = pkgs.fetchurl {url = https://github.com/totten/loco/releases/download/v0.4.3/loco-0.4.3.phar; sha256 = "0galyryymdl2b9kdz212d7f2dcv76xgjws6j4bihr23sacamd029"; executable = true;}; };
+   loco = import ./loco/default.nix;
 }
