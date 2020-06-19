@@ -5,7 +5,7 @@ format: 'loco-0.1'
 ## This differs from the default configuration in (a) port numbers and (b) the LOCO_VAR location.
 
 #### General configuration
-default_environment:
+environment:
 
  ## HOSTS_TYPE: When creating an HTTP service, should we register the hostname in "/etc/hosts" ('file') or not ('none')?
  - HOSTS_TYPE=none
@@ -31,8 +31,6 @@ default_environment:
  ## LOCALHOST: Bind services to a local IP address.
  - LOCALHOST=127.0.0.1
 
-#### Mandatory environment settings
-environment:
  # For multiprofile CI, data is split
  - LOCO_VAR=$HOME/_bknix/ramdisk/dfl
 
