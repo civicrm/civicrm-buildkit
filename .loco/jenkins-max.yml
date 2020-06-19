@@ -35,7 +35,7 @@ environment:
  - LOCO_VAR=$HOME/_bknix/ramdisk/max
 
  # CLI applications should use our stuff
- - AMPHOME=$HOME/_bknix/keep/max
+ - AMPHOME=$HOME/_bknix/amp/max
  - CIVIBUILD_HOME=$HTTPD_VDROOT
  - BKIT=$LOCO_PRJ
  - MYSQL_HOME=$LOCO_VAR/mysql/conf
