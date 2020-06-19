@@ -10,6 +10,7 @@ source "$BINDIR/../lib/common.sh"
 
 echo "[install-nix.sh] Starting"
 
+assert_not_root_user
 install_nix_interactive
 check_reqs
 install_warmup

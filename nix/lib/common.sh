@@ -21,10 +21,7 @@ function install_nix_interactive() {
     exit 1
   fi
 
-  if [ "$USER" == "root" ]; then
-    echo "This command must run as a regular user - not as root!" 1>&2
-    exit 1
-  fi
+  assert_not_root_user ## The nix installer will complain about root.
 
   echo "==== Installing nix ===="
   echo ""
@@ -147,6 +144,20 @@ function install_all_publisher() {
 
 ###########################################################
 ## Install helpers
+
+function assert_root_user() {
+  if [ "$USER" != "root" ]; then
+    echo "This command must run as a super user - not a regular user!" 1>&2
+    exit 1
+  fi
+}
+
+function assert_not_root_user() {
+  if [ "$USER" == "root" ]; then
+    echo "This command must run as a regular user - not as root!" 1>&2
+    exit 1
+  fi
+}
 
 function check_reqs() {
   if [ -z `which nix` ]; then

@@ -1,22 +1,12 @@
 #!/bin/bash
-GUARD=
-
 set -e
 
-function get_svcs() {
-  for svc in bknix{,-publisher}-{dfl,min,max,old,edge}{,-mysqld} ; do
-    if [ -f "/etc/systemd/system/$svc.service" ]; then
-      echo -n " $svc"
-    fi
-  done
-}
-function get_ramdisks() {
-  for svc in mnt-mysql-{jenkins,publisher}.mount ; do
-    if [ -f "/etc/systemd/system/$svc" ]; then
-      echo -n " $svc"
-    fi
-  done
-}
+BINDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+BKNIXSRC=$(dirname "$BINDIR")
+cd "$BKNIXSRC"
+source "$BINDIR/../lib/common.sh"
+
+GUARD=
 
 function do_stop() {
   echo "Stopping all services: $(get_svcs)"
@@ -34,6 +24,8 @@ function do_start() {
   echo "Starting all services: $(get_svcs)"
   $GUARD systemctl start $(get_svcs)
 }
+
+assert_root_user
 
 case "$1" in
   stop) do_stop ;;

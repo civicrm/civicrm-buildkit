@@ -48,6 +48,7 @@ else
   BKNIX_CI_TEMPLATE="$1"
 fi
 
+assert_root_user
 check_reqs
 install_warmup
 init_folder "$BKNIXSRC/examples/$BKNIX_CI_TEMPLATE" /etc/bknix-ci
