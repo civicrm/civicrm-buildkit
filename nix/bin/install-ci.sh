@@ -32,13 +32,16 @@
 #    eval $(use-bknix dfl)
 
 ###########################################################
-## Main
+## Bootstrap
 
 set -e
 BINDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 BKNIXSRC=$(dirname "$BINDIR")
 cd "$BKNIXSRC"
 source "$BINDIR/../lib/common.sh"
+
+###########################################################
+## Main
 
 if [ -z "$1" -o ! -d "$BKNIXSRC/examples/$1" ]; then
   echo "usage: ./bin/install-ci.sh <template-name>"

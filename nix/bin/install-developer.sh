@@ -24,13 +24,16 @@
 #    eval $(use-bknix dfl)
 
 ###########################################################
-## Main
+## Bootstrap
 
 set -e
 BINDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 BKNIXSRC=$(dirname "$BINDIR")
 cd "$BKNIXSRC"
 source "$BINDIR/../lib/common.sh"
+
+###########################################################
+## Main
 
 PROFILES=${PROFILES:-min max dfl}
 
@@ -39,6 +42,6 @@ install_nix_interactive
 check_reqs
 install_warmup
 install_bin "$BINDIR"/use-bknix.loco /usr/local/bin/use-bknix
-for PROFILE in $PROFILES ; do 
+for PROFILE in $PROFILES ; do
   install_profile_binaries "$PROFILE" "/nix/var/nix/profiles/per-user/$USER/bknix-$PROFILE"
 done

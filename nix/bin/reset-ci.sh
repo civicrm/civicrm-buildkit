@@ -4,6 +4,9 @@
 ##
 ## NOTE: reset-ci.sh and reset-gcloud.sh should be kept in sync. TODO: DRY
 
+###########################################################
+## Bootstrap
+
 set -e
 BINDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 BKNIXSRC=$(dirname "$BINDIR")

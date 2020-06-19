@@ -1,10 +1,15 @@
 #!/bin/bash
 
+###########################################################
+## Bootstrap
+
 BINDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 BKNIXSRC=$(dirname "$BINDIR")
 cd "$BKNIXSRC"
 source "$BINDIR/../lib/common.sh"
 
+###########################################################
+## Main
 assert_root_user
 
 for OWNER in jenkins publisher ; do

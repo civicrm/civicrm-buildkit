@@ -226,7 +226,7 @@ function install_profile_systemd() {
   local PROFILE="$2"
   local SYSDTMP=$(tempfile -p bknix-systemd).d
   local PREFIX="bknix-$OWNER-$PROFILE"
-  
+
   [ -z "$SYSDTMP" ] && echo "Failed to identify temp dir" && exit 99
   mkdir "$SYSDTMP"
   chown "$OWNER" "$SYSDTMP"
@@ -254,7 +254,7 @@ function install_profile_systemd() {
     systemctl daemon-reload
     systemctl enable /etc/systemd/system/${PREFIX}*service
     systemctl start ${PREFIX}
-    
+
     echo "Cleaning temp files"
     rm -rf "$SYSDTMP"
   set +x

@@ -1,10 +1,16 @@
 #!/bin/bash
 set -e
 
+###########################################################
+## Bootstrap
+
 BINDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 BKNIXSRC=$(dirname "$BINDIR")
 cd "$BKNIXSRC"
 source "$BINDIR/../lib/common.sh"
+
+###########################################################
+## Helpers
 
 GUARD=
 
@@ -24,6 +30,9 @@ function do_start() {
   echo "Starting all services: $(get_svcs)"
   $GUARD systemctl start $(get_svcs)
 }
+
+###########################################################
+## Main
 
 assert_root_user
 

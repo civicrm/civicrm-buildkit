@@ -1,16 +1,22 @@
 #!/bin/bash
 
+###########################################################
+## Bootstrap
+
 set -e
 BINDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 BKNIXSRC=$(dirname "$BINDIR")
 cd "$BKNIXSRC"
 source "$BINDIR/../lib/common.sh"
 
+###########################################################
+## Constants
+
 OWNER=${OWNER:-jenkins}
 RAMDISK="/mnt/mysql/$OWNER"
 RAMDISKSVC=$(systemd-escape "mnt/mysql/$OWNER")
 
-########################################
+###########################################################
 ## Utilities
 
 function uninstall_ramdisk() {
