@@ -88,13 +88,13 @@ function install_nix_interactive() {
   fi
 }
 
-function install_warmup() {
+function install_cachix() {
   if [ -f /etc/nix/nix.conf ]; then
     if grep -q bknix.cachix.org /etc/nix/nix.conf ; then
       return
     fi
   fi
-  echo "Setup binary cache"
+  echo "Setup binary cache (cachix)"
   local SUDO
   is_my_file /nix && SUDO='' || SUDO='sudo -i'
   $SUDO nix-env -iA cachix -f https://cachix.org/api/v1/install

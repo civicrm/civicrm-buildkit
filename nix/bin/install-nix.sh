@@ -20,7 +20,7 @@ echo "[install-nix.sh] Starting"
 assert_not_root_user
 install_nix_interactive
 check_reqs
-install_warmup
+install_cachix
 
 echo
 echo "TIP: You may need to restart the console or session to gain full access to nix commands."

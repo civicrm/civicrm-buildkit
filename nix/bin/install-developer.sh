@@ -42,7 +42,7 @@ if [ ! -d /nix ]; then
   install_nix_interactive
 fi
 check_reqs
-install_warmup
+install_cachix
 install_bin "$BINDIR"/use-bknix.loco /usr/local/bin/use-bknix
 for PROFILE in $PROFILES ; do
   install_profile_binaries "$PROFILE" "/nix/var/nix/profiles/per-user/$USER/bknix-$PROFILE"
