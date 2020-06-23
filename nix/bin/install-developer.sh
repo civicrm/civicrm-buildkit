@@ -38,7 +38,9 @@ source "$BINDIR/../lib/common.sh"
 PROFILES=${PROFILES:-min max dfl}
 
 assert_not_root_user
-install_nix_interactive
+if [ ! -d /nix ]; then
+  install_nix_interactive
+fi
 check_reqs
 install_warmup
 install_bin "$BINDIR"/use-bknix.loco /usr/local/bin/use-bknix
