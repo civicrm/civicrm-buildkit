@@ -165,7 +165,18 @@ function assert_not_root_user() {
 function check_reqs() {
   if [ -z `which nix` ]; then
    echo "Please install \"nix\" before running this. See: https://nixos.org/nix/manual/"
-    exit 2
+   echo
+   echo "If you have already installed /nix, then there may be an issue with the shell setup."
+   echo
+   echo "- Try restarting the terminal/session."
+   echo "- If the problem persists, you may need to manually update the .profile or .bashrc with a snippet like this:"
+   echo
+   echo "  if [ -e \"$HOME/.nix-profile/etc/profile.d/nix.sh\" ]; then"
+   echo "    . \"$HOME/.nix-profile/etc/profile.d/nix.sh\""
+   echo "  elif [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then"
+   echo "    . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'"
+   echo "  fi"
+   exit 2
   fi
 }
 
