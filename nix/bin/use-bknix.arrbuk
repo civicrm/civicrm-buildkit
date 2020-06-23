@@ -76,20 +76,26 @@ fi
 ## Main
 
 export PATH="$PRFDIR/bin:$PATH"
+USE_LOCO_FILE=""
 
-## FIXME: The OWNER thing probably shouldn't exist. Easier to just use HOME and USER. But removing it requires other updates/verification.
-for CANDIDATE in "/home/$OWNER/bknix" "/home/$OWNER/bknix-$PROFILE" "/Users/$OWNER/bknix" "/Users/$OWNER/bknix-$PROFILE" ; do
-  if [ -d "$CANDIDATE" ]; then
+for CANDIDATE in "$HOME/bknix" "$HOME/bknix-$PROFILE" "$HOME/buildkit" "$HOME/buildkit-$PROFILE" ; do
+  if [ -f "$CANDIDATE/.loco/$OWNER-$PROFILE.yml" ]; then
     export BKIT="$CANDIDATE"
+    USE_LOCO_FILE=".loco/$OWNER-$PROFILE.yml"
+    break
+  elif [ -f "$CANDIDATE/.loco/loco.yml" ]; then
+    export BKIT="$CANDIDATE"
+    USE_LOCO_FILE=".loco/loco.yml"
+    break
   fi
 done
 if [ ! -d "$BKIT" ]; then
-  echo "WARNING: The BKIT ($BKIT) does not exist. If it was initialized by another user, try setting OWNER first." >&2
+  echo "WARNING: Could not find suitable BKIT in \"$HOME\" (eg \"bknix\", \"buildkit\", \"bknix-min\")" >&2
 fi
 
 case "$MODE" in
   env)
-    CODE=`cd "$BKIT" && loco env -c ".loco/$OWNER-$PROFILE.yml" --export`
+    CODE=`cd "$BKIT" && loco env -c "$USE_LOCO_FILE" --export`
     echo "$CODE"
     eval "$CODE"
     echo "export PS1=\"[${TXT_CYAN}bknix-$PROFILE${TXT_RESET}:${TXT_GREEN}\w${TXT_RESET}] \" ;"
