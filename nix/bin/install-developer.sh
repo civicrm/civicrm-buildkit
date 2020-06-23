@@ -37,7 +37,7 @@ source "$BINDIR/../lib/common.sh"
 
 PROFILES=${PROFILES:-min max dfl}
 
-assert_not_root_user()
+assert_not_root_user
 install_nix_interactive
 check_reqs
 install_warmup
