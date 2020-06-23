@@ -1,7 +1,7 @@
 #!/bin/bash
 ##
-## This is a small wrapper for the normal installer. It displays a prompt to ask about common CLI options.
-
+## This is a small wrapper for the normal installer. It displays a prompt to ask about common CLI options,
+## and it configures 'cachix'.
 
 ###########################################################
 ## Bootstrap

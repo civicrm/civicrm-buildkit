@@ -41,8 +41,9 @@ function install_nix_interactive() {
   echo "   - The /nix folder will be stored in a separate volume."
   echo "   - The regular console user can directly edit files in /nix."
   echo "3. Multi-user mode"
-  echo "   - Suitable for Linux. Requires systemd."
+  echo "   - Suitable for Linux and older macOS."
   echo "   - The /nix folder is restricted. It is managed transparently/securely by nix-daemon."
+  echo "   - On Linux, it requires systemd."
   echo ""
   echo "For more details and for more advanced options, see https://nixos.org/nix/manual/"
   echo ""
@@ -169,7 +170,7 @@ function check_reqs() {
    echo "If you have already installed /nix, then there may be an issue with the shell setup."
    echo
    echo "- Try restarting the terminal/session."
-   echo "- If the problem persists, you may need to manually update the .profile or .bashrc with a snippet like this:"
+   echo "- If the problem persists, you may need to manually update the ~/.profile or ~/.bashrc with a snippet like this:"
    echo
    echo "  if [ -e \"$HOME/.nix-profile/etc/profile.d/nix.sh\" ]; then"
    echo "    . \"$HOME/.nix-profile/etc/profile.d/nix.sh\""
