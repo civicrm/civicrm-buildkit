@@ -82,6 +82,9 @@ function install_nix_interactive() {
     . "$HOME/.nix-profile/etc/profile.d/nix.sh"
   elif [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
     . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+  else
+    echo "ERROR: Failed to find nix console script. Perhaps it has a different name now-a-days? You may need to restart console before continuing with any commands." 1>&2
+    exit 1
   fi
 }
 
@@ -93,7 +96,7 @@ function install_warmup() {
   fi
   echo "Setup binary cache"
   local SUDO
-  [ "$(stat -c '%U' /nix)" == "$USER" ] && SUDO='' || SUDO='sudo -i'
+  is_my_file /nix && SUDO='' || SUDO='sudo -i'
   $SUDO nix-env -iA cachix -f https://cachix.org/api/v1/install
   $SUDO cachix use bknix
 }
@@ -326,6 +329,24 @@ function do_as_owner() {
 
   sudo su - "$OWNER" -c "export PATH=\"$PRFDIR/bin:$PATH\" BKIT=\"$BKIT\" PROFILE=\"$PROFILE\" OWNER=\"$OWNER\" ; cd \$HOME ; $FUNC; $(_escape_args "$@")"
 }
+
+## Determine if a file is owned by the current user
+##
+## usage: if is_my_file "/path/to/foo/bar" ; then ... fi
+function is_my_file() {
+  local tgt="$1"
+
+  ## Crude heuristic: Darwin systems have BSD userland in /bin and /usr/bin. Everything else is GNU.
+  if [ "$(uname -s)" == "Darwin" ]; then
+    ## Be explicit about /usr/bin bc we don't know if sysadmin has supplemented with GNU toolchain.
+    local ownerid=$( /usr/bin/stat -f "%u" "$tgt" )
+  else
+    local ownerid=$( stat -c "%u" "$tgt" )
+  fi
+  local myid=$( id -u )
+  [ "$myid" == "$ownerid" ] && return 0 || return 1
+}
+
 
 ## usage: init_folder <src-folder> <tgt-folder>
 ## If the target folder doesn't exist, create it (by copying the source folder).
