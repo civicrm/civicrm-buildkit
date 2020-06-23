@@ -30,6 +30,12 @@ $GLOBALS['lazyVars']['FAKE_IP'] = function () {
   return implode('.', [rand(1, 256), rand(1, 256), rand(1, 256), rand(1, 256)]);
 };
 
+$GLOBALS['lazyVars']['EXTERNAL_IP'] = function () {
+  $ip = trim(file_get_contents('https://ipv4bot.whatismyipaddress.com'));
+  assertWellFormedIP($ip);
+  return $ip;
+};
+
 $GLOBALS['lazyVars']['GCLOUD_IP'] = function() {
   $ttl = 600;
   $ip = Loco::cache('lazy-vars')->get('gcloud-ip');
@@ -37,9 +43,7 @@ $GLOBALS['lazyVars']['GCLOUD_IP'] = function() {
     $url = 'http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip';
     $opts = ['http' => ['method' => "GET", 'header' => "Metadata-Flavor: Google\r\n"]];
     $ip = file_get_contents($url, FALSE, stream_context_create($opts));
-    if (!$ip || !preg_match('/^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/', $ip)) {
-      throw new \Exception('Failed to determine gcloud IP');
-    }
+    assertWellFormedIP($ip);
     Loco::cache('lazy-vars')->set('gcloud-ip', $ip, $ttl);
   }
   return $ip;
@@ -47,6 +51,12 @@ $GLOBALS['lazyVars']['GCLOUD_IP'] = function() {
 
 // --------------------------------------------------------------
 // Apply the lazy variables
+
+function assertWellFormedIP($ip) {
+  if (!$ip || !preg_match('/^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/', $ip)) {
+    throw new \Exception('Failed to determine IP address. This value is not an IP address: ' . $ip);
+  }
+}
 
 /**
  * Find any lazy-var placeholders and replace them.
