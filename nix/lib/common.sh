@@ -354,7 +354,7 @@ function do_as_owner() {
   local FUNC="$1"
   shift
 
-  sudo su - "$OWNER" -c "export PATH=\"$PRFDIR/bin:$PATH\" BKIT=\"$BKIT\" PROFILE=\"$PROFILE\" OWNER=\"$OWNER\" ; cd \$HOME ; eval $( bknix-profile env ) ; $FUNC; $(_escape_args "$@")"
+  sudo su - "$OWNER" -c "export PATH=\"$PRFDIR/bin:$PATH\" BKIT=\"$BKIT\" PROFILE=\"$PROFILE\" OWNER=\"$OWNER\" ; cd \$HOME ; eval \$( bknix-profile env ) ; $FUNC; $(_escape_args "$@")"
 }
 
 ## Run a function in the context for given owner/prfdir, where the owner is... me, the current user/developer. For use with 'install-developer.sh' use-cases.
