@@ -55,6 +55,6 @@ assert_root_user
 check_reqs
 install_cachix
 init_folder "$BKNIXSRC/examples/$BKNIX_CI_TEMPLATE" /etc/bknix-ci
-install_bin "$BINDIR"/use-bknix.arrbuk /usr/local/bin/use-bknix
+install_bin "$BINDIR"/use-bknix /usr/local/bin/use-bknix
 install_all_jenkins
 install_all_publisher
