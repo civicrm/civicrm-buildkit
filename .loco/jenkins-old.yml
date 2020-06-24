@@ -1,0 +1,91 @@
+format: 'loco-0.1'
+
+## The "ci-old" configuration is used for running tests on the continuous-integration server.
+##
+## This differs from the default configuration in (a) port numbers and (b) the LOCO_VAR location.
+
+#### General configuration
+environment:
+
+ ## HOSTS_TYPE: When creating an HTTP service, should we register the hostname in "/etc/hosts" ('file') or not ('none')?
+ - HOSTS_TYPE=none
+
+ ## HTTPD_*: Determine how a local folder (eg "./build/dmaster") relates to a local HTTP service (eg "http://dmaster.bknix:8001").
+ - HTTPD_DOMAIN=bknix
+ - HTTPD_PORT=8006
+ - HTTPD_VDROOT=$BKIT/build
+ - HTTPD_VISIBILITY=all
+
+ ## *_PORT: Most daemons run on auxiliary/non-standard TCP/UDP ports.
+ - MAIL_SMTP_PORT=1030
+ - MAIL_HTTP_PORT=1085
+ - MEMCACHED_PORT=12226
+ - MYSQLD_PORT=3312
+ - PHPFPM_PORT=9014
+ - REDIS_PORT=6385
+ - XDEBUG_PORT=9000
+
+ ## CIVIBUILD_ADMIN_PASS: When creating an administrative user, set the default password.
+ # - CIVIBUILD_ADMIN_PASS=admin
+
+ ## LOCALHOST: Bind services to a local IP address.
+ - LOCALHOST=127.0.0.1
+
+ # For multiprofile CI, data is split
+ - LOCO_VAR=$HOME/_bknix/ramdisk/old
+
+ # CLI applications should use our stuff
+ - AMPHOME=$HOME/_bknix/amp/old
+ - CIVIBUILD_HOME=$HTTPD_VDROOT
+ - BKIT=$LOCO_PRJ
+ - MYSQL_HOME=$LOCO_VAR/mysql/conf
+ - NODE_PATH=$BKIT/node_modules:$NODE_PATH
+ - PATH=$BKIT/bin:$BKIT/node_modules/.bin:$LOCO_PRJ/.loco/bin:$PATH
+
+#### Functional service definitions
+services:
+
+  redis:
+    run: 'redis-server --port "$REDIS_PORT" --bind "$LOCALHOST" --pidfile "$LOCO_SVC_VAR/redis.pid" --dir "$LOCO_SVC_VAR"'
+    pid_file: '$LOCO_SVC_VAR/redis.pid'
+    message: 'Redis is running on "<comment>$LOCALHOST:$REDIS_PORT</comment>".'
+
+  memcached:
+    enabled: false
+    run: 'memcached --port=$MEMCACHED_PORT --pidfile="$LOCO_SVC_VAR/memcached.pid"'
+    pid_file: '$LOCO_SVC_VAR/memcached.pid'
+    message: 'Memcached is running on "<comment>$LOCALHOST:$MEMCACHED_PORT</comment>".'
+
+  php-fpm:
+    run: 'php-fpm -y "$LOCO_SVC_VAR/php-fpm.conf" --nodaemonize'
+    pid_file: '$LOCO_SVC_VAR/php-fpm.pid'
+    message: 'PHP-FPM is running on "<comment>$LOCALHOST:$PHPFPM_PORT</comment>"'
+
+  # To enable in CI, need to either set LOCALHOST to a public IP, or setup some kind of reverse proxy.
+  #mailcatcher:
+  #  run: 'mailcatcher --ip "$LOCALHOST" --smtp-port "$MAIL_SMTP_PORT" --http-port "$MAIL_HTTP_PORT" -f'
+  #  message: 'Mailcatcher is running on "<comment>smtp://$LOCALHOST:$MAIL_SMTP_PORT</comment>" and "<comment>http://$LOCALHOST:$MAIL_HTTP_PORT</comment>"'
+
+  ## apache-vdr uses a "virtual document root" to host a wildcard domain;
+  ## Formula: "http://{SUBDOMAIN}.{HTTPD_DOMAIN}:{HTTPD_PORT}/" <==> "./build/{SUBDOMAIN}/"
+  ## Ex: "http://foobar.bknix:8001/" <==> "./build/foobar/"
+  apache-vdr:
+    init:
+      - cp "$LOCO_SVC_CFG"/conf/magic "$LOCO_SVC_CFG"/conf/mime.types "$LOCO_SVC_VAR/conf"
+      - mk-apache-links
+      - 'if [ ! -d "$HTTPD_VDROOT" ]; then mkdir "$HTTPD_VDROOT"; fi'
+    run: 'apachectl -d "$LOCO_SVC_VAR" -DFOREGROUND'
+    pid_file: '$LOCO_SVC_VAR/httpd.pid'
+    message: 'Apache HTTPD is running at "<comment>http://$LOCALHOST:$HTTPD_PORT</comment>" with content from "<comment>$HTTPD_VDROOT</comment>".'
+
+  mysql:
+    enabled: true
+    init:
+      - 'loco-mysql-init'
+    run: 'mysqld --datadir="$LOCO_SVC_VAR/data"'
+    pid_file: '$LOCO_SVC_VAR/run/mysql.pid'
+    message: 'MySQL is running on "<comment>$LOCALHOST:$MYSQLD_PORT</comment>". The default credentials are user="<comment>root</comment>" and password="".'
+
+## Configure the loco=>systemd export
+export:
+  include_env: '/^(PATH|NIX_SSL_.*|LOCALE_ARCHIVE)$/'

@@ -1,0 +1,4 @@
+## The "fulltime" examples are used on the "test-N.civicrm.org" hosts (which... are running fulltime...)
+environment:
+  - HOSTNAME_FQDN=(placeholder; computed via lazy-vars.php)
+  - HTTPD_DOMAIN=${HOSTNAME_FQDN}

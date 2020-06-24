@@ -1,0 +1,137 @@
+format: 'loco-0.1'
+
+## This is an alternative configuration for local development environments. It uses replicated MySQL.
+
+#### General configuration
+default_environment:
+
+ ## HOSTS_TYPE: When creating an HTTP service, should we register the hostname in "/etc/hosts" ('file') or not ('none')?
+ - HOSTS_TYPE=none
+ # - HOSTS_TYPE=file
+
+ ## HTTPD_*: Determine how a local folder (eg "./build/dmaster") relates to a local HTTP service (eg "http://dmaster.bknix:8001").
+ - HTTPD_DOMAIN=bknix
+ - HTTPD_PORT=8001
+ - HTTPD_VDROOT=$LOCO_PRJ/build
+ - HTTPD_VISIBILITY=local
+
+ ## *_PORT: Most daemons run on auxiliary/non-standard TCP/UDP ports.
+ - MAIL_SMTP_PORT=1025
+ - MAIL_HTTP_PORT=1080
+ - MEMCACHED_PORT=12221
+ - MYSQLD_PORT=$MYSQL1_PORT
+ - MYSQL1_PORT=3307
+ - MYSQL2_PORT=3308
+ - PHPFPM_PORT=9009
+ - REDIS_PORT=6380
+ - XDEBUG_PORT=9000
+
+ ## RAMDISK_SIZE: Most daemons (including MySQL) store runtime data in a ramdisk.
+ - RAMDISK_SIZE=600
+
+ ## CIVICRM_LOCALES: When pre-generating CiviCRM datasets, limit the number of locales.
+ - CIVICRM_LOCALES=en_US,fr_FR
+
+ ## CIVIBUILD_ADMIN_PASS: When creating an administrative user, set the default password.
+ # - CIVIBUILD_ADMIN_PASS=admin
+
+ ## LOCALHOST: Bind services to a local IP address.
+ - LOCALHOST=127.0.0.1
+
+#### Mandatory environment settings
+environment:
+ # CLI applications should use our stuff
+ - AMPHOME=$LOCO_VAR.keep/amp
+ - CIVIBUILD_HOME=$HTTPD_VDROOT
+ - BKIT=$LOCO_PRJ
+ - MYSQL_HOME=$LOCO_VAR/mysql/conf
+ #- MYSQL_HOME=$LOCO_VAR/mysql-1/conf
+ - NODE_PATH=$BKIT/node_modules:$NODE_PATH
+ - PATH=$BKIT/bin:$BKIT/node_modules/.bin:$LOCO_PRJ/.loco/bin:$PATH
+
+volume:
+  ramdisk: $RAMDISK_SIZE
+
+#### Functional service definitions
+services:
+
+  redis:
+    run: 'redis-server --port "$REDIS_PORT" --bind "$LOCALHOST" --pidfile "$LOCO_SVC_VAR/redis.pid" --dir "$LOCO_SVC_VAR"'
+    pid_file: '$LOCO_SVC_VAR/redis.pid'
+    message: 'Redis is running on "<comment>$LOCALHOST:$REDIS_PORT</comment>".'
+
+  memcached:
+    enabled: false
+    run: 'memcached --port=$MEMCACHED_PORT --pidfile="$LOCO_SVC_VAR/memcached.pid"'
+    pid_file: '$LOCO_SVC_VAR/memcached.pid'
+    message: 'Memcached is running on "<comment>$LOCALHOST:$MEMCACHED_PORT</comment>".'
+
+  php-fpm:
+    run: 'php-fpm -y "$LOCO_SVC_VAR/php-fpm.conf" --nodaemonize'
+    pid_file: '$LOCO_SVC_VAR/php-fpm.pid'
+    message: 'PHP-FPM is running on "<comment>$LOCALHOST:$PHPFPM_PORT</comment>"'
+
+  mailcatcher:
+    run: 'mailcatcher --ip "$LOCALHOST" --smtp-port "$MAIL_SMTP_PORT" --http-port "$MAIL_HTTP_PORT" -f'
+    message: 'Mailcatcher is running on "<comment>smtp://$LOCALHOST:$MAIL_SMTP_PORT</comment>" and "<comment>http://$LOCALHOST:$MAIL_HTTP_PORT</comment>"'
+
+  ## apache-vdr uses a "virtual document root" to host a wildcard domain;
+  ## Formula: "http://{SUBDOMAIN}.{HTTPD_DOMAIN}:{HTTPD_PORT}/" <==> "./build/{SUBDOMAIN}/"
+  ## Ex: "http://foobar.bknix:8001/" <==> "./build/foobar/"
+  apache-vdr:
+    init:
+      - cp "$LOCO_SVC_CFG"/conf/magic "$LOCO_SVC_CFG"/conf/mime.types "$LOCO_SVC_VAR/conf"
+      - mk-apache-links
+      - 'if [ ! -d "$HTTPD_VDROOT" ]; then mkdir "$HTTPD_VDROOT"; fi'
+    run: 'apachectl -d "$LOCO_SVC_VAR" -DFOREGROUND'
+    pid_file: '$LOCO_SVC_VAR/httpd.pid'
+    message: 'Apache HTTPD is running at "<comment>http://$LOCALHOST:$HTTPD_PORT</comment>" with content from "<comment>$HTTPD_VDROOT</comment>".'
+
+  mysql:
+    enabled: true
+    environment:
+      - MYSQL_HOME=$LOCO_SVC_VAR/conf
+    init:
+      - 'loco-mysql-init'
+    run: 'mysqld --datadir="$LOCO_SVC_VAR/data"'
+    pid_file: '$LOCO_SVC_VAR/run/mysql.pid'
+    message: 'MySQL is running on "<comment>$LOCALHOST:$MYSQLD_PORT</comment>". The default credentials are user="<comment>root</comment>" and password="".'
+
+  mysql-1:
+    enabled: false
+    environment:
+      - MYSQL_HOME=$LOCO_SVC_VAR/conf
+    init:
+      - 'loco-mysql-init'
+    run: 'mysqld --datadir="$LOCO_SVC_VAR/data"'
+    pid_file: '$LOCO_SVC_VAR/run/mysql.pid'
+    message: 'MySQL (master) is running on "<comment>$LOCALHOST:$MYSQL1_PORT</comment>". The default credentials are user="<comment>root</comment>" and password="".'
+
+  mysql-2:
+    enabled: false
+    environment:
+      - MYSQL_HOME=$LOCO_SVC_VAR/conf
+    init:
+      - 'loco-mysql-init'
+    run: 'mysqld --datadir="$LOCO_SVC_VAR/data"'
+    pid_file: '$LOCO_SVC_VAR/run/mysql.pid'
+    message: 'MySQL (slave) is running on "<comment>$LOCALHOST:$MYSQL2_PORT</comment>". The default credentials are user="<comment>root</comment>" and password="".'
+
+  mysql-repl:
+    enabled: false
+    ## We probably need to figure a better way for this... does work with 'loco run', but doesn't work with 'loco init'
+    depends: ['mysql-1', 'mysql-2']
+    init:
+      ## FIXME: We currently don't have a good signal for when processes have started. Maybe letting the daemons handle forking will help?
+      ## Otherwise I guess we need a richer ping/heartbeat mechanism?
+      # - 'for n in $(seq 8 -2 2) ; do echo "Start $LOCO_SVC in $n sec..."; sleep 2; done'
+      - 'step=2; total=8; for n in `seq $total -$step $step` ; do echo "Start $LOCO_SVC in $n sec..."; sleep $step; done'
+      - 'loco-mysql-repl'
+    run: 'sleep 10000'
+    message: 'MySQL master-slave setup between "<comment>$LOCALHOST:$MYSQL1_PORT</comment>" and "<comment>$LOCALHOST:$MYSQL2_PORT</comment>".'
+
+  ## FIXME: Consider moving this to nix download system
+  buildkit:
+    init:
+      - 'loco-buildkit-init'
+    message: 'Buildkit (<comment>$BKIT</comment>) is configured to use these services. It produces builds in "<comment>$HTTPD_VDROOT</comment>".'

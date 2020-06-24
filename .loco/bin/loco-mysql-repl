@@ -1,0 +1,68 @@
+#!/usr/bin/env php
+<?php
+
+// The MySQL docs have some steps which require holding multiple connections to the master DB.
+// This is tough in bash, so we do it in PHP.
+
+// TODO change 127.0.0.1 to getenv(LOCALHOST)
+
+/**
+ * Make a new connection to the master
+ */
+function master() {
+  $pdoOptions = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_PERSISTENT         => false,
+  ];
+  return new PDO('mysql:host=127.0.0.1;port=' . getenv('MYSQL1_PORT') . ';charset=utf8mb4', 'root', '', $pdoOptions);
+}
+
+/**
+ * Make a new connection to the slave
+ */
+function slave() {
+  $pdoOptions = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_PERSISTENT         => false,
+  ];
+  return new PDO('mysql:host=127.0.0.1;port=' . getenv('MYSQL2_PORT') . ';charset=utf8mb4', 'root', '', $pdoOptions);
+}
+
+// ------------------------------------------------------------------------ //
+
+echo "Create replication user on master\n";
+
+$master = master();
+$master->exec("CREATE USER IF NOT EXISTS 'repl'@'127.0.0.1' IDENTIFIED BY 'totallyInsecureRepl'");
+$master->exec("GRANT REPLICATION SLAVE ON *.* TO 'repl'@'127.0.0.1'");
+$master->exec("FLUSH TABLES WITH READ LOCK");
+
+echo "Setup slave\n";
+
+list ($masterStatus) = master()->query('SHOW MASTER STATUS')->fetchAll();
+
+$slave = slave();
+$changeMaster = strtr(
+  "CHANGE MASTER TO MASTER_HOST=:host, MASTER_PORT=:port, MASTER_USER=:user,  MASTER_PASSWORD=:pass, MASTER_LOG_FILE=:file, MASTER_LOG_POS=:pos", [
+    ':host' => $slave->quote('127.0.0.1'),
+    ':port' => (int)getenv('MYSQL1_PORT'),
+    ':user' => $slave->quote('repl'),
+    ':pass' => $slave->quote('totallyInsecureRepl'),
+    ':file' => $slave->quote($masterStatus['File']),
+    ':pos' => (int)$masterStatus['Position'],
+  ]
+);
+$slave->exec($changeMaster);
+$slave->exec('START SLAVE');
+
+$master->exec("UNLOCK TABLES");
+
+echo "Create user \"reader\"\n";
+$master->exec("CREATE USER IF NOT EXISTS 'reader'@'127.0.0.1' IDENTIFIED BY ''");
+$master->exec("CREATE USER IF NOT EXISTS 'reader'@'localhost' IDENTIFIED BY ''");
+$master->exec("GRANT SELECT, CREATE TEMPORARY TABLES ON *.* TO  'reader'@'127.0.0.1'");
+$master->exec("GRANT SELECT, CREATE TEMPORARY TABLES ON *.* TO  'reader'@'localhost'");
+
+echo "Done\n";

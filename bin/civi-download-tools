@@ -124,13 +124,18 @@ function make_link() {
 ##
 ## This addresses the issue where somone has erroneously executed `composer`
 ## or `npm` or `bower` or somesuch as `root`.
-## usage: check_path_ownership <find-args>"
+## usage: check_path_ownership <dir>
 function check_datafile_ownership() {
+  local tgtdir="$1"
+  if [ ! -e "$tgtdir" ]; then
+    return
+  fi
+
   local tgtuser=$(whoami)
-  local files=$( find "$@" ! -user $tgtuser 2>&1 )
+  local files=$( find "$tgtdir" ! -user $tgtuser 2>&1 )
   if [ -n "$files" ]; then
     echo "WARNING: The following data-files are not owned by your user, which may lead to permission issues. You may need to delete or chown them." >&2
-    echo "$ find "$@" ! -user $tgtuser"
+    echo "$ find "$tgtdir" ! -user $tgtuser"
     echo "$files"
     echo ""
   fi
@@ -545,11 +550,12 @@ pushd $PRJDIR >> /dev/null
 
   ## Check that data folders/files are writeable. Since this is expensive, only do it on new systems.
   if [ -z "$IS_QUIET" -o ! -d vendor -o ! -d node_modules ]; then
-    [ -n "$COMPOSER_CACHE_DIR" ] && check_datafile_ownership "$COMPOSER_CACHE_DIR" || check_datafile_ownership "$HOME/.composer"
-    [ -d "$HOME/.cache" ] && check_datafile_ownership "$HOME/.cache"
-    [ -d "$HOME/.npm" ] && check_datafile_ownership "$HOME/.npm"
-    [ -n "$AMPHOME" -a -d "$AMPHOME" ] && check_datafile_ownership "$AMPHOME"
-    [ -z "$AMPHOME" -a -d "$HOME/.amp/apache.d" ] && check_datafile_ownership "$HOME/.amp/apache.d"
+    [ -n "$COMPOSER_CACHE_DIR" ] && check_datafile_ownership "$COMPOSER_CACHE_DIR"
+    [ -z "$COMPOSER_CACHE_DIR" ] && check_datafile_ownership "$HOME/.composer"
+    check_datafile_ownership "$HOME/.cache"
+    check_datafile_ownership "$HOME/.npm"
+    [ -n "$AMPHOME" ] && check_datafile_ownership "$AMPHOME"
+    [ -z "$AMPHOME" ] && check_datafile_ownership "$HOME/.amp/apache.d"
   fi
 
   ## Cleanup previous PHAR downloads before composer-downloads-plugin takes a crack at it.

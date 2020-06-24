@@ -1,0 +1,10 @@
+#!/bin/bash
+
+REALHTTPDIR=$(dirname $(dirname $(which httpd)))
+mkdir -p "$LOCO_SVC_VAR" "$LOCO_SVC_VAR/logs" "$LOCO_SVC_VAR/conf" "$LOCO_SVC_VAR/htdocs"
+if [ ! -f "$LOCO_SVC_VAR/htdocs/index.html" ]; then
+  echo "<html><body>Placeholder</body></html>" > "$LOCO_SVC_VAR/htdocs/index.html"
+fi
+for SUBDIR in bin cgi-bin error icons modules ;do
+  [ ! -e "$LOCO_SVC_VAR/$SUBDIR" ] && ln -s "$REALHTTPDIR/$SUBDIR" "$LOCO_SVC_VAR/$SUBDIR"
+done
