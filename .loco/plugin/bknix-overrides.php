@@ -59,13 +59,18 @@ function applyOverrides(&$config, &$override) {
 }
 
 Loco::dispatcher()->addListener('loco.config.filter', function($e) {
-  $f = '/etc/bknix-ci/loco-overrides.yaml';
-  if (file_exists($f)) {
-    $o = Yaml::parse(file_get_contents($f));
-    applyOverrides($e['config'], $o);
-    $svcNames = array_intersect(array_keys($e['config']['services'] ?? []), array_keys($o['services'] ?? []));
-    foreach ($svcNames as $svcName) {
-      applyOverrides($e['config']['services'][$svcName], $o['services'][$svcName]);
+  $files = [
+    preg_replace(';\.ya?ml$;', '.overrides.yml', $e['file']),
+    '/etc/bknix-ci/loco-overrides.yaml',
+  ];
+  foreach ($files as $f) {
+    if (file_exists($f)) {
+      $o = Yaml::parse(file_get_contents($f));
+      applyOverrides($e['config'], $o);
+      $svcNames = array_intersect(array_keys($e['config']['services'] ?? []), array_keys($o['services'] ?? []));
+      foreach ($svcNames as $svcName) {
+        applyOverrides($e['config']['services'][$svcName], $o['services'][$svcName]);
+      }
     }
   }
 });

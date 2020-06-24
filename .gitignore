@@ -75,6 +75,7 @@ vagrant/*/.vagrant
 vendor/
 web/
 /.loco/var/
+/.loco/*.overrides.yml
 /.loco/var.keep/
 /nix/etc/bashrc.local
 /nix/result
