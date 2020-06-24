@@ -73,14 +73,18 @@ git pull
 
 Now, we want to promote `civicrm-buildkit` folder, replace the `bknix` folder, and retain the
 data-folders (ie `~/bknix/build` and `~/bknix/.loco/var.keep`). The buildkit repo includes a
-script do this:
+script do this (`swap-bknix-bkit.sh`).
+
+On a local developer machine, run a command like:
 
 ```bash
 cd ~
-bash ~/bknix/civicrm-buildkit/nix/bin/swap-bknix-bkit.sh ~/bknix
+bash ~/bknix/civicrm-buildkit/nix/bin/swap-bknix-bkit.sh developer ~/bknix
 ```
 
 > TIP: If the folder isn't literally `~/bknix`, then you'll need to update both arguments.
+
+> TIP: For a pre-loco CI machine, change `developer` to `ci`.
 
 The end result will be:
 
