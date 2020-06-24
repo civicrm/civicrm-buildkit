@@ -83,6 +83,7 @@ case "$MODE" in
     ## Migrate data folders
     safe_rename "$BKNIX_ORIG/build"               "$BKIT_ORIG/build"
     safe_rename "$BKNIX_ORIG/.loco/var.keep"      "$BKIT_ORIG/.loco/var.keep"
+    ## tmp data is part of build/.civibuild
 
     ## Swap top level folders
     safe_rename "$BKNIX_ORIG"                     "$BKNIX_BAK"
@@ -103,7 +104,11 @@ case "$MODE" in
 
     ## Migrate data folders
     safe_rename "$BKNIX_ORIG/build"               "$BKIT_ORIG/build"
+    mkdir -p "$BKIT_ORIG/build/.civibuild"
+    safe_rename "$BKNIX_ORIG/app/tmp/git-cache"   "$BKIT_ORIG/build/.civibuild/cache"
+    safe_rename "$BKNIX_ORIG/app/snapshot"        "$BKIT_ORIG/build/.civibuild/snapshot"
     safe_rename "$AMP_ORIG"                       "$AMP_FINAL"
+    safe_rename "$BKNIX_ORIG/app/tmp"             "$TMP_FINAL"
 
     ## Swap top level folders
     safe_rename "$BKNIX_ORIG"                     "$BKNIX_BAK"
