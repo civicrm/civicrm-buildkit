@@ -86,12 +86,6 @@ services:
     pid_file: '$LOCO_SVC_VAR/run/mysql.pid'
     message: 'MySQL is running on "<comment>$LOCALHOST:$MYSQLD_PORT</comment>". The default credentials are user="<comment>root</comment>" and password="".'
 
-  ## FIXME: Consider moving this to nix download system
-  buildkit:
-    init:
-      - 'loco-buildkit-init'
-    message: 'Buildkit (<comment>$BKIT</comment>) is configured to use these services. It produces builds in "<comment>$HTTPD_VDROOT</comment>".'
-
 ## Configure the loco=>systemd export
 export:
   include_env: '/^(PATH|NIX_SSL_.*|LOCALE_ARCHIVE)$/'

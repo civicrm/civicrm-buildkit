@@ -207,8 +207,11 @@ function install_profile() {
 
   install_profile_binaries "$PROFILE" "$PRFDIR"
 
-  echo "Initializing buildkit folder \"$BKIT\""
+  echo "Downloading buildkit folder \"$BKIT\""
   do_as_owner "$(declare -f download_buildkit)" download_buildkit "$PROFILE"
+
+  echo "Setting up buildkit folder \"$BKIT\""
+  do_as_owner "$(declare -f setup_buildkit)" setup_buildkit ".loco/$OWNER-$PROFILE.yml"
 
   if [ -z "$NO_SYSTEMD" ]; then
     install_profile_systemd "$OWNER" "$PROFILE"
@@ -250,7 +253,6 @@ function install_profile_systemd() {
 
   function locogen() {
     set -ex
-    eval $(bknix-profile env)
     cd "$BKIT"
     local YAML=".loco/$OWNER-$PROFILE.yml"
     loco init -c "$YAML"
@@ -305,21 +307,34 @@ function install_user() {
 }
 
 ## Initialize a copy of buildkit.
-## NOTE: This runs as $OWNER.
+## NOTE: This runs as $OWNER by way of do_as_owner(). Do not rely on any sibling functions.
 function download_buildkit() {
   set -ex
   local PROFILE="$1"
-  local DEST="$HOME/bknix-$1"
   cd "$HOME"
 
-  if [ ! -d "$DEST" ]; then
-    git clone https://github.com/totten/civicrm-buildkit -b loco-ci "$DEST"
+  if [ ! -d "$BKIT" ]; then
+    git clone https://github.com/totten/civicrm-buildkit -b loco-ci "$BKIT"
   else
-    pushd "$DEST" ; git pull ; popd
+    git pull
   fi
 }
 
-## Run a function in the context for the given owner/prfdir
+## Populate civibuild configuration and caches
+## NOTE: This runs as $OWNER by way of do_as_owner(). Do not rely on any sibling functions.
+## NOTE: This expects that civi-download-tools has already run.
+function setup_buildkit() {
+  set -ex
+  local YAML="$1"
+  cd "$BKIT"
+
+  ./bin/civi-download-tools
+  eval $( loco env -c "$YAML" --export)
+  loco-buildkit-init
+  civibuild cache-warmup
+}
+
+## Run a function in the context for the given owner/prfdir. For use with 'install-ci.sh' use-cases.
 ##
 ## NOTE: This will drop privileges
 ##
@@ -339,7 +354,23 @@ function do_as_owner() {
   local FUNC="$1"
   shift
 
-  sudo su - "$OWNER" -c "export PATH=\"$PRFDIR/bin:$PATH\" BKIT=\"$BKIT\" PROFILE=\"$PROFILE\" OWNER=\"$OWNER\" ; cd \$HOME ; $FUNC; $(_escape_args "$@")"
+  sudo su - "$OWNER" -c "export PATH=\"$PRFDIR/bin:$PATH\" BKIT=\"$BKIT\" PROFILE=\"$PROFILE\" OWNER=\"$OWNER\" ; cd \$HOME ; eval $( bknix-profile env ) ; $FUNC; $(_escape_args "$@")"
+}
+
+## Run a function in the context for given owner/prfdir, where the owner is... me, the current user/developer. For use with 'install-developer.sh' use-cases.
+function do_as_dev() {
+  ## Ex (input): _escape_args "Hello World" "Alice Bobson"
+  ## Ex (output): Hello\ World Alice\ Bobson
+  function _escape_args() {
+    for v in "$@" ; do printf "%q " "$v" ; done
+  }
+
+  local BKIT=$( dirname "$BKNIXSRC" )
+  local FUNC="$1"
+  shift
+
+  [ -z "$PRFDIR" ] && echo "WARNING: No PRFDIR!"
+  bash -c "export PATH=\"$PRFDIR/bin:$PATH\" BKIT=\"$BKIT\" PROFILE=\"$PROFILE\" OWNER=\"$OWNER\" ; cd \$HOME ; eval \$( bknix-profile env ) ; $FUNC; $(_escape_args "$@")"
 }
 
 ## Determine if a file is owned by the current user

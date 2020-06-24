@@ -6,6 +6,7 @@ if [ ! -e "$BKIT" ]; then
 fi
 
 echo "#!/usr/bin/env bash" > "$BKIT/app/civibuild.conf"
+echo '## NOTE: This file may be automatically regenerated. Make changes via $LOCO_CFG/buildkit/civibuild.conf' >> "$BKIT/app/civibuild.conf"
 echo 'if [ -z "$LOCO_CFG" ]; then echo "Undefined: LOCO_CFG" >&2 ; exit 1; fi' >> "$BKIT/app/civibuild.conf"
 echo 'source "$LOCO_CFG"/buildkit/civibuild.conf' >> "$BKIT/app/civibuild.conf"
 

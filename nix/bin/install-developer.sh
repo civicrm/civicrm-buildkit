@@ -47,3 +47,10 @@ install_bin "$BINDIR"/use-bknix /usr/local/bin/use-bknix
 for PROFILE in $PROFILES ; do
   install_profile_binaries "$PROFILE" "/nix/var/nix/profiles/per-user/$USER/bknix-$PROFILE"
 done
+
+## We need to run setup_buildkit with one of the profiles; but given multiple options, any of them would be equally reasonable.
+for PROFILE in $PROFILES ; do
+  PRFDIR="/nix/var/nix/profiles/per-user/$USER/bknix-$PROFILE"
+  do_as_dev "$(declare -f setup_buildkit)" setup_buildkit ".loco/loco.yml"
+  break
+done
