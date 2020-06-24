@@ -316,7 +316,9 @@ function download_buildkit() {
   if [ ! -d "$BKIT" ]; then
     git clone https://github.com/civicrm/civicrm-buildkit "$BKIT"
   else
-    git pull
+    pushd "$BKIT"
+      git pull
+    popd
   fi
 }
 
