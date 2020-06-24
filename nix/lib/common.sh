@@ -314,7 +314,7 @@ function download_buildkit() {
   cd "$HOME"
 
   if [ ! -d "$BKIT" ]; then
-    git clone https://github.com/totten/civicrm-buildkit -b loco-ci "$BKIT"
+    git clone https://github.com/civicrm/civicrm-buildkit "$BKIT"
   else
     git pull
   fi
