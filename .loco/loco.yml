@@ -10,7 +10,7 @@ default_environment:
  # - HOSTS_TYPE=file
 
  ## HTTPD_*: Determine how a local folder (eg "./build/dmaster") relates to a local HTTP service (eg "http://dmaster.bknix:8001").
- - HTTPD_DOMAIN=bknix
+ - HTTPD_DOMAIN=${LOCALHOST}.nip.io
  - HTTPD_PORT=8001
  - HTTPD_VDROOT=$LOCO_PRJ/build
  - HTTPD_VISIBILITY=local
