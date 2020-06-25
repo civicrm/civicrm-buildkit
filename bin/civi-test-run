@@ -3,7 +3,9 @@ set -e
 
 function getPhpunitVer() {
   CIVIVER=$(getCiviVer)
-  if [ $(php -r "echo version_compare('$CIVIVER', '5.22', '>=');") ]; then
+  if [ $(php -r "echo version_compare('$CIVIVER', '5.28', '>=');") ]; then
+    echo "phpunit7 --printer \Civi\Test\TAP"
+  elif [ $(php -r "echo version_compare('$CIVIVER', '5.22', '>=');") ]; then
     echo "phpunit6 --printer \Civi\Test\TAP"
   else
     echo 'phpunit5 --tap'
@@ -118,7 +120,11 @@ function task_upgrade() {
     EXITCODES="$EXITCODES upgrade-test"
   fi
   echo "Found EXITCODES=\"$EXITCODES\""
-  $GUARD cp "$PRJDIR/app/debug/$BLDNAME/civicrm-upgrade-test.xml" "$JUNITDIR/"
+  if [ -d "$PRJDIR/build/$BLDNAME/.civibuild" ]; then
+    $GUARD cp "$PRJDIR/build/$BLDNAME/.civibuild/debug/civicrm-upgrade-test.xml" "$JUNITDIR/"
+  else
+    $GUARD cp "$PRJDIR/app/debug/$BLDNAME/civicrm-upgrade-test.xml" "$JUNITDIR/"
+  fi
   $GUARD civibuild restore "$BLDNAME"
 }
 
