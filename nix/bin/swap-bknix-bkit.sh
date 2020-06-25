@@ -99,6 +99,7 @@ case "$MODE" in
     BKIT_FINAL=$TGT
     AMP_ORIG=$BKNIX_ORIG/var/amp
     AMP_FINAL=$HOME/_bknix/amp/$PROFILE
+    TMP_FINAL=$TGT.tmp
 
     mkdir -p "$HOME/_bknix/amp"
 
@@ -108,7 +109,7 @@ case "$MODE" in
     safe_rename "$BKIT_ORIG/app/tmp/git-cache"    "$BKIT_ORIG/build/.civibuild/cache"
     safe_rename "$BKIT_ORIG/app/snapshot"         "$BKIT_ORIG/build/.civibuild/snapshot"
     safe_rename "$AMP_ORIG"                       "$AMP_FINAL"
-    safe_rename "$BKNIX_ORIG/app/tmp"             "$TMP_FINAL"
+    safe_rename "$BKIT_ORIG/app/tmp"              "$TMP_FINAL"
 
     ## Swap top level folders
     safe_rename "$BKNIX_ORIG"                     "$BKNIX_BAK"
