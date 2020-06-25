@@ -37,6 +37,7 @@ innodb_file_per_table = 1
 <?php if (matchVer('/Ver 5.6/')) { ?>
 innodb_large_prefix = 1
 <?php } ?>
+<?php if (!matchVer('/Ver 8.0/')) { ?>innodb_file_format = Barracuda<?php } ?>
 
 <?php if (matchVer('/Ver 5.7/')) { ?>
 # https://expressionengine.com/blog/mysql-5.7-server-os-x-has-gone-away
