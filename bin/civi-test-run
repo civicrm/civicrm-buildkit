@@ -121,7 +121,7 @@ function task_upgrade() {
   fi
   echo "Found EXITCODES=\"$EXITCODES\""
   if [ -d "$PRJDIR/build/$BLDNAME/.civibuild" ]; then
-    $GUARD cp "$PRJDIR/build/$BLDNAME/.civibuild/debug/$BLDNAME/civicrm-upgrade-test.xml" "$JUNITDIR/"
+    $GUARD cp "$PRJDIR/build/$BLDNAME/.civibuild/debug/civicrm-upgrade-test.xml" "$JUNITDIR/"
   else
     $GUARD cp "$PRJDIR/app/debug/$BLDNAME/civicrm-upgrade-test.xml" "$JUNITDIR/"
   fi
