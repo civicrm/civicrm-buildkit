@@ -44,6 +44,7 @@ environment:
  - AMPHOME=$LOCO_VAR.keep/amp
  - CIVIBUILD_HOME=$HTTPD_VDROOT
  - BKIT=$LOCO_PRJ
+ - BKITBLD=$HTTPD_VDROOT
  - MYSQL_HOME=$LOCO_VAR/mysql/conf
  #- MYSQL_HOME=$LOCO_VAR/mysql-1/conf
  - NODE_PATH=$BKIT/node_modules:$NODE_PATH
