@@ -104,9 +104,9 @@ case "$MODE" in
 
     ## Migrate data folders
     safe_rename "$BKNIX_ORIG/build"               "$BKIT_ORIG/build"
-    mkdir -p "$BKIT_ORIG/build/.civibuild"
-    safe_rename "$BKNIX_ORIG/app/tmp/git-cache"   "$BKIT_ORIG/build/.civibuild/cache"
-    safe_rename "$BKNIX_ORIG/app/snapshot"        "$BKIT_ORIG/build/.civibuild/snapshot"
+    mkdir -p    "$BKIT_ORIG/build/.civibuild"
+    safe_rename "$BKIT_ORIG/app/tmp/git-cache"    "$BKIT_ORIG/build/.civibuild/cache"
+    safe_rename "$BKIT_ORIG/app/snapshot"         "$BKIT_ORIG/build/.civibuild/snapshot"
     safe_rename "$AMP_ORIG"                       "$AMP_FINAL"
     safe_rename "$BKNIX_ORIG/app/tmp"             "$TMP_FINAL"
 
