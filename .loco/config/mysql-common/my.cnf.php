@@ -1,7 +1,9 @@
 <?php
 function ver() {
   static $ver = NULL;
-  if ($ver === NULL) $ver = `mysqld --version`;
+  if ($ver === NULL) {
+    $ver = getenv('FORCE_MY_CNF_VERSION') ?: `mysqld --version`;
+  }
   return $ver;
 }
 function matchVer($pat) {return (bool) preg_match($pat, ver());}
