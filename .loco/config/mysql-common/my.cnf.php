@@ -1,7 +1,9 @@
 <?php
 function ver() {
   static $ver = NULL;
-  if ($ver === NULL) $ver = `mysqld --version`;
+  if ($ver === NULL) {
+    $ver = getenv('FORCE_MY_CNF_VERSION') ?: `mysqld --version`;
+  }
   return $ver;
 }
 function matchVer($pat) {return (bool) preg_match($pat, ver());}
@@ -16,8 +18,8 @@ read_buffer_size = 1M
 read_rnd_buffer_size = 4M
 myisam_sort_buffer_size = 64M
 thread_cache_size = 8
-<?php if (!matchVer('/Ver 8.0/')) { ?>query_cache_size= 16M<?php } ?>
-<?php if (matchVer('/Ver 8.0/')) { ?>default_authentication_plugin = mysql_native_password<?php } ?>
+<?php if (!matchVer('/Ver 8.0/')) { printf("query_cache_size= 16M\n"); } ?>
+<?php if (matchVer('/Ver 8.0/')) { printf("default_authentication_plugin = mysql_native_password\n"); } ?>
 # Try number of CPU's*2 for thread_concurrency
 #MariaDB?# thread_concurrency = 8
 
@@ -34,10 +36,8 @@ innodb_file_per_table = 1
 #innodb_flush_log_at_trx_commit = 1
 #innodb_lock_wait_timeout = 50
 
-<?php if (matchVer('/Ver 5.6/')) { ?>
-innodb_large_prefix = 1
-<?php } ?>
-<?php if (!matchVer('/Ver 8.0/')) { ?>innodb_file_format = Barracuda<?php } ?>
+<?php if (matchVer('/Ver 5.6/')) { printf("innodb_large_prefix = 1\n"); } ?>
+<?php if (!matchVer('/Ver 8.0/')) { printf("innodb_file_format = Barracuda\n"); } ?>
 
 <?php if (matchVer('/Ver 5.7/')) { ?>
 # https://expressionengine.com/blog/mysql-5.7-server-os-x-has-gone-away
