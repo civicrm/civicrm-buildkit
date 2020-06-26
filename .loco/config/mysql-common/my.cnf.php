@@ -41,8 +41,8 @@ innodb_file_per_table = 1
 
 <?php if (matchVer('/Ver 5.7/')) { ?>
 # https://expressionengine.com/blog/mysql-5.7-server-os-x-has-gone-away
-interactive_timeout = 300
-wait_timeout = 300
+interactive_timeout = 900
+wait_timeout = 900
 <?php } ?>
 
 [mysqldump]
