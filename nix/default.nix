@@ -17,7 +17,7 @@ let
 
         if [ -f ".loco/loco.yml" ]; then
           eval $(loco env --export)
-          [ -f "./etc/bashrc.local" ] && source "./etc/bashrc.local"
+          [ -f "./nix/etc/bashrc.local" ] && source "./nix/etc/bashrc.local"
         else
           echo "WARNING: The .loco/loco.yml not found. Environment may not be fully initialized. Please run nix-shell in the buildkit folder." 1>&2
         fi

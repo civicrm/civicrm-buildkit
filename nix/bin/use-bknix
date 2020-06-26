@@ -100,8 +100,8 @@ case "$MODE" in
     eval "$CODE"
     echo "export PS1=\"[${TXT_CYAN}bknix-$PROFILE${TXT_RESET}:${TXT_GREEN}\w${TXT_RESET}] \" ;"
     bknix-profile env
-    if [ -f "$BKIT/bknix/etc/bashrc.local" ]; then
-      echo "source \"$BKIT/bknix/etc/bashrc.local\""
+    if [ -f "$BKIT/nix/etc/bashrc.local" ]; then
+      echo "source \"$BKIT/nix/etc/bashrc.local\""
     fi
     echo
     ;;
