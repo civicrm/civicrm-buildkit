@@ -25,6 +25,7 @@ thread_cache_size = 8
 
 binlog_format	= row
 sync_binlog	= 1
+<?php if (matchVer('/Ver 8.0/')) { printf("skip-log-bin\n"); } ?>
 
 innodb_file_per_table = 1
 # You can set .._buffer_pool_size up to 50 - 80 %
