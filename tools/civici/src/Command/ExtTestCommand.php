@@ -111,7 +111,6 @@ Optional environment variables:
       else {
         $headlessCmd = "$phpunit --tap --group headless";
       }
-      $headlessCmd = "$phpunit --tap --group headless";
       if ($junitDir) {
         $headlessCmd .= ' --log-junit ' . escapeshellarg("{$junitDir}headless.xml");
       }
