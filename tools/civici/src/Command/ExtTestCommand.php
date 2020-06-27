@@ -91,7 +91,7 @@ Optional environment variables:
       $phpunit = getenv('PHPUNIT_BIN') ? getenv('PHPUNIT_BIN') : 'phpunit5';
       $batch->add("<info>Restore database</info>", $restore);
       if ($phpunit !== 'phpunit5') {
-        $ex3Cmd = "$phpunit --printer '\Civi\Test\TAP'  --group e2e";
+        $e2eCmd = "$phpunit --printer '\Civi\Test\TAP'  --group e2e";
       }
       else {
         $e2eCmd = "$phpunit --tap --group e2e";
