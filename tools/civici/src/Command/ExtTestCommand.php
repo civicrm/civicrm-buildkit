@@ -89,9 +89,13 @@ Optional environment variables:
 
     if (file_exists("$targetDir/phpunit.xml.dist")) {
       $phpunit = getenv('PHPUNIT_BIN') ? getenv('PHPUNIT_BIN') : 'phpunit5';
-
       $batch->add("<info>Restore database</info>", $restore);
-      $e2eCmd = "$phpunit --tap --group e2e";
+      if ($phpunit !== 'phpunit5') {
+        $ex3Cmd = "$phpunit --printer '\Civi\Test\TAP'  --group e2e";
+      }
+      else {
+        $e2eCmd = "$phpunit --tap --group e2e";
+      }
       if ($junitDir) {
         $e2eCmd .= ' --log-junit ' . escapeshellarg("{$junitDir}e2e.xml");
       }
@@ -101,6 +105,12 @@ Optional environment variables:
       );
 
       $batch->add("<info>Restore database</info>", $restore);
+      if ($phpunit !== 'phpunit5') {
+        $headlessCmd = "$phpunit --printer '\Civi\Test\TAP'  --group headless";
+      }
+      else {
+        $headlessCmd = "$phpunit --tap --group headless";
+      }
       $headlessCmd = "$phpunit --tap --group headless";
       if ($junitDir) {
         $headlessCmd .= ' --log-junit ' . escapeshellarg("{$junitDir}headless.xml");
