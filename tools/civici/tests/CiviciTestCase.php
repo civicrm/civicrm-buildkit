@@ -6,7 +6,7 @@ use Civici\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
 
-class CiviciTestCase extends \PHPUnit_Framework_TestCase {
+class CiviciTestCase extends \PHPUnit\Framework\TestCase {
   /**
    * @var string
    */
