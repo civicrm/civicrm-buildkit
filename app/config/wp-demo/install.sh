@@ -169,4 +169,7 @@ wp cap add civicrm_admin \
 wp civicrm api StatusPreference.create ignore_severity=critical name=checkOutboundMail
 wp civicrm api StatusPreference.create ignore_severity=critical name=checkLastCron
 
+# Disable WP fatal error handler as it gets in the way of debugging.
+wp config set WP_DISABLE_FATAL_ERROR_HANDLER true --raw
+
 popd >> /dev/null
