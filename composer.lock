@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c9d72db564726e79f068c9474b309c01",
+    "content-hash": "615127a26c14e4d2cddeaca49bbf3f17",
     "packages": [
         {
             "name": "civicrm/composer-downloads-plugin",
@@ -63,12 +63,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/civicrm/civicrm-upgrade-test.git",
-                "reference": "a3d0b7e5088d822559818716f51a5ad70478014e"
+                "reference": "7ddd3d941b67644ac89f45e8359b8a36bfc34d6c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/a3d0b7e5088d822559818716f51a5ad70478014e",
-                "reference": "a3d0b7e5088d822559818716f51a5ad70478014e",
+                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/7ddd3d941b67644ac89f45e8359b8a36bfc34d6c",
+                "reference": "7ddd3d941b67644ac89f45e8359b8a36bfc34d6c",
                 "shasum": ""
             },
             "bin": [
@@ -87,7 +87,7 @@
             ],
             "description": "Collection of scripts and data-files for testing CiviCRM upgrades",
             "homepage": "https://github.com/civicrm/civicrm-upgrade-test",
-            "time": "2020-07-06T00:37:15+00:00"
+            "time": "2020-07-06T02:33:23+00:00"
         },
         {
             "name": "composer/semver",
