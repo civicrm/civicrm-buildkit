@@ -54,6 +54,7 @@ function show_help() {
   echo "                        - phpunit-wordpress"
   echo "                        - phpunit-backdrop"
   echo "                        - phpunit-creditnotes"
+  echo "                        - phpunit-flexmailer"
   echo "                        - upgrade"
   echo "                        - upgrade@4.7.30:10"
   echo
@@ -279,7 +280,7 @@ export TIME_FUNC
 for TESTTYPE in $SUITES ; do
   case "$TESTTYPE" in
     karma)  task_karma ;;
-    upgrade)  CIVIVER=$(getCiviVer) ; task_upgrade 4.2.9-multilingual_af_bg_en* "@4.3..$CIVIVER:10" ;;
+    upgrade)  CIVIVER=$(getCiviVer) ; task_upgrade 5.13.3-multilingual_af_bg_en* "@4.4..$CIVIVER:10" ;;
     upgrade@*)  task_upgrade $(echo $TESTTYPE | sed s'/^upgrade//' ) ;;
     phpunit-e2e)  task_phpunit E2E_AllTests ;;
     phpunit-crm)  task_phpunit CRM_AllTests ;;
@@ -292,6 +293,7 @@ for TESTTYPE in $SUITES ; do
     phpunit-wordpress) task_phpunit_wordpress ;;
     phpunit-backdrop) task_phpunit_backdrop ;;
     phpunit-creditnotes) task_phpunit_core_extension sequentialcreditnotes ;;
+    phpunit-flexmailer) task_phpunit_core_extension flexmailer ;;
     *) echo "unrecognized suite: $TESTTYPE"; exit 2 ;;
   esac
 done
