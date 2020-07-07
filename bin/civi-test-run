@@ -261,6 +261,10 @@ if [ "$SUITES" = "all" ]; then
       SUITES="$SUITES phpunit-creditnotes"
     fi
 
+    if [ -e "ext/flexmailer" ]; then
+      SUITES="$SUITES phpunit-flexmailer"
+    fi
+
   popd >> /dev/null
 elif [[ " $SUITES " =~ \ all\  ]]; then
   echo "The \"all\" target should not be mixed with other targets."
