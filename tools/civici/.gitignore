@@ -1,4 +1,5 @@
 /vendor
+/extern
 /.idea
 *~
 /bin/civici.phar
