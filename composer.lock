@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "35c6b371db01f90a8442704d6825b2cc",
+    "content-hash": "f3a5afe427ed7e4cf36c1f2b4d95463a",
     "packages": [
         {
             "name": "civicrm/composer-downloads-plugin",
@@ -711,7 +711,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "backendtea@gmail.com"
+                    "email": "BackEndTea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
@@ -886,9 +886,6 @@
             "require": {
                 "nikic/php-parser": "^1.4"
             },
-            "require-dev": {
-                "phpunit/phpunit": "3.7.*"
-            },
             "bin": [
                 "bin/php-symbol-diff",
                 "bin/git-php-symbol-diff"
@@ -945,13 +942,13 @@
             "authors": [
                 {
                     "name": "James Logsdon",
-                    "email": "jlogsdon@php.net",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "jlogsdon@php.net"
                 },
                 {
                     "name": "Daniel Bachhuber",
-                    "email": "daniel@handbuilt.co",
-                    "role": "Maintainer"
+                    "role": "Maintainer",
+                    "email": "daniel@handbuilt.co"
                 }
             ],
             "description": "Console utilities for PHP",
