@@ -1,5 +1,5 @@
 ## civicrm-upgrade-test only works with drush right now
-if grep -q drupal "$CMS_ROOT/index.php" || grep -q backdrop "$CMS_ROOT/index.php" ; then
+if grep -q drupal "$CMS_ROOT/index.php" || grep -q backdrop "$CMS_ROOT/index.php" || [ -f "$CMS_ROOT/wp-config.php" ] ; then
   cvutil_makeparent "$UPGRADE_LOG_DIR"
   cvutil_mkdir "$UPGRADE_LOG_DIR"
   pushd "$PRJDIR/vendor/civicrm/upgrade-test/databases" > /dev/null
