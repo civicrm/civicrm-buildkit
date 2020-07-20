@@ -1,0 +1,321 @@
+#!/usr/bin/env pogo
+<?php
+#!depdir '../extern/bknix-ci-cleanup'
+#!ttl 10 years
+#!require symfony/var-dumper: ~3.0
+#!require clippy/std: ~0.3.0
+namespace Clippy;
+
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+$c = clippy()->register(plugins());
+
+###############################################################################
+## About
+##
+## The ci-cleanup script aims to keep available capacity within certain boundaries.
+## To meet those boundaries, it will perform a series of increasingly aggressive cleanup tasks.
+##
+## - Initially, it runs the "level 0" tasks.
+##   Ex: Delete files older than 2 weeks.
+## - If there still isn't enough free space, then proceed to "level 1" tasks.
+##   Ex: Delete files older than 1 week.
+## - If there still isn't enough, then proceed to "level 2". Ad nauseum.
+
+###############################################################################
+## Primary subcommands
+
+$c['app']->command('dump', function($allTasks) {
+  dump([
+    'partitions' => uniq(...array_column($allTasks, 'partitions')),
+    'levels' => uniq(array_column($allTasks, 'level')),
+    'tasks' => $allTasks,
+  ]);
+});
+
+$c['app']->command('run [-N|--dry-run] [--threshold=]', function($dryRun, $threshold = 90, SymfonyStyle $io, $allTasks, $findTasks, $isPartitionFull, $cmdr) {
+  $exitCode = 0;
+
+  $allPartitions = uniq(...array_column($allTasks, 'partitions'));
+  $io->writeln("<comment>PARTITIONS</comment>: <info>" . implode("</info>, <info>", $allPartitions) . "</info> (" . count($allPartitions) . ")");
+  $io->writeln("<comment>THRESHOLD</comment>: <info>" . $threshold . "%</info>");
+
+  foreach ($allPartitions as $partition) {
+    $levels = uniq(array_column($allTasks, 'level'));
+    do {
+      if (empty($levels)) {
+        $io->writeln("<error>Cannot reduce space on partition ({$partition}) to {$threshold}%. No more levels found.</error>");
+        $exitCode = 1;
+        break;
+      }
+
+      $level = array_shift($levels);
+      $io->writeln("Clean up <info>{$partition}</info> at level <info>{$level}</info>.");
+      $tasks = $findTasks(['level' => $level, 'partition' => $partition]);
+      $cmds = uniq(array_column($tasks, 'cmd'));
+      foreach ($cmds as $cmd) {
+        if ($dryRun) {
+          $io->writeln("<comment>DRY-RUN</comment>: " . $cmd);
+        }
+        else {
+          $cmdr->run($cmd);
+        }
+      }
+    } while ($isPartitionFull($partition, $threshold));
+  }
+  return $exitCode;
+});
+
+###############################################################################
+## Task library
+
+class CleanupTask {
+
+  /**
+   * How early/late to try this cleanup task.
+   *
+   * Lower levels run first. If they don't succeed in creating sufficient
+   * free space, then higher levels run.
+   *
+   * @var int
+   */
+  public $level = 0;
+
+  /**
+   * A bash command which frees up some space.
+   *
+   * @var string|null
+   */
+  public $cmd = NULL;
+
+  /**
+   * List of paths from which files may be removed.
+   *
+   * @var string[]
+   */
+  public $paths = [];
+
+  /**
+   * List of partitions from which files may be removed.
+   * Usually computed from $paths.
+   *
+   * @var string[]
+   */
+  public $partitions = [];
+}
+
+/**
+ * Get a list of bknix profiles.
+ *
+ * @return string[]
+ */
+$c['allProfiles'] = function() {
+  return ['min', 'max', 'dfl', 'old', 'edge'];
+};
+
+/**
+ * @param string[] $allProfiles
+ * @param callable $createProfileTasks
+ * @return CleanupTask[]
+ */
+$c['allTasks'] = function($allProfiles, $createProfileTasks, $createTask, $cmdr) {
+  /** @var CleanupTask[] $tasks */
+  $tasks = [];
+
+  foreach ($allProfiles as $profile) {
+    $tasks = array_merge($tasks, $createProfileTasks($profile));
+  }
+
+  $TMP_CLEANUP = 'find /tmp -user "$USER" -mtime +{{DAYS|s}} -delete 2>&1 | grep -v "Permission denied"';
+  foreach ([45, 30, 15, 7, 1] as $level => $days) {
+    if (file_exists('/tmp')) {
+      $tasks[] = $createTask([
+        'level' => $level,
+        'cmd' => $cmdr->escape($TMP_CLEANUP, ['DAYS' => $days]),
+        'paths' => ['/tmp'],
+      ]);
+    }
+  }
+
+  usort($tasks, function($a, $b){
+    return $a->level - $b->level;
+  });
+
+  return $tasks;
+};
+
+/**
+ * Prepare a list of cleanup tasks for the given profile/environment.
+ *
+ * @param string $profile
+ *   Ex: 'min', 'max'
+ * @param callable $createTask
+ *   (injected)
+ * @return array
+ */
+$c['createProfileTasks()'] = function($profile, $createTask, Cmdr $cmdr, SymfonyStyle $io) {
+  $bldDir = getenv('HOME') . '/bknix-' . $profile . '/build';
+  if (!file_exists($bldDir)) {
+    $io->writeln("<comment>SKIP</comment>: No builds found for profile <info>{$profile}</info> (<info>{$bldDir}</info>)");
+    return [];
+  }
+
+  $PREFIX = 'eval $( use-bknix ' . $profile . ' -e ) ';
+  // $PREFIX = $cmdr->run('use-bknix {{PROFILE|s}} -e', ['PROFILE' => $profile]);
+  $CIVIBUILD_CLEANUP = 'find-stale-builds {{BLDDIR|s}} {{EXPIRE_AFTER|s}} {{REDUNDANT_AFTER|s}} | while read BLD ; do echo y | civibuild destroy $(basename $BLD) ; done';
+  $AMP_CLEANUP = '[ -d "$AMPHOME" -a -d "$AMPHOME/my.cnf.d" ] && find "$AMPHOME/my.cnf.d" -name \'my.cnf-*\' -ctime +{{DAYS|s}} -delete';
+
+  $tasks = [];
+
+  foreach ([5, 4, 3, 2, 1] as $level => $days) {
+    $tasks[] = $createTask([
+      'level' => $level,
+      'cmd' => $cmdr->escape($PREFIX . $CIVIBUILD_CLEANUP, [
+        'BLDDIR' => $bldDir,
+        'EXPIRE_AFTER' => $days * 24,
+        'REDUNDANT_AFTER' => 4,
+      ]),
+      'paths' => [$bldDir, getenv('HOME') . "/_bknix/ramdisk/{$profile}", getenv('HOME') . "/_bknix/amp/{$profile}"],
+    ]);
+    $tasks[] = $createTask([
+      'level' => $level + 1,
+      'cmd' => $cmdr->escape($PREFIX . $CIVIBUILD_CLEANUP, [
+        'BLDDIR' => $bldDir,
+        'EXPIRE_AFTER' => $days * 24,
+        'REDUNDANT_AFTER' => 1,
+      ]),
+      'paths' => [$bldDir, getenv('HOME') . "/_bknix/ramdisk/{$profile}", getenv('HOME') . "/_bknix/amp/{$profile}"],
+    ]);
+  }
+
+  foreach ([45, 30, 15, 7, 1] as $level => $days) {
+    if (file_exists(getenv('HOME') . "/_bknix/amp/{$profile}")) {
+      $tasks[] = $createTask([
+        'level' => $level,
+        'cmd' => $cmdr->escape($PREFIX . $AMP_CLEANUP, ['DAYS' => $days]),
+        'paths' => [getenv('HOME') . "/_bknix/amp/{$profile}"],
+      ]);
+    }
+  }
+
+  return $tasks;
+};
+
+/**
+ * @param array $params
+ * @param callable $getPartition
+ *   (injected)
+ * @param SymfonyStyle $io
+ *   (injected)
+ * @return \Clippy\CleanupTask
+ */
+$c['createTask()'] = function($params, $getPartition, $io) {
+  $task = new CleanupTask($params);
+
+  foreach ($params as $k => $v) {
+    $task->{$k} = $v;
+  }
+
+  $partitions = [];
+  foreach ($task->paths as $path) {
+    $part = $getPartition($path);
+    if ($part) {
+      $partitions[] = $part;
+    }
+    else {
+      $io->writeln("<comment>Warning</comment>: Path <info>{$path}</info> appears to be invalid.");
+    }
+  }
+  $task->partitions = uniq($partitions);
+
+  return $task;
+};
+
+/**
+ * @param array $criteria
+ *   partition: string
+ *   level: int
+ * @param CleanupTask[] $allTasks
+ *   (injected)
+ * @return array
+ *   List of tasks, filtered by $criteria.
+ */
+$c['findTasks()'] = function($criteria, $allTasks) {
+  return array_filter($allTasks, function($t) use ($criteria) {
+    /** @var CleanupTask $t */
+    if (isset($criteria['partition']) && !in_array($criteria['partition'], $t->partitions)) {
+      return FALSE;
+    }
+    if (isset($criteria['level']) && $t->level != $criteria['level']) {
+      return FALSE;
+    }
+    return TRUE;
+  });
+};
+
+###############################################################################
+## Partition helpers
+
+/**
+ * Determine the root mount-point for the partition which has $tgtPath.
+ *
+ * @param string $tgtPath
+ *   Ex: '/home/foo/.bashrc'
+ * @param Cmdr $cmdr
+ *   (injected)
+ * @return string
+ *   Ex: '/home'
+ */
+$c['getPartition()'] = function($tgtPath, Cmdr $cmdr) {
+  static $cache = [];
+  if (!isset($cache[$tgtPath])) {
+    $cache[$tgtPath] = trim($cmdr->run('df -P {{TGT|s}} | sed -n \'$s/[^%]*%[[:blank:]]*//p\'', [
+      'TGT' => $tgtPath,
+    ]));
+  }
+  return $cache[$tgtPath];
+};
+
+/**
+ * Determine if a partition's utilization is approaching it's capacity.
+ *
+ * @param string $tgtPath
+ * @param int $maxUsedPct
+ *  The threshold percentage. If more than $X percent used, then the disk needs work.
+ * @param \Clippy\Cmdr $cmdr
+ *   (injected)
+ * @return bool
+ * @throws \Exception
+ */
+$c['isPartitionFull()'] = function($tgtPath, $maxUsedPct, Cmdr $cmdr) {
+  $inodePct = trim($cmdr->run('df {{TGT|s}} --output=ipcent | tail -n1 | sed \'s/[^0-9]//g\'', ['TGT' => $tgtPath]));
+  $spacePct = trim($cmdr->run('df {{TGT|s}} --output=pcent | tail -n1 | sed \'s/[^0-9]//g\'', ['TGT' => $tgtPath]));
+  if (!is_numeric($inodePct) || !is_numeric($spacePct)) {
+    throw new \Exception("Received invalid percentages ($spacePct, $inodePct)");
+  }
+  return ($inodePct > $maxUsedPct || $spacePct > $maxUsedPct);
+};
+
+###############################################################################
+## Primitive utilities
+
+/**
+ * Combine the $arrays and return the uniq values.
+ *
+ * @param \array[] ...$arrays
+ * @return array
+ *   Unique values.
+ *   To avoid ambiguous behavior, these values are sorted (natsort).
+ */
+function uniq(array... $arrays) {
+  $v = [];
+  foreach ($arrays as $arr) {
+    $v = array_unique(array_merge($arr, $v));
+  }
+  $v = array_values($v);
+  natsort($v);
+  return $v;
+}
+
+###############################################################################
+$c['app']->run();
