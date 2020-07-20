@@ -8,6 +8,8 @@ namespace Clippy;
 
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Process\Process;
+
 $c = clippy()->register(plugins());
 
 ###############################################################################
@@ -35,34 +37,45 @@ $c['app']->command('dump', function($allTasks) {
 
 $c['app']->command('run [-N|--dry-run] [--threshold=]', function($dryRun, $threshold = 90, SymfonyStyle $io, $allTasks, $findTasks, $isPartitionFull, $cmdr) {
   $exitCode = 0;
+  $partitions = uniq(...array_column($allTasks, 'partitions'));
+  $levels = uniq(array_column($allTasks, 'level'));
 
-  $allPartitions = uniq(...array_column($allTasks, 'partitions'));
-  $io->writeln("<comment>PARTITIONS</comment>: <info>" . implode("</info>, <info>", $allPartitions) . "</info> (" . count($allPartitions) . ")");
+  $io->writeln("<comment>PARTITIONS</comment>: <info>" . implode("</info>, <info>", $partitions) . "</info> (" . count($partitions) . ")");
   $io->writeln("<comment>THRESHOLD</comment>: <info>" . $threshold . "%</info>");
 
-  foreach ($allPartitions as $partition) {
-    $levels = uniq(array_column($allTasks, 'level'));
-    do {
-      if (empty($levels)) {
-        $io->writeln("<error>Cannot reduce space on partition ({$partition}) to {$threshold}%. No more levels found.</error>");
-        $exitCode = 1;
-        break;
-      }
+  // Whiddle the $partitions. In each pass, we run the next level of (relevant) cleanups and remove any satisfactory partitions.
+  // Repeat until either (a) all partitions are satisfactory or (b) there are no more relevant cleanups.
+  while (TRUE) {
+    $partitions = array_filter($partitions, function($p) {
+      return file_exists($p);
+    });
+    $level = array_shift($levels);
 
-      $level = array_shift($levels);
-      $io->writeln("Clean up <info>{$partition}</info> at level <info>{$level}</info>.");
-      $tasks = $findTasks(['level' => $level, 'partition' => $partition]);
-      $cmds = uniq(array_column($tasks, 'cmd'));
-      foreach ($cmds as $cmd) {
-        if ($dryRun) {
-          $io->writeln("<comment>DRY-RUN</comment>: " . $cmd);
-        }
-        else {
-          $cmdr->run($cmd);
-        }
+    $io->writeln("Clean up level <info>{$level}</info> on partitions <info>" . implode("</info>, <info>", $partitions) . "</info>.");
+    $tasks = $findTasks(['level' => $level, 'partitions' => $partitions]);
+    foreach (uniq(array_column($tasks, 'cmd')) as $cmd) {
+      if ($dryRun) {
+        $io->writeln("<comment>DRY-RUN</comment>: " . $cmd);
       }
-    } while ($isPartitionFull($partition, $threshold));
+      else {
+        $cmdr->run(new Process($cmd));
+      }
+    }
+
+    $partitions = array_filter($partitions, function($p) use ($isPartitionFull, $threshold) {
+      return $isPartitionFull($p, $threshold);
+    });
+    if (empty($partitions)) {
+      $io->writeln("<comment>COMPLETE</comment>: All partitions meet the <info>" . $threshold . "%</info> threshold.");
+      break;
+    }
+    if (empty($levels)) {
+      $io->writeln("<error>Cannot reduce space to {$threshold}%. No more levels found.</error>");
+      $exitCode = 1;
+      break;
+    }
   }
+
   return $exitCode;
 });
 
@@ -244,6 +257,9 @@ $c['findTasks()'] = function($criteria, $allTasks) {
   return array_filter($allTasks, function($t) use ($criteria) {
     /** @var CleanupTask $t */
     if (isset($criteria['partition']) && !in_array($criteria['partition'], $t->partitions)) {
+      return FALSE;
+    }
+    if (isset($criteria['partitions']) && empty(array_intersect($criteria['partitions'], $t->partitions))) {
       return FALSE;
     }
     if (isset($criteria['level']) && $t->level != $criteria['level']) {
