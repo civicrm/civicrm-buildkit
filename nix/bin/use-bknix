@@ -39,6 +39,7 @@ if [ -z "$OWNER" ]; then
 fi
 
 PROFILE="$1"
+shift
 
 for BASEDIR in "/nix/var/nix/profiles/per-user/$OWNER" "/nix/var/nix/profiles" ;do
   PRFDIR="$BASEDIR/bknix-$PROFILE"
@@ -47,27 +48,36 @@ for BASEDIR in "/nix/var/nix/profiles/per-user/$OWNER" "/nix/var/nix/profiles" ;
   fi
 done
 
-case "$2" in
-  -s|--shell) MODE=shell ; ;;
-  -e|--env) MODE=env ; ;;
-  *) MODE=env ; ;;
-esac
+if [ -n "$1" ]; then
+  case "$1" in
+    -s|--shell) MODE=shell ; ;;
+    -e|--env) MODE=env ; ;;
+    -r|--run) MODE=run ; ;;
+    *) MODE=env ; ;;
+  esac
+  shift
+else
+  MODE=env
+fi
 
 ###########################################################
 ## Validation/help
 if [ -z "$PROFILE" -o ! -d "$PRFDIR" ]; then
   echo "The specified profile does not correspond to an actual profile"
   echo
-  echo "usage: $0 <profile> [-e|--env|-s|--shell]"
+  echo "usage: $0 <profile> [-e|--env|-s|--shell|-r|--run] [runcmd]"
   echo ""
   echo "options:"
   echo "  -e|--env    Display environment variables for the profile"
   echo "  -s|--shell  Open a subshell with the profile"
+  echo "  -r|--run    Run a command in a subshell"
   echo ""
   echo "example: Generate environment variables for \"dfl\" profile"
   echo "  $0 dfl"
   echo "example: Open subshell for \"min\" profile"
   echo "  $0 min -s"
+  echo "example: Run a command in a subshell for \"min\" profile"
+  echo "  $0 min -r civibuild"
   echo ""
   exit 1
 fi
@@ -120,5 +130,19 @@ case "$MODE" in
 
     "$0" "$PROFILE" --env > "$TMPFILE"
     bash --rcfile "$TMPFILE" -i
+    ;;
+  run)
+    ## We will call ourselves in --env mode, load that, and then run the given command..
+
+    ## Note: "mktemp" in BSD and GNU work differently, but this formulation seems close enough to be portable.
+    TMPFILE=$(mktemp -t .use-bknix.XXXXXXXX)
+    function cleanup_bashrc() {
+      rm -f "$TMPFILE"
+    }
+    trap cleanup_bashrc EXIT
+
+    "$0" "$PROFILE" --env > "$TMPFILE"
+    source "$TMPFILE"
+    eval "$@"
     ;;
 esac
