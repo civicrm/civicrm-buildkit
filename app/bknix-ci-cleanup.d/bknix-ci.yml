@@ -1,0 +1,44 @@
+tasks:
+  - { templateSet: BKNIX_CI, vars: {HOME: '/home/jenkins', PROFILE: 'dfl'} }
+  - { templateSet: BKNIX_CI, vars: {HOME: '/home/jenkins', PROFILE: 'min'} }
+  - { templateSet: BKNIX_CI, vars: {HOME: '/home/jenkins', PROFILE: 'max'} }
+  - { templateSet: BKNIX_CI, vars: {HOME: '/home/jenkins', PROFILE: 'old'} }
+  - { templateSet: BKNIX_CI, vars: {HOME: '/home/jenkins', PROFILE: 'edge'} }
+  - { templateSet: BKNIX_CI, vars: {HOME: '/home/publisher', PROFILE: 'dfl'} }
+  - { templateSet: BKNIX_CI, vars: {HOME: '/home/publisher', PROFILE: 'min'} }
+  - { templateSet: BKNIX_CI, vars: {HOME: '/home/publisher', PROFILE: 'max'} }
+  - { templateSet: BKNIX_CI, vars: {HOME: '/home/publisher', PROFILE: 'old'} }
+  - { templateSet: BKNIX_CI, vars: {HOME: '/home/publisher', PROFILE: 'edge'} }
+
+templateSets:
+  BKNIX_CI:
+    - { level: 0, template: CIVIBUILD_CLEANUP, vars: {EXPIRE_AFTER: 120, REDUNDANT_AFTER: 4} }
+    - { level: 1, template: CIVIBUILD_CLEANUP, vars: {EXPIRE_AFTER: 96, REDUNDANT_AFTER: 3} }
+    - { level: 2, template: CIVIBUILD_CLEANUP, vars: {EXPIRE_AFTER: 72, REDUNDANT_AFTER: 3} }
+    - { level: 3, template: CIVIBUILD_CLEANUP, vars: {EXPIRE_AFTER: 48, REDUNDANT_AFTER: 2} }
+    - { level: 4, template: CIVIBUILD_CLEANUP, vars: {EXPIRE_AFTER: 24, REDUNDANT_AFTER: 1} }
+    - { level: 0, template: MYCNF_CLEANUP, vars: {DAYS: 45} }
+    - { level: 1, template: MYCNF_CLEANUP, vars: {DAYS: 30} }
+    - { level: 2, template: MYCNF_CLEANUP, vars: {DAYS: 14} }
+    - { level: 3, template: MYCNF_CLEANUP, vars: {DAYS: 7} }
+    - { level: 4, template: MYCNF_CLEANUP, vars: {DAYS: 1} }
+
+templates:
+  CIVIBUILD_CLEANUP:
+    ## This task is only used of the `condition` returns success.
+    condition: 'test "$HOME" = {{HOME|s}} -a -d {{HOME|s}}/bknix-{{PROFILE|s}}/build'
+
+    ## The shell command to run. This should delete some stuff.
+    cmd: 'eval $( use-bknix {{PROFILE|s}} ) find-stale-builds {{HOME|s}}/bknix-{{PROFILE|s}}/build {{EXPIRE_AFTER|s}} {{REDUNDANT_AFTER|s}} | while read BLD ; do echo y | civibuild destroy $(basename $BLD) ; done'
+
+    ## The command may the side-effect of reducing disk-usage in various folders. List them.
+    paths:
+      - '{{HOME}}/bknix-{{PROFILE}}/build'
+      - '{{HOME}}/_bknix/ramdisk/{{PROFILE}}'
+      - '{{HOME}}/_bknix/amp/{{PROFILE}}'
+
+  MYCNF_CLEANUP:
+    condition: 'test "$HOME" = {{HOME|s}} -a -d {{HOME|s}}/_bknix/amp/{{PROFILE|s}} '
+    cmd: 'find {{HOME|s}}/_bknix/amp/{{PROFILE|s}}/my.cnf.d -name my.cnf-\* -ctime +{{DAYS|s}} -delete'
+    paths:
+      - '{{HOME}}/_bknix/amp/{{PROFILE}}'

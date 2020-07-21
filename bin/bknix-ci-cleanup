@@ -3,12 +3,14 @@
 #!depdir '../extern/bknix-ci-cleanup'
 #!ttl 10 years
 #!require symfony/var-dumper: ~3.0
+#!require symfony/yaml: ~3.0
 #!require clippy/std: ~0.3.0
 namespace Clippy;
 
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Yaml\Yaml;
 
 $c = clippy()->register(plugins());
 
@@ -115,38 +117,34 @@ class CleanupTask {
    * @var string[]
    */
   public $partitions = [];
+
+  /**
+   * Optional bash command. The rule is only used if the command returns success.
+   *
+   * @var string|null
+   */
+  public $condition = NULL;
 }
 
 /**
- * Get a list of bknix profiles.
- *
- * @return string[]
- */
-$c['allProfiles'] = function() {
-  return ['min', 'max', 'dfl', 'old', 'edge'];
-};
-
-/**
- * @param string[] $allProfiles
- * @param callable $createProfileTasks
  * @return CleanupTask[]
  */
-$c['allTasks'] = function($allProfiles, $createProfileTasks, $createTask, $cmdr) {
+$c['allTasks'] = function($createTask, $cmdr, $ymlConfig) {
   /** @var CleanupTask[] $tasks */
   $tasks = [];
 
-  foreach ($allProfiles as $profile) {
-    $tasks = array_merge($tasks, $createProfileTasks($profile));
-  }
-
-  $TMP_CLEANUP = 'find /tmp -user "$USER" -mtime +{{DAYS|s}} -delete 2>&1 | grep -v "Permission denied"';
-  foreach ([45, 30, 15, 7, 1] as $level => $days) {
-    if (file_exists('/tmp')) {
-      $tasks[] = $createTask([
-        'level' => $level,
-        'cmd' => $cmdr->escape($TMP_CLEANUP, ['DAYS' => $days]),
-        'paths' => ['/tmp'],
-      ]);
+  foreach ($ymlConfig['tasks'] ?? [] as $taskSpec) {
+    $newTasks = $createTask($taskSpec);
+    foreach ($newTasks as $task) {
+      if ($task->condition !== NULL && $task->condition !== '') {
+        /** @var Process $proc */
+        $proc = $cmdr->process($task->condition);
+        $proc->run();
+        if (!$proc->isSuccessful()) {
+          continue;
+        }
+      }
+      $tasks[] = $task;
     }
   }
 
@@ -158,60 +156,31 @@ $c['allTasks'] = function($allProfiles, $createProfileTasks, $createTask, $cmdr)
 };
 
 /**
- * Prepare a list of cleanup tasks for the given profile/environment.
- *
- * @param string $profile
- *   Ex: 'min', 'max'
- * @param callable $createTask
- *   (injected)
  * @return array
+ *   The aggregated YAML configuration
  */
-$c['createProfileTasks()'] = function($profile, $createTask, Cmdr $cmdr, SymfonyStyle $io) {
-  $bldDir = getenv('HOME') . '/bknix-' . $profile . '/build';
-  if (!file_exists($bldDir)) {
-    $io->writeln("<comment>SKIP</comment>: No builds found for profile <info>{$profile}</info> (<info>{$bldDir}</info>)");
-    return [];
-  }
+$c['ymlConfig'] = function($io) {
 
-  $PREFIX = 'eval $( use-bknix ' . $profile . ' -e ) ';
-  // $PREFIX = $cmdr->run('use-bknix {{PROFILE|s}} -e', ['PROFILE' => $profile]);
-  $CIVIBUILD_CLEANUP = 'find-stale-builds {{BLDDIR|s}} {{EXPIRE_AFTER|s}} {{REDUNDANT_AFTER|s}} | while read BLD ; do echo y | civibuild destroy $(basename $BLD) ; done';
-  $AMP_CLEANUP = '[ -d "$AMPHOME" -a -d "$AMPHOME/my.cnf.d" ] && find "$AMPHOME/my.cnf.d" -name \'my.cnf-*\' -ctime +{{DAYS|s}} -delete';
+  $files = (array) glob(dirname(__DIR__) . '/app/bknix-ci-cleanup.d/*.yml');
+  $ymlConfig = ['templates' => [], 'templateSets' => [], 'tasks' => []];
+  foreach ($files as $file) {
+    $io->writeln("<comment>PARSING</comment>: Load file <info>$file</info>");
+    $yml = Yaml::parse(file_get_contents($file));
 
-  $tasks = [];
-
-  foreach ([5, 4, 3, 2, 1] as $level => $days) {
-    $tasks[] = $createTask([
-      'level' => $level,
-      'cmd' => $cmdr->escape($PREFIX . $CIVIBUILD_CLEANUP, [
-        'BLDDIR' => $bldDir,
-        'EXPIRE_AFTER' => $days * 24,
-        'REDUNDANT_AFTER' => 4,
-      ]),
-      'paths' => [$bldDir, getenv('HOME') . "/_bknix/ramdisk/{$profile}", getenv('HOME') . "/_bknix/amp/{$profile}"],
-    ]);
-    $tasks[] = $createTask([
-      'level' => $level + 1,
-      'cmd' => $cmdr->escape($PREFIX . $CIVIBUILD_CLEANUP, [
-        'BLDDIR' => $bldDir,
-        'EXPIRE_AFTER' => $days * 24,
-        'REDUNDANT_AFTER' => 1,
-      ]),
-      'paths' => [$bldDir, getenv('HOME') . "/_bknix/ramdisk/{$profile}", getenv('HOME') . "/_bknix/amp/{$profile}"],
-    ]);
-  }
-
-  foreach ([45, 30, 15, 7, 1] as $level => $days) {
-    if (file_exists(getenv('HOME') . "/_bknix/amp/{$profile}")) {
-      $tasks[] = $createTask([
-        'level' => $level,
-        'cmd' => $cmdr->escape($PREFIX . $AMP_CLEANUP, ['DAYS' => $days]),
-        'paths' => [getenv('HOME') . "/_bknix/amp/{$profile}"],
-      ]);
+    // Propagate file-scoped vars
+    if (isset($yml['vars'])) {
+      foreach ($yml['tasks'] as &$task) {
+        $task['vars'] = array_merge($yml['vars'], $task['vars'] ?? []);
+      }
     }
+
+    // Merge into main list
+    $ymlConfig['templates'] = array_merge($ymlConfig['templates'] ?? [], $yml['templates'] ?? []);
+    $ymlConfig['templateSets'] = array_merge($ymlConfig['templateSets'] ?? [], $yml['templateSets'] ?? []);
+    $ymlConfig['tasks'] = array_merge($ymlConfig['tasks'] ?? [], $yml['tasks'] ?? []);
   }
 
-  return $tasks;
+  return $ymlConfig;
 };
 
 /**
@@ -220,12 +189,58 @@ $c['createProfileTasks()'] = function($profile, $createTask, Cmdr $cmdr, Symfony
  *   (injected)
  * @param SymfonyStyle $io
  *   (injected)
- * @return \Clippy\CleanupTask
+ * @param array $ymlConfig
+ * @param Cmdr $cmdr
+ * @return \Clippy\CleanupTask[]
  */
-$c['createTask()'] = function($params, $getPartition, $io) {
-  $task = new CleanupTask($params);
+$c['createTask()'] = function($params, $getPartition, SymfonyStyle $io, $ymlConfig, $cmdr) use ($c) {
 
+  if (isset($params['templateSet'])) {
+    if (!isset($ymlConfig['templateSets'][$params['templateSet']])) {
+      throw new \RuntimeException("Unrecognized templateSet: " . $params['templateSet']);
+    }
+    $newTasks = [];
+    foreach ($ymlConfig['templateSets'][$params['templateSet']] as $template) {
+      $newTaskParams = $template;
+      $newTaskParams['vars'] = array_merge($template['vars'] ?? [], $params['vars'] ?? []);
+      $newTasks = array_merge(
+        $c['createTask()']($newTaskParams, $getPartition, $io, $ymlConfig, $cmdr),
+        $newTasks
+      );
+    }
+    return $newTasks;
+  }
+
+  if (isset($params['template'])) {
+    if (!isset($ymlConfig['templates'][$params['template']])) {
+      throw new \RuntimeException("Unrecognized template: " . $params['template']);
+    }
+    $params = array_merge($ymlConfig['templates'][$params['template']], $params);
+    unset($params['template']);
+  }
+
+  $vars = $params['vars'] ?? [];
+  unset($params['vars']);
+
+  $task = new CleanupTask($params);
   foreach ($params as $k => $v) {
+    switch ($k) {
+      case 'level':
+        // No filtering needed.
+        break;
+
+      case 'cmd':
+      case 'condition':
+        $v = $cmdr->escape($v, $vars);
+        break;
+
+      case 'paths':
+      case 'partitions':
+        foreach ($v as &$item) {
+          $item = $cmdr->escape($item, $vars);
+        }
+        break;
+    }
     $task->{$k} = $v;
   }
 
@@ -235,13 +250,10 @@ $c['createTask()'] = function($params, $getPartition, $io) {
     if ($part) {
       $partitions[] = $part;
     }
-    else {
-      $io->writeln("<comment>Warning</comment>: Path <info>{$path}</info> appears to be invalid.");
-    }
   }
   $task->partitions = uniq($partitions);
 
-  return $task;
+  return [$task];
 };
 
 /**
