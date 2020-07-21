@@ -4,7 +4,7 @@
 #!ttl 10 years
 #!require symfony/var-dumper: ~3.0
 #!require symfony/yaml: ~3.0
-#!require clippy/std: ~0.3.1
+#!require clippy/std: ~0.3.2
 namespace Clippy;
 
 use Symfony\Component\Console\Output\OutputInterface;

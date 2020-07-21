@@ -29,7 +29,7 @@ templates:
     condition: 'test "$HOME" = {{HOME|s}} -a -d {{HOME|s}}/bknix-{{PROFILE|s}}/build'
 
     ## The shell command to run. This should delete some stuff.
-    cmd: 'eval $( use-bknix {{PROFILE|s}} ) find-stale-builds {{HOME|s}}/bknix-{{PROFILE|s}}/build {{EXPIRE_AFTER|s}} {{REDUNDANT_AFTER|s}} | while read BLD ; do echo y | civibuild destroy $(basename $BLD) ; done'
+    cmd: 'eval $( use-bknix {{PROFILE|s}} -e ) find-stale-builds {{HOME|s}}/bknix-{{PROFILE|s}}/build {{EXPIRE_AFTER|s}} {{REDUNDANT_AFTER|s}} | while read BLD ; do echo y | civibuild destroy $(basename $BLD) ; done'
 
     ## The command may the side-effect of reducing disk-usage in various folders. List them.
     paths:
