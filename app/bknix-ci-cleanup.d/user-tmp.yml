@@ -7,6 +7,6 @@ tasks:
 
 templates:
   USER_TMP:
-    cmd: 'find /tmp -user "$USER" -mtime +{{DAYS|s}} -delete 2>&1 | grep -v "Permission denied"'
+    cmd: 'find /tmp -user "$USER" -mtime +{{DAYS|s}} -delete 2>&1 | grep -v "Permission denied" || echo "WARNING: Some tmp files could not be inspected."'
     condition: 'test -d /tmp'
     paths: ['/tmp']
