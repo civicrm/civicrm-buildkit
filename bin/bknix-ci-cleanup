@@ -164,7 +164,7 @@ $c['ymlConfig'] = function($io) {
   $files = (array) glob(dirname(__DIR__) . '/app/bknix-ci-cleanup.d/*.yml');
   $ymlConfig = ['templates' => [], 'templateSets' => [], 'tasks' => []];
   foreach ($files as $file) {
-    $io->writeln("<comment>PARSING</comment>: Load file <info>$file</info>");
+    $io->writeln("<comment>PARSING</comment>: Config file <info>$file</info>");
     $yml = Yaml::parse(file_get_contents($file));
 
     // Propagate file-scoped vars
@@ -246,7 +246,7 @@ $c['createTask()'] = function($params, $getPartition, SymfonyStyle $io, $ymlConf
 
   $partitions = [];
   foreach ($task->paths as $path) {
-    $part = $getPartition($path);
+    $part = $getPartition(realpath($path));
     if ($part) {
       $partitions[] = $part;
     }
@@ -287,21 +287,39 @@ $c['findTasks()'] = function($criteria, $allTasks) {
 /**
  * Determine the root mount-point for the partition which has $tgtPath.
  *
+ * Ambiguity: if there are symlinks, do you care about the partition where the
+ * symlink lives or the partition where (ultimate) the symlink-target lives? Use
+ * `$getPartition(realpath(...))` if you need the target.
+ *
  * @param string $tgtPath
  *   Ex: '/home/foo/.bashrc'
  * @param Cmdr $cmdr
  *   (injected)
  * @return string
- *   Ex: '/home'
+ *   Ex: '/home' or '/'
  */
 $c['getPartition()'] = function($tgtPath, Cmdr $cmdr) {
-  static $cache = [];
-  if (!isset($cache[$tgtPath])) {
-    $cache[$tgtPath] = trim($cmdr->run('df -P {{TGT|s}} | sed -n \'$s/[^%]*%[[:blank:]]*//p\'', [
-      'TGT' => $tgtPath,
-    ]));
+  $withSlash = function($x) {return rtrim($x, '/') . '/'; };
+
+  static $partitions = NULL;
+  if ($partitions === NULL) {
+    $partitions = explode("\n", $cmdr->run('df --out=target | grep -v "^Mounted on"'));
+    foreach ($partitions as &$p) {
+      $p = $withSlash($p);
+    }
   }
-  return $cache[$tgtPath];
+
+  $tgtPath = $withSlash($tgtPath);
+  $bestMatch = NULL;
+  foreach ($partitions as $partition) {
+    if (strpos($tgtPath, $partition) === 0) {
+      if ($bestMatch === NULL || strlen($bestMatch) < strlen($partition)) {
+        $bestMatch = $partition;
+      }
+    }
+  }
+
+  return $bestMatch === '/' ? '/' : rtrim($bestMatch, '/');
 };
 
 /**
