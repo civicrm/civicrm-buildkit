@@ -4,7 +4,7 @@
 #!ttl 10 years
 #!require symfony/var-dumper: ~3.0
 #!require symfony/yaml: ~3.0
-#!require clippy/std: ~0.3.0
+#!require clippy/std: ~0.3.1
 namespace Clippy;
 
 use Symfony\Component\Console\Output\OutputInterface;
@@ -60,7 +60,7 @@ $c['app']->command('run [-N|--dry-run] [--threshold=]', function($dryRun, $thres
         $io->writeln("<comment>DRY-RUN</comment>: " . $cmd);
       }
       else {
-        $cmdr->run(new Process($cmd));
+        $cmdr->passthru(new Process($cmd));
       }
     }
 
