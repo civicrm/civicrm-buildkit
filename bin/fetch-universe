@@ -1,6 +1,9 @@
 #!/usr/bin/env php
 <?php
 
+########################################################################################
+## General utilities
+
 /**
  * @param string $cwd Current working directory
  * @param string $cmd Command to execute
@@ -16,124 +19,249 @@ function run($cwd, $cmd) {
   return $status;
 }
 
+/**
+ * Print an error note.
+ */
+function errprintf() {
+  $str = call_user_func_array('sprintf', func_get_args());
+  fwrite(STDERR, $str);
+}
+
 ########################################################################################
+## Feeds
+
+/**
+ * Get the list of published extensions from civicrm.org.
+ *
+ * @return array
+ */
+function feed_extdir() {
+  $extdirUrl = 'https://civicrm.org/extdir/git-urls';
+  errprintf("Fetch URL (%s)\n", $extdirUrl);
+  $json = json_decode(file_get_contents($extdirUrl), 1);
+  return feed_normalize($json);
+}
+
+/**
+ * Get the list of semi-published extensions from lab.civicrm.org.
+ *
+ * @return array
+ */
+function feed_labdir() {
+  $labdir = [];
+  $page = 1;
+  $pageSize = 100;
+  do {
+    $laburl = "https://lab.civicrm.org/api/v4/groups/58/projects?page={$page}&per_page={$pageSize}";
+    errprintf("Fetch URL (%s)\n", $laburl);
+
+    $validProjectsInPage = 0;
+    $projects = json_decode(file_get_contents($laburl), 1);
+    foreach ($projects as $project) {
+      // Have we gotten generally sensible data?
+      if (empty($project['path_with_namespace'])) {
+        continue;
+      }
+
+      $validProjectsInPage++;
+
+      // Does this look cloneable?
+      if (!$project['empty_repo'] && $project['repository_access_level'] !== 'disabled') {
+        $name = basename($project['path_with_namespace']);
+        $labdir[$name] = [
+          'git_url' => $project['http_url_to_repo'],
+        ];
+      }
+    }
+
+    $page++;
+  } while ($validProjectsInPage > 0);
+
+  return feed_normalize($labdir);
+}
+
+/**
+ * Get a static list of projects from CiviCRM's Github
+ * @return array
+ */
+function feed_static() {
+  $core = array(
+    'civicrm-core' => array(
+      'git_url' => 'https://github.com/civicrm/civicrm-core',
+    ),
+    'civicrm-backdrop-1.x' => array(
+      'git_url' => 'https://github.com/civicrm/civicrm-backdrop',
+      'git_branch' => '1.x-master',
+    ),
+    'civicrm-buildkit' => array(
+      'git_url' => 'https://github.com/civicrm/civicrm-buildkit',
+    ),
+    'civicrm-drupal-6.x' => array(
+      'git_url' => 'https://github.com/civicrm/civicrm-drupal',
+      'git_branch' => '6.x-master',
+    ),
+    'civicrm-drupal-7.x' => array(
+      'git_url' => 'https://github.com/civicrm/civicrm-drupal',
+      'git_branch' => '7.x-master',
+    ),
+    'civicrm-drupal-8.x' => array(
+      'git_url' => 'https://github.com/civicrm/civicrm-drupal',
+      'git_branch' => '8.x-master',
+    ),
+    'civicrm-joomla' => array(
+      'git_url' => 'https://github.com/civicrm/civicrm-joomla',
+    ),
+    'civicrm-packages' => array(
+      'git_url' => 'https://github.com/civicrm/civicrm-packages',
+    ),
+    'civicrm-setup' => array(
+      'git_url' => 'https://github.com/civicrm/civicrm-setup',
+    ),
+    'civicrm-wordpress' => array(
+      'git_url' => 'https://github.com/civicrm/civicrm-wordpress',
+    ),
+    'civihr' => array(
+      'git_url' => 'https://github.com/civicrm/civihr',
+      'git_branch' => 'staging',
+    ),
+    'com.webaccessglobal.module.civimobile' => array(
+      'git_url' => 'https://github.com/webaccess/com.webaccessglobal.module.civimobile',
+    ),
+    'civix' => array(
+      'git_url' => 'https://github.com/totten/civix',
+    ),
+  );
+
+  // These repos all have basic names and use default branch.
+  $subRepos = array(
+    'apachesolr_civiAttachments',
+    'civicon',
+    'civicrm-ac',
+    'civicrm-botdylan',
+    'civicrm-community-messages',
+    'civicrm-cxn-rpc',
+    'civicrm-demo-wp',
+    'civicrm-docs',
+    'civicrm-extdir-example',
+    'civicrm-l10n-extensions',
+    'civicrm-org-platform',
+    'civicrm-pingback',
+    'civicrm-statistics',
+    'civicrm-upgrade-test',
+    'coder',
+    'cv-nodejs',
+    'cxnapp',
+    'pr-report',
+    'zetacomponents-mail',
+    'cv',
+    'civistrings',
+    'civicrm-sysadmin-guide',
+    'civicrm-user-guide',
+    'civicrm-dev-docs',
+    'civicrm-infra',
+    'civicrm-dist-manager',
+    'release-management',
+    'l10n',
+  );
+  foreach ($subRepos as $subRepo) {
+    $core[$subRepo] = array(
+      'git_url' => 'https://github.com/civicrm/' . $subRepo,
+    );
+  }
+
+  return feed_normalize($core);
+}
+
+/**
+ * Adjust common quirks/omissions.
+ *
+ * @param array $feed
+ * @return array
+ */
+function feed_normalize($feed) {
+  $new = [];
+  foreach ($feed as $key => $repo) {
+    $repo['key'] = $key;
+
+    if (preg_match('/^git@(lab\.civicrm\.org|github\.com):(.*)/', $repo['git_url'], $m)) {
+      $userRepo = preg_replace('/\.git$/', '', $m[2]);
+      $repo['git_url'] = sprintf('https://%s/%s.git', $m[1], $userRepo);
+    }
+    elseif (preg_match(';^https?://(lab\.civicrm\.org|github\.com)/(.*);', $repo['git_url'], $m)) {
+      $userRepo = preg_replace('/\.git$/', '', $m[2]);
+      $repo['git_url'] = sprintf('https://%s/%s.git', $m[1], $userRepo);
+    }
+
+    $new[$key] = $repo;
+  }
+  ksort($new);
+  return $new;
+}
+
+/**
+ * Combine a list of feeds.
+ *
+ * Duplicate keys and duplicate URLs are consolidated, with priority
+ * given to the first instance.
+ *
+ * @param array $feeds
+ * @return array
+ */
+function feed_merge($feeds) {
+  $all = [];
+  $srcIds = []; // Flag git URLs/branches that have been visited already.
+  foreach ($feeds as $feed) {
+    foreach ($feed as $key => $repo) {
+      $srcId = $repo['git_url'] . '#' . ($repo['git_branch'] ?? 'DEFAULT');
+      if (isset($all[$key])) {
+        errprintf("skip duplicate key (%s) from (%s)\n", $key, $srcId);
+        continue;
+      }
+      if (isset($srcIds[$srcId])) {
+        errprintf("skip duplicate src (%s) from (%s)\n", $key, $srcId);
+        continue;
+      }
+
+      $all[$key] = $repo;
+      $srcIds[$srcId] = 1;
+    }
+  }
+
+  return feed_normalize($all);
+}
+
+########################################################################################
+## Parse inputs
 if (empty($argv[1])) {
-  fwrite(STDERR, "Missing base directory\n");
-  fwrite(STDERR, "usage: fetch-universe <base-dir>\n");
+  errprintf("Missing base directory\n");
+  errprintf("usage: fetch-universe <base-dir>\n");
   exit(1);
 }
 
 $basedir = realpath($argv[1]);
 
 if (!file_exists($basedir) || !is_dir($basedir)) {
-  fwrite(STDERR, "Missing base directory\n");
-  fwrite(STDERR, "usage: fetch-universe <base-dir>\n");
+  errprintf("Missing base directory\n");
+  errprintf("usage: fetch-universe <base-dir>\n");
   exit(1);
 }
 
-
 ########################################################################################
-$exts = json_decode(file_get_contents('https://civicrm.org/extdir/git-urls'), 1);
-$core = array(
-  'civicrm-core' => array(
-    'git_url' => 'https://github.com/civicrm/civicrm-core',
-  ),
-  'civicrm-backdrop-1.x' => array(
-    'git_url' => 'https://github.com/civicrm/civicrm-backdrop',
-    'git_branch' => '1.x-master',
-  ),
-  'civicrm-buildkit' => array(
-    'git_url' => 'https://github.com/civicrm/civicrm-buildkit',
-  ),
-  'civicrm-drupal-6.x' => array(
-    'git_url' => 'https://github.com/civicrm/civicrm-drupal',
-    'git_branch' => '6.x-master',
-  ),
-  'civicrm-drupal-7.x' => array(
-    'git_url' => 'https://github.com/civicrm/civicrm-drupal',
-    'git_branch' => '7.x-master',
-  ),
-  'civicrm-drupal-8.x' => array(
-    'git_url' => 'https://github.com/civicrm/civicrm-drupal',
-    'git_branch' => '8.x-master',
-  ),
-  'civicrm-joomla' => array(
-    'git_url' => 'https://github.com/civicrm/civicrm-joomla',
-  ),
-  'civicrm-packages' => array(
-    'git_url' => 'https://github.com/civicrm/civicrm-packages',
-  ),
-  'civicrm-setup' => array(
-    'git_url' => 'https://github.com/civicrm/civicrm-setup',
-  ),
-  'civicrm-wordpress' => array(
-    'git_url' => 'https://github.com/civicrm/civicrm-wordpress',
-  ),
-  'civihr' => array(
-    'git_url' => 'https://github.com/civicrm/civihr',
-    'git_branch' => 'staging',
-  ),
-  'com.webaccessglobal.module.civimobile' => array(
-    'git_url' => 'https://github.com/webaccess/com.webaccessglobal.module.civimobile',
-  ),
-  'civix' => array(
-    'git_url' => 'https://github.com/totten/civix',
-  ),
-);
+## Main data loading
 
-// These repos all have basic names and use default branch.
-$subRepos = array(
-  'apachesolr_civiAttachments',
-  'api4',
-  'civicon',
-  'civicrm-ac',
-  'civicrm-botdylan',
-  'civicrm-community-messages',
-  'civicrm-cxn-rpc',
-  'civicrm-demo-wp',
-  'civicrm-docs',
-  'civicrm-extdir-example',
-  'civicrm-l10n-extensions',
-  'civicrm-org-platform',
-  'civicrm-org-site',
-  'civicrm-pingback',
-  'civicrm-statistics',
-  'civicrm-upgrade-test',
-  'coder',
-  'cv-nodejs',
-  'cxnapp',
-  'pr-report',
-  'zetacomponents-mail',
-  'cv',
-  'civistrings',
-  'civicrm-user-guide',
-  'civicrm-dev-docs',
-  'civicrm-infra',
-  'civicrm-dist-manager',
-  'release-management',
-  'l10n',
-);
-foreach ($subRepos as $subRepo) {
-  $core[$subRepo] = array(
-    'git_url' => 'https://github.com/civicrm/' . $subRepo,
-  );
-}
-
-$deprecated = array('civicrm-drupal');
-
-
-########################################################################################
 $statuses = array(); // array(string $key => int $code)
+$deprecated = array('civicrm-drupal', 'civicrm-org-site', 'api4');
 
-$repos = array_merge($exts, $core);
-ksort($repos);
+$repos = feed_merge([feed_extdir(), feed_static(), feed_labdir()]);
+
 foreach ($repos as $key => $ext) {
   $dir = "$basedir/$key";
   if (empty($ext['git_url'])) {
-    fwrite(STDERR, "$key does not have git_url\n");
+    errprintf("$key does not have git_url\n");
     $statuses[$key] = 1;
   }
   elseif (file_exists($dir)) {
+    run($dir, sprintf("git remote set-url origin %s", escapeshellarg($ext['git_url'])));
     $statuses[$key] = run($dir, "git pull");
   }
   else {
