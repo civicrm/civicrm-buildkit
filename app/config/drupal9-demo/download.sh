@@ -4,7 +4,8 @@
 
 ###############################################################################
 
-[ -z "$CMS_VERSION" ] && CMS_VERSION=8
+#[ -z "$CMS_VERSION" ] && CMS_VERSION=8.7.x
+[ -z "$CMS_VERSION" ] && CMS_VERSION=9
 [ -z "$VOL_VERSION" ] && VOL_VERSION='master'
 [ -z "$NG_PRFL_VERSION" ] && NG_PRFL_VERSION='master'
 [ -z "$RULES_VERSION" ] && RULES_VERSION='master'
