@@ -25,10 +25,10 @@ pushd "$WEB_ROOT/web" >> /dev/null
     composer install --no-dev --no-interaction
   fi
   civicrm_download_composer_d8
-  git clone "${CACHE_DIR}/civicrm/civivolunteer.git"                       -b "$VOL_VERSION"       vendor/civicrm/civicrm-core/civicrm/tools/extensions/civivolunteer
-  git clone "${CACHE_DIR}/ginkgostreet/org.civicrm.angularprofiles.git"    -b "$NG_PRFL_VERSION"   vendor/civicrm/civicrm-core/civicrm/tools/extensions/org.civicrm.angularprofiles
-  git clone "${CACHE_DIR}/civicrm/org.civicoop.civirules.git"              -b "$RULES_VERSION"     vendor/civicrm/civicrm-core/civicrm/tools/extensions/org.civicoop.civirules
-  git clone "${CACHE_DIR}/TechToThePeople/civisualize.git"                 -b "master"             vendor/civicrm/civicrm-core/civicrm/tools/extensions/civisualize
-  git clone "${CACHE_DIR}/dlobo/org.civicrm.module.cividiscount.git"       -b "$DISC_VERSION"      vendor/civicrm/civicrm-core/civicrm/tools/extensions/cividiscount
-  git clone "${CACHE_DIR}/colemanw/exportui.git"       -b "master"             vendor/civicrm/civicrm-core/civicrm/tools/extensions/exportui
+  git clone "${CACHE_DIR}/civicrm/civivolunteer.git"                       -b "$VOL_VERSION"       vendor/civicrm/civicrm-core/tools/extensions/civivolunteer
+  git clone "${CACHE_DIR}/ginkgostreet/org.civicrm.angularprofiles.git"    -b "$NG_PRFL_VERSION"   vendor/civicrm/civicrm-core/tools/extensions/org.civicrm.angularprofiles
+  git clone "${CACHE_DIR}/civicrm/org.civicoop.civirules.git"              -b "$RULES_VERSION"     vendor/civicrm/civicrm-core/tools/extensions/org.civicoop.civirules
+  git clone "${CACHE_DIR}/TechToThePeople/civisualize.git"                 -b "master"             vendor/civicrm/civicrm-core/tools/extensions/civisualize
+  git clone "${CACHE_DIR}/dlobo/org.civicrm.module.cividiscount.git"       -b "$DISC_VERSION"      vendor/civicrm/civicrm-core/tools/extensions/cividiscount
+  git clone "${CACHE_DIR}/colemanw/exportui.git"       -b "master"             vendor/civicrm/civicrm-core/tools/extensions/exportui
 popd >> /dev/null
