@@ -12,6 +12,4 @@ pushd "$WEB_ROOT"
   ## Checkout the proper revisions
   git submodule update --init --recursive
 
-  ## FIXME: Merge into upstream
-  #patch -p1 < "$SITE_CONFIG_DIR/buildkit-changes.diff"
 popd
