@@ -22,7 +22,7 @@ popd >> /dev/null
 
 CIVI_DOMAIN_NAME="Demonstrators Anonymous"
 CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
-CIVI_CORE="${CMS_ROOT}/vendor/civicrm/civicrm-core"
+CIVI_CORE="${WEB_ROOT}/vendor/civicrm/civicrm-core"
 CIVI_UF="Drupal8"
 GENCODE_CONFIG_TEMPLATE="${CMS_ROOT}/modules/contrib/civicrm/civicrm.config.php.drupal"
 
@@ -80,8 +80,12 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   cv en civirules civisualize cividiscount
 
   ## Demo sites always disable email and often disable cron
-  drush cvapi StatusPreference.create ignore_severity=critical name=checkOutboundMail
-  drush cvapi StatusPreference.create ignore_severity=critical name=checkLastCron
+  drush8 cvapi StatusPreference.create ignore_severity=critical name=checkOutboundMail
+  drush8 cvapi StatusPreference.create ignore_severity=critical name=checkLastCron
+
+  export SITE_CONFIG_DIR
+  ## Install theem and blocks
+  drush8 scr "$SITE_CONFIG_DIR/install-theme.php"
 
   ## Setup CiviCRM dashboards
   INSTALL_DASHBOARD_USERS="$ADMIN_USER;$DEMO_USER" drush scr "$SITE_CONFIG_DIR/install-dashboard.php"

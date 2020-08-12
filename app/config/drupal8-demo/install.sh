@@ -22,7 +22,7 @@ popd >> /dev/null
 
 CIVI_DOMAIN_NAME="Demonstrators Anonymous"
 CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
-CIVI_CORE="${CMS_ROOT}/vendor/civicrm/civicrm-core"
+CIVI_CORE="${WEB_ROOT}/vendor/civicrm/civicrm-core"
 CIVI_UF="Drupal8"
 GENCODE_CONFIG_TEMPLATE="${CMS_ROOT}/modules/contrib/civicrm/civicrm.config.php.drupal"
 
@@ -46,7 +46,7 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   ## Setup theme
   #above# drush8 -y en garland
   export SITE_CONFIG_DIR
-  # (not d8 ready) drush8 -y -u "$ADMIN_USER" scr "$SITE_CONFIG_DIR/install-theme.php"
+  drush8 -y -u "$ADMIN_USER" scr "$SITE_CONFIG_DIR/install-theme.php"
 
   ## Based on the block info, CRM_Core_Block::CREATE_NEW and CRM_Core_Block::ADD should be enabled by default, but they aren't.
   ## "drush8 -y cc all" and "drush8 -y cc block" do *NOT* solve the problem. But this does:
@@ -61,7 +61,6 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   # doesn't work in d8 drush8 -y scr "$SITE_CONFIG_DIR/install-login-destination.php"
 
   ## Setup userprotect
-  drush8 -y dl userprotect
   drush8 -y en userprotect
   drush8 -y rmp authenticated userprotect.account.edit
   drush8 -y rmp authenticated userprotect.mail.edit
