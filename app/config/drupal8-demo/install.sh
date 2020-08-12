@@ -98,10 +98,10 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   cv en civirules civisualize cividiscount
 
   ## Demo sites always disable email and often disable cron
-  drush cvapi StatusPreference.create ignore_severity=critical name=checkOutboundMail
-  drush cvapi StatusPreference.create ignore_severity=critical name=checkLastCron
+  drush8 cvapi StatusPreference.create ignore_severity=critical name=checkOutboundMail
+  drush8 cvapi StatusPreference.create ignore_severity=critical name=checkLastCron
 
   ## Setup CiviCRM dashboards
-  INSTALL_DASHBOARD_USERS="$ADMIN_USER;$DEMO_USER" drush scr "$SITE_CONFIG_DIR/install-dashboard.php"
+  INSTALL_DASHBOARD_USERS="$ADMIN_USER;$DEMO_USER" drush8 scr "$SITE_CONFIG_DIR/install-dashboard.php"
 
 popd >> /dev/null
