@@ -37,42 +37,16 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   ## make sure drush functions are loaded
   drush8 cc drush -y
 
-  ## Setup CiviCRM
+  ## Setup CiviCRM -- But not in 'clean' config!
   echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign"]}' \
     | drush8 cvapi setting.create --in=json
   civicrm_apply_demo_defaults
   cv ev 'return CRM_Utils_System::synchronizeUsers();'
 
-  ## Setup theme
-  #above# drush8 -y en garland
-  export SITE_CONFIG_DIR
-  drush8 -y -u "$ADMIN_USER" scr "$SITE_CONFIG_DIR/install-theme.php"
-
-  ## Based on the block info, CRM_Core_Block::CREATE_NEW and CRM_Core_Block::ADD should be enabled by default, but they aren't.
-  ## "drush8 -y cc all" and "drush8 -y cc block" do *NOT* solve the problem. But this does:
-  ## doesn't work on d8
-  ## drush8 php-eval -u "$ADMIN_USER" 'module_load_include("inc","block","block.admin"); block_admin_display();'
-
-  ## Setup welcome page
-  drush8 -y scr "$SITE_CONFIG_DIR/install-welcome.php"
-
-  ## Setup login_destination
-  #above# drush8 -y en login_destination
-  # doesn't work in d8 drush8 -y scr "$SITE_CONFIG_DIR/install-login-destination.php"
-
-  ## Setup userprotect
-  drush8 -y en userprotect
-  drush8 -y rmp authenticated userprotect.account.edit
-  drush8 -y rmp authenticated userprotect.mail.edit
-  drush8 -y rmp authenticated userprotect.pass.edit
-
   ## Setup demo user
-  # drush8 -y en civicrm_webtest
   civicrm_apply_d8_perm_defaults
   drush8 -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
   drush8 -y user-add-role demoadmin "$DEMO_USER"
-  # In Garland, CiviCRM's toolbar looks messy unless you also activate Drupal's "toolbar", so grant "access toolbar"
-  # We've activated more components than typical web-test baseline, so grant rights to those components.
   drush8 -y rap demoadmin 'access toolbar'
   drush8 -y rap demoadmin 'administer CiviCase'
   drush8 -y rap demoadmin 'access all cases and activities'
@@ -86,6 +60,14 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   drush8 -y rap demoadmin 'interview campaign contacts'
   drush8 -y rap demoadmin 'gotv campaign contacts'
   drush8 -y rap demoadmin 'sign CiviCRM Petition'
+
+  ## Setup userprotect
+  drush8 -y en userprotect
+  drush8 -y rmp authenticated userprotect.account.edit
+  drush8 -y rmp authenticated userprotect.mail.edit
+  drush8 -y rmp authenticated userprotect.pass.edit
+
+  drush8 -y scr "$SITE_CONFIG_DIR/install-welcome.php"
 
   ## Setup CiviVolunteer
   drush8 -y cvapi extension.install key=org.civicrm.angularprofiles debug=1
@@ -101,7 +83,12 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   drush8 cvapi StatusPreference.create ignore_severity=critical name=checkOutboundMail
   drush8 cvapi StatusPreference.create ignore_severity=critical name=checkLastCron
 
+  export SITE_CONFIG_DIR
+  ## Install theem and blocks
+  drush8 scr "$SITE_CONFIG_DIR/install-theme.php"
+
   ## Setup CiviCRM dashboards
   INSTALL_DASHBOARD_USERS="$ADMIN_USER;$DEMO_USER" drush8 scr "$SITE_CONFIG_DIR/install-dashboard.php"
 
 popd >> /dev/null
+
