@@ -76,7 +76,6 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   drush8 -y cvapi extension.install key=org.civicrm.angularprofiles debug=1
 
   drush8 -y cvapi extension.install key=org.civicrm.volunteer debug=1
-  drush8 -y cvapi extension.install key=exportui debug=1
   drush8 -y rap anonymous 'register to volunteer'
   drush8 -y rap authenticated 'register to volunteer'
 
