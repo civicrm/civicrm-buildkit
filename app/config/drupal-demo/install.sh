@@ -110,7 +110,6 @@ EOPERM
   drush -y cvapi extension.install key=org.civicrm.angularprofiles debug=1
 
   drush -y cvapi extension.install key=org.civicrm.volunteer debug=1
-  drush -y cvapi extension.install key=exportui debug=1
   drush scr "$PRJDIR/src/drush/perm.php" <<EOPERM
     role 'anonymous user'
     role 'authenticated user'
