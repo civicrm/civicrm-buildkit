@@ -43,6 +43,9 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   civicrm_apply_demo_defaults
   cv ev 'return CRM_Utils_System::synchronizeUsers();'
 
+  ## Show errors on screen
+  drush8 -y config:set system.logging error_level verbose
+
   ## Setup theme
   #above# drush8 -y en garland
   export SITE_CONFIG_DIR

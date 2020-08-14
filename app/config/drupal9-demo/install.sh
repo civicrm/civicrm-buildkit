@@ -37,11 +37,14 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   ## make sure drush functions are loaded
   drush8 cc drush -y
 
-  ## Setup CiviCRM -- But not in 'clean' config!
+  ## Setup CiviCRM
   echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign"]}' \
     | drush8 cvapi setting.create --in=json
   civicrm_apply_demo_defaults
   cv ev 'return CRM_Utils_System::synchronizeUsers();'
+
+  ## Show errors on screen
+  drush8 -y config:set system.logging error_level verbose
 
   ## Setup demo user
   civicrm_apply_d8_perm_defaults
