@@ -111,7 +111,7 @@ function addExampleCases() {
     $case = civicrm_api3('Case', 'create', array(
       'contact_id' => $cids,
       'case_type_id' => $caseType,
-      'subject' => "This case is in reference to " . implode(' and ', $names) . ".",
+      'subject' => substr("This case is in reference to " . implode(' and ', $names), 0, 127) . ".",
       'start_date' => "now - $age day",
       'end_date' => $endDate ? "now - $endDate day" : NULL,
       'status_id' => $endDate ? 'Closed' : 'Open',
