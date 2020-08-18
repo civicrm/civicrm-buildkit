@@ -130,6 +130,9 @@ function feed_static() {
     'civix' => array(
       'git_url' => 'https://github.com/totten/civix',
     ),
+    'cf-civicrm' => array(
+      'git_url' => 'https://github.com/mecachisenros/cf-civicrm',
+    ),
     'webform_civicrm' => array(
       'git_url' => 'https://github.com/colemanw/webform_civicrm',
     ),
