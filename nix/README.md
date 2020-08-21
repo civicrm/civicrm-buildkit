@@ -21,8 +21,8 @@ Given that you have several pieces of software (e.g. PHP + MySQL + Redis), the *
 is responsible for starting and stopping processes. `bknix` works with a few launchers:
 
 * `loco run`: [Loco](https://github.com/totten/loco) runs local processes in the foreground. This is useful for local development.
-  It can be configured by editing the YAML file ([loco.yml](.loco/loco.yml)), by setting environment variables
-  (`HTTPD_PORT` et al), and/or by editing the [configuration templates](.loco/config).
+  It can be configured by editing the YAML file ([loco.yml](../.loco/loco.yml)), by setting environment variables
+  (`HTTPD_PORT` et al), and/or by editing the [configuration templates](../.loco/config).
 * `systemd`: This is a common process manager on Linux hosts. This is useful for CI nodes. The `loco.yml`
   can be exported to systemd notation directly (via `loco export`) or indirectly (as part of `install-ci.sh`).
 
@@ -162,10 +162,6 @@ Some of these policies/opinions can be changed, as described below ("Extended in
 ## TODO/Issues
 
 * Sort out php-imap
-* Make it easier to switch between php56, php70, php71. (Currently, you need to search/replace in `default.nix`.)
-* Instead of putting most code in `./civicrm-buildkit`, put it in `$out`. (Preferrably... without neutering git cache.)
-* `mysqld` is spawned in the background via `amp` (b/c that has the automated ramdisk handling). However, it'd be conceptually cleaner
-  to launch `mysqld` in the foreground via `loco run`.
 
 ## Tips
 
@@ -196,8 +192,8 @@ to irregular (once every months).
 * (*Most frequent; perhaps every day*) *Update the CiviCRM source*: See [CiviCRM Developer Guide: civibuild](https://docs.civicrm.org/dev/en/latest/tools/civibuild/#upgrade-site)
 * (*Mid-level; perhaps every couple weeks*) *Update buildkit's CLI tools*: Run `cd civicrm-buildkit && git pull && civi-download-tools`.
 * (*Least frequent; perhaps every couple months*) *Update the full `bknix` stack (mysqld/httpd/etc)*: This takes a few steps.
-    * If you haven't already, shutdown any active services (`Ctrl-C` in the background terminal)
+    * If you haven't already, shutdown any active services (`Ctrl-C` in the terminal). Run `loco clean` to remove any service state.
     * Exit any active `nix-shell` environments.
-    * In the `bknix` directory, update the git repo (i.e. `git pull`).
-    * Open a new `nix-shell` and run `bknix update`
+    * `cd civicrm-buildkit && git pull`
+    * Open a new `nix-shell` and start `loco run` again.
     * If you have an IDE configuration which references the PHP interpreter or PATH, update the IDE.

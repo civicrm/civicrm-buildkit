@@ -7,7 +7,7 @@
 ## Highly opinionated
 
 * It is primarily intended for developing patches and extensions for CiviCRM -- this influences the set of tools included.
-* It combines service binaries (`mysqld`, `httpd`, etc) from [nix](https://nixos.org/nix) with an unsophisticated process-manager script (`bknix`) and all the tools from [buildkit](https://github.com/civicrm/civicrm-buildkit).
+* It combines service binaries (`mysqld`, `httpd`, etc) from [nix](https://nixos.org/nix) with an unsophisticated process-manager script (`loco`) and all the tools from [buildkit](https://github.com/civicrm/civicrm-buildkit).
 * To facilitate quick development with any IDE/editor, all file-storage and development-tasks run in the current users' local Linux/macOS (*without* any virtualization, containerization, invisible filesystems, or magic permissions).
 * To optimize DB performance, `mysqld` stores all its data in a ramdisk.
 * To avoid conflicts with other tools on your system, all binaries are stored in their own folders, and services run on alternative ports.
