@@ -25,12 +25,12 @@ drupal_install
 
 CIVI_DOMAIN_NAME="Demonstrators Anonymous"
 CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
-CIVI_CORE="${WEB_ROOT}/sites/all/modules/civicrm"
-CIVI_SETTINGS="${WEB_ROOT}/sites/default/civicrm.settings.php"
-CIVI_FILES="${WEB_ROOT}/sites/default/files/civicrm"
+CIVI_CORE="${CMS_ROOT}/sites/all/modules/civicrm"
+CIVI_SETTINGS="${CMS_ROOT}/sites/default/civicrm.settings.php"
+CIVI_FILES="${CMS_ROOT}/sites/default/files/civicrm"
 CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
 CIVI_UF="Drupal"
-CIVI_EXT_DIR="${WEB_ROOT}/sites/default/civicrm/extensions"
+CIVI_EXT_DIR="${CMS_ROOT}/sites/default/civicrm/extensions"
 CIVI_EXT_URL="${CMS_URL}/sites/default/civicrm/extensions"
 
 civicrm_install
