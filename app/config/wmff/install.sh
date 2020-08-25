@@ -46,7 +46,9 @@ drush -y en `cat sites/default/enabled_modules`
 drush -y updatedb
 
 ## Setup theme
-#above# drush -y en garland
+drush -y en tivy
+drush vset theme_default tivy
+drush -y dis overlay
 export SITE_CONFIG_DIR
 drush -y -u "$ADMIN_USER" scr "$SITE_CONFIG_DIR/install-theme.php"
 
