@@ -36,7 +36,15 @@ HASH_SUFFIX=-0003
 ###############################################################################
 ## Fetch the latest code
 function cividist_update() {
-  git scan foreach -c "pwd; git fetch $GIT_REMOTE"
+  for SUBDIR in . packages backdrop drupal drupal-8 joomla WordPress ; do
+    if [ -d "$SUBDIR" ]; then
+      pushd "$SUBDIR"
+         git fetch "$GIT_REMOTE"
+      popd
+    else
+      echo "Skip update on non-existent subdir ($SUBDIR)."
+    fi
+  done
   if cividist_l10n_is_current ; then
     echo "[l10n] Appears recent (less than $L10N_TTL minutes old)" 1>&2
   else
