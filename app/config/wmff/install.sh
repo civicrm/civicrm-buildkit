@@ -62,6 +62,11 @@ if [ -e "$DEV_SETTINGS_FILE" ]; then
   drush --in=json cvapi Setting.create < "$DEV_SETTINGS_FILE"
 fi
 
+WMF_SETTINGS_FILE="${WEB_ROOT}/sites/default/wmf_settings.json"
+if [ -e "$WMF_SETTINGS_FILE" ]; then
+  drush --in=json cvapi Setting.create < "$WMF_SETTINGS_FILE"
+fi
+
 #drush -y user-add-role civicrm_webtest_user "$DEMO_USER"
 # In Garland, CiviCRM's toolbar looks messy unless you also activate Drupal's "toolbar", so grant "access toolbar"
 # We've activated more components than typical web-test baseline, so grant rights to those components.
