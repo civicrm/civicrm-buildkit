@@ -265,6 +265,10 @@ if [ "$SUITES" = "all" ]; then
       SUITES="$SUITES phpunit-flexmailer"
     fi
 
+    if [ -e "ext/financialacls" ]; then
+      SUITES="$SUITES phpunit-financialacls"
+    fi
+
   popd >> /dev/null
 elif [[ " $SUITES " =~ \ all\  ]]; then
   echo "The \"all\" target should not be mixed with other targets."
@@ -298,6 +302,7 @@ for TESTTYPE in $SUITES ; do
     phpunit-backdrop) task_phpunit_backdrop ;;
     phpunit-creditnotes) task_phpunit_core_extension sequentialcreditnotes ;;
     phpunit-flexmailer) task_phpunit_core_extension flexmailer ;;
+    phpunit-financialacls) task_phpunit_core_extension financialacls ;;
     *) echo "unrecognized suite: $TESTTYPE"; exit 2 ;;
   esac
 done
