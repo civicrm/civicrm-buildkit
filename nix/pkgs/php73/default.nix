@@ -25,6 +25,7 @@ let
             extension=${phpExtras.runkit7_3}/lib/php/extensions/runkit7.so
             openssl.cafile=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
       ''
+       + stdenv.lib.optionalString stdenv.isLinux "extension=${phpExtras.inotify}/lib/php/extensions/inotify.so"
 
        ## Per https://bugs.php.net/bug.php?id=77260 -- in php73, pcre.jit uses MAP_JIT which is quirky on diff versions of macOS
        + (if stdenv.isDarwin then "pcre.jit=0\n" else "");
@@ -42,7 +43,9 @@ let
         name = "bknix-php73";
         ## TEST ME: Do we still need imagick? Can we get away with gd nowadays?
         # buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.yaml phpPkgs.memcached phpPkgs.imagick phpExtras.timecop phpExtras.runkit7_3 pkgs.makeWrapper pkgs.cacert];
-        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.yaml phpPkgs.memcached phpExtras.timecop phpExtras.runkit7_3 pkgs.makeWrapper pkgs.cacert];
+        buildInputs =
+		[phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.yaml phpPkgs.memcached phpExtras.timecop phpExtras.runkit7_3 pkgs.makeWrapper pkgs.cacert]
+		++ stdenv.lib.optionals stdenv.isLinux [ phpExtras.inotify ];
         buildCommand = ''
           makeWrapper ${phpRuntime}/bin/phar $out/bin/phar
           makeWrapper ${phpRuntime}/bin/php $out/bin/php --add-flags -c --add-flags "${phpIni}"

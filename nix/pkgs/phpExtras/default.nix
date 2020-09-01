@@ -55,4 +55,21 @@ in rec {
     buildInputs = [ ];
   };
 
+  inotify = buildPecl {
+    name = "inotify-2.0.0";
+    sha256 = "01si0jn4jzkxhcywzflnh1v0ksxm5b4v30pi6h7i3amv4sfshi6h";
+    configureFlags = [ ];
+    nativeBuildInputs = [ pkgs.pkgconfig ];
+    buildInputs = [ ];
+#    https://pecl.php.net/get/inotify-2.0.0.tgz
+  };
+
+  inotify_0 = buildPecl {
+    name = "inotify-0.1.6";
+    sha256 = "0kj9bcp9jj1yjjdhnc9z72l4cwzh8vgw1zqp4qldxc2fbni817wp";
+    configureFlags = [ ];
+    nativeBuildInputs = [ pkgs.pkgconfig ];
+    buildInputs = [ ];
+  };
+
 }

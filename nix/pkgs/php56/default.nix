@@ -31,7 +31,7 @@ let
             extension=${phpPkgs.imagick}/lib/php/extensions/imagick.so
             extension=${phpExtras.timecop}/lib/php/extensions/timecop.so
             openssl.cafile=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
-      '';
+      '' + stdenv.lib.optionalString stdenv.isLinux "extension=${phpExtras.inotify_0}/lib/php/extensions/inotify.so";
     }
     ''
       cat "${phpRuntime}/etc/php.ini" > $out
@@ -41,7 +41,8 @@ let
 
     phpOverride = stdenv.mkDerivation rec {
         name = "bknix-php56";
-        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.yaml phpPkgs.apcu phpPkgs.memcached phpPkgs.memcache phpPkgs.imagick phpExtras.timecop pkgs.makeWrapper pkgs.cacert];
+        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.yaml phpPkgs.apcu phpPkgs.memcached phpPkgs.memcache phpPkgs.imagick phpExtras.timecop pkgs.makeWrapper pkgs.cacert]
+             ++ stdenv.lib.optionals stdenv.isLinux [ phpExtras.inotify_0 ];
         buildCommand = ''
           makeWrapper ${phpRuntime}/bin/phar $out/bin/phar
           makeWrapper ${phpRuntime}/bin/php $out/bin/php --add-flags -c --add-flags "${phpIni}"
