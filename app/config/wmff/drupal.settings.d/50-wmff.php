@@ -4,6 +4,7 @@ global $databases;
 
 $databases['donations']['default'] = $databases['default']['default'];
 $databases['fredge']['default'] = $databases['default']['default'];
+$databases['fredge']['default']['database'] = 'fredge';
 $databases['default']['default']['prefix'] = [
   'default' => '',
   'payments_initial' => '`fredge`.',
