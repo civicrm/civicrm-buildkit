@@ -98,6 +98,15 @@ function task_phpunit_core_extension() {
 
 }
 
+function test_core_extenions() {
+  for dir in "$CIVI_CORE/ext/*/" do
+    if [ -f "$DIR/phpunit.xml.dist" ]; then
+      task_phpunit_core_extension $DIR
+      $GUARD civibuild restore "$BLDNAME"
+    fi
+  done
+}      
+
 function task_karma() {
   $GUARD pushd "$CIVI_CORE"
     ## Work-around: ensure pradmin user has sa contact
@@ -308,6 +317,7 @@ for TESTTYPE in $SUITES ; do
     phpunit-flexmailer) task_phpunit_core_extension flexmailer ;;
     phpunit-financialacls) task_phpunit_core_extension financialacls ;;
     phpunit-eway) task_phpunit_core_extension ewaysingle ;;
+    phpunit-core-exts) test_core_extenions ;;
     *) echo "unrecognized suite: $TESTTYPE"; exit 2 ;;
   esac
 done
