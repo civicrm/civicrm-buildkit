@@ -99,9 +99,10 @@ function task_phpunit_core_extension() {
 }
 
 function test_core_extenions() {
-  for dir in "$CIVI_CORE/ext/*/" do
+  for DIR in $CIVI_CORE/ext/*/
+  do
     if [ -f "$DIR/phpunit.xml.dist" ]; then
-      task_phpunit_core_extension $DIR
+      task_phpunit_core_extension "$(basename $DIR)"
       $GUARD civibuild restore "$BLDNAME"
     fi
   done
@@ -266,20 +267,8 @@ if [ "$SUITES" = "all" ]; then
       SUITES="$SUITES phpunit-api4"
     fi
 
-    if [ -e "ext/sequentialcreditnotes" ]; then
-      SUITES="$SUITES phpunit-creditnotes"
-    fi
-
-    if [ -e "ext/flexmailer" ]; then
-      SUITES="$SUITES phpunit-flexmailer"
-    fi
-
-    if [ -e "ext/financialacls" ]; then
-      SUITES="$SUITES phpunit-financialacls"
-    fi
-
-    if [ -e "ext/ewaysingle" ]; then
-      SUITES="$SUITES phpunit-eway"
+    if [ -d "ext" ]; then
+      SUITES="$SUITES phpunit-core-exts"
     fi
 
   popd >> /dev/null
