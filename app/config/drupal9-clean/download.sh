@@ -5,15 +5,14 @@
 ###############################################################################
 
 #[ -z "$CMS_VERSION" ] && CMS_VERSION=8.7.x
-[ -z "$CMS_VERSION" ] && CMS_VERSION=9
+[ -z "$CMS_VERSION" ] && CMS_VERSION=9.0.x-dev
 
 mkdir "$WEB_ROOT"
-drush8 -y dl drupal-${CMS_VERSION} --destination="$WEB_ROOT" --drupal-project-rename
-mv "$WEB_ROOT/drupal" "$WEB_ROOT/web"
+composer create-project drupal/recommended-project:"$CMS_VERSION" "$WEB_ROOT" --no-interaction
 
-pushd "$WEB_ROOT/web" >> /dev/null
-  drush8 dl -y devel userprotect
-  composer update psr/log ## Some D8 builds are too specific
+pushd "$WEB_ROOT" >> /dev/null
+  composer require drupal/userprotect
+  composer require drupal/devel
   ## Some D8 builds include a specific revision of phpunit, but Civi uses standalone phpunit (PHAR)
   if composer info | grep -q ^phpunit/phpunit\ ; then
     composer config "discard-changes" true ## Weird. phpcs has changes which interfere with other work.
