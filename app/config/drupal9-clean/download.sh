@@ -1,4 +1,3 @@
-  
 #!/bin/bash
 
 ## download.sh -- Download Drupal and CiviCRM
