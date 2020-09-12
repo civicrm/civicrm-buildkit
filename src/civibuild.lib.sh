@@ -580,9 +580,7 @@ function civicrm_download_composer_d8() {
     5.24*) echo "No extra patches required" ; ;;
     5.25*) echo "No extra patches required" ; ;;
     5.26*) echo "No extra patches required" ; ;;
-    ## Need 5.27? Maybe it's time to remove all this...
-    master) echo "No extra patches required" ; ;;
-    *) cvutil_fatal "This build type is temporarily limited to branches which have a corresponding patchset." ; ;;
+    *) echo "No extra patches required" ; ;;
   esac
   EXTRA_COMPOSER+=( 'pear/pear_exception:1.0.1 as 1.0.0') ## weird conflict in drupal-composer/drupal-project
 

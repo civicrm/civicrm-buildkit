@@ -1,7 +1,9 @@
 #!/usr/bin/env php
 <?php
 
-## Generate a list of old/stale builds which are either:
+## Generate a list of "stale" builds - either:
+## - The build is objectively old.
+## - The build is redundant because there's a newer build of the same PR.
 
 ###############################################################################
 ## Bootstrap

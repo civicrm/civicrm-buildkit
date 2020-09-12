@@ -1,0 +1,26 @@
+# This is an example systemd service which deploys bknix as a systemd service.
+#
+# To use it:
+#
+# 1. Copy this template, e.g. `cp systemd/bknix-%%PROFILE%%.service /etc/systemd/system/`
+# 2. Change all references to `%%OWNER%%` or `%%PROFILE%%`
+# 3. Load the new service (`systemctl daemon-reload`)
+# 4. Start the new service for immediate use (`systemctl start bknix-%%PROFILE%%`)
+# 5. Enable the new service to start on reboot (`systemctl enable bknix-%%PROFILE%%`)
+
+[Unit]
+Description=Buildkit LAMP Warmup
+After=syslog.target
+After=network.target
+Before=%%RAMDISKSVC%%.mount
+
+[Service]
+
+Type=oneshot
+ExecStart=/root/bknix/bin/warmup-gcloud.sh
+RemainAfterExit=true
+# ExecStop=/root/bknix/teardown-foo.sh
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target

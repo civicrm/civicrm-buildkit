@@ -1,0 +1,148 @@
+#!/usr/bin/env bash
+
+## For systems which use `bin/install-ci.sh` to setup multiple copies of
+## buildkit ("array of buildkits"; arrbuk), this helper script allows you to
+## configure your shell to use one of those services.
+##
+## Examples:
+##   eval $(use-bknix min)
+##   eval $(use-bknix max)
+##   eval $(use-bknix dfl)
+##
+## Works with nix binaries in either of:
+##    /nix/var/nix/profiles/per-user/{$USER}/bknix-{$NAME}
+##    /nix/var/nix/profiles/bknix-{$NAME}
+## Works with buildkit data in either of:
+##    {$HOME}/bknix-{$NAME}
+##    {$HOME}/bknix
+
+###########################################################
+## Constants
+
+TXT_RESET='\[\033[0m\]'
+TXT_BLACK='\[\033[0;30m\]'
+TXT_RED='\[\033[0;31m\]'
+TXT_GREEN='\[\033[0;32m\]'
+TXT_YELLOW='\033[0;33m\]'
+TXT_BLUE='\[\033[0;34m\]'
+TXT_PURPLE='\[\033[0;35m\]'
+TXT_CYAN='\[\033[0;36m\]'
+TXT_WHITE='\[\033[0;37m\]'
+
+###########################################################
+## Input parsing
+
+MODE=env
+
+if [ -z "$OWNER" ]; then
+  OWNER=$USER
+fi
+
+PROFILE="$1"
+shift
+
+for BASEDIR in "/nix/var/nix/profiles/per-user/$OWNER" "/nix/var/nix/profiles" ;do
+  PRFDIR="$BASEDIR/bknix-$PROFILE"
+  if [ -d "$PRFDIR" ]; then
+    break
+  fi
+done
+
+if [ -n "$1" ]; then
+  case "$1" in
+    -s|--shell) MODE=shell ; ;;
+    -e|--env) MODE=env ; ;;
+    -r|--run) MODE=run ; ;;
+    *) MODE=env ; ;;
+  esac
+  shift
+else
+  MODE=env
+fi
+
+###########################################################
+## Validation/help
+if [ -z "$PROFILE" -o ! -d "$PRFDIR" ]; then
+  echo "The specified profile does not correspond to an actual profile"
+  echo
+  echo "usage: $0 <profile> [-e|--env|-s|--shell|-r|--run] [runcmd]"
+  echo ""
+  echo "options:"
+  echo "  -e|--env    Display environment variables for the profile"
+  echo "  -s|--shell  Open a subshell with the profile"
+  echo "  -r|--run    Run a command in a subshell"
+  echo ""
+  echo "example: Generate environment variables for \"dfl\" profile"
+  echo "  $0 dfl"
+  echo "example: Open subshell for \"min\" profile"
+  echo "  $0 min -s"
+  echo "example: Run a command in a subshell for \"min\" profile"
+  echo "  $0 min -r civibuild"
+  echo ""
+  exit 1
+fi
+
+###########################################################
+## Main
+
+export PATH="$PRFDIR/bin:$PATH"
+USE_LOCO_FILE=""
+
+for CANDIDATE in "$HOME/bknix" "$HOME/bknix-$PROFILE" "$HOME/buildkit" "$HOME/buildkit-$PROFILE" ; do
+  if [ -f "$CANDIDATE/.loco/$OWNER-$PROFILE.yml" ]; then
+    export BKIT="$CANDIDATE"
+    USE_LOCO_FILE=".loco/$OWNER-$PROFILE.yml"
+    break
+  elif [ -f "$CANDIDATE/.loco/loco.yml" ]; then
+    export BKIT="$CANDIDATE"
+    USE_LOCO_FILE=".loco/loco.yml"
+    break
+  fi
+done
+if [ ! -d "$BKIT" ]; then
+  echo "WARNING: Could not find suitable BKIT in \"$HOME\" (eg \"bknix\", \"buildkit\", \"bknix-min\")" >&2
+fi
+
+case "$MODE" in
+  env)
+    CODE=`cd "$BKIT" && loco env -c "$USE_LOCO_FILE" --export`
+    echo "$CODE"
+    eval "$CODE"
+    echo "export PS1=\"[${TXT_CYAN}bknix-$PROFILE${TXT_RESET}:${TXT_GREEN}\w${TXT_RESET}] \" ;"
+    bknix-profile env
+    if [ -f "$BKIT/nix/etc/bashrc.local" ]; then
+      echo "source \"$BKIT/nix/etc/bashrc.local\""
+    fi
+    echo
+    ;;
+  shell)
+    ## We will can ourselves in --env mode and use that as the bash --rcfile.
+
+    ## Bash v4(?) would support '--rcfile <( ...some command ... )'; but for
+    ## backward compat, we explicitly make a temp file.
+
+    ## Note: "mktemp" in BSD and GNU work differently, but this formulation seems close enough to be portable.
+    TMPFILE=$(mktemp -t .use-bknix.XXXXXXXX)
+    function cleanup_bashrc() {
+      rm -f "$TMPFILE"
+    }
+    trap cleanup_bashrc EXIT
+
+    "$0" "$PROFILE" --env > "$TMPFILE"
+    bash --rcfile "$TMPFILE" -i
+    ;;
+  run)
+    ## We will call ourselves in --env mode, load that, and then run the given command..
+
+    ## Note: "mktemp" in BSD and GNU work differently, but this formulation seems close enough to be portable.
+    TMPFILE=$(mktemp -t .use-bknix.XXXXXXXX)
+    function cleanup_bashrc() {
+      rm -f "$TMPFILE"
+    }
+    trap cleanup_bashrc EXIT
+
+    "$0" "$PROFILE" --env > "$TMPFILE"
+    source "$TMPFILE"
+    eval "$@"
+    ;;
+esac

@@ -1,0 +1,5 @@
+## The "nip" examples are used on "A.B.C.D.nip.io" hosts
+environment:
+  ## Local-only deployments cannot be accessed on public Internet.
+  ## But we still want a wildcard DNS for '{buildname}.{hostname}`.
+  - HTTPD_DOMAIN=${LOCALHOST}.nip.io

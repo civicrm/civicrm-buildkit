@@ -1,0 +1,25 @@
+#!/bin/bash
+
+## TODO: Detect MySQL version and tweak accordingly
+
+mkdir "$LOCO_SVC_VAR"/{log,tmp,run}
+
+php "$LOCO_CFG/mysql-common/my.cnf.php" > "$LOCO_SVC_VAR"/conf/common-my.cnf
+
+## MySQL v5.7
+if mysql --version | grep 'Distrib 5.7' -q; then
+  mysqld --initialize-insecure --explicit_defaults_for_timestamp --datadir="$LOCO_SVC_VAR/data"
+
+elif mysql --version | grep 'Ver 8.0' -q; then
+  mysqld --initialize-insecure --explicit_defaults_for_timestamp --datadir="$LOCO_SVC_VAR/data"
+
+## MariaDB v10.2
+elif true; then
+  mysql_bin=$(dirname $(which mysqld))
+  mysql_base=$(dirname "$mysql_bin")
+  pushd "$mysql_base"
+    set -ex
+      mysql_install_db --datadir="$LOCO_SVC_VAR/data" --defaults-file="$LOCO_SVC_VAR/conf/my.cnf" --skip-name-resolve
+    set +ex
+  popd
+fi

@@ -41,7 +41,9 @@ function civibuild_alias_resolve() {
 #   d6-47)       SITE_TYPE=drupal6-demo     ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM 4.7 Demo on Drupal 6"      ; VOL_VERSION=master       ; DISC_VERSION=master   ;;
 #   d6-master)   SITE_TYPE=drupal6-demo     ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal 6"       ; VOL_VERSION=master       ; DISC_VERSION=master   ;;
 #   d8-47)       SITE_TYPE=drupal8-demo     ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM 4.7 Demo on Drupal 8"      ; VOL_VERSION=master       ; DISC_VERSION=master   ;;
-    d8-master)   SITE_TYPE=drupal8-clean    ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal 8"       ;;
+    d8-master)   SITE_TYPE=drupal8-demo    ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal 8"       ;;
+
+    d9-master)   SITE_TYPE=drupal9-demo    ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal 9"       ;;
 
     dc43)        SITE_TYPE=drupal-clean     ; CIVI_VERSION=4.3       ; CMS_TITLE="CiviCRM 4.3 Clean on Drupal"       ;;
     dc44)        SITE_TYPE=drupal-clean     ; CIVI_VERSION=4.4       ; CMS_TITLE="CiviCRM 4.4 Clean on Drupal"       ;;

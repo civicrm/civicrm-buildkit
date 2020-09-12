@@ -3,7 +3,9 @@ set -e
 
 function getPhpunitVer() {
   CIVIVER=$(getCiviVer)
-  if [ $(php -r "echo version_compare('$CIVIVER', '5.22', '>=');") ]; then
+  if [ $(php -r "echo version_compare('$CIVIVER', '5.28', '>=');") ]; then
+    echo "phpunit7 --printer \Civi\Test\TAP"
+  elif [ $(php -r "echo version_compare('$CIVIVER', '5.22', '>=');") ]; then
     echo "phpunit6 --printer \Civi\Test\TAP"
   else
     echo 'phpunit5 --tap'
@@ -52,6 +54,7 @@ function show_help() {
   echo "                        - phpunit-wordpress"
   echo "                        - phpunit-backdrop"
   echo "                        - phpunit-creditnotes"
+  echo "                        - phpunit-flexmailer"
   echo "                        - upgrade"
   echo "                        - upgrade@4.7.30:10"
   echo
@@ -95,6 +98,16 @@ function task_phpunit_core_extension() {
 
 }
 
+function test_core_extenions() {
+  for DIR in $CIVI_CORE/ext/*/
+  do
+    if [ -f "$DIR/phpunit.xml.dist" ]; then
+      task_phpunit_core_extension "$(basename $DIR)"
+      $GUARD civibuild restore "$BLDNAME"
+    fi
+  done
+}      
+
 function task_karma() {
   $GUARD pushd "$CIVI_CORE"
     ## Work-around: ensure pradmin user has sa contact
@@ -118,7 +131,11 @@ function task_upgrade() {
     EXITCODES="$EXITCODES upgrade-test"
   fi
   echo "Found EXITCODES=\"$EXITCODES\""
-  $GUARD cp "$PRJDIR/app/debug/$BLDNAME/civicrm-upgrade-test.xml" "$JUNITDIR/"
+  if [ -d "$PRJDIR/build/$BLDNAME/.civibuild" ]; then
+    $GUARD cp "$PRJDIR/build/$BLDNAME/.civibuild/debug/civicrm-upgrade-test.xml" "$JUNITDIR/"
+  else
+    $GUARD cp "$PRJDIR/app/debug/$BLDNAME/civicrm-upgrade-test.xml" "$JUNITDIR/"
+  fi
   $GUARD civibuild restore "$BLDNAME"
 }
 
@@ -250,8 +267,8 @@ if [ "$SUITES" = "all" ]; then
       SUITES="$SUITES phpunit-api4"
     fi
 
-    if [ -e "ext/sequentialcreditnotes" ]; then
-      SUITES="$SUITES phpunit-creditnotes"
+    if [ -d "ext" ]; then
+      SUITES="$SUITES phpunit-core-exts"
     fi
 
   popd >> /dev/null
@@ -260,11 +277,20 @@ elif [[ " $SUITES " =~ \ all\  ]]; then
   exit 3
 fi
 
+## dev/core#1781: Some tests exhibit flakiness due to the timing/pacing/happenstance of execution. TIME_FUNC helps to deterministically simulate some of this variation.
+if [ -n "$TIME_FUNC" ]; then
+  echo "(Clock simulation) Tests will use inherited option TIME_FUNC=$TIME_FUNC"
+else
+  TIME_FUNC=$( php -r '$a=$argv; array_shift($a); shuffle($a); echo $a[0];' natural natural frozen linear:500 linear:1250 prng:500 prng:666 prng:1000 prng:1500 )
+  echo "(Clock simulation) No TIME_FUNC was specified. Using TIME_FUNC=$TIME_FUNC"
+fi
+export TIME_FUNC
+
 ## Main
 for TESTTYPE in $SUITES ; do
   case "$TESTTYPE" in
     karma)  task_karma ;;
-    upgrade)  CIVIVER=$(getCiviVer) ; task_upgrade 4.2.9-multilingual_af_bg_en* "@4.3..$CIVIVER:10" ;;
+    upgrade)  CIVIVER=$(getCiviVer) ; task_upgrade 5.13.3-multilingual_af_bg_en* "@4.4.7..$CIVIVER:10" ;;
     upgrade@*)  task_upgrade $(echo $TESTTYPE | sed s'/^upgrade//' ) ;;
     phpunit-e2e)  task_phpunit E2E_AllTests ;;
     phpunit-crm)  task_phpunit CRM_AllTests ;;
@@ -277,6 +303,10 @@ for TESTTYPE in $SUITES ; do
     phpunit-wordpress) task_phpunit_wordpress ;;
     phpunit-backdrop) task_phpunit_backdrop ;;
     phpunit-creditnotes) task_phpunit_core_extension sequentialcreditnotes ;;
+    phpunit-flexmailer) task_phpunit_core_extension flexmailer ;;
+    phpunit-financialacls) task_phpunit_core_extension financialacls ;;
+    phpunit-eway) task_phpunit_core_extension ewaysingle ;;
+    phpunit-core-exts) test_core_extenions ;;
     *) echo "unrecognized suite: $TESTTYPE"; exit 2 ;;
   esac
 done

@@ -25,16 +25,20 @@ drupal_install
 
 CIVI_DOMAIN_NAME="Demonstrators Anonymous"
 CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
-CIVI_CORE="${WEB_ROOT}/sites/all/modules/civicrm"
-CIVI_SETTINGS="${WEB_ROOT}/sites/default/civicrm.settings.php"
-CIVI_FILES="${WEB_ROOT}/sites/default/files/civicrm"
+CIVI_CORE="${CMS_ROOT}/sites/all/modules/civicrm"
+CIVI_SETTINGS="${CMS_ROOT}/sites/default/civicrm.settings.php"
+CIVI_FILES="${CMS_ROOT}/sites/default/files/civicrm"
 CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
 CIVI_UF="Drupal"
-CIVI_EXT_DIR="${WEB_ROOT}/sites/default/civicrm/extensions"
+CIVI_EXT_DIR="${CMS_ROOT}/sites/default/civicrm/extensions"
 CIVI_EXT_URL="${CMS_URL}/sites/default/civicrm/extensions"
 
 civicrm_install
 
+chmod 774 "${WEB_ROOT}/sites/default/civicrm/extensions/rpow/bin/harvey-dent"
+"${WEB_ROOT}/sites/default/civicrm/extensions/rpow/bin/harvey-dent" --root "${WEB_ROOT}/drupal"
+
+echo "create database fredge "| amp sql -N civi -a
 ###############################################################################
 ## Extra configuration
 pushd "$CMS_ROOT"
@@ -43,7 +47,9 @@ drush -y en `cat sites/default/enabled_modules`
 drush -y updatedb
 
 ## Setup theme
-#above# drush -y en garland
+drush -y en tivy
+drush vset theme_default tivy
+drush -y dis overlay
 export SITE_CONFIG_DIR
 drush -y -u "$ADMIN_USER" scr "$SITE_CONFIG_DIR/install-theme.php"
 
@@ -53,6 +59,17 @@ drush php-eval -u "$ADMIN_USER" 'module_load_include("inc","block","block.admin"
 
 ## Setup demo user
 drush -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
+
+DEV_SETTINGS_FILE="${WEB_ROOT}/sites/default/wmf_settings_developer.json"
+if [ -e "$DEV_SETTINGS_FILE" ]; then
+  drush --in=json cvapi Setting.create < "$DEV_SETTINGS_FILE"
+fi
+
+WMF_SETTINGS_FILE="${WEB_ROOT}/sites/default/wmf_settings.json"
+if [ -e "$WMF_SETTINGS_FILE" ]; then
+  drush --in=json cvapi Setting.create < "$WMF_SETTINGS_FILE"
+fi
+
 #drush -y user-add-role civicrm_webtest_user "$DEMO_USER"
 # In Garland, CiviCRM's toolbar looks messy unless you also activate Drupal's "toolbar", so grant "access toolbar"
 # We've activated more components than typical web-test baseline, so grant rights to those components.

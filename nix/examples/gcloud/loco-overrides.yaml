@@ -1,0 +1,3 @@
+environment:
+  - GCLOUD_IP=(placeholder; computed via lazy-vars.php)
+  - HTTPD_DOMAIN=${GCLOUD_IP}.nip.io

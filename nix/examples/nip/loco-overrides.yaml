@@ -1,0 +1,4 @@
+## The "nip" examples are used on "A.B.C.D.nip.io" hosts
+environment:
+  - EXTERNAL_IP=(placeholder; computed via lazy-vars.php)
+  - HTTPD_DOMAIN=${EXTERNAL_IP}.nip.io

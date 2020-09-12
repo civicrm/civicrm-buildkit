@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+## This script exists because there are a handful of small discrepancies between:
+##
+## (1) nix-shell -A foo
+## (2) PATH=/nix/var/nix/profiles/foo/bin:$PATH
+##
+## In particular, `nix-shell` fires shell-hooks. I haven't found a good way to
+## reproduce those shell-hooks, so this is a quick-and-dirty work-around.
+
+function find_profile() {
+  local PROG=$(basename "$0")
+  if which $PROG 2>&1 >> /dev/null ; then
+    BINDIR=$(dirname "$(which $PROG)")
+    dirname "$BINDIR"
+  fi
+}
+
+case "$1" in
+  dir) find_profile ; ;;
+  env)
+
+    PRFDIR=$(find_profile)
+
+    if [ -e "$PRFDIR/lib/locale/locale-archive" ]; then
+      echo "export LOCALE_ARCHIVE='$PRFDIR/lib/locale/locale-archive' ;"
+    fi
+
+    if [ -e "$PRFDIR/etc/bash_completion.d/git-completion.bash" ]; then
+      echo "source \"$PRFDIR/etc/bash_completion.d/git-completion.bash\" ;"
+    fi
+    ;;
+
+  *)
+    echo "usage: $0 <dir|env>"
+    echo ""
+    echo " - dir: Show the base directory of the profile which has this script"
+    echo " - env: Show bash commands for initializing the environment"
+    echo ""
+    echo "If paths cannot be identified, then output is empty."
+    ;;
+esac

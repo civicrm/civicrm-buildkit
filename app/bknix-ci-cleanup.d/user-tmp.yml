@@ -1,0 +1,12 @@
+tasks:
+  - { level: 0, template: USER_TMP, vars: {DAYS: 45} }
+  - { level: 1, template: USER_TMP, vars: {DAYS: 30} }
+  - { level: 2, template: USER_TMP, vars: {DAYS: 15} }
+  - { level: 3, template: USER_TMP, vars: {DAYS: 7} }
+  - { level: 4, template: USER_TMP, vars: {DAYS: 1} }
+
+templates:
+  USER_TMP:
+    cmd: 'find /tmp -user "$USER" -mtime +{{DAYS|s}} -delete 2>&1 | grep -v "Permission denied" || echo "WARNING: Some tmp files could not be inspected."'
+    condition: 'test -d /tmp'
+    paths: ['/tmp']
