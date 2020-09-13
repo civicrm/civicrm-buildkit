@@ -311,7 +311,7 @@ function get_system_installer() {
     source /etc/lsb-release
   fi
   case "$DISTRIB_CODENAME" in
-    jessie|stretch|buster|xenial|bionic|disco)
+    stretch|buster|xenial|bionic|disco|focal)
       echo "do_system_$DISTRIB_CODENAME"
       ;;
     *)
@@ -321,9 +321,10 @@ function get_system_installer() {
 }
 
 ###############################################################################
+
 function do_system_xenial() {
   set -e
-    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.0-cli php7.0-imap php7.0-ldap php7.0-curl php7.0-mysql php7.0-intl php7.0-gd php7.0-mcrypt php7.0-bcmath php7.0-mbstring php7.0-soap php7.0-zip php7.0-xml apache2 libapache2-mod-php7.0 nodejs-legacy npm"
+    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.1-cli php7.1-imap php7.1-ldap php7.1-curl php7.1-mysql php7.1-intl php7.1-gd php7.1-mcrypt php7.1-bcmath php7.1-mbstring php7.1-soap php7.1-zip php7.1-xml apache2 libapache2-mod-php7.1 nodejs"
     UBUNTU_VERSION=$(lsb_release -ds)
     echo "Detected $UBUNTU_VERSION."
     echo ""
@@ -332,12 +333,13 @@ function do_system_xenial() {
     do_php_mysql_warning
     echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
+      sudo add-apt-repository -y ppa:ondrej/php
+      sudo curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash - # This runs sudo apt update so there's no point running it twice.
       sudo apt-get update
       sudo apt-get -y install $PACKAGES
       sudo phpenmod bcmath
       sudo phpenmod curl
       sudo phpenmod imap
-      sudo phpenmod mcrypt
       sudo phpenmod xml
       sudo a2enmod rewrite
       sudo apache2ctl restart
@@ -349,6 +351,7 @@ function do_system_xenial() {
 }
 
 ###############################################################################
+
 function do_system_bionic() {
   set -e
     PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.2-cli php7.2-imap php7.2-ldap php7.2-curl php7.2-mysql php7.2-intl php7.2-gd php7.2-dev php7.2-bcmath php7.2-mbstring php7.2-soap php7.2-zip php7.2-xml apache2 libapache2-mod-php7.2 nodejs php-pear libmcrypt-dev libreadline-dev curl"
@@ -360,7 +363,8 @@ function do_system_bionic() {
     do_php_mysql_warning
     echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
-      sudo curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash - # This runs sudo apt update so there's no point running it twice.
+      sudo add-apt-repository -y ppa:ondrej/php
+      sudo curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash - # This runs sudo apt update so there's no point running it twice.
       sudo apt-get -y install $PACKAGES
       sudo phpenmod bcmath
       sudo phpenmod curl
@@ -388,6 +392,7 @@ function do_system_disco() {
     do_php_mysql_warning
     echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
+      sudo add-apt-repository -y ppa:ondrej/php
       sudo curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash - # This runs sudo apt update so there's no point running it twice.
       sudo apt-get -y install $PACKAGES
       sudo phpenmod bcmath
@@ -404,18 +409,25 @@ function do_system_disco() {
 }
 
 ###############################################################################
-function do_system_jessie() {
+
+function do_system_focal() {
   set -e
-    PACKAGES="acl git wget unzip zip mysql-server mysql-client php5-cli php5-imap php5-ldap php5-curl php5-mysql php5-intl php5-gd php5-mcrypt php-apc apache2 libapache2-mod-php5 nodejs-legacy npm"
-    echo "Detected \"Debian Jessie\"."
+    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.3-cli php7.3-imap php7.3-ldap php7.3-curl php7.3-mysql php7.3-intl php7.3-gd php7.3-dev php7.3-bcmath php7.3-mbstring php7.3-soap php7.3-zip php7.3-xml apache2 libapache2-mod-php7.3 nodejs php-pear libreadline-dev curl"
+    UBUNTU_VERSION=$(lsb_release -ds)
+    echo "Detected $UBUNTU_VERSION."
     echo ""
-    echo "Recommended packages: $PACKAGES"
+    echo "Task: $PACKAGES"
+    echo ""
+    do_php_mysql_warning
     echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
-      wget -O- https://deb.nodesource.com/setup_8.x | sudo -E bash -
+      sudo add-apt-repository -y ppa:ondrej/php
+      sudo curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash - # This runs sudo apt update so there's no point running it twice.
       sudo apt-get -y install $PACKAGES
-      sudo php5enmod mcrypt
-      sudo php5enmod imap
+      sudo phpenmod bcmath
+      sudo phpenmod curl
+      sudo phpenmod imap
+      sudo phpenmod xml
       sudo a2enmod rewrite
       sudo apache2ctl restart
     else
@@ -424,20 +436,26 @@ function do_system_jessie() {
     fi
   set +e
 }
+
 ###############################################################################
+
 function do_system_stretch() {
   set -e
-    PACKAGES="acl git wget unzip zip mysql-server mysql-client php-cli php-imap php-ldap php-curl php-mysql php-intl php-gd php-mcrypt php-apcu apache2 libapache2-mod-php php-bcmath php-mbstring php-soap php-zip"
+    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.2-cli php7.2-imap php7.2-ldap php7.2-curl php7.2-mysql php7.2-intl php7.2-gd php7.2-dev php7.2-bcmath php7.2-mbstring php7.2-soap php7.2-zip php7.2-xml apache2 libapache2-mod-php7.2 nodejs"
     echo "Detected \"Debian Stretch\"."
     echo ""
     echo "Installing nodejs Debian repository."
     echo ""
     echo "Recommended packages: $PACKAGES"
     echo ""
+    do_php_mysql_warning
+    echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
-      wget -O- https://deb.nodesource.com/setup_8.x | sudo -E bash -
+      sudo apt-get -y install ca-certificates apt-transport-https wget
+      wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
+      sudo echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
+      wget -O- https://deb.nodesource.com/setup_10.x | sudo -E bash -
       sudo apt-get -y install $PACKAGES
-      sudo phpenmod mcrypt
       sudo phpenmod imap
       sudo a2enmod rewrite
       sudo apache2ctl restart
@@ -449,14 +467,18 @@ function do_system_stretch() {
 }
 
 ###############################################################################
+
 function do_system_buster() {
   set -e
-    PACKAGES="acl git wget unzip zip default-mysql-server default-mysql-client php-cli php-imap php-ldap php-curl php-mysql php-intl php-gd php-apcu apache2 libapache2-mod-php php-bcmath php-mbstring php-soap php-zip php-xml php-curl nodejs npm"
-    echo "Detected \"Debian Jessie\"."
+    PACKAGES="acl git wget unzip zip default-mysql-server default-mysql-client php7.3-cli php7.3-imap php7.3-ldap php7.3-curl php7.3-mysql php7.3-intl php7.3-gd php7.3-dev php7.3-bcmath php7.3-mbstring php7.3-soap php7.3-zip php7.3-xml apache2 libapache2-mod-php7.3 nodejs php-pear"
+    echo "Detected \"Debian Buster\"."
     echo ""
     echo "Recommended packages: $PACKAGES"
     echo ""
     if cvutil_confirm "Run automated installation? [Y/n] " y y; then
+      sudo apt-get -y install ca-certificates apt-transport-https wget
+      wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
+      sudo echo "deb https://packages.sury.org/php/ buster main" | tee /etc/apt/sources.list.d/php.list
       sudo apt-get -y install $PACKAGES
       sudo phpenmod imap
       sudo a2enmod rewrite
@@ -467,7 +489,9 @@ function do_system_buster() {
     fi
   set +e
 }
+
 ###############################################################################
+
 function do_system_unknown() {
   echo "ERROR: Could not identify the required system packages."
   echo ""

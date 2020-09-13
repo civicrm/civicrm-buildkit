@@ -1,0 +1,57 @@
+.ubuntu:
+  before_script:
+    - echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+    - TZ='Etc/UTC'
+    - apt-get -y update
+    - apt-get -y install curl lsb-release sudo software-properties-common locales bzip2 apt-utils
+    - locale-gen en_US.UTF-8 && update-locale en_US.UTF-8
+    - export LANG=en_US.UTF-8
+    - export LANGUAGE=en_US
+    - export LC_ALL=en_US.UTF-8
+    - echo debconf mysql-server/root_password password $MYSQL_ROOT_PASSWORD | debconf-set-selections
+    - echo debconf mysql-server/root_password_again password $MYSQL_ROOT_PASSWORD | debconf-set-selections
+    - useradd -m buildkit && echo "buildkit:buildkit" | chpassword && adduser buildkit sudo
+    - sudo -u buildkit --login
+  script: "bin/civi-download-tools --full --dir ~/buildkit"
+  rules:
+    - changes:
+      - bin/civi-download-tools
+
+.debian:
+  before_script:
+    - echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+    - TZ='Etc/UTC'
+    - apt-get -y update
+    - apt-get -y install curl lsb-release sudo software-properties-common locales gnupg gnupg1 gnupg2 apt-utils
+    - sed -i -e 's/# \(en_US\.UTF-8 .*\)/\1/' /etc/locale.gen && locale-gen
+    - LANG=en_US.UTF-8
+    - LANGUAGE=en_US
+    - LC_ALL=en_US.UTF-8
+    - echo debconf mysql-server/root_password password $MYSQL_ROOT_PASSWORD | debconf-set-selections
+    - echo debconf mysql-server/root_password_again password $MYSQL_ROOT_PASSWORD | debconf-set-selections
+    - useradd -m buildkit && echo "buildkit:buildkit" | chpassword && adduser buildkit sudo
+    - sudo -u buildkit --login
+  script: "bin/civi-download-tools --full --dir ~/buildkit"
+  rules:
+    - changes:
+      - bin/civi-download-tools
+
+ubuntu1604:
+  image: "ubuntu:16.04"
+  extends: .ubuntu
+  
+ubuntu1804:
+  image: "ubuntu:18.04"
+  extends: .ubuntu
+
+ubuntu2004:
+  image: "ubuntu:20.04"
+  extends: .ubuntu
+
+debianstretch:
+  image: "debian:stretch"
+  extends: .debian
+
+debianbuster:
+  image: "debian:buster"
+  extends: .debian
