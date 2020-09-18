@@ -122,10 +122,15 @@ function test_core_extenions() {
 
 function test_afform_extensions() {
   DIR="$1"
+  cv en --test afform afform_mock
   task_phpunit_core_extension "$(basename $DIR)/core" "afform-core"
   $GUARD civibuild restore "$BLDNAME"
-  cv en afform
+
+  cv en afform afform_mock
   task_phpunit_core_extension "$(basename $DIR)/mock" "afform-mock-e2e" e2e
+  $GUARD civibuild restore "$BLDNAME"
+
+  cv en --test afform afform_mock
   task_phpunit_core_extension "$(basename $DIR)/mock" "afform-mock-headless" headless
   $GUARD civibuild restore "$BLDNAME"
 }
