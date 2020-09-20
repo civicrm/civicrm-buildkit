@@ -568,6 +568,8 @@ function civicrm_download_composer_d8() {
   cvutil_assertvars civicrm_download_composer_d8 CIVI_VERSION
 
   composer config 'extra.enable-patching' true
+  ## Ensure that we compile all our js as necessary
+  composer config extra.compile-mode all
 
   local CIVI_VERSION_COMP=$(civicrm_composer_ver "$CIVI_VERSION")
   local EXTRA_COMPOSER=()
