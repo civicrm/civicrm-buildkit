@@ -586,7 +586,7 @@ function civicrm_download_composer_d8() {
   esac
   EXTRA_COMPOSER+=( 'pear/pear_exception:1.0.1 as 1.0.0') ## weird conflict in drupal-composer/drupal-project
 
-  composer require civicrm/civicrm-asset-plugin:'~1.0.0' "${EXTRA_COMPOSER[@]}" civicrm/civicrm-{core,packages,drupal-8}:"$CIVI_VERSION_COMP" --prefer-source
+  composer require civicrm/civicrm-asset-plugin:'~1.1' "${EXTRA_COMPOSER[@]}" civicrm/civicrm-{core,packages,drupal-8}:"$CIVI_VERSION_COMP" --prefer-source
   [ -n "$EXTRA_PATCH" ] && git scan am -N "${EXTRA_PATCH[@]}"
 
   local civicrm_version_php=$(find -name civicrm-version.php)
