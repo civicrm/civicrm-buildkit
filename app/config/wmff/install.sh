@@ -38,6 +38,7 @@ civicrm_install
 chmod 774 "${WEB_ROOT}/sites/default/civicrm/extensions/rpow/bin/harvey-dent"
 "${WEB_ROOT}/sites/default/civicrm/extensions/rpow/bin/harvey-dent" --root "${WEB_ROOT}/drupal"
 
+echo "create database fredge "| amp sql -N civi -a
 ###############################################################################
 ## Extra configuration
 pushd "$CMS_ROOT"
