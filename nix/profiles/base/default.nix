@@ -14,6 +14,7 @@ in [
     pkgs.gnugrep
     pkgs.gnutar
     pkgs.hostname
+    pkgs.moreutils
     pkgs.ncurses
     pkgs.patch
     pkgs.rsync
