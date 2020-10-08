@@ -79,18 +79,29 @@ function hydra_parse() {
 function hydra_create() {
   cvutil_assertvars "hydra_create" HYDRA_PREFIX URL_TEMPLATE
 
+  local l10n_url=
+
   for TARFILE in "${ARGS[@]}" ; do
     local subsite_name=
     local subsite_type=
     local subsite_url=
     local subsite_dl=
+    local l10n_dl=
 
     case $(basename "$TARFILE") in
+      civicrm-*-l10n.tar.gz)
+        echo "Note: Found 10n: $TARFILE"
+        echo "This will be mixed into subsequent builds (same call)"
+        l10n_url="$TARFILE"
+        continue
+        ;;
+
       civicrm-*-drupal.tar.gz|civicrm-*-drupal-*.tar.gz)
         subsite_name="${HYDRA_PREFIX}drupal"
         subsite_type="drupal-empty"
         subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}drupal")
         subsite_dl="web/sites/all/modules=$TARFILE"
+        [ -n "$l10n_url" ] && l10n_dl="web/sites/all/modules=$l10n_url"
         ;;
 
       civicrm-*-backdrop.tar.gz|civicrm-*-backdrop-*.tar.gz)
@@ -98,6 +109,7 @@ function hydra_create() {
         subsite_type="backdrop-empty"
         subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}backdrop")
         subsite_dl="web/modules=$TARFILE"
+        [ -n "$l10n_url" ] && l10n_dl="web/modules=$l10n_url"
         ;;
 
       civicrm-*-joomla-alt*)
@@ -118,6 +130,7 @@ function hydra_create() {
         subsite_type="wp-empty"
         subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}wp")
         subsite_dl="web/wp-content/plugins=$TARFILE"
+        [ -n "$l10n_url" ] && l10n_dl="web/wp-content/plugins/civicrm=$l10n_url"
         ;;
 
       civicrm-*-wporg.zip|civicrm-*-wporg-*.zip)
@@ -125,6 +138,7 @@ function hydra_create() {
         subsite_type="wp-empty"
         subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}wporg")
         subsite_dl="web/wp-content/plugins=$TARFILE"
+        [ -n "$l10n_url" ] && l10n_dl="web/wp-content/plugins/civicrm=$l10n_url"
         ;;
 
       *)
@@ -137,7 +151,11 @@ function hydra_create() {
       rm -rf "$BLDDIR/$subsite_name"
     fi
 
-    civibuild create "$subsite_name" --type "$subsite_type" --dl "$subsite_dl" --url "$subsite_url"
+    if [ -n "$l10n_dl" ]; then
+      civibuild create "$subsite_name" --type "$subsite_type" --dl "$subsite_dl" --url "$subsite_url" --dl "$l10n_dl"
+     else
+      civibuild create "$subsite_name" --type "$subsite_type" --dl "$subsite_dl" --url "$subsite_url"
+    fi
   done
 }
 
