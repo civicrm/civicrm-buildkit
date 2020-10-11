@@ -116,7 +116,7 @@ EOPERM
     add 'register to volunteer'
 EOPERM
 
-  cv en civirules civisualize cividiscount
+  cv en --ignore-missing civirules civisualize cividiscount org.civicrm.search
 
   ## Demo sites always disable email and often disable cron
   drush cvapi StatusPreference.create ignore_severity=critical name=checkOutboundMail
