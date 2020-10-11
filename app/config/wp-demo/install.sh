@@ -156,7 +156,7 @@ wp eval '$c=[civi_wp()->users->set_wp_user_capabilities()];if (is_callable($c)) 
 ## Force basepage
 wp eval '$c=[civi_wp()->basepage->create_wp_basepage()];if (is_callable($c)) $c();'
 
-cv en --ignore-missing angularprofiles volunteer org.civicrm.search
+cv en --ignore-missing angularprofiles volunteer org.civicrm.search org.civicrm.contactlayout
 
 wp cap add civicrm_admin \
   register to volunteer \

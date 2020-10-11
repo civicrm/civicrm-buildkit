@@ -79,7 +79,7 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   drush8 -y rap anonymous 'register to volunteer'
   drush8 -y rap authenticated 'register to volunteer'
 
-  cv en --ignore-missing civirules civisualize cividiscount org.civicrm.search
+  cv en --ignore-missing civirules civisualize cividiscount org.civicrm.search org.civicrm.contactlayout
 
   ## Demo sites always disable email and often disable cron
   drush8 cvapi StatusPreference.create ignore_severity=critical name=checkOutboundMail
