@@ -27,5 +27,7 @@ pushd "$WEB_ROOT" >> /dev/null
   git clone "${CACHE_DIR}/ginkgostreet/org.civicrm.angularprofiles.git"    -b "$NG_PRFL_VERSION"   vendor/civicrm/civicrm-core/tools/extensions/org.civicrm.angularprofiles
   git clone "${CACHE_DIR}/civicrm/org.civicoop.civirules.git"              -b "$RULES_VERSION"     vendor/civicrm/civicrm-core/tools/extensions/org.civicoop.civirules
   git clone "${CACHE_DIR}/TechToThePeople/civisualize.git"                 -b "master"             vendor/civicrm/civicrm-core/tools/extensions/civisualize
-  git clone "${CACHE_DIR}/dlobo/org.civicrm.module.cividiscount.git"       -b "$DISC_VERSION"      vendor/civicrm/civicrm-core/tools/extensions/cividiscount
+  git clone "${CACHE_DIR}/civicrm/org.civicrm.module.cividiscount.git"     -b "$DISC_VERSION"      vendor/civicrm/civicrm-core/tools/extensions/cividiscount
+  git clone "${CACHE_DIR}/civicrm/org.civicrm.contactlayout.git"           -b "master"             vendor/civicrm/civicrm-core/tools/extensions/org.civicrm.contactlayout
+
 popd >> /dev/null

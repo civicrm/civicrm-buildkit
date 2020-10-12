@@ -32,7 +32,8 @@ git_cache_setup "https://github.com/ginkgostreet/org.civicrm.angularprofiles.git
 
 git_cache_setup "https://lab.civicrm.org/extensions/civirules.git" "$CACHE_DIR/civicrm/org.civicoop.civirules.git"
 git_cache_setup "https://github.com/TechToThePeople/civisualize.git" "$CACHE_DIR/TechToThePeople/civisualize.git"
-git_cache_setup "https://github.com/dlobo/org.civicrm.module.cividiscount.git" "$CACHE_DIR/dlobo/org.civicrm.module.cividiscount.git"
+git_cache_setup "https://github.com/civicrm/org.civicrm.module.cividiscount.git" "$CACHE_DIR/civicrm/org.civicrm.module.cividiscount.git"
+git_cache_setup "https://github.com/civicrm/org.civicrm.contactlayout.git" "$CACHE_DIR/civicrm/org.civicrm.contactlayout.git"
 
 ## SVN data is stale (last updated Apr 2014). Use daily tarballs instead.
 #svn_cache_setup "https://svn.civicrm.org/l10n/trunk"                         "$CACHE_DIR/civicrm/l10n-trunk.svn"

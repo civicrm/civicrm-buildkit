@@ -25,7 +25,8 @@ pushd "$WEB_ROOT/web"
     git clone "${CACHE_DIR}/ginkgostreet/org.civicrm.angularprofiles.git"    -b "$NG_PRFL_VERSION"   civicrm/tools/extensions/org.civicrm.angularprofiles
     git clone "${CACHE_DIR}/civicrm/org.civicoop.civirules.git"              -b "$RULES_VERSION"     civicrm/tools/extensions/org.civicoop.civirules
     git clone "${CACHE_DIR}/TechToThePeople/civisualize.git"                 -b "master"             civicrm/tools/extensions/civisualize
-    git clone "${CACHE_DIR}/dlobo/org.civicrm.module.cividiscount.git"       -b "$DISC_VERSION"      civicrm/tools/extensions/cividiscount
+    git clone "${CACHE_DIR}/civicrm/org.civicrm.module.cividiscount.git"     -b "$DISC_VERSION"      civicrm/tools/extensions/cividiscount
+    git clone "${CACHE_DIR}/civicrm/org.civicrm.contactlayout.git"           -b "master"             civicrm/tools/extensions/org.civicrm.contactlayout
     extract-url --cache-ttl 172800 civicrm=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
     ## or https://raw.github.com/civicrm/l10n/master/po/fr_CA/civicrm.mo => civicrm/l10n/fr_CA/LC_MESSAGES/
   popd
