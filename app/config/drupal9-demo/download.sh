@@ -25,9 +25,9 @@ pushd "$WEB_ROOT" >> /dev/null
   fi
   civicrm_download_composer_d8
   git clone "${CACHE_DIR}/civicrm/civivolunteer.git"                       -b "$VOL_VERSION"       vendor/civicrm/civicrm-core/tools/extensions/civivolunteer
-  git clone "${CACHE_DIR}/ginkgostreet/org.civicrm.angularprofiles.git"    -b "$NG_PRFL_VERSION"   vendor/civicrm/civicrm-core/tools/extensions/org.civicrm.angularprofiles
+  git clone "${CACHE_DIR}/ginkgostreet/org.civicrm.angularprofiles.git"    -b "$NG_PRFL_VERSION"   web/sites/default/files/civicrm/ext/org.civicrm.angularprofiles
   git clone "${CACHE_DIR}/civicrm/org.civicoop.civirules.git"              -b "$RULES_VERSION"     vendor/civicrm/civicrm-core/tools/extensions/org.civicoop.civirules
   git clone "${CACHE_DIR}/TechToThePeople/civisualize.git"                 -b "master"             vendor/civicrm/civicrm-core/tools/extensions/civisualize
   git clone "${CACHE_DIR}/civicrm/org.civicrm.module.cividiscount.git"     -b "$DISC_VERSION"      vendor/civicrm/civicrm-core/tools/extensions/cividiscount
-  git clone "${CACHE_DIR}/civicrm/org.civicrm.contactlayout.git"           -b "master"             vendor/civicrm/civicrm-core/tools/extensions/org.civicrm.contactlayout
+  git clone "${CACHE_DIR}/civicrm/org.civicrm.contactlayout.git"           -b "master"             web/sites/default/files/civicrm/ext/org.civicrm.contactlayout
 popd >> /dev/null
