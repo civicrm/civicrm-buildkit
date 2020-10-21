@@ -90,6 +90,11 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   drush8 -y rap demoadmin 'gotv campaign contacts'
   drush8 -y rap demoadmin 'sign CiviCRM Petition'
 
+  # Move extensions into web accessible areas
+  mv $CIVI_CORE/tools/extensions/org.civicrm.angularprofiles files/civicrm/ext
+  mv $CIVI_CORE/tools/extensions/org.civicrm.contactlayout files/civicrm/ext
+  cv api extension.refresh
+
   ## Setup CiviVolunteer
   drush8 -y cvapi extension.install key=org.civicrm.angularprofiles debug=1
 
