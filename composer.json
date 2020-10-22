@@ -40,7 +40,7 @@
       "amp": {"version": "2020-06-12-e65089c8", "url": "https://download.civicrm.org/amp/amp.phar-{$version}", "path": "bin/amp", "type": "phar"},
       "box": {"version": "2.7.5", "url": "https://github.com/box-project/box2/releases/download/{$version}/box-{$version}.phar", "path": "bin/box", "type": "phar"},
       "civici": {"version": "2020-07-10-6a29419c", "url": "https://download.civicrm.org/civici/civici.phar-{$version}", "path": "bin/civici", "type": "phar"},
-      "civistrings": {"version": "2018-04-11-93987d92", "url": "https://download.civicrm.org/civistrings/civistrings.phar-{$version}", "path": "bin/civistrings", "type": "phar"},
+      "civistrings": {"version": "2020-10-22-9e260990", "url": "https://download.civicrm.org/civistrings/civistrings.phar-{$version}", "path": "bin/civistrings", "type": "phar"},
       "civix": {"version": "2020-09-20-7c26d0f9", "url": "https://download.civicrm.org/civix/civix.phar-{$version}", "path": "bin/civix", "type": "phar"},
       "codecept-php5": {"version": "2.3.6", "url": "https://codeception.com/releases/{$version}/php54/codecept.phar", "path": "bin/_codecept-php5.phar", "type": "phar"},
       "codecept-php7": {"version": "2.3.6", "url": "https://codeception.com/releases/{$version}/codecept.phar", "path": "bin/_codecept-php7.phar", "type": "phar"},
