@@ -1,4 +1,4 @@
-# Installation for Jenkins/CI Worker nodes (*arrbuk*)
+# Installation for Jenkins/CI Worker nodes
 
 A Jenkins/CI worker node, we want all profiles to be used concurrently. For each profile:
 
@@ -17,7 +17,7 @@ A Jenkins/CI worker node, we want all profiles to be used concurrently. For each
 | PHP Xdebug  | 9000         | 9000         | 9000         |
 | Redis       | 6380         | 6381         | 6382         |
 
-## Steps
+## Initial installation
 
 (*These steps were developed on Debian 9.*)
 
@@ -46,3 +46,33 @@ which php
 php --version
 # (...and exit...)
 ```
+
+## Updates
+
+There are two typical levels of updates:
+
+1. (*Ligther*) For each profile (dfl, min, max), update its copy of `civicrm-buildkit.git`.
+   This is for the common case of updating buildkit's CLI tools (`cv`, `drush`, etc).
+2. (*More thorough*)For each profile (dfl, min, max), update the copy of `civicrm-buildkit.git` **and**
+   teardown/restart all related system services (httpd, mysqld, etc). This may destroy any data
+   produced by extant builds. This is for the less common case of updating bknix daemons.
+
+
+For the lighter update:
+
+```bash
+sudo -i bash
+cd /root/buildkit/
+./nix/bin/update-ci-buildkit.sh
+```
+
+For a the thorough update:
+
+```bash
+sudo -i bash
+cd /root/buildkit/
+./nix/bin/reset-ci.sh
+```
+
+(TIP: If this complains about missing nix commands, then the call to su/sudo may not have properly managed
+the environment. Try a different form of su/sudo.)
