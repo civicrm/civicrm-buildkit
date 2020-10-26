@@ -1031,7 +1031,9 @@ function backdrop_download() {
 
   # See: https://github.com/backdrop/backdrop/pull/3018
   pushd "$WEB_ROOT/web/core/includes/database/mysql"
-    patch database.inc < "$PRJDIR/app/drupal-patches/mysql8-drupal.patch"
+    if grep -q 'NO_AUTO_CREATE_USER' database.inc; then
+      patch database.inc < "$PRJDIR/app/drupal-patches/mysql8-drupal.patch"
+    fi
   popd
 }
 
