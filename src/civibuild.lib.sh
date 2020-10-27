@@ -412,14 +412,14 @@ function amp_snapshot_create() {
     echo "[[Save CMS DB ($CMS_DB_NAME) to file ($CMS_SQL)]]"
     cvutil_assertvars amp_snapshot_create CMS_SQL CMS_DB_ARGS CMS_DB_NAME
     cvutil_makeparent "$CMS_SQL"
-    cvutil_php_nodbg amp sql:dump --root="$CMS_ROOT" -Ncms | gzip > "$CMS_SQL"
+    cvutil_php_nodbg amp sql:dump --root="$CMS_ROOT" --passthru="--no-tablespaces" -Ncms | gzip > "$CMS_SQL"
   fi
 
   if [ -z "$CIVI_SQL_SKIP" ]; then
     echo "[[Save Civi DB ($CIVI_DB_NAME) to file ($CIVI_SQL)]]"
     cvutil_assertvars amp_snapshot_create CIVI_SQL CIVI_DB_ARGS CIVI_DB_NAME
     cvutil_makeparent "$CIVI_SQL"
-    cvutil_php_nodbg amp sql:dump --root="$CMS_ROOT" -Ncivi | gzip > "$CIVI_SQL"
+    cvutil_php_nodbg amp sql:dump --root="$CMS_ROOT" --passthru="--no-tablespaces" -Ncivi | gzip > "$CIVI_SQL"
   fi
 }
 
