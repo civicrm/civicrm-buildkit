@@ -45,7 +45,6 @@ pushd "$CMS_ROOT" >> /dev/null
 
   ## Setup welcome page
   drush -y scr "$SITE_CONFIG_DIR/install-welcome.php"
-  drush -y vset site_frontpage "welcome"
 
   ## Setup demo user
   drush -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
