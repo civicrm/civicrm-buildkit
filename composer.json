@@ -22,7 +22,7 @@
     "totten/php-symbol-diff": "dev-master#54f869ca68a3cd75f3386f8490870369733d2c23",
     "civicrm/upgrade-test": "dev-master#03e554787f378900f870a030cf2575d3cd49900f",
     "drupal/coder": "dev-8.x-2.x-civi#ef68b5617b94a1cef724b74c8b4318799388cc00",
-    "civicrm/composer-downloads-plugin": "~2.1",
+    "civicrm/composer-downloads-plugin": "^3.0",
     "squizlabs/php_codesniffer": ">=2.7 <4.0"
   },
   "repositories": [
