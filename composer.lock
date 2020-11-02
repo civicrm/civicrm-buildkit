@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/civicrm/composer-downloads-plugin.git",
-                "reference": "61c0d4185877aeaacd2ac53a0558d0e265502127"
+                "reference": "3aabb6d259a86158d01829fc2c62a2afb9618877"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/civicrm/composer-downloads-plugin/zipball/61c0d4185877aeaacd2ac53a0558d0e265502127",
-                "reference": "61c0d4185877aeaacd2ac53a0558d0e265502127",
+                "url": "https://api.github.com/repos/civicrm/composer-downloads-plugin/zipball/3aabb6d259a86158d01829fc2c62a2afb9618877",
+                "reference": "3aabb6d259a86158d01829fc2c62a2afb9618877",
                 "shasum": ""
             },
             "require": {
