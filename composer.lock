@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "civicrm/composer-downloads-plugin",
-            "version": "v3.0.0",
+            "version": "v3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/civicrm/composer-downloads-plugin.git",
-                "reference": "e0cd70f6a9e2403a5496e08a3cb017e6b81b26b6"
+                "reference": "61c0d4185877aeaacd2ac53a0558d0e265502127"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/civicrm/composer-downloads-plugin/zipball/e0cd70f6a9e2403a5496e08a3cb017e6b81b26b6",
-                "reference": "e0cd70f6a9e2403a5496e08a3cb017e6b81b26b6",
+                "url": "https://api.github.com/repos/civicrm/composer-downloads-plugin/zipball/61c0d4185877aeaacd2ac53a0558d0e265502127",
+                "reference": "61c0d4185877aeaacd2ac53a0558d0e265502127",
                 "shasum": ""
             },
             "require": {
@@ -55,7 +55,7 @@
                 }
             ],
             "description": "Composer plugin for downloading additional files within any composer package.",
-            "time": "2020-11-02T02:02:52+00:00"
+            "time": "2020-11-02T04:00:42+00:00"
         },
         {
             "name": "civicrm/upgrade-test",
