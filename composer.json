@@ -49,6 +49,8 @@
       "drush-backdrop": {"version": "1.0.0", "url": "https://github.com/backdrop-contrib/drush/archive/{$version}.zip", "path": "extern/drush-lib/backdrop"},
       "git-scan": {"version": "2020-07-16-5f15f6f5", "url": "https://download.civicrm.org/git-scan/git-scan.phar-{$version}", "path": "bin/git-scan", "type": "phar"},
       "joomla": {"version": "2017-06-19-62ff6a9df", "url": "https://download.civicrm.org/joomlatools-console/joomla.phar-{$version}", "path": "bin/joomla", "type": "phar"},
+      "phpstan": {"version": "0.12.54", "url": "https://github.com/phpstan/phpstan/releases/download/{$version}/phpstan.phar", "path": "extern/phpstan/phpstan.phar", "type": "phar"},
+      "phpstan-civicrm": {"version": "0.12.0", "url": "https://github.com/mglaman/phpstan-civicrm/archive/{$version}.zip", "path": "extern/phpstan/ext-civicrm"},
       "phpunit4": {"version": "4.8.21", "url": "https://phar.phpunit.de/phpunit-{$version}.phar", "path": "extern/phpunit4/phpunit4.phar", "type": "phar"},
       "phpunit5": {"version": "5.x", "url": "https://phar.phpunit.de/phpunit-5.phar", "path": "extern/phpunit5/phpunit5.phar", "type": "phar"},
       "phpunit6": {"version": "6.x", "url": "https://phar.phpunit.de/phpunit-6.phar", "path": "extern/phpunit6/phpunit6.phar", "type": "phar"},
