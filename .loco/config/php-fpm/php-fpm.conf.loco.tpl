@@ -16,3 +16,4 @@ pm.start_servers = 2
 pm.min_spare_servers = 1
 pm.max_spare_servers = 3
 chdir = /
+env[NIX_SSL_CERT_FILE] = $NIX_SSL_CERT_FILE
