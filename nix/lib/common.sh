@@ -97,7 +97,7 @@ function install_cachix() {
   fi
   echo "Setup binary cache (cachix)"
   local SUDO
-  is_my_file /nix && SUDO='' || SUDO='sudo -i'
+  is_my_file /nix/store && SUDO='' || SUDO='sudo -i'
   $SUDO nix-env -iA cachix -f https://cachix.org/api/v1/install
   $SUDO cachix use bknix
 }
