@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "80a9a8808d208849a98a706cf96eef38",
+    "content-hash": "ab622af66235a066c1c91c6cd8c8cf1f",
     "packages": [
         {
             "name": "civicrm/composer-downloads-plugin",
@@ -156,7 +156,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/civicrm/coder.git",
-                "reference": "ef68b5617b94a1cef724b74c8b4318799388cc00"
+                "reference": "b04829b2095b6351531050f3ad25448fe63f1ce9"
             },
             "require": {
                 "ext-mbstring": "*",
@@ -188,7 +188,7 @@
                 "issues": "https://www.drupal.org/project/issues/coder",
                 "source": "https://www.drupal.org/project/coder"
             },
-            "time": "2020-08-17T23:23:52+00:00"
+            "time": "2020-11-14T00:08:25+00:00"
         },
         {
             "name": "mustache/mustache",
