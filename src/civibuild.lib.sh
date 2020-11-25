@@ -1045,12 +1045,15 @@ function drupal_download() {
   drush8 -y dl drupal-${CMS_VERSION} --destination="$WEB_ROOT" --drupal-project-rename
   mv "$WEB_ROOT/drupal" "$WEB_ROOT/web"
 
-  if [ ${CMS_VERSION} == "7.x" ]; then
-    # See: https://www.drupal.org/project/drupal/issues/2978575
-    pushd "$WEB_ROOT/web/includes/database/mysql"
-      patch database.inc < "$PRJDIR/app/drupal-patches/mysql8-drupal.patch"
-    popd
-  fi
+  case $CMS_VERSION in
+    7*)
+     # See: https://www.drupal.org/project/drupal/issues/2978575
+     pushd "$WEB_ROOT/web/includes/database/mysql"
+       if ! grep -q 'escapeAlias' database.inc; then
+         patch database.inc < "$PRJDIR/app/drupal-patches/mysql8-drupal.patch"
+       fi
+     popd
+  esac
 }
 
 ###############################################################################
