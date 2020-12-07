@@ -20,6 +20,7 @@ in [
     pkgs.patch
     pkgs.rsync
     pkgs.unzip
+    pkgs.wget
     pkgs.which
     pkgs.zip
 ] ++ (if pkgs.glibcLocales != null then [pkgs.glibcLocales] else [] )
