@@ -13,6 +13,7 @@ in [
     pkgs.gitAndTools.hub
     pkgs.gnugrep
     pkgs.gnutar
+    pkgs.gnutls
     pkgs.hostname
     pkgs.moreutils
     pkgs.ncurses
