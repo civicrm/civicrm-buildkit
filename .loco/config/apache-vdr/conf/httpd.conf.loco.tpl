@@ -1,5 +1,6 @@
 ServerRoot "{{LOCO_SVC_VAR}}"
 Listen {{HTTPD_PORT}}
+Listen {{HTTPD_SSL_PORT}}
 PidFile {{LOCO_SVC_VAR}}/httpd.pid
 LoadModule mpm_event_module modules/mod_mpm_event.so
 LoadModule authn_file_module modules/mod_authn_file.so
@@ -97,6 +98,40 @@ Timeout 600
 </Proxy>
 
 <VirtualHost *:{{HTTPD_PORT}}>
+    ServerAdmin webmaster@{{HTTPD_DOMAIN}}
+    ServerName {{HTTPD_DOMAIN}}
+
+    UseCanonicalName    Off
+    VirtualDocumentRoot "{{HTTPD_VDROOT}}/%1/web"
+
+    <Directory "{{HTTPD_VDROOT}}">
+        Options All
+        AllowOverride All
+        <IfModule mod_authz_host.c>
+            Require all granted
+        </IfModule>
+    </Directory>
+
+    ## Added for php-fpm
+    # ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://{{LOCALHOST}}:{{PHPFPM_PORT}}/<?php echo $root ?>/$1
+    DirectoryIndex index.html index.php
+
+    <FilesMatch \.php$>
+      # SetHandler "proxy:fcgi://{{LOCALHOST}}:{{PHPFPM_PORT}}#"
+      # SetHandler "proxy:unix:/var/run/php5-fpm.sock|fcgi://localhost"
+      SetHandler "proxy:fcgi://{{LOCALHOST}}:{{PHPFPM_PORT}}"
+    </FilesMatch>
+
+</VirtualHost>
+
+
+<VirtualHost *:{{HTTPD_SSL_PORT}}>
+
+    SSLEngine on
+    SSLCertificateFile "{{LOCO_SSL}}/server.crt"
+    SSLCertificateKeyFile "{{LOCO_SSL}}/server.key"
+    SSLCertificateChainFile "{{LOCO_SSL}}/ca.crt"
+
     ServerAdmin webmaster@{{HTTPD_DOMAIN}}
     ServerName {{HTTPD_DOMAIN}}
 

@@ -13,6 +13,7 @@ environment:
  ## HTTPD_*: Determine how a local folder (eg "./build/dmaster") relates to a local HTTP service (eg "http://dmaster.bknix:8001").
  - HTTPD_DOMAIN=bknix
  - HTTPD_PORT=8002
+ - HTTPD_SSL_PORT=4002
  - HTTPD_VDROOT=$BKIT/build
  - HTTPD_VISIBILITY=all
 
@@ -39,6 +40,7 @@ environment:
  - CIVIBUILD_HOME=$HTTPD_VDROOT
  - BKIT=$LOCO_PRJ
  - BKITBLD=$HTTPD_VDROOT
+ - LOCO_SSL_DOMAIN=*.$HTTPD_DOMAIN
  - MYSQL_HOME=$LOCO_VAR/mysql/conf
  - NODE_PATH=$BKIT/node_modules:$NODE_PATH
  - PATH=$BKIT/bin:$BKIT/node_modules/.bin:$LOCO_PRJ/.loco/bin:$PATH
