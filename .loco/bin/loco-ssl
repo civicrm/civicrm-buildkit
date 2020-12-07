@@ -1,0 +1,167 @@
+#!/bin/bash
+
+
+################################################
+## Main tasks
+
+function make_ca_key() {
+  h1 "Create CA key $LOCO_SSL_CA_KEY"
+  make_parent "$LOCO_SSL_CA_KEY"
+  certtool --generate-privkey --outfile "$LOCO_SSL_CA_KEY"
+}
+
+function make_ca_crt() {
+  h1 "Create CA certificate $LOCO_SSL_CA_CRT"
+  make_parent "$LOCO_SSL_CA_CRT"
+  make_ca_tpl > "$LOCO_SSL_CA_CRT".cfg
+  certtool --generate-self-signed --load-privkey "$LOCO_SSL_CA_KEY" --outfile "$LOCO_SSL_CA_CRT" --template "$LOCO_SSL_CA_CRT".cfg
+}
+
+function make_srv_key() {
+  h1 "Create server key $LOCO_SSL_SERVER_KEY"
+  make_parent "$LOCO_SSL_SERVER_KEY"
+  certtool --generate-privkey --outfile "$LOCO_SSL_SERVER_KEY"
+}
+
+function make_srv_crt() {
+  h1 "Create server cert $LOCO_SSL_SERVER_CRT"
+  make_parent "$LOCO_SSL_SERVER_CRT"
+  make_srv_tpl > "$LOCO_SSL_SERVER_CRT".cfg
+  certtool --generate-certificate --load-privkey "$LOCO_SSL_SERVER_KEY" \
+   --outfile "$LOCO_SSL_SERVER_CRT" --load-ca-certificate "$LOCO_SSL_CA_CRT" \
+   --load-ca-privkey "$LOCO_SSL_CA_KEY" --template "$LOCO_SSL_SERVER_CRT".cfg
+}
+
+function make_cabundle() {
+  if [ ! -e "$LOCO_SSL_BUNDLE_CRT" -o "$LOCO_SSL_CA_CRT" -nt "$LOCO_SSL_BUNDLE_CRT" -o "$LOCO_SSL_UPSTREAM" -nt "$LOCO_SSL_BUNDLE_CRT" ]; then
+    h1 "Create CA bundle $LOCO_SSL_BUNDLE_CRT"
+    cat "$LOCO_SSL_CA_CRT" "$LOCO_SSL_UPSTREAM" > "$LOCO_SSL_BUNDLE_CRT"
+  fi
+}
+
+function make_ca_tpl() {
+  echo 'organization = "Local Org"'
+  echo 'unit = "Local Dev"'
+  echo 'state = "CA"'
+  echo 'country = US'
+  echo 'cn = "Certificate Authority"'
+  echo "serial = $RANDOM"
+  echo 'expiration_days = 3650'
+  echo 'email = "local@localhost"'
+  echo 'ca'
+  echo 'signing_key'
+  echo 'encryption_key'
+  echo 'cert_signing_key'
+}
+
+function make_srv_tpl() {
+  echo 'organization = "Local Org"'
+  echo 'unit = "Local Dev"'
+  echo 'state = "CA"'
+  echo 'country = US'
+  echo 'cn = "wildcard"'
+  echo "serial = $RANDOM"
+  echo 'expiration_days = 3650'
+  for domain in $LOCO_SSL_DOMAIN ; do
+    echo "dns_name = \"$domain\""
+  done
+  # dns_name = "*.local"
+  # dns_name = "*.ci.local"
+  # dns_name = "*.ci.dev"
+  # dns_name = "*.ci.test"
+  # dns_name = "*.ci.staging"
+  echo 'tls_www_server'
+  echo 'encryption_key'
+}
+
+################################################
+## Generic helpers
+
+function h1() {
+  echo
+  echo "## $@"
+}
+
+function fatal() {
+  echo "Error: $@" 1>&2
+  exit 2
+}
+
+function make_parent() {
+  local dir=$(dirname "$1")
+  if [ ! -d "$dir" ]; then
+    mkdir -p "$dir"
+  fi
+}
+
+## Assert that shell variables are defined. If not defined, exit with an error.
+## usage: assertvars <context> <var1> <var2> <var3> ...
+## exmple: assertvars civibuild_app_download WEB_ROOT PRJDIR CACHE_DIR SITE_NAME SITE_TYPE
+function assertvars() {
+  _assertvars_back="$-"
+
+  # disable verbose output:
+  set +x
+
+  # the calling function name:
+  context="$1"
+
+  shift
+  while [ "$1" ]; do
+    var="$1"
+    eval "val=\$$var"
+    if [ -z "$val" ]; then
+      echo "missing variable: $var [in $context]"
+      exit 98
+    fi
+    shift
+  done
+
+  #restore previous bash options (revert set +x)
+  set -${_assertvars_back}
+}
+
+################################################
+## Environment setup / conditions
+
+assertvars loco-ssl LOCO_SSL LOCO_SSL_UPSTREAM LOCO_SSL_DOMAIN
+[ -z "$LOCO_SSL" ]                       && fatal "Missing variable LOCO_SSL"
+[ -z "$LOCO_SSL_UPSTREAM" ]              && fatal "Missing variable LOCO_SSL_UPSTREAM"
+
+LOCO_SSL_BUNDLE_CRT="$LOCO_SSL/ca-bundle.crt"
+LOCO_SSL_CA_CRT="$LOCO_SSL/ca.crt"
+LOCO_SSL_CA_KEY="$LOCO_SSL/ca.key"
+LOCO_SSL_SERVER_CRT="$LOCO_SSL/server.crt"
+LOCO_SSL_SERVER_KEY="$LOCO_SSL/server.key"
+
+################################################
+## Main
+set -e
+
+FORCE=
+if [ "$1" == "-f" ]; then
+  FORCE=1
+  shift
+fi
+
+while [ -n "$1" ]; do
+  ACTION="$1"
+  shift
+  case "$ACTION" in
+    ca)
+      [ -z "$FORCE" -a -f "$LOCO_SSL_CA_KEY" ]      || make_ca_key
+      [ -z "$FORCE" -a -f "$LOCO_SSL_CA_CRT" ]      || make_ca_crt
+      ;;
+    ca-bundle)
+      make_cabundle
+      ;;
+    server)
+      [ -z "$FORCE" -a -f "$LOCO_SSL_SERVER_KEY" ]  || make_srv_key
+      [ -z "$FORCE" -a -f "$LOCO_SSL_SERVER_CRT" ]  || make_srv_crt
+      ;;
+    *)
+      echo "usage: $0 [-f] [ca] [server] [bundle]"
+      exit 2
+      ;;
+  esac
+done
