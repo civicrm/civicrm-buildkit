@@ -105,8 +105,7 @@ function feed_static() {
       'git_branch' => '7.x-master',
     ),
     'civicrm-drupal-8.x' => array(
-      'git_url' => 'https://github.com/civicrm/civicrm-drupal',
-      'git_branch' => '8.x-master',
+      'git_url' => 'https://github.com/civicrm/civicrm-drupal-8',
     ),
     'civicrm-joomla' => array(
       'git_url' => 'https://github.com/civicrm/civicrm-joomla',
@@ -256,7 +255,7 @@ if (!file_exists($basedir) || !is_dir($basedir)) {
 ## Main data loading
 
 $statuses = array(); // array(string $key => int $code)
-$deprecated = array('civicrm-drupal', 'civicrm-org-site', 'api4');
+$deprecated = array('civicrm-drupal', 'civicrm-org-site', 'api4', 'civicrm-setup');
 
 $repos = feed_merge([feed_extdir(), feed_static(), feed_labdir()]);
 
