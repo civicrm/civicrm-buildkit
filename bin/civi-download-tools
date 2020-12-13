@@ -18,7 +18,7 @@ PRJDIR=$(dirname "$BINDIR")
 [ -z "$CIVIBUILD_HOME" ] && TMPDIR="$PRJDIR/app/tmp" || TMPDIR="$CIVIBUILD_HOME/.civibuild/tmp"
 LOCKFILE="$TMPDIR/civi-download-tools.lock"
 LOCKTIMEOUT=90
-HUB_VERSION="2.2.9"
+HUB_VERSION="2.14.2"
 IS_QUIET=
 IS_FORCE=
 IS_FULL=
