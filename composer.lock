@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ab622af66235a066c1c91c6cd8c8cf1f",
+    "content-hash": "8ec3e3c8cf63b0d0405ac8ba21b6e385",
     "packages": [
         {
             "name": "civicrm/composer-downloads-plugin",
@@ -474,12 +474,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/config.git",
-                "reference": "cfd510c047359b6a48197f3bc08c9d260e68a108"
+                "reference": "84c0c150c1520995f09ea9e47e817068b353cb0f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/config/zipball/cfd510c047359b6a48197f3bc08c9d260e68a108",
-                "reference": "cfd510c047359b6a48197f3bc08c9d260e68a108",
+                "url": "https://api.github.com/repos/symfony/config/zipball/84c0c150c1520995f09ea9e47e817068b353cb0f",
+                "reference": "84c0c150c1520995f09ea9e47e817068b353cb0f",
                 "shasum": ""
             },
             "require": {
@@ -711,7 +711,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "BackEndTea@gmail.com"
+                    "email": "backendtea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
