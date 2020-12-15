@@ -1,0 +1,74 @@
+#!/usr/bin/env php
+<?php
+
+## This script auto-registers the public-keys for SSH services commonly polled
+## during development or testing of CiviCRM.
+##
+## To add a new host key, use 'ssh-keyscan' and create a new file:
+##
+##   app/ssh/known_hosts.d/{HOSTNAME}.pub
+##
+## The script currently adds missing keys.  If we ever have cause to revoke
+## a host key, then update to support that
+##
+## Hostnames are identified in plaintext (rather than HMAC-SHA1) because (a)
+## these hosts tend to be well-known/public, (b) it's easier to manage,
+## and (c) it still works.
+
+###############################################################################
+## Helpers
+
+function notice($msg) {
+  global $argv;
+  $prog = basename($argv[0]);
+  fwrite(STDERR, "($prog) $msg\n");
+}
+
+function readHostFiles($files) {
+  $keys = [];
+  foreach ($files as $file) {
+    $lines = explode("\n", trim(file_get_contents($file)));
+    $keys = array_merge($keys, $lines);
+  }
+  return array_unique($keys);
+}
+
+###############################################################################
+## Constants
+$sshDir = getenv('HOME') . '/.ssh';
+$knownHostsActual = $sshDir . '/known_hosts';
+$knownHostsExpectedDir = dirname(__DIR__) . '/app/ssh/known_hosts.d';
+
+###############################################################################
+## Main
+
+if (!is_dir($knownHostsExpectedDir)) {
+  notice("Failed to read $knownHostsExpectedDir");
+  exit(1);
+}
+
+$allActual = file_exists($knownHostsActual)
+	? explode("\n", trim(file_get_contents($knownHostsActual)))
+	: [];
+$allExpected = readHostFiles((array) glob("$knownHostsExpectedDir/*.pub"));
+
+$missingHosts = array_diff($allExpected, $allActual);
+if (empty($missingHosts)) {
+  exit(0);
+}
+
+if (!is_dir($sshDir)) {
+  notice("Create $sshDir");
+  mkdir($sshDir, 0700);
+}
+
+if (!file_exists($knownHostsActual)) {
+  notice("Create $knownHostsActual");
+  touch($knownHostsActual);
+  chmod($knownHostsActual, 0700);
+}
+
+foreach ($missingHosts as $missingHost) {
+  notice("Add key: $missingHost");
+  file_put_contents($knownHostsActual, "$missingHost\n", FILE_APPEND);
+}
