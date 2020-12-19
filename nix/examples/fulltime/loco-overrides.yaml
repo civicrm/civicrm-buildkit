@@ -2,3 +2,4 @@
 environment:
   - HOSTNAME_FQDN=(placeholder; computed via lazy-vars.php)
   - HTTPD_DOMAIN=${HOSTNAME_FQDN}
+  - OPENSSL_CONF=/etc/ssl/
