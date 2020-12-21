@@ -38,7 +38,7 @@ innodb_file_per_table = 1
 #innodb_lock_wait_timeout = 50
 
 <?php if (matchVer('/Ver 5.6/')) { printf("innodb_large_prefix = 1\n"); } ?>
-<?php if (matchVer('/Ver 5.6/')) { printf("sql-mode=\"STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION\"\n"); } ?>
+<?php if (matchVer('/Ver 5.6/')) { printf("sql_mode=\"STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION\"\n"); } ?>
 <?php if (!matchVer('/Ver 8.0/')) { printf("innodb_file_format = Barracuda\n"); } ?>
 
 <?php if (matchVer('/Ver 5.7/')) { ?>
