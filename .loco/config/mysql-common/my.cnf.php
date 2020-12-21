@@ -38,12 +38,13 @@ innodb_file_per_table = 1
 #innodb_lock_wait_timeout = 50
 
 <?php if (matchVer('/Ver 5.6/')) { printf("innodb_large_prefix = 1\n"); } ?>
+<?php if (matchVer('/Ver 5.6/')) { printf("sql-mode=\"STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION\"\n"); } ?>
 <?php if (!matchVer('/Ver 8.0/')) { printf("innodb_file_format = Barracuda\n"); } ?>
 
 <?php if (matchVer('/Ver 5.7/')) { ?>
 # https://expressionengine.com/blog/mysql-5.7-server-os-x-has-gone-away
-interactive_timeout = 900
-wait_timeout = 900
+interactive_timeout = 1200
+wait_timeout = 1200
 <?php } ?>
 
 [mysqldump]
