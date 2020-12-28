@@ -2,15 +2,6 @@ diff --git a/includes/database/mysql/database.inc b/includes/database/mysql/data
 index 356e039f..c803207d 100644
 --- a/includes/database/mysql/database.inc
 +++ b/includes/database/mysql/database.inc
-@@ -87,7 +87,7 @@ class DatabaseConnection_mysql extends DatabaseConnection {
-       'init_commands' => array(),
-     );
-     $connection_options['init_commands'] += array(
--      'sql_mode' => "SET sql_mode = 'REAL_AS_FLOAT,PIPES_AS_CONCAT,ANSI_QUOTES,IGNORE_SPACE,STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER'",
-+      'sql_mode' => "SET sql_mode = 'REAL_AS_FLOAT,PIPES_AS_CONCAT,ANSI_QUOTES,IGNORE_SPACE,STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO'",
-     );
-     // Execute initial commands.
-     foreach ($connection_options['init_commands'] as $sql) {
 @@ -101,6 +101,14 @@ class DatabaseConnection_mysql extends DatabaseConnection {
      }
    }
