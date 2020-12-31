@@ -23,6 +23,11 @@ let
             extension=${phpPkgs.memcached}/lib/php/extensions/memcached.so
             extension=${phpExtras.timecop}/lib/php/extensions/timecop.so
             extension=${phpExtras.runkit7_3}/lib/php/extensions/runkit7.so
+
+            extension=${phpPkgs.apcu}/lib/php/extensions/apcu.so
+            extension=${phpPkgs.apcu_bc}/lib/php/extensions/apc.so
+            apc.enable_cli = ''${PHP_APC_CLI}
+
             openssl.cafile=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
       ''
 
@@ -41,8 +46,8 @@ let
     phpOverride = stdenv.mkDerivation rec {
         name = "bknix-php73";
         ## TEST ME: Do we still need imagick? Can we get away with gd nowadays?
-        # buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.yaml phpPkgs.memcached phpPkgs.imagick phpExtras.timecop phpExtras.runkit7_3 pkgs.makeWrapper pkgs.cacert];
-        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.yaml phpPkgs.memcached phpExtras.timecop phpExtras.runkit7_3 pkgs.makeWrapper pkgs.cacert];
+        # buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.apcu phpPkgs.apcu_bc phpPkgs.yaml phpPkgs.memcached phpPkgs.imagick phpExtras.timecop phpExtras.runkit7_3 pkgs.makeWrapper pkgs.cacert];
+        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.apcu phpPkgs.apcu_bc phpPkgs.yaml phpPkgs.memcached phpExtras.timecop phpExtras.runkit7_3 pkgs.makeWrapper pkgs.cacert];
         buildCommand = ''
           makeWrapper ${phpRuntime}/bin/phar $out/bin/phar
           makeWrapper ${phpRuntime}/bin/php $out/bin/php --add-flags -c --add-flags "${phpIni}"

@@ -29,6 +29,10 @@ let
             extension=${phpPkgs.imagick}/lib/php/extensions/imagick.so
             extension=${phpExtras.timecop}/lib/php/extensions/timecop.so
             extension=${phpExtras.runkit7_3}/lib/php/extensions/runkit7.so
+
+            extension=${phpPkgs.apcu}/lib/php/extensions/apcu.so
+            extension=${phpPkgs.apcu_bc}/lib/php/extensions/apc.so
+            apc.enable_cli = ''${PHP_APC_CLI}
       '';
     }
     ''
@@ -39,7 +43,7 @@ let
 
     phpOverride = stdenv.mkDerivation rec {
         name = "bknix-php71";
-        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.yaml phpPkgs.memcached phpPkgs.imagick phpExtras.timecop phpExtras.runkit7_3 pkgs.makeWrapper];
+        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.apcu phpPkgs.apcu_bc phpPkgs.yaml phpPkgs.memcached phpPkgs.imagick phpExtras.timecop phpExtras.runkit7_3 pkgs.makeWrapper];
         buildCommand = ''
           makeWrapper ${phpRuntime}/bin/phar $out/bin/phar
           makeWrapper ${phpRuntime}/bin/php $out/bin/php --add-flags -c --add-flags "${phpIni}"
