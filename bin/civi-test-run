@@ -314,7 +314,7 @@ for TESTTYPE in $SUITES ; do
     karma)  task_karma ;;
     upgrade)  CIVIVER=$(getCiviVer) ; task_upgrade 5.13.3-multilingual_af_bg_en* "@4.4.7..$CIVIVER:10" ;;
     upgrade@*)  task_upgrade $(echo $TESTTYPE | sed s'/^upgrade//' ) ;;
-    phpunit-e2e)  task_phpunit E2E_AllTests ;;
+    phpunit-e2e)  PHP_APC_CLI=on task_phpunit E2E_AllTests ;;
     phpunit-crm)  task_phpunit CRM_AllTests ;;
     # Handle legacy call for phpunit-api being equivilant to phpunit-api3
     phpunit-api)  task_phpunit api_v3_AllTests ;;
