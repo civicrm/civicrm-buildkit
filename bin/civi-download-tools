@@ -19,6 +19,7 @@ PRJDIR=$(dirname "$BINDIR")
 LOCKFILE="$TMPDIR/civi-download-tools.lock"
 LOCKTIMEOUT=90
 HUB_VERSION="2.14.2"
+JOOMLATOOLS_CONSOLE_VERSION="v1.5.9"
 IS_QUIET=
 IS_FORCE=
 IS_FULL=
@@ -296,6 +297,50 @@ function get_hub_url() {
   esac
 
   echo https://github.com/github/hub/releases/download/v${VERSION}/hub-${PLATFORM}-${VERSION}.${FORMAT}
+}
+
+###############################################################################
+## Install the project 'joomlatools/console' in 'extern/joomlatools-console'
+## Note that this uses a separate folder becuase:
+##  1. Some of the dependencies don't agree with other top-level packages.
+##  2. The file structure allows writing data to funny places.
+##
+## usage: install_joomlatools_console <version-tag-branch>
+function install_joomlatools_console() {
+  local VERSION="$1"
+  local WRAPPER="$PRJDIR/bin/joomla"
+  local SRC="$PRJDIR/extern/joomlatools-console"
+  local MARKER="$PRJDIR/extern/joomlatools-console.txt"
+
+  ## Create/update wrapper script
+  ## Note: joomla was previously downloaded via other means (and gitignored). This "cp" ensures we overwrite without git conflicts.
+  if [ ! -f "$WRAPPER" -o "$PRJDIR/src/joomlatools-console.tmpl" -nt  "$WRAPPER" ]; then
+    echo "[[joomlatools-console ($WRAPPER): Generate wrapper]]"
+    cp "$PRJDIR/src/joomlatools-console.tmpl" "$WRAPPER"
+  fi
+
+  ## Do we need to download?
+  touch "$MARKER"
+  if [ -z "$IS_FORCE" -a -e "$SRC/bin/joomla" -a "$(cat $MARKER)" == "$VERSION" ]; then
+    echo_comment "[[joomla ($PRJDIR/extern/joomlatools-console) already exists. Skipping.]]"
+    return
+  fi
+  echo "[[Install joomlatools-console $VERSION]]"
+
+  ## Cleanup any previous downloads
+  [ -e "$SRC" ] && rm -rf "$SRC"
+
+  ## Download
+  git clone -b "$VERSION" --depth 1 https://github.com/joomlatools/joomlatools-console "$SRC"
+  pushd "$SRC" >> /dev/null
+    ## In 1.5.9, the lock file is pegged to libraries that aren't compatible with our env. Resolve dependencies anew.
+    rm -f composer.lock
+    composer update --prefer-lowest
+    composer install
+  popd >> /dev/null
+
+  ## Mark as downloaded
+  echo "$VERSION" > "$MARKER"
 }
 
 ###############################################################################
@@ -669,6 +714,9 @@ pushd $PRJDIR >> /dev/null
   make_link "$PRJDIR/bin" "../extern/phpunit5/phpunit5.phar" "phpunit5"
   make_link "$PRJDIR/bin" "../extern/phpunit6/phpunit6.phar" "phpunit6"
   make_link "$PRJDIR/bin" "../extern/phpunit7/phpunit7.phar" "phpunit7"
+
+  ## Download joomlatools-console
+  install_joomlatools_console "$JOOMLATOOLS_CONSOLE_VERSION"
 
   ## Download "hub"
   touch "$PRJDIR/extern/hub.txt"
