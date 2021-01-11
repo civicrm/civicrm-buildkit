@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+BINDIR=$(dirname $0)
+PRJDIR=$(dirname "$BINDIR")
+JTCDIR="$PRJDIR/extern/joomlatools-console"
+PATH="$JTCDIR/bin:$PATH"
+
+exec "joomla" "$@"
