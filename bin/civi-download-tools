@@ -335,8 +335,8 @@ function install_joomlatools_console() {
   pushd "$SRC" >> /dev/null
     ## In 1.5.9, the lock file is pegged to libraries that aren't compatible with our env. Resolve dependencies anew.
     rm -f composer.lock
-    composer update --prefer-lowest
-    composer install
+    "$PRJDIR/bin/composer" update --prefer-lowest
+    "$PRJDIR/bin/composer" install
   popd >> /dev/null
 
   ## Mark as downloaded
