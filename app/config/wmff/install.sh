@@ -39,7 +39,7 @@ chmod 774 "${WEB_ROOT}/sites/default/civicrm/extensions/rpow/bin/harvey-dent"
 ## Comment out for now
 ##"${WEB_ROOT}/sites/default/civicrm/extensions/rpow/bin/harvey-dent" --root "${WEB_ROOT}/drupal"
 
-echo "CREATE DATABASE fredge IF NOT EXISTS"| amp sql -N civi -a
+#echo "CREATE DATABASE fredge IF NOT EXISTS"| amp sql -N civi -a
 ###############################################################################
 ## Extra configuration
 pushd "$CMS_ROOT"
