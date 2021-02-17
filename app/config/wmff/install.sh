@@ -35,7 +35,6 @@ CIVI_EXT_URL="${CMS_URL}/sites/default/civicrm/extensions"
 
 civicrm_install
 
-chmod 774 "${WEB_ROOT}/sites/default/civicrm/extensions/rpow/bin/harvey-dent"
 ## Comment out for now
 ##"${WEB_ROOT}/sites/default/civicrm/extensions/rpow/bin/harvey-dent" --root "${WEB_ROOT}/drupal"
 
