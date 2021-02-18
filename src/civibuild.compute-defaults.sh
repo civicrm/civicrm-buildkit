@@ -4,6 +4,8 @@
 ## Common/standard defaults
 
 [ -z "$SITE_TOKEN" ]         && SITE_TOKEN=$(cvutil_makepasswd 16)
+[ -z "$CIVI_CRED_KEY" ]      && CIVI_CRED_KEY=$(cvutil_makepasswd 32)
+[ -z "$CIVI_SIGN_KEY" ]      && CIVI_SIGN_KEY=$(cvutil_makepasswd 32)
 [ -z "$CIVI_SITE_KEY" ]      && CIVI_SITE_KEY=$(cvutil_makepasswd 16)
 [ -z "$ADMIN_PASS" ]         && ADMIN_PASS=$(cvutil_makepasswd 12)
 [ -z "$DEMO_PASS" ]          && DEMO_PASS=$(cvutil_makepasswd 12)

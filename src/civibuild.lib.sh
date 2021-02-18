@@ -223,7 +223,7 @@ function cvutil_inject_settings() {
   local FILE="$1"
   local NAME="$2"
   local PREAMBLE="$3"
-  cvutil_assertvars cvutil_inject_settings PRJDIR SITE_NAME SITE_TYPE SITE_CONFIG_DIR SITE_ID SITE_TOKEN PRIVATE_ROOT FILE NAME
+  cvutil_assertvars cvutil_inject_settings PRJDIR CIVI_CRED_KEY CIVI_SIGN_KEY SITE_NAME SITE_TYPE SITE_CONFIG_DIR SITE_ID SITE_TOKEN PRIVATE_ROOT FILE NAME
   # Note: CMS_VERSION ought to be defined for use in $civibuild['CMS_VERSION'], but it hasn't always been, and for most build-types its absence would be non-fatal.
 
   ## Prepare temp file
@@ -760,6 +760,8 @@ function civicrm_make_settings_php() {
     | sed "s;%%testPass%%;${TEST_DB_PASS};" \
     | sed "s;%%testUser%%;${TEST_DB_USER};" \
     | sed "s;%%siteKey%%;${CIVI_SITE_KEY};" \
+    | sed "s;%%credKeys%%;aes-cbc::${CIVI_CRED_KEY};" \
+    | sed "s;%%signKeys%%;jwt-hs256::${CIVI_SIGN_KEY};" \
     | sed "s;%%templateCompileDir%%;${CIVI_TEMPLATEC};" \
     > "$CIVI_SETTINGS"
   echo >> "$CIVI_SETTINGS"

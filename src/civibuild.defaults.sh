@@ -107,6 +107,14 @@ CMS_TITLE=
 ## The Drupal/WordPress/Joomla version (default: discretionary)
 CMS_VERSION=
 
+## Store credentials in encrypted format
+## (default: randomly generated)
+CIVI_CRED_KEY=
+
+## Digital signatures
+## (default: randomly generated)
+CIVI_SIGN_KEY=
+
 ## The CiviCRM API (default: randomly generated)
 CIVI_SITE_KEY=
 
@@ -295,7 +303,7 @@ PERSISTENT_VARS="
   CIVI_SETTINGS CIVI_FILES CIVI_TEMPLATEC CIVI_UF
   IS_INSTALLED
   EXT_DLS
-  SITE_TOKEN SITE_TYPE
+  CIVI_CRED_KEY CIVI_SIGN_KEY SITE_TOKEN SITE_TYPE
 "
 # ignore: runtime options like CIVI_SQL_SKIP and FORCE_DOWNLOAD
 
