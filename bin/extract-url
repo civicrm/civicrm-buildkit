@@ -5,21 +5,6 @@
 ## Bootstrap
 
 ini_set('display_errors', 1);
-$found = 0;
-$autoloaders = array(
-  dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php',
-  dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'autoload.php',
-);
-foreach ($autoloaders as $autoloader) {
-  if (file_exists($autoloader)) {
-    require_once $autoloader;
-    $found = 1;
-    break;
-  }
-}
-if (!$found) {
-  die("Failed to find autoloader");
-}
 
 ###############################################################################
 function main($argv) {
@@ -82,15 +67,15 @@ function main($argv) {
  * @param string $archiveUrl
  */
 function download_extract($baseDir, $archiveUrl, $verbose, $cacheTtl) {
-  $fs = new \Symfony\Component\Filesystem\Filesystem();
-
   list ($format, $isDownload, $archiveFile) = parse_archive_url($archiveUrl);
   if ($format === NULL || $isDownload === NULL) {
     usage("Failed to determine if archive is local/remote or zip/tar. ($baseDir=$archiveUrl)");
   }
 
   if (!is_dir($baseDir)) {
-    $fs->mkdir($baseDir);
+    if (!mkdir($baseDir, 0777, TRUE)) {
+      throw new \Exception("Failed to mkdir($baseDir)");
+    }
   }
 
   if ($isDownload) {
@@ -178,8 +163,9 @@ function get_cache_dir() {
     'tmp',
   ));
   if (!file_exists($cacheDir)) {
-    $fs = new \Symfony\Component\Filesystem\Filesystem();
-    $fs->mkdir($cacheDir);
+    if (!mkdir($cacheDir, 0777, TRUE)) {
+      throw new \Exception("Failed to mkdir($baseDir)");
+    }
   }
   return $cacheDir;
 }
