@@ -84,6 +84,7 @@ function task_phpunit() {
   $GUARD phpunit-xml-cleanup "$JUNITDIR"/*.xml
 }
 
+## usage: task_phpunit_core_extension <extension-dir> <junit-file> [<phpunit-group>]
 function task_phpunit_core_extension() {
 
  EXTENSION="$1"
