@@ -84,6 +84,7 @@ function task_phpunit() {
   $GUARD phpunit-xml-cleanup "$JUNITDIR"/*.xml
 }
 
+## usage: task_phpunit_core_extension <extension-dir> <junit-file> [<phpunit-group>]
 function task_phpunit_core_extension() {
 
  EXTENSION="$1"
@@ -125,6 +126,7 @@ function test_afform_extensions() {
   task_phpunit_core_extension "$(basename $DIR)/core" "afform-core"
   $GUARD civibuild restore "$BLDNAME"
   cv en afform
+  cv en --ignore-missing authx
   task_phpunit_core_extension "$(basename $DIR)/mock" "afform-mock-e2e" e2e
   task_phpunit_core_extension "$(basename $DIR)/mock" "afform-mock-headless" headless
   $GUARD civibuild restore "$BLDNAME"
