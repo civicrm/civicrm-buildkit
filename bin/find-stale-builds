@@ -1,5 +1,8 @@
-#!/usr/bin/env php
+#!/usr/bin/env pogo
 <?php
+#!depdir '../extern/find-stale-builds'
+#!ttl 10 years
+#!require symfony/finder: ~2.6.1
 
 ## Generate a list of "stale" builds - either:
 ## - The build is objectively old.
@@ -9,21 +12,6 @@
 ## Bootstrap
 
 ini_set('display_errors', 1);
-$found = 0;
-$autoloaders = array(
-  dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php',
-  dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'autoload.php'
-);
-foreach ($autoloaders as $autoloader) {
-  if (file_exists($autoloader)) {
-    require_once $autoloader;
-    $found = 1;
-    break;
-  }
-}
-if (!$found) {
-  die("Failed to find autoloader");
-}
 
 ###############################################################################
 class MyFinder {
