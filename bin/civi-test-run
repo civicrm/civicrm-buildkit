@@ -100,7 +100,7 @@ function task_phpunit_core_extension() {
  fi
 
  pushd "$CIVI_CORE/ext/$EXTENSION"
- if ! $GUARD phpunit6 --printer='Civi\Test\TAP' --log-junit="$JUNITDIR/$FILENAME" $GROUP; then
+ if ! $GUARD $(getPhpunitVer) --printer='Civi\Test\TAP' --log-junit="$JUNITDIR/$FILENAME" $GROUP; then
    EXITCODES="$EXITCODES $EXTENSION"
  fi
  echo "Found EXITCODES=\"$EXITCODES\""
