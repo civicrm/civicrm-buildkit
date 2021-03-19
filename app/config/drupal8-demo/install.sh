@@ -83,6 +83,9 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   if [ -d "$CIVI_CORE/tools/extensions/org.civicrm.contactlayout" ]; then
     mv $CIVI_CORE/tools/extensions/org.civicrm.contactlayout files/civicrm/ext
   fi
+  if [ -d "$CIVI_CORE/tools/extensions/civivolunteer" ]; then
+    mv $CIVI_CORE/tools/extensions/civivolunteer files/civicrm/ext
+  fi
   cv api extension.refresh
 
   ## Setup CiviVolunteer
