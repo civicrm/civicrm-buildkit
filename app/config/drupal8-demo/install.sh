@@ -65,9 +65,7 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   ## Setup userprotect
   drush8 -y en userprotect
-  drush8 -y rmp authenticated userprotect.account.edit
-  drush8 -y rmp authenticated userprotect.mail.edit
-  drush8 -y rmp authenticated userprotect.pass.edit
+  drush8 -y rmp authenticated 'userprotect.account.edit,authenticated userprotect.mail.edit,authenticated userprotect.pass.edit'
 
   ## Setup demo user
   # drush8 -y en civicrm_webtest
@@ -76,23 +74,15 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   drush8 -y user-add-role demoadmin "$DEMO_USER"
   # In Garland, CiviCRM's toolbar looks messy unless you also activate Drupal's "toolbar", so grant "access toolbar"
   # We've activated more components than typical web-test baseline, so grant rights to those components.
-  drush8 -y rap demoadmin 'access toolbar'
-  drush8 -y rap demoadmin 'administer CiviCase'
-  drush8 -y rap demoadmin 'access all cases and activities'
-  drush8 -y rap demoadmin 'access my cases and activities'
-  drush8 -y rap demoadmin 'add cases'
-  drush8 -y rap demoadmin 'delete in CiviCase'
-  drush8 -y rap demoadmin 'administer CiviCampaign'
-  drush8 -y rap demoadmin 'manage campaign'
-  drush8 -y rap demoadmin 'reserve campaign contacts'
-  drush8 -y rap demoadmin 'release campaign contacts'
-  drush8 -y rap demoadmin 'interview campaign contacts'
-  drush8 -y rap demoadmin 'gotv campaign contacts'
-  drush8 -y rap demoadmin 'sign CiviCRM Petition'
+  drush8 -y rap demoadmin 'access toolbar,administer CiviCase,access all cases and activities,access my cases and activities,add cases,delete in CiviCase,administer CiviCampaign,manage campaign,reserve campaign contacts,release campaign contacts,interview campaign contacts,gotv campaign contacts,sign CiviCRM Petition'
 
   # Move extensions into web accessible areas
-  mv $CIVI_CORE/tools/extensions/org.civicrm.angularprofiles files/civicrm/ext
-  mv $CIVI_CORE/tools/extensions/org.civicrm.contactlayout files/civicrm/ext
+  if [ -d "$CIVI_CORE/tools/extensions/org.civicrm.angularprofiles" ]; then
+    mv $CIVI_CORE/tools/extensions/org.civicrm.angularprofiles files/civicrm/ext
+  fi
+  if [ -d "$CIVI_CORE/tools/extensions/org.civicrm.contactlayout" ]; then
+    mv $CIVI_CORE/tools/extensions/org.civicrm.contactlayout files/civicrm/ext
+  fi
   cv api extension.refresh
 
   ## Setup CiviVolunteer

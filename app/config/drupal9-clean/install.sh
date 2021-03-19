@@ -50,9 +50,7 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   ## Setup userprotect
   drush8 -y en userprotect
-  drush8 -y rmp authenticated userprotect.account.edit
-  drush8 -y rmp authenticated userprotect.mail.edit
-  drush8 -y rmp authenticated userprotect.pass.edit
+  drush8 -y rmp authenticated 'userprotect.account.edit,userprotect.mail.edit,userprotect.pass.edit'
 
 popd >> /dev/null
 
