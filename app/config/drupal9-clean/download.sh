@@ -5,7 +5,7 @@
 ###############################################################################
 
 #[ -z "$CMS_VERSION" ] && CMS_VERSION=8.7.x
-[ -z "$CMS_VERSION" ] && CMS_VERSION=9.0.x-dev
+[ -z "$CMS_VERSION" ] && CMS_VERSION=9.1.x
 
 mkdir "$WEB_ROOT"
 composer create-project drupal/recommended-project:"$CMS_VERSION" "$WEB_ROOT" --no-interaction
