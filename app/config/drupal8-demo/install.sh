@@ -65,7 +65,7 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   ## Setup userprotect
   drush8 -y en userprotect
-  drush8 -y rmp authenticated 'userprotect.account.edit,authenticated userprotect.mail.edit,authenticated userprotect.pass.edit'
+  drush8 -y rmp authenticated 'userprotect.account.edit,userprotect.mail.edit,userprotect.pass.edit'
 
   ## Setup demo user
   # drush8 -y en civicrm_webtest
