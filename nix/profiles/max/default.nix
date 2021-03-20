@@ -11,7 +11,7 @@ let
 
 in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
 
-    bkpkgs.php73
+    bkpkgs.php74
     pkgs_1809.nodejs-8_x
     pkgs.apacheHttpd
     pkgs_1809.mailcatcher
