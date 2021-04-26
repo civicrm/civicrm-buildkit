@@ -67,6 +67,6 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
     drush -y role-add-perm civicrm_webtest_user "$perm"
   done
 
-  cv en --ignore-missing org.civicrm.search
+  #cv en --ignore-missing org.civicrm.search_kit org.civicrm.search
 
 popd >> /dev/null
