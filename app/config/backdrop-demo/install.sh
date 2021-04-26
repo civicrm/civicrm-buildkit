@@ -54,7 +54,7 @@ pushd "$CMS_ROOT" >> /dev/null
     #drush -y user-add-role civicrm_webtest_user "$DEMO_USER"
   fi
 
-  cv en --ignore-missing civirules civisualize cividiscount org.civicrm.search org.civicrm.contactlayout org.civicrm.angularprofiles org.civicrm.volunteer
+  cv en --ignore-missing civirules civisualize cividiscount org.civicrm.search_kit org.civicrm.search org.civicrm.contactlayout org.civicrm.angularprofiles org.civicrm.volunteer
 
   ## Demo sites always disable email and often disable cron
   drush cvapi StatusPreference.create ignore_severity=critical name=checkOutboundMail
