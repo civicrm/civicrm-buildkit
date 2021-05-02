@@ -73,6 +73,9 @@ drush -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
 ## Add a contact record for the admin user so we can do stuff with it before logging in
 drush -y civicrm-sync-users-contacts
 
+[ ! -z "$FR_DOCKER_CIVI_API_KEY" ] && cv api4 Contact.update \
+	'{"where":[["display_name","=","admin@example.com"]],"values":{"api_key":"'$FR_DOCKER_CIVI_API_KEY'"}}'
+
 DEV_SETTINGS_FILE="${WEB_ROOT}/drupal/sites/default/wmf_settings_developer.json"
 if [ -e "$DEV_SETTINGS_FILE" ]; then
   drush --in=json cvapi Setting.create < "$DEV_SETTINGS_FILE"
