@@ -40,8 +40,12 @@ civicrm_install
 
 ## Comment out for now
 ##"${WEB_ROOT}/sites/default/civicrm/extensions/rpow/bin/harvey-dent" --root "${WEB_ROOT}/drupal"
+echo "DROP DATABASE IF EXISTS fredge"| amp sql -N civi -a
+echo "CREATE DATABASE IF NOT EXISTS fredge"| amp sql -N civi -a
+eval mysql $CIVI_DB_ARGS <<EOSQL
+  GRANT ALL PRIVILEGES ON fredge.* TO $CMS_DB_USER@'%';
+EOSQL
 
-#echo "CREATE DATABASE fredge IF NOT EXISTS"| amp sql -N civi -a
 ###############################################################################
 ## Extra configuration
 pushd "$CMS_ROOT"
