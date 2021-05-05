@@ -33,6 +33,9 @@ CIVI_UF="Drupal"
 CIVI_EXT_DIR="${CMS_ROOT}/sites/default/civicrm/extensions"
 CIVI_EXT_URL="${CMS_URL}/sites/default/civicrm/extensions"
 
+## Set site key if requested in Docker environment
+[ ! -z "$FR_DOCKER_CIVI_SITE_KEY" ] && CIVI_SITE_KEY=${FR_DOCKER_CIVI_SITE_KEY}
+
 civicrm_install
 
 ## Comment out for now
