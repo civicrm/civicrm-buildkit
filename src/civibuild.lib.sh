@@ -577,19 +577,18 @@ function civicrm_download_composer_d8() {
   local EXTRA_PATCH=()
 
   case "$CIVI_VERSION" in
-    5.21*) EXTRA_COMPOSER+=( 'civicrm/civicrm-asset-plugin:~1.1' ) ; EXTRA_COMPOSER+=( "civicrm/civicrm-setup:0.4.0 as 0.2.99" ) ; EXTRA_COMPOSER+=( 'cache/integration-tests:dev-master#b97328797ab199f0ac933e39842a86ab732f21f9' ) ; EXTRA_PATCH+=( "https://github.com/civicrm/civicrm-core/pull/16328" ); ;;
-    5.22*) EXTRA_COMPOSER+=( 'civicrm/civicrm-asset-plugin:~1.1' ) ; EXTRA_COMPOSER+=( "civicrm/civicrm-setup:0.4.0 as 0.2.99" ) ; EXTRA_COMPOSER+=( 'cache/integration-tests:dev-master#b97328797ab199f0ac933e39842a86ab732f21f9' ) ; EXTRA_PATCH+=( "https://github.com/civicrm/civicrm-core/pull/16413" ); ;;
-    5.23*) EXTRA_COMPOSER+=( 'civicrm/civicrm-asset-plugin:~1.1' ) ; EXTRA_COMPOSER+=( 'cache/integration-tests:dev-master#b97328797ab199f0ac933e39842a86ab732f21f9' ); ;;
-    5.24*) EXTRA_COMPOSER+=( 'civicrm/civicrm-asset-plugin:~1.1' ) ; ;;
-    5.25*) EXTRA_COMPOSER+=( 'civicrm/civicrm-asset-plugin:~1.1' ) ; ;;
-    5.26*) EXTRA_COMPOSER+=( 'civicrm/civicrm-asset-plugin:~1.1' ) ; ;;
-    5.27*) EXTRA_COMPOSER+=( 'civicrm/civicrm-asset-plugin:~1.1' ) ; ;;
+    5.21*) EXTRA_COMPOSER+=( 'civicrm/civicrm-asset-plugin:~1.1' ) ; EXTRA_COMPOSER+=( 'pear/pear_exception:1.0.1 as 1.0.0') ; EXTRA_COMPOSER+=( "civicrm/civicrm-setup:0.4.0 as 0.2.99" ) ; EXTRA_COMPOSER+=( 'cache/integration-tests:dev-master#b97328797ab199f0ac933e39842a86ab732f21f9' ) ; EXTRA_PATCH+=( "https://github.com/civicrm/civicrm-core/pull/16328" ); ;;
+    5.22*) EXTRA_COMPOSER+=( 'civicrm/civicrm-asset-plugin:~1.1' ) ; EXTRA_COMPOSER+=( 'pear/pear_exception:1.0.1 as 1.0.0') ; EXTRA_COMPOSER+=( "civicrm/civicrm-setup:0.4.0 as 0.2.99" ) ; EXTRA_COMPOSER+=( 'cache/integration-tests:dev-master#b97328797ab199f0ac933e39842a86ab732f21f9' ) ; EXTRA_PATCH+=( "https://github.com/civicrm/civicrm-core/pull/16413" ); ;;
+    5.23*) EXTRA_COMPOSER+=( 'civicrm/civicrm-asset-plugin:~1.1' ) ; EXTRA_COMPOSER+=( 'pear/pear_exception:1.0.1 as 1.0.0') ; EXTRA_COMPOSER+=( 'cache/integration-tests:dev-master#b97328797ab199f0ac933e39842a86ab732f21f9' ); ;;
+    5.24*) EXTRA_COMPOSER+=( 'civicrm/civicrm-asset-plugin:~1.1' ) ; EXTRA_COMPOSER+=( 'pear/pear_exception:1.0.1 as 1.0.0') ; ;;
+    5.25*) EXTRA_COMPOSER+=( 'civicrm/civicrm-asset-plugin:~1.1' ) ; EXTRA_COMPOSER+=( 'pear/pear_exception:1.0.1 as 1.0.0') ; ;;
+    5.26*) EXTRA_COMPOSER+=( 'civicrm/civicrm-asset-plugin:~1.1' ) ; EXTRA_COMPOSER+=( 'pear/pear_exception:1.0.1 as 1.0.0') ; ;;
+    5.27*) EXTRA_COMPOSER+=( 'civicrm/civicrm-asset-plugin:~1.1' ) ; EXTRA_COMPOSER+=( 'pear/pear_exception:1.0.1 as 1.0.0') ; ;;
     5.28*) EXTRA_COMPOSER+=( 'civicrm/civicrm-asset-plugin:~1.1' ) ; ;;
     5.29*) EXTRA_COMPOSER+=( 'civicrm/civicrm-asset-plugin:~1.1' ) ; ;;
     5.30*) EXTRA_COMPOSER+=( 'civicrm/civicrm-asset-plugin:~1.1' ) ; ;;
     *) echo "No extra patches required" ; ;;
   esac
-  EXTRA_COMPOSER+=( 'pear/pear_exception:1.0.1 as 1.0.0') ## weird conflict in drupal-composer/drupal-project
 
   composer require "${EXTRA_COMPOSER[@]}" civicrm/civicrm-{core,packages,drupal-8}:"$CIVI_VERSION_COMP" --prefer-source
   [ -n "$EXTRA_PATCH" ] && git scan am -N "${EXTRA_PATCH[@]}"
