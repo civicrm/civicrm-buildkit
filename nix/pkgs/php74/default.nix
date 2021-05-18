@@ -2,13 +2,13 @@
 # add all extensions needed as buildInputs and don't forget to load them in the php.ini above
 
 let
-    pkgs = import (import ../../pins/20.03.nix) {};
+    pkgs = import (import ../../pins/20.09.nix) {};
     ## TEST ME: Do we need to set config.php.mysqlnd = true?
 
     stdenv = pkgs.stdenv;
 
     phpRuntime = pkgs.php74;
-    phpPkgs = pkgs.php74Packages;
+    phpPkgs = pkgs.php74Extensions;
     phpExtras = import ../phpExtras/default.nix {
       pkgs = pkgs;
       php = pkgs.php74; ## Hmm, a little bit loopy, but this effectively how other extensions resolve the loopines..

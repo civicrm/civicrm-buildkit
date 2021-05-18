@@ -8,7 +8,7 @@
 let
 
   buildPecl = import ./build-pecl.nix {
-    php = php.unwrapped;
+    php = php;
     inherit (pkgs) lib;
     inherit (pkgs) stdenv autoreconfHook fetchurl re2c;
   };

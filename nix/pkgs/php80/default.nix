@@ -2,16 +2,16 @@
 # add all extensions needed as buildInputs and don't forget to load them in the php.ini above
 
 let
-    pkgs = import (import ../../pins/20.09.nix) {};
+    pkgs = import (import ../../pins/pre-21.05.nix) {};
     ## TEST ME: Do we need to set config.php.mysqlnd = true?
 
     stdenv = pkgs.stdenv;
 
-    phpRuntime = pkgs.php73;
-    phpPkgs = pkgs.php73Extensions;
+    phpRuntime = pkgs.php80;
+    phpPkgs = pkgs.php80Extensions;
     phpExtras = import ../phpExtras/default.nix {
       pkgs = pkgs;
-      php = pkgs.php73; ## Hmm, a little bit loopy, but this effectively how other extensions resolve the loopines..
+      php = pkgs.php80; ## Hmm, a little bit loopy, but this effectively how other extensions resolve the loopines..
     };
 
     phpIniSnippet = ../phpCommon/php.ini;
@@ -21,19 +21,11 @@ let
             extension=${phpPkgs.redis}/lib/php/extensions/redis.so
             extension=${phpPkgs.yaml}/lib/php/extensions/yaml.so
             extension=${phpPkgs.memcached}/lib/php/extensions/memcached.so
-            extension=${phpExtras.timecop}/lib/php/extensions/timecop.so
-            extension=${phpExtras.runkit7_3}/lib/php/extensions/runkit7.so
+            extension=${phpExtras.runkit7_4}/lib/php/extensions/runkit7.so
 
             extension=${phpPkgs.apcu}/lib/php/extensions/apcu.so
-            extension=${phpPkgs.apcu_bc}/lib/php/extensions/apc.so
             apc.enable_cli = ''${PHP_APC_CLI}
-
-            openssl.cafile=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
-      ''
-
-       ## Per https://bugs.php.net/bug.php?id=77260 -- in php73, pcre.jit uses MAP_JIT which is quirky on diff versions of macOS
-       + (if stdenv.isDarwin then "pcre.jit=0\n" else "");
-
+      '';
        ## TEST ME: Do we still need imagick? Can we get away with gd nowadays?
        #    extension=${phpPkgs.imagick}/lib/php/extensions/imagick.so
     }
@@ -44,10 +36,10 @@ let
     '';
 
     phpOverride = stdenv.mkDerivation rec {
-        name = "bknix-php73";
+        name = "bknix-php80";
         ## TEST ME: Do we still need imagick? Can we get away with gd nowadays?
-        # buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.apcu phpPkgs.apcu_bc phpPkgs.yaml phpPkgs.memcached phpPkgs.imagick phpExtras.timecop phpExtras.runkit7_3 pkgs.makeWrapper pkgs.cacert];
-        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.apcu phpPkgs.apcu_bc phpPkgs.yaml phpPkgs.memcached phpExtras.timecop phpExtras.runkit7_3 pkgs.makeWrapper pkgs.cacert];
+        # buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.apcu phpPkgs.apcu_bc phpPkgs.yaml phpPkgs.memcached phpPkgs.imagick phpExtras.timecop phpExtras.runkit7_3 pkgs.makeWrapper];
+        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.apcu phpPkgs.yaml phpPkgs.memcached phpExtras.runkit7_4 pkgs.makeWrapper];
         buildCommand = ''
           makeWrapper ${phpRuntime}/bin/phar $out/bin/phar
           makeWrapper ${phpRuntime}/bin/php $out/bin/php --add-flags -c --add-flags "${phpIni}"
