@@ -88,14 +88,12 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   fi
   cv api extension.refresh
 
-  ## Setup CiviVolunteer
-  drush8 -y cvapi extension.install key=org.civicrm.angularprofiles debug=1
-
-  drush8 -y cvapi extension.install key=org.civicrm.volunteer debug=1
-  drush8 -y rap anonymous 'register to volunteer'
-  drush8 -y rap authenticated 'register to volunteer'
-
-  cv en --ignore-missing civirules civisualize cividiscount org.civicrm.search_kit org.civicrm.search org.civicrm.contactlayout
+  ## Setup demo extensions
+  cv en --ignore-missing $CIVI_DEMO_EXTS
+  if [[ "$CIVI_DEMO_EXTS" =~ volunteer ]]; then
+    drush8 -y rap anonymous 'register to volunteer'
+    drush8 -y rap authenticated 'register to volunteer'
+  fi
 
   ## Demo sites always disable email and often disable cron
   drush8 cvapi StatusPreference.create ignore_severity=critical name=checkOutboundMail
