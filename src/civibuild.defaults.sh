@@ -207,6 +207,9 @@ CIVI_EXT_DIR=
 ## URL of the web-managed extension folder (required iff CIVI_EXT_DIR is set)
 CIVI_EXT_URL=
 
+## List of extensions to enable on `*-demo` builds
+CIVI_DEMO_EXTS='civirules civisualize cividiscount org.civicrm.search_kit org.civicrm.search org.civicrm.contactlayout org.civicrm.angularprofiles org.civicrm.volunteer'
+
 ## DB credentials for Civi test DB
 ## (suggested: autogenerate via 'amp create -f --root="$WEB_ROOT" --name=civi --prefix=TEST_ --skip-url')
 TEST_DB_DSN=
