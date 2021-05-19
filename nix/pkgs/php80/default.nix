@@ -9,7 +9,7 @@ let
       php = pkgs.php80; ## Compile PECL extensions with our preferred version of PHP
     };
 
-    phpIniSnippet1 = builtins.readFile ../phpCommon/php.ini;
+    phpIniSnippet1 = builtins.readFile ./php.ini;
     phpIniSnippet2 = ''
       apc.enable_cli = ''${PHP_APC_CLI}
     '';
@@ -17,7 +17,7 @@ let
 in pkgs.php80.buildEnv {
 
   ## EVALUATE: apcu_bc
-  extensions = { all, ... }: with all; [ xdebug redis apcu yaml memcached imagick opcache phpExtras.runkit7_4 ];
+  extensions = { all, enabled}: with all; enabled++ [ xdebug redis apcu yaml memcached imagick opcache phpExtras.runkit7_4 ];
   extraConfig = phpIniSnippet1 + phpIniSnippet2;
 
 }
