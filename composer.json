@@ -53,7 +53,7 @@
       "phpunit6": {"version": "6.x", "url": "https://phar.phpunit.de/phpunit-6.phar", "path": "extern/phpunit6/phpunit6.phar", "type": "phar"},
       "phpunit7": {"version": "7.5.15", "url": "https://phar.phpunit.de/phpunit-7.5.15.phar", "path": "extern/phpunit7/phpunit7.phar", "type": "phar"},
       "pogo": {"version": "0.2.4", "url": "https://github.com/totten/pogo/releases/download/v{$version}/pogo-{$version}.phar", "path": "bin/pogo", "type": "phar"},
-      "wp": {"version": "2.4.0", "url": "https://github.com/wp-cli/wp-cli/releases/download/v{$version}/wp-cli-{$version}.phar", "path": "bin/wp", "type": "phar"}
+      "wp": {"version": "2.5.0", "url": "https://github.com/wp-cli/wp-cli/releases/download/v{$version}/wp-cli-{$version}.phar", "path": "bin/wp", "type": "phar"}
     }
   }
 }
