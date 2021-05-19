@@ -91,7 +91,9 @@ services:
       - 'loco-mysql-init'
     run: 'mysqld --datadir="$LOCO_SVC_VAR/data"'
     pid_file: '$LOCO_SVC_VAR/run/mysql.pid'
-    message: 'MySQL is running on "<comment>$LOCALHOST:$MYSQLD_PORT</comment>". The default credentials are user="<comment>root</comment>" and password="".'
+    message: |-
+      MySQL is running on "<comment>$LOCALHOST:$MYSQLD_PORT</comment>". The default credentials are user="<comment>root</comment>" and password="".
+        URL: <comment>mysql://root:@$LOCALHOST:$MYSQLD_PORT</comment>
 
   ## NOTE: This a non-service setup task. Strictly speaking, it also runs in install-{ci,developer}.sh, but we keep it
   ## here so that it reruns automatically - which should help if a dev-user is twiddling the ports.
