@@ -24,6 +24,7 @@ in rec {
    bknixPhpstormAdvisor = import ./bknixPhpstormAdvisor/default.nix;
    bknixProfile = import ./bknixProfile/default.nix;
    php74 = import ./php74/default.nix;
+   php80 = import ./php80/default.nix;
    transifexClient = import ./transifexClient/default.nix;
    ramdisk = callPackage (fetchTarball https://github.com/totten/ramdisk/archive/v0.1.1.tar.gz) {};
 

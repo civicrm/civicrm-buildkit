@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ea9b885a07cb3f10120c9442c615c853",
+    "content-hash": "00c14acfb206aabc47dc248e5341acc1",
     "packages": [
         {
             "name": "civicrm/composer-downloads-plugin",
@@ -55,7 +55,10 @@
                 }
             ],
             "description": "Composer plugin for downloading additional files within any composer package.",
-            "time": "2020-11-02T04:00:42+00:00"
+            "support": {
+                "source": "https://github.com/civicrm/composer-downloads-plugin/tree/v3.0.1"
+            },
+            "time": "2020-11-02T05:26:23+00:00"
         },
         {
             "name": "civicrm/upgrade-test",
@@ -71,6 +74,7 @@
                 "reference": "03e554787f378900f870a030cf2575d3cd49900f",
                 "shasum": ""
             },
+            "default-branch": true,
             "bin": [
                 "civicrm-upgrade-test"
             ],
@@ -87,6 +91,9 @@
             ],
             "description": "Collection of scripts and data-files for testing CiviCRM upgrades",
             "homepage": "https://github.com/civicrm/civicrm-upgrade-test",
+            "support": {
+                "source": "https://github.com/civicrm/civicrm-upgrade-test/tree/master"
+            },
             "time": "2020-07-17T23:40:27+00:00"
         },
         {
@@ -106,6 +113,7 @@
             "require-dev": {
                 "phpunit/phpunit": ">=3.7 <6"
             },
+            "default-branch": true,
             "type": "phpcodesniffer-standard",
             "autoload": {
                 "psr-0": {
@@ -172,6 +180,10 @@
                 "parser",
                 "php"
             ],
+            "support": {
+                "issues": "https://github.com/nikic/PHP-Parser/issues",
+                "source": "https://github.com/nikic/PHP-Parser/tree/1.x"
+            },
             "time": "2015-07-14T17:31:05+00:00"
         },
         {
@@ -223,6 +235,11 @@
                 "phpcs",
                 "standards"
             ],
+            "support": {
+                "issues": "https://github.com/squizlabs/PHP_CodeSniffer/issues",
+                "source": "https://github.com/squizlabs/PHP_CodeSniffer",
+                "wiki": "https://github.com/squizlabs/PHP_CodeSniffer/wiki"
+            },
             "time": "2019-04-10T23:49:02+00:00"
         },
         {
@@ -281,6 +298,9 @@
                 "polyfill",
                 "portable"
             ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-ctype/tree/master"
+            },
             "time": "2019-02-06T07:57:58+00:00"
         },
         {
@@ -340,6 +360,9 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/yaml/tree/v3.4.24"
+            },
             "time": "2019-03-25T07:48:46+00:00"
         },
         {
@@ -373,6 +396,10 @@
                 "MIT"
             ],
             "description": "Parser for .gitignore (and sparse-checkout, and anything else using the same format) files",
+            "support": {
+                "issues": "https://github.com/TOGoS/PHPGitIgnore/issues",
+                "source": "https://github.com/TOGoS/PHPGitIgnore/tree/master"
+            },
             "time": "2019-04-19T19:16:58+00:00"
         },
         {
@@ -392,9 +419,7 @@
             "require": {
                 "nikic/php-parser": "^1.4"
             },
-            "require-dev": {
-                "phpunit/phpunit": "3.7.*"
-            },
+            "default-branch": true,
             "bin": [
                 "bin/php-symbol-diff",
                 "bin/git-php-symbol-diff"
@@ -416,7 +441,11 @@
                 }
             ],
             "description": "Identify changes in PHP code by symbol (class/method)",
-            "time": "2015-08-06T08:23:13+00:00"
+            "support": {
+                "issues": "https://github.com/totten/php-symbol-diff/issues",
+                "source": "https://github.com/totten/php-symbol-diff/tree/master"
+            },
+            "time": "2018-05-04T22:36:55+00:00"
         }
     ],
     "packages-dev": [],
@@ -436,5 +465,5 @@
     "platform-overrides": {
         "php": "5.6"
     },
-    "plugin-api-version": "1.1.0"
+    "plugin-api-version": "2.0.0"
 }

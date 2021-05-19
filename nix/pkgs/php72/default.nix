@@ -14,7 +14,7 @@ let
 
     phpRuntime = pkgs.php72;
     phpPkgs = pkgs.php72Packages;
-    phpExtras = import ../phpExtras/default.nix {
+    phpExtras = import ../phpExtras/pre-20.09.nix {
       pkgs = pkgs;
       php = pkgs.php72; ## Hmm, a little bit loopy, but this effectively how other extensions resolve the loopines..
     };
