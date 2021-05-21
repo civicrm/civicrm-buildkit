@@ -3,7 +3,9 @@ set -e
 
 function getPhpunitVer() {
   CIVIVER=$(getCiviVer)
-  if [ $(php -r "echo version_compare('$CIVIVER', '5.28', '>=');") ]; then
+  if [ $(php -r "echo version_compare('$CIVIVER', '5.39', '>=');") ]; then
+    echo "phpunit8 --printer \Civi\Test\TAP"
+  elif [ $(php -r "echo version_compare('$CIVIVER', '5.28', '>=');") ]; then
     echo "phpunit7 --printer \Civi\Test\TAP"
   elif [ $(php -r "echo version_compare('$CIVIVER', '5.22', '>=');") ]; then
     echo "phpunit6 --printer \Civi\Test\TAP"
