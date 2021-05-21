@@ -63,6 +63,8 @@ bin/phpunit4
 bin/phpunit5
 bin/phpunit6
 bin/phpunit7
+bin/phpunit8
+bin/phpunit9
 bin/pogo
 bin/protractor
 bin/webdriver-manager
