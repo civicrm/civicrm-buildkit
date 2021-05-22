@@ -16,5 +16,6 @@ foreach ($files as $file) {
   $content = preg_replace('/(<testsuite.*) fullPackage="[^"]+" /', '$1 ', $content);
   $content = preg_replace('/(<testsuite.*) subpackage="[^"]+" /', '$1 ', $content);
   $content = preg_replace('/(<testsuite.*) namespace="[^"]+" /', '$1 ', $content);
+  $content = preg_replace('/(<testsuite.*) warnings="[^"]+" /', '$1 ', $content);
   file_put_contents($file, $content);
 }
