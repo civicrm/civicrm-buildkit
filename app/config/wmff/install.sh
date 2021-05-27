@@ -49,9 +49,12 @@ EOSQL
 ###############################################################################
 ## Extra configuration
 pushd "$CMS_ROOT"
-drush -y en `cat sites/default/enabled_modules`
+drush -y en civicrm
+cv en --ignore-missing search search_kit wmf-civicrm
 
-drush -y updatedb
+drush -y en --debug `cat sites/default/enabled_modules`
+
+drush -y -v --debug updatedb
 
 ## Setup theme
 drush -y en tivy
