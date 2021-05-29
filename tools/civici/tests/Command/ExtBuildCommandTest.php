@@ -4,7 +4,7 @@ namespace Civici\Command;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ExtBuildCommandTest extends \Civici\CiviciTestCase {
-  public function setup() {
+  public function setup(): void {
     parent::setup();
   }
 

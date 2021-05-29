@@ -22,7 +22,7 @@ class CiviciTestCase extends \PHPUnit\Framework\TestCase {
    */
   private $originalCwd;
 
-  public function setup() {
+  public function setup(): void {
     $runtimeClass = get_class($this);
     $this->originalCwd = getcwd();
     $this->fixturePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR
@@ -37,7 +37,7 @@ class CiviciTestCase extends \PHPUnit\Framework\TestCase {
     chdir($this->fixturePath);
   }
 
-  public function tearDown() {
+  public function tearDown(): void {
     chdir($this->originalCwd);
     if ($this->fixturePath) {
       if (!getenv('EXTTEST_KEEP_TMP')) {
