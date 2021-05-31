@@ -143,6 +143,6 @@ case "$MODE" in
 
     "$0" "$PROFILE" --env > "$TMPFILE"
     source "$TMPFILE"
-    eval "$@"
+    "$@"
     ;;
 esac
