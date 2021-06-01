@@ -39,7 +39,7 @@ CIVI_EXT_URL="${CMS_URL}/sites/default/civicrm/extensions"
 civicrm_install
 
 ## Comment out for now
-##"${WEB_ROOT}/sites/default/civicrm/extensions/rpow/bin/harvey-dent" --root "${WEB_ROOT}/drupal"
+"${WEB_ROOT}/drupal/sites/default/civicrm/extensions/rpow/bin/harvey-dent" --root "${WEB_ROOT}/drupal"
 echo "DROP DATABASE IF EXISTS fredge"| amp sql -N civi -a
 echo "CREATE DATABASE IF NOT EXISTS fredge"| amp sql -N civi -a
 eval mysql $CIVI_DB_ARGS <<EOSQL
