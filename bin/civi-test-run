@@ -333,7 +333,7 @@ for TESTTYPE in $SUITES ; do
     phpunit-financialacls) task_phpunit_core_extension financialacls ;;
     phpunit-eway) task_phpunit_core_extension ewaysingle ;;
     phpunit-afform) test_afform_extensions "$CIVI_CORE/ext/afform" ;;
-    phpunit-authx) test_afform_extensions "$CIVI_CORE/ext/authx" ;;
+    phpunit-authx) test_phpunit_core_extension authx ;;
     phpunit-core-exts) test_core_extenions ;;
     *) echo "unrecognized suite: $TESTTYPE"; exit 2 ;;
   esac
