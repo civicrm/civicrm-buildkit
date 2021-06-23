@@ -50,7 +50,7 @@ EOSQL
 ## Extra configuration
 pushd "$CMS_ROOT"
 drush -y en civicrm
-cv en --ignore-missing search search_kit wmf-civicrm
+cv en --ignore-missing search_kit wmf-civicrm
 
 drush -y en --debug `cat sites/default/enabled_modules`
 
