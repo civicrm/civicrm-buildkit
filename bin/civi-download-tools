@@ -524,6 +524,7 @@ function do_system_buster() {
       sudo apt-get -y install ca-certificates apt-transport-https wget
       wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
       sudo echo "deb https://packages.sury.org/php/ buster main" | tee /etc/apt/sources.list.d/php.list
+      wget -O- https://deb.nodesource.com/setup_14.x | sudo -E bash -
       sudo apt-get -y install $PACKAGES
       sudo phpenmod imap
       sudo a2enmod rewrite
