@@ -112,7 +112,19 @@ EOPERM
     drush scr "$PRJDIR/src/drush/perm.php" <<EOPERM
       role 'anonymous user'
       role 'authenticated user'
+      role 'civicrm_webtest_user'
       add 'register to volunteer'
+EOPERM
+    drush scr "$PRJDIR/src/drush/perm.php" <<EOPERM
+      role 'civicrm_webtest_user'
+      add 'create volunteer projects'
+      add 'edit own volunteer projects'
+      add 'edit all volunteer projects'
+      add 'log own hours'
+      add 'edit volunteer project relationships'
+      add 'edit volunteer registration profiles'
+      add 'delete own volunteer projects'
+      add 'delete all volunteer projects'
 EOPERM
   fi
 

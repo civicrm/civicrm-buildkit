@@ -75,6 +75,7 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   if [[ "$CIVI_DEMO_EXTS" =~ volunteer ]]; then
     drush8 -y rap anonymous 'register to volunteer'
     drush8 -y rap authenticated 'register to volunteer'
+    drush8 -y rap demoadmin 'create volunteer projects,edit own volunteer projects,edit all volunteer projects,log own hours,edit volunteer project relationships,edit volunteer registration profiles,delete own volunteer projects,delete all volunteer projects'
   fi
 
   ## Demo sites always disable email and often disable cron

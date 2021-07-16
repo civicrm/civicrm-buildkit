@@ -164,7 +164,11 @@ if [[ "$CIVI_DEMO_EXTS" =~ volunteer ]]; then
     log own hours \
     create volunteer projects \
     edit own volunteer projects \
-    delete own volunteer projects
+    edit all volunteer projects \
+    delete all volunteer projects \
+    delete own volunteer projects \
+    edit volunteer registration profiles \
+    edit volunteer project relationships
 fi
 
 ## Demo sites always disable email and often disable cron
