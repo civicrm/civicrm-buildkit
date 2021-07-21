@@ -33,6 +33,10 @@ CIVI_UF="Drupal"
 CIVI_EXT_DIR="${CMS_ROOT}/sites/default/civicrm/extensions"
 CIVI_EXT_URL="${CMS_URL}/sites/default/civicrm/extensions"
 
+## Clear out any cached container files to avoid it attempting to load
+## the cached monolog service before the extension is installed.
+rm -f ${WEB_ROOT}/drupal/sites/default/files/civicrm/templates_c/*.php
+
 ## Set site key if requested in Docker environment
 [ ! -z "$FR_DOCKER_CIVI_SITE_KEY" ] && CIVI_SITE_KEY=${FR_DOCKER_CIVI_SITE_KEY}
 
