@@ -80,17 +80,20 @@ drush -y civicrm-sync-users-contacts
 [ ! -z "$FR_DOCKER_CIVI_API_KEY" ] && cv api4 Contact.update \
 	'{"where":[["display_name","=","admin@example.com"]],"values":{"api_key":"'$FR_DOCKER_CIVI_API_KEY'"}}'
 
+echo "adding general wmf dev-specific settings"
 DEV_SETTINGS_FILE="${WEB_ROOT}/drupal/sites/default/wmf_settings_developer.json"
 if [ -e "$DEV_SETTINGS_FILE" ]; then
   drush --in=json cvapi Setting.create < "$DEV_SETTINGS_FILE"
 fi
 
+echo "adding general wmf settings"
 WMF_SETTINGS_FILE="${WEB_ROOT}/drupal/sites/default/wmf_settings.json"
 if [ -e "$WMF_SETTINGS_FILE" ]; then
-  drush --in=json cvapi Setting.create < "$WMF_SETTINGS_FILE"
+  drush --in=json cvapi Setting.create debug=1 < "$WMF_SETTINGS_FILE"
 fi
 
-drush cvapi Contact.create Contact.create first_name='Anonymous' last_name=Anonymous email=fakeemail@wikimedia.org contact_type=Individual
+echo "adding anonymous user"
+drush cvapi Contact.create first_name='Anonymous' last_name=Anonymous email=fakeemail@wikimedia.org contact_type=Individual
 #drush -y user-add-role civicrm_webtest_user "$DEMO_USER"
 # In Garland, CiviCRM's toolbar looks messy unless you also activate Drupal's "toolbar", so grant "access toolbar"
 # We've activated more components than typical web-test baseline, so grant rights to those components.
