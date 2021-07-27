@@ -419,7 +419,7 @@ function amp_snapshot_create() {
     echo "[[Save Civi DB ($CIVI_DB_NAME) to file ($CIVI_SQL)]]"
     cvutil_assertvars amp_snapshot_create CIVI_SQL CIVI_DB_ARGS CIVI_DB_NAME
     cvutil_makeparent "$CIVI_SQL"
-    cvutil_php_nodbg amp sql:dump --root="$CMS_ROOT" --passthru="--no-tablespaces" -Ncivi | gzip > "$CIVI_SQL"
+    cvutil_php_nodbg amp sql:dump --root="$CMS_ROOT" --passthru="--no-tablespaces --routines" -Ncivi | gzip > "$CIVI_SQL"
   fi
 }
 
