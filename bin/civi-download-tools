@@ -293,6 +293,7 @@ function get_hub_url() {
       ;;
     *)
       echo ""
+      return
   esac
 
   echo https://github.com/github/hub/releases/download/v${VERSION}/hub-${PLATFORM}-${VERSION}.${FORMAT}
