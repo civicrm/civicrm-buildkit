@@ -36,7 +36,9 @@ $c['fmtNames()'] = function($ppl, $ids, $extras, SymfonyStyle $io) {
     $names[] = sprintf("%s - %s", $orgName, implode(', ', $orgPpl));
   }
 
-  sort($names);
+  usort($names, function($a,$b) {
+    return strnatcmp(mb_strtolower($a), mb_strtolower($b));
+  });
   return $names;
 };
 
