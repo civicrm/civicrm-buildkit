@@ -70,4 +70,13 @@ in rec {
     buildInputs = [ ];
   };
 
+  xdebug2 = buildPecl {
+    version = "2.8.1";
+    pname = "xdebug";
+    sha256 = "080mwr7m72rf0jsig5074dgq2n86hhs7rdbfg6yvnm959sby72w3";
+    doCheck = true;
+    checkTarget = "test";
+    zendExtension = true;
+  };
+
 }
