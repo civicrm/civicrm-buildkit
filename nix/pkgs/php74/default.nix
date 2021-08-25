@@ -17,7 +17,7 @@ let
 in pkgs.php74.buildEnv {
 
   ## EVALUATE: apcu_bc
-  extensions = { all, enabled}: with all; enabled++ [ xdebug redis apcu apcu_bc yaml memcached imagick opcache phpExtras.runkit7_3 phpExtras.timecop ];
+  extensions = { all, enabled}: with all; enabled++ [ xdebug redis tidy apcu apcu_bc yaml memcached imagick opcache phpExtras.runkit7_3 phpExtras.timecop ];
   extraConfig = phpIniSnippet1 + phpIniSnippet2;
 
 }
