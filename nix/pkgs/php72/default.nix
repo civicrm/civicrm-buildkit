@@ -6,6 +6,7 @@ let
       config = {
         php = {
           mysqlnd = true;
+          tidy = true;
         };
       };
     };
