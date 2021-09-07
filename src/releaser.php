@@ -225,6 +225,23 @@ $c['task_tag()'] = function (array $versionSpec, $input, $io, $gitTag) {
 };
 
 /**
+ * Generate and push git tags.
+ *
+ * @param array $versionSpec
+ * @param \Symfony\Component\Console\Input\InputInterface $input
+ * @param \Symfony\Component\Console\Style\SymfonyStyle $io
+ */
+$c['task_esr_tag()'] = function (array $versionSpec, $input, $io, $gitTag) {
+  $io->section('Generate and push git tags');
+  $jsonFile = sprintf("%s/civicrm-%s.json", $versionSpec['stagingDir'], $versionSpec['version']);
+  $versionJson = json_decode(file_get_contents($jsonFile), 1);
+  $newTags = task_tag_plan($versionSpec, $versionJson, '+esr');
+  $gitRemote = 'esr';
+  // $gitRemote = $input->getOption('git-remote');
+  $gitTag($newTags, $gitRemote);
+};
+
+/**
  * Send build to primary download service.
  *
  * @param array $versionSpec
