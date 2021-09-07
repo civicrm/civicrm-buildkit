@@ -358,6 +358,8 @@ $c['app']->main('[-f|--force] [-N|--dry-run] [--git-remote=] [--gpg-key=] json-u
  *
  * @param array $versionSpec
  * @param array $versionJson
+ * @param string $tagSuffix
+ *   Ex: '+esr'
  * @return array
  *   Each item has:
  *     - path: string, the file path to the local repo
@@ -365,7 +367,7 @@ $c['app']->main('[-f|--force] [-N|--dry-run] [--git-remote=] [--gpg-key=] json-u
  *     - commit: string, git sha1 hash
  * @throws \Exception
  */
-function task_tag_plan($versionSpec, $versionJson) {
+function task_tag_plan($versionSpec, $versionJson, $tagSuffix = '') {
   $repoPaths = array(
     "civicrm-drupal" => $versionSpec['gitDir'] . "/drupal",
     "civicrm-drupal-8" => $versionSpec['gitDir'] . "/drupal-8",
@@ -380,11 +382,11 @@ function task_tag_plan($versionSpec, $versionJson) {
     // Ex: $repoName: "civicrm-drupal@7.x" or "civicrm-core".
     if (strpos($repoDesc, '@') !== FALSE) {
       list ($repoName, $tagPrefix) = explode('@', $repoDesc);
-      $tagName = $tagPrefix . '-' . $versionSpec['version'];
+      $tagName = $tagPrefix . '-' . $versionSpec['version'] . $tagSuffix;
     }
     else {
       $repoName = $repoDesc;
-      $tagName = $versionSpec['version'];
+      $tagName = $versionSpec['version'] . $tagSuffix;
     }
     if (!isset($repoPaths[$repoName])) {
       throw new \Exception("Failed to determine path for repo $repoName");
