@@ -122,6 +122,36 @@ $c['git()'] = function ($path, $command, $runner) {
   }
 };
 
+/**
+ * Send tags to a remote
+ *
+ * @param array $newTags
+ * @param string $gitRemote
+ * @param \Symfony\Component\Console\Input\InputInterface $input
+ * @param \Symfony\Component\Console\Style\SymfonyStyle $io
+ */
+$c['gitTag()'] = function (array $newTags, string $gitRemote, $input, $io, $git) {
+  $force = $input->getOption('force') ? '-f' : '';
+
+  // Do all the local ops first. Progress toward more risky/enduring.
+
+  foreach ($newTags as $todo) {
+    $git($todo['path'], sprintf("git fetch %s", escapeshellarg($gitRemote)));
+  }
+
+  foreach ($newTags as $todo) {
+    $git($todo['path'],
+      sprintf("git tag %s %s %s", $force,
+        escapeshellarg($todo['tag']), escapeshellarg($todo['commit'])));
+  }
+
+  if (!$input->getOption('dry-run')) {
+    foreach ($newTags as $todo) {
+      $git($todo['path'], sprintf("git push %s %s %s", escapeshellarg($gitRemote), $force, escapeshellarg($todo['tag'])));
+    }
+  }
+};
+
 ###############################################################################
 ## Tasks
 
@@ -185,32 +215,13 @@ $c['task_sign()'] = function (array $versionSpec, $input, $io, $runner) {
  * @param \Symfony\Component\Console\Input\InputInterface $input
  * @param \Symfony\Component\Console\Style\SymfonyStyle $io
  */
-$c['task_tag()'] = function (array $versionSpec, $input, $io, $git) {
+$c['task_tag()'] = function (array $versionSpec, $input, $io, $gitTag) {
   $io->section('Generate and push git tags');
-  $jsonFile = sprintf("%s/civicrm-%s.json",
-    $versionSpec['stagingDir'], $versionSpec['version']);
+  $jsonFile = sprintf("%s/civicrm-%s.json", $versionSpec['stagingDir'], $versionSpec['version']);
   $versionJson = json_decode(file_get_contents($jsonFile), 1);
   $newTags = task_tag_plan($versionSpec, $versionJson);
-  $force = $input->getOption('force') ? '-f' : '';
   $gitRemote = $input->getOption('git-remote');
-
-  // Do all the local ops first. Progress toward more risky/enduring.
-
-  foreach ($newTags as $todo) {
-    $git($todo['path'], sprintf("git fetch %s", escapeshellarg($gitRemote)));
-  }
-
-  foreach ($newTags as $todo) {
-    $git($todo['path'],
-      sprintf("git tag %s %s %s", $force,
-        escapeshellarg($todo['tag']), escapeshellarg($todo['commit'])));
-  }
-
-  if (!$input->getOption('dry-run')) {
-    foreach ($newTags as $todo) {
-      $git($todo['path'], sprintf("git push %s %s %s", escapeshellarg($gitRemote), $force, escapeshellarg($todo['tag'])));
-    }
-  }
+  $gitTag($newTags, $gitRemote);
 };
 
 /**
