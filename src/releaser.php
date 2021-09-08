@@ -399,15 +399,16 @@ $c['task_publish()'] = function (array $versionSpec, $input, $io, $runner) {
  * @param \Symfony\Component\Console\Input\InputInterface $input
  * @param \Symfony\Component\Console\Style\SymfonyStyle $io
  */
-$c['task_esr_publish()'] = function (array $versionSpec, $input, $io, $runner, $gitlabUpload) {
-  $gitlabEsr = 'https://lab.civicrm.org/esr';
+$c['task_esr_publish()'] = function (array $versionSpec, $input, $io, $runner, $gitlabUpload, $gitlabClient) {
+  $gitlabUrl = 'https://lab.civicrm.org';
   $files = (array) glob($versionSpec['stagingDir'] . '/civicrm*');
   if (empty($files)) {
     throw new \Exception("Failed to find assets in " . $versionSpec['stagingDir']);
   }
+  $esrVer = $versionSpec['version'] . '+esr';
 
-  $io->section("Publish ESR tarballs to Gitlab ($gitlabEsr)");
-  $gitlabUpload("$gitlabEsr/core", $versionSpec['version'] . '+esr', $files);
+  $io->section("Publish ESR tarballs to Gitlab ($gitlabUrl/esr/core)");
+  $gitlabUpload("$gitlabUrl/esr/core", $esrVer, $files);
 
   $io->section('Publish ESR tarballs to Google Cloud');
   $dry = $input->getOption('dry-run') ? '-n' : '';
@@ -415,6 +416,16 @@ $c['task_esr_publish()'] = function (array $versionSpec, $input, $io, $runner, $
     escapeshellarg($versionSpec['stagingDir']),
     escapeshellarg('gs://civicrm-private/civicrm-esr/' . $versionSpec['version'])
   ));
+
+  $composerProjects = ['esr/core' => 558, 'esr/packages' => 1092, 'esr/drupal-8' => 1093];
+  foreach ($composerProjects as $prjName => $prjId) {
+    $io->section("Update ESR composer feed ($gitlabUrl/$prjName aka #{$prjId})");
+    // For some reason, the `packages/composer` API doesn't seem to work with the symbolic project name...
+    // $gitlabClient("$gitlabUrl/$prjName")->post('packages/composer', [
+    $gitlabClient("$gitlabUrl/esr/core")->post("$gitlabUrl/api/v4/projects/$prjId/packages/composer", [
+      'form_params' => ['tag' => $esrVer],
+    ]);
+  }
 };
 
 /**
