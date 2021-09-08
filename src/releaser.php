@@ -1,13 +1,15 @@
 <?php
-#!require clippy/std: ~0.2.1
+#!require clippy/std: ~0.2.2
 #!require clippy/container: '~1.2'
 
 ###############################################################################
 ## Bootstrap
 namespace Clippy;
 
+use GuzzleHttp\HandlerStack;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 $c = clippy()->register(plugins());
 
@@ -149,6 +151,107 @@ $c['gitTag()'] = function (array $newTags, string $gitRemote, $input, $io, $git)
     foreach ($newTags as $todo) {
       $git($todo['path'], sprintf("git push %s %s %s", escapeshellarg($gitRemote), $force, escapeshellarg($todo['tag'])));
     }
+  }
+};
+
+/**
+ * Create a client for communicating with Gitlab API.
+ *
+ * @param string $url
+ *   Base URL for Gitlab project (https:///DOMAIN/OWNER/REPO).
+ * @return \GuzzleHttp\Client
+ */
+$c['gitlabClient()'] = function($url, Credentials $cred, HandlerStack $guzzleHandler) {
+  assertThat(preg_match(';https?://[^/]+/[^/]+/[^/]+;', $url), "Project URL should match pattern: https:///DOMAIN/OWNER/REPO");
+  list ($scheme, , $host, $owner, $repo) = explode('/', $url);
+
+  static $credCache = [];
+  $credCache[$host] = $credCache[$host] ?? $cred->get('PRIVATE_TOKEN', $host);
+
+  $client = new \GuzzleHttp\Client([
+    'base_uri' => "{$scheme}//{$host}/api/v4/projects/{$owner}%2F{$repo}/",
+    'headers' => ['PRIVATE-TOKEN' => $credCache[$host]],
+    'handler' => $guzzleHandler,
+  ]);
+  return $client;
+};
+
+/**
+ * Ensure that the given Gitlab release exists.
+ *
+ * @param \GuzzleHttp\Client
+ *   Client for talking with a Gitlab project.
+ * @param string $verNum
+ *   The version that should exist.
+ */
+$c['gitlabRelease()'] = function($client, $verNum, SymfonyStyle $io) {
+  try {
+    $client->get('releases/' . urlencode($verNum) . '/');
+  }
+  catch (\Exception $e) {
+    $client->post('releases', [
+      'form_params' => [
+        'name' => $verNum,
+        'tag_name' => $verNum,
+        'description' => $verNum,
+      ],
+    ]);
+  }
+};
+
+/**
+ * Upload a list of files to Gitlab. Attach them to a specific release.
+ * @param string $projectUrl
+ *   Base URL for Gitlab project (https:///DOMAIN/OWNER/REPO).
+ * @param string $verNum
+ * @param string[] $assets
+ *   List of local files to upload. The remote file will have a matching name.
+ */
+$c['gitlabUpload()'] = function (string $projectUrl, string $verNum, array $assets, SymfonyStyle $io, $gitlabClient, $input, $gitlabRelease) {
+  $verbose = function($data) use ($io) {
+    return $io->isVerbose() ? toJSON($data) : '';
+  };
+
+  $client = $gitlabClient($projectUrl);
+  assertThat(preg_match('/^\d[0-9a-z\.\-\+]*$/', $verNum));
+  $io->writeln(sprintf("<info>Upload to project <comment>%s</comment> for version <comment>%s</comment> with files:\n<comment>  * %s</comment></info>", $projectUrl, $verNum, implode("\n  * ", $assets)));
+
+  $gitlabRelease($client, $verNum);
+
+  try {
+    $existingAssets = fromJSON($client->get('releases/' . urlencode($verNum) . '/assets/links'));
+    $existingAssets = index(['name'], $existingAssets);
+  }
+  catch (\Exception $e) {
+    $existingAssets = [];
+  }
+
+  foreach ($assets as $asset) {
+    assertThat(file_exists($asset), "File $asset does not exist");
+    if ($input->getOption('dry-run')) {
+      $io->note("(DRY-RUN) Skipped upload of $asset");
+      continue;
+    }
+    $upload = fromJSON($client->post('uploads', [
+      'multipart' => [
+        ['name' => 'file', 'contents' => fopen($asset, 'r')],
+      ],
+    ]));
+    $io->writeln("<info>Created new upload</info> " . $verbose($upload));
+
+    if (isset($existingAssets[basename($asset)])) {
+      $delete = fromJSON($client->delete('releases/' . urlencode($verNum) . '/assets/links/' . $existingAssets[basename($asset)]['id']));
+      $io->writeln("<info>Deleted old upload</info> " . $verbose($delete));
+      // Should we also delete the previous upload? Is that possible?
+    }
+
+    $release = fromJSON($client->post('releases/' . urlencode($verNum) . '/assets/links', [
+      'form_params' => [
+        'name' => basename($asset),
+        'url' => joinUrl($projectUrl, $upload['url']),
+      ],
+    ]));
+    $io->writeln("<info>Updated release</info> " . $verbose($release));
   }
 };
 
@@ -296,8 +399,17 @@ $c['task_publish()'] = function (array $versionSpec, $input, $io, $runner) {
  * @param \Symfony\Component\Console\Input\InputInterface $input
  * @param \Symfony\Component\Console\Style\SymfonyStyle $io
  */
-$c['task_esr_publish()'] = function (array $versionSpec, $input, $io, $runner) {
-  $io->section('Publish tarballs to primary download service (ESR)');
+$c['task_esr_publish()'] = function (array $versionSpec, $input, $io, $runner, $gitlabUpload) {
+  $gitlabEsr = 'https://lab.civicrm.org/esr';
+  $files = (array) glob($versionSpec['stagingDir'] . '/civicrm*');
+  if (empty($files)) {
+    throw new \Exception("Failed to find assets in " . $versionSpec['stagingDir']);
+  }
+
+  $io->section("Publish ESR tarballs to Gitlab ($gitlabEsr)");
+  $gitlabUpload("$gitlabEsr/core", $versionSpec['version'] . '+esr', $files);
+
+  $io->section('Publish ESR tarballs to Google Cloud');
   $dry = $input->getOption('dry-run') ? '-n' : '';
   $runner->passthruOk(sprintf("gsutil -m rsync $dry %s/ %s/",
     escapeshellarg($versionSpec['stagingDir']),
