@@ -94,11 +94,23 @@ fi
 
 echo "adding anonymous user"
 drush cvapi Contact.create first_name='Anonymous' last_name=Anonymous email=fakeemail@wikimedia.org contact_type=Individual
-#drush -y user-add-role civicrm_webtest_user "$DEMO_USER"
-# In Garland, CiviCRM's toolbar looks messy unless you also activate Drupal's "toolbar", so grant "access toolbar"
-# We've activated more components than typical web-test baseline, so grant rights to those components.
-#for perm in 'access toolbar'
-#do
-#  drush -y role-add-perm civicrm_webtest_user "$perm"
-#done
-popd
+
+echo "adding wmf roles"
+WMF_ROLES_FILE="${WEB_ROOT}/drupal/sites/default/wmf_roles/roles.txt"
+if [ -e "$WMF_ROLES_FILE" ]; then
+  while IFS= read -r role; do
+    # we want to declare administrator permissions but the role exists.
+    if [ "$role" != 'administrator' ] && [ "$role" != 'authenticated user' ] && [ "$role" != 'anonymous' ]; then
+      echo "Adding role $role"
+      drush -y role-create "$role"
+    fi
+    WMF_ROLE_FILE="${WEB_ROOT}/drupal/sites/default/wmf_roles/${role}.txt"
+    if [ -e "$WMF_ROLE_FILE" ]; then
+      echo "Adding permissions for ${role}"
+      drush scr "$PRJDIR/src/drush/perm.php" < "$WMF_ROLE_FILE"
+    fi
+  done < "$WMF_ROLES_FILE"
+fi
+drush user-create engage --mail="engage@example.com" --password="engage"
+drush -y user-add-role fr-tech "$ADMIN_USER"
+drush -y user-add-role "Engage Direct Mail" "engage"
