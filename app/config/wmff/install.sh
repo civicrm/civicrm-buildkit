@@ -110,7 +110,8 @@ if [ -e "$WMF_ROLES_FILE" ]; then
       drush scr "$PRJDIR/src/drush/perm.php" < "$WMF_ROLE_FILE"
     fi
   done < "$WMF_ROLES_FILE"
+  drush user-create engage --mail="engage@example.com" --password="engage"
+  drush -y user-add-role fr-tech "$ADMIN_USER"
+  drush -y user-add-role "Engage Direct Mail" "engage"
+
 fi
-drush user-create engage --mail="engage@example.com" --password="engage"
-drush -y user-add-role fr-tech "$ADMIN_USER"
-drush -y user-add-role "Engage Direct Mail" "engage"
