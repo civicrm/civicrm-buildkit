@@ -14,7 +14,7 @@ in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
 
     bkpkgs.php74
     pkgs_2105.nodejs-14_x
-    pkgs.apacheHttpd
+    pkgs_2105.apacheHttpd
     pkgs_1809.mailcatcher
     pkgs.memcached
     pkgs.mysql57
