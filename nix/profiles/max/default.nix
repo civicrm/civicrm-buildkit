@@ -7,7 +7,7 @@
 let
     pkgs = import (import ../../pins/19.09.nix) {};
     pkgs_1809 = import (import ../../pins/18.09.nix) {};
-    pkgs_2105 = import (import ../../pins/pre-21.05.nix) {};
+    pkgs_2105 = import (import ../../pins/21.05.nix) {};
     bkpkgs = import ../../pkgs;
 
 in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
