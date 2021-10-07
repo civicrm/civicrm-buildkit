@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bb6eba908a2298ce8800dfff419f7fc7",
+    "content-hash": "18f0d647934bbb76fa2d638a4faa8686",
     "packages": [
         {
             "name": "civicrm/composer-downloads-plugin",
@@ -99,7 +99,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/civicrm/coder.git",
-                "reference": "b04829b2095b6351531050f3ad25448fe63f1ce9"
+                "reference": "5fa299b7790535b9f5098417f848a173cb6ce4d4"
             },
             "require": {
                 "ext-mbstring": "*",
@@ -110,6 +110,7 @@
             "require-dev": {
                 "phpunit/phpunit": ">=3.7 <6"
             },
+            "default-branch": true,
             "type": "phpcodesniffer-standard",
             "autoload": {
                 "psr-0": {
@@ -131,7 +132,7 @@
                 "issues": "https://www.drupal.org/project/issues/coder",
                 "source": "https://www.drupal.org/project/coder"
             },
-            "time": "2020-11-14T00:08:25+00:00"
+            "time": "2021-09-30T18:55:03+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -445,5 +446,5 @@
     "platform-overrides": {
         "php": "7.1"
     },
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }
