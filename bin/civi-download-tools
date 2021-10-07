@@ -356,7 +356,7 @@ function get_system_installer() {
     source /etc/lsb-release
   fi
   case "$DISTRIB_CODENAME" in
-    stretch|buster|bionic|focal|hirsute)
+    stretch|buster|bullseye|bionic|focal|hirsute)
       echo "do_system_$DISTRIB_CODENAME"
       ;;
     *)
@@ -524,6 +524,31 @@ function do_system_buster() {
       sudo apt-get -y install ca-certificates apt-transport-https wget
       wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
       sudo echo "deb https://packages.sury.org/php/ buster main" | tee /etc/apt/sources.list.d/php.list
+      wget -O- https://deb.nodesource.com/setup_14.x | sudo -E bash -
+      sudo apt-get -y install $PACKAGES
+      sudo phpenmod imap
+      sudo a2enmod rewrite
+      sudo apache2ctl restart
+    else
+      echo "Aborted" 1>&2
+      exit 1
+    fi
+  set +e
+}
+
+###############################################################################
+
+function do_system_bullseye() {
+  set -e
+    PACKAGES="acl git wget unzip zip default-mysql-server default-mysql-client php7.3-cli php7.3-imap php7.3-ldap php7.3-curl php7.3-mysql php7.3-intl php7.3-gd php7.3-dev php7.3-bcmath php7.3-mbstring php7.3-soap php7.3-zip php7.3-xml apache2 libapache2-mod-php7.3 nodejs php-pear"
+    echo "Detected \"Debian Bullseye\"."
+    echo ""
+    echo "Recommended packages: $PACKAGES"
+    echo ""
+    if cvutil_confirm "Run automated installation? [Y/n] " y y; then
+      sudo apt-get -y install ca-certificates apt-transport-https wget
+      wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
+      sudo echo "deb https://packages.sury.org/php/ bullseye main" | sudo tee /etc/apt/sources.list.d/php.list
       wget -O- https://deb.nodesource.com/setup_14.x | sudo -E bash -
       sudo apt-get -y install $PACKAGES
       sudo phpenmod imap
