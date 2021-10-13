@@ -7,19 +7,19 @@
 let
     pkgs = import (import ../../pins/19.09.nix) {};
     pkgs_1809 = import (import ../../pins/18.09.nix) {};
-    pkgs_2105 = import (import ../../pins/pre-21.05.nix) {};
+    pkgs_2105 = import (import ../../pins/21.05.nix) {};
     bkpkgs = import ../../pkgs;
 
 in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
 
     bkpkgs.php80
     pkgs_2105.nodejs-14_x
-    pkgs.apacheHttpd
+    pkgs_2105.apacheHttpd
     pkgs_1809.mailcatcher
-    pkgs.memcached
+    pkgs_2105.memcached
     /* pkgs.mariadb */
     bkpkgs.mysql80
-    pkgs.redis
+    pkgs_2105.redis
     bkpkgs.transifexClient
 
 ]
