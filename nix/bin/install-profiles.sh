@@ -12,13 +12,13 @@
 #   Only tested with multiuser mode.
 #
 # Example: Install (or upgrade) all the profiles based on their master revision
-#   sh <(curl https://raw.githubusercontent.com/totten/bknix/master/bin/install-profiles.sh)
+#   sh <(curl https://raw.githubusercontent.com/civicrm/civicrm-buildkit/master/nix/bin/install-profiles.sh)
 #
 # Example: Install (or upgrade) one specific profile (based on the master revision)
-#   env PROFILES="dfl" sh <(curl https://raw.githubusercontent.com/totten/bknix/master/bin/install-profiles.sh)
+#   env PROFILES="dfl" sh <(curl https://raw.githubusercontent.com/civicrm/civicrm-buildkit/master/nix/bin/install-profiles.sh)
 #
 # Example: Install (or upgrade) all the profiles defined in some other branch
-#   env VERSION=someBranch sh <(curl https://raw.githubusercontent.com/totten/bknix/someBranch/bin/install-profiles.sh)
+#   env VERSION=someBranch sh <(curl https://raw.githubusercontent.com/civicrm/civicrm-buildkit/someBranch/nix/bin/install-profiles.sh)
 #
 # Example: Install (or upgrade) using the local profile definitions
 #    env PROFILES="min max dfl old edge" DEFN=$PWD ./bin/install-profiles.sh
@@ -28,7 +28,7 @@
 
 VERSION=${VERSION:-master}
 PROFILES=${PROFILES:-min max dfl}
-DEFN="${DEFN:-https://github.com/totten/bknix/archive/$VERSION.tar.gz}"
+DEFN="${DEFN:-https://github.com/civicrm/civicrm-buildkit/archive/$VERSION.tar.gz}"
 
 if [ -z `which nix` ]; then
   echo "Please install \"nix\" before running this. See: https://nixos.org/nix/manual/"

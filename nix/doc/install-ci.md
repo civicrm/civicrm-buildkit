@@ -28,8 +28,8 @@ sh <(curl https://nixos.org/nix/install) --daemon
 
 ## Get the config file
 sudo -i bash
-git clone https://github.com/totten/bknix /root/bknix
-cd /root/bknix
+git clone https://github.com/civicrm/civicrm-buildkit /root/buildkit
+cd /root/buildkit
 
 ## Optional: If you want to change the ramdisk config, then create files like:
 mkdir /etc/bknix-ci
@@ -37,7 +37,7 @@ echo RAMDISKSIZE=12G >> /etc/bknix-ci/install_all_jenkins.sh
 echo RAMDISKSIZE=700M >> /etc/bknix-ci/install_all_publisher.sh
 
 ## Initialize the min, max, and dfl profiles for the test user "jenkins"
-./bin/install-ci.sh
+./nix/bin/install-ci.sh
 
 ## Do a trial run
 su - totten

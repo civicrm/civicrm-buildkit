@@ -16,7 +16,7 @@ This document can be summarized as a few small commands:
 
 ```
 ## Step 1. Download the configuration
-me@localhost:~$ git clone https://github.com/totten/bknix
+me@localhost:~$ git clone https://github.com/civicrm/civicrm-buildkit ~/bknix
 
 ## Step 2. (Optional) Warmup with prebuilt binaries
 me@localhost:~$ nix-env -iA cachix -f https://cachix.org/api/v1/install
@@ -36,7 +36,7 @@ understand them, then proceed to [bknix: General usage](usage-loco.md).
 The `bknix` repository stores some *metadata* -- basically, a list of required packages.  We download a copy via `git`:
 
 ```
-git clone https://github.com/totten/bknix
+git clone https://github.com/civicrm/civicrm-buildkit ~/bknix
 ```
 
 This should be pretty quick.

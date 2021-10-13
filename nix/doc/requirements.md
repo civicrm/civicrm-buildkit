@@ -32,9 +32,9 @@ installer.  It will present a few introductory questions to address common
 options and suggestions:
 
 ```
-git clone https://github.com/civicrm/civicrm-buildkit ~/buildkit
-cd ~/buildkit/nix
-./bin/install-nix.sh
+git clone https://github.com/civicrm/civicrm-buildkit ~/bknix
+cd ~/bknix
+./nix/bin/install-nix.sh
 ```
 
 After running the script, you will need to re-initialize bash (i.e.  close

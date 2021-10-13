@@ -6,13 +6,13 @@ If you're developing a revision to the `bknix.git` project, then you'll need to 
 configuration files locally.
 
 ```
-git clone https://github.com/totten/bknix
+git clone https://github.com/civicrm/civicrm-buildkit ~/bknix
 ```
 
 The quickest way to try out a configuration (like `dfl` or `min` or `max`) is to use `nix-shell`, as in:
 
 ```
-cd bknix
+cd ~/bknix
 nix-shell -A dfl
 ```
 
@@ -27,7 +27,7 @@ installation-process or profile-arrangement, then you *can* install a profile.  
 provided to new users in [README.md](../README.md):
 
 ```bash
-sudo -i nix-env -i -p /nix/var/nix/profiles/bknix-dfl -f 'https://github.com/totten/bknix/archive/master.tar.gz' -E 'f: f.profiles.dfl'
+sudo -i nix-env -i -p /nix/var/nix/profiles/bknix-dfl -f 'https://github.com/civicrm/civicrm-buildkit/archive/master.tar.gz' -E 'f: f.profiles.dfl'
 ```
 
 Which breaks down as a few parts:
@@ -35,18 +35,18 @@ Which breaks down as a few parts:
 * `sudo -i` means *run the command as `root`*
 * `nix-env -i` means *install packages to a live environment*
 * `-p /nix/var/nix/profiles/bknix-dfl` means *put the packages in the shared profile `bknix-dfl`*
-* `-f 'https://github.com/totten/bknix/archive/master.tar.gz'` means *download the latest configuration file from Github*
+* `-f 'https://github.com/civicrm/civicrm-buildkit/archive/master.tar.gz'` means *download the latest configuration file from Github*
 * `-E 'f: f.profiles.dfl'` means *get a list of packages by evaluating the configuration file (aliased as `f`) and returning property `f.profiles.dfl`*
 
 For local development, we can change the `-f` option to get the config files from a local source (like `$HOME/bknix`):
 
 ```bash
-sudo -i nix-env -i -p /nix/var/nix/profiles/bknix-dfl -f $HOME/bknix -E 'f: f.profiles.dfl'
+sudo -i nix-env -i -p /nix/var/nix/profiles/bknix-dfl -f ~/bknix -E 'f: f.profiles.dfl'
 ```
 
 or equivalently
 
 ```bash
-cd $HOME/bknix
+cd ~/bknix
 sudo -i nix-env -i -p /nix/var/nix/profiles/bknix-dfl -f $PWD -E 'f: f.profiles.dfl'
 ```

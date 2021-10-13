@@ -18,8 +18,8 @@ This document can be summarized as two steps (three commands):
 
 ```
 ## Step 1. Download the configuration
-me@localhost:~$ git clone https://github.com/totten/bknix
-me@localhost:~$ cd bknix
+me@localhost:~$ git clone https://github.com/civicrm/civicrm-buildkit ~/bknix
+me@localhost:~$ cd ~/bknix/nix
 
 ## Step 2. Download and install the binaries
 me@localhost:~/bknix$ sudo -i
@@ -43,7 +43,7 @@ First, we need to get a copy of `bknix` repository. This provides configuration 
 the various packages/programs, and it provides some helper scripts to make use of them.
 
 ```bash
-git clone https://github.com/totten/bknix.git
+git clone https://github.com/civicrm/civicrm-buildkit ~/bknix
 ```
 
 ## Step 2. Download and install the binaries

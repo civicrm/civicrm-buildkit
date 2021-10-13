@@ -23,8 +23,8 @@ is responsible for starting and stopping processes. `bknix` works with a few lau
 * `loco run`: [Loco](https://github.com/totten/loco) runs local processes in the foreground. This is useful for local development.
   It can be configured by editing the YAML file ([loco.yml](../.loco/loco.yml)), by setting environment variables
   (`HTTPD_PORT` et al), and/or by editing the [configuration templates](../.loco/config).
-* `systemd`: This is a common process manager on Linux hosts. This is useful for CI nodes. The `loco.yml`
-  can be exported to systemd notation directly (via `loco export`) or indirectly (as part of `install-ci.sh`).
+* `systemd`: This is the most common process manager on Linux hosts. This is useful for CI nodes. The `loco.yml`
+  can be exported to systemd notation manually (via `loco export`) or automatically (as part of `install-ci.sh`).
 
 ## Usage
 

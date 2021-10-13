@@ -20,11 +20,11 @@ This document can be summarized as a few steps:
 
 ```
 ## Step 1. Download the configuration
-me@localhost:~$ git clone https://github.com/totten/bknix
+me@localhost:~$ git clone https://github.com/civicrm/civicrm-buildkit ~/bknix
 
 ## Step 2. Download and install the binaries
 me@localhost:~$ cd ~/bknix
-me@localhost:~/bknix$ ./bin/install-developer.sh
+me@localhost:~/bknix$ ./nix/bin/install-developer.sh
 
 ## Step 3. (Day-to-day) Open a subshell
 me@localhost:~$ use-bknix dfl -s
@@ -39,7 +39,7 @@ First, we need to get a copy of `bknix` repository. This provides configuration 
 the various packages/programs, and it provides some helper scripts to make use of them.
 
 ```bash
-git clone https://github.com/totten/bknix.git
+git clone https://github.com/civicrm/civicrm-buildkit
 ```
 
 ## Step 2. Download and install the binaries
@@ -48,7 +48,7 @@ Second, we download and install the actual binaries.
 
 ```
 cd bknix
-./bin/install-developer.sh
+./nix/bin/install-developer.sh
 ```
 
 The `install-developer.sh` script will:
@@ -63,7 +63,7 @@ The `install-developer.sh` script will:
 > Optionally, you may give a list of different profiles using the `PROFILES` variable, e.g.
 >
 > ```
-> env PROFILES="max edge" ./bin/install-developer.sh
+> env PROFILES="max edge" ./nix/bin/install-developer.sh
 > ```
 
 Once it's finished, you can inspect the list of binaries that were installed.  The `bin` folder contains symlinks for
