@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1d64093012346fa1be86b2b9196133a9",
+    "content-hash": "33c82e59961b04def8a786f03e82b582",
     "packages": [
         {
             "name": "civicrm/composer-downloads-plugin",
@@ -58,7 +58,7 @@
             "support": {
                 "source": "https://github.com/civicrm/composer-downloads-plugin/tree/v3.0.1"
             },
-            "time": "2020-11-02T04:00:42+00:00"
+            "time": "2020-11-02T05:26:23+00:00"
         },
         {
             "name": "civicrm/upgrade-test",
@@ -445,7 +445,7 @@
                 "issues": "https://github.com/totten/php-symbol-diff/issues",
                 "source": "https://github.com/totten/php-symbol-diff/tree/master"
             },
-            "time": "2015-08-06T08:23:13+00:00"
+            "time": "2018-05-04T22:36:55+00:00"
         }
     ],
     "packages-dev": [],
@@ -465,5 +465,5 @@
     "platform-overrides": {
         "php": "7.1"
     },
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.0.0"
 }
