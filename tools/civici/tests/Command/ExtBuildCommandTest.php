@@ -1,12 +1,20 @@
 <?php
 namespace Civici\Command;
 
+use Civici\Util\CacheDir;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ExtBuildCommandTest extends \Civici\CiviciTestCase {
 
   public function setup(): void {
     parent::setup();
+    $this->fs->remove(CacheDir::get());
+    CacheDir::writeFile('master-version.txt', '5.40.0');
+  }
+
+  public function tearDown(): void {
+    $this->fs->remove(CacheDir::get());
+    parent::tearDown();
   }
 
   /**

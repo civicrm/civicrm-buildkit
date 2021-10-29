@@ -1,6 +1,7 @@
 <?php
 namespace Civici\Command;
 
+use Civici\Util\CacheDir;
 use Symfony\Component\Console\Command\Command;
 use Civici\Util\ProcessBatch;
 use Symfony\Component\Console\Input\InputInterface;
@@ -8,6 +9,10 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class BaseCommand extends Command {
+
+  const MASTER_VERSION_URL = 'https://raw.githubusercontent.com/civicrm/civicrm-core/master/xml/version.xml';
+
+  const CACHE_TTL = 60 * 60;
 
   /**
    * @param array $names
@@ -113,16 +118,14 @@ class BaseCommand extends Command {
    * @return string
    */
   protected function detectFeedUrl($civiVer, $includeDev) {
+    $feedVer = NULL;
     if ($civiVer === 'master') {
-      if (time() < 1627768800 /*'2021-08-01'*/) {
-        // We don't know the real value, but (given the way forward compatibility works
-        // in the feed) we can just pick something high.
-        // Something like 5.99999.0 might be better, but (currently) the feed isn't very efficient
-        // with really numbers.
-        $feedVer = '5.40.0';
-      }
-      else {
-        throw new \RuntimeException("Cannot fudge version lookup. Please specify --feed or a numerical --civi-ver");
+      $feedVer = CacheDir::readFile('master-version.txt', self::CACHE_TTL);
+      if ($feedVer === NULL) {
+        $xmlString = file_get_contents(self::MASTER_VERSION_URL);
+        $xmlObj = simplexml_load_string($xmlString);
+        $feedVer = preg_replace('/^(\d+\.\d+)\..*$/', '\1.0', (string) $xmlObj->version_no);
+        CacheDir::writeFile('master-version.txt', $feedVer);
       }
     }
     elseif (preg_match('/^([0-9]+\.[0-9]+)$/', $civiVer, $matches)) {
@@ -131,8 +134,9 @@ class BaseCommand extends Command {
     elseif (preg_match('/^([0-9]+\.[0-9]+)\./', $civiVer, $matches)) {
       $feedVer = $matches[1] . '.0';
     }
-    else {
-      throw new \RuntimeException("Cannot autodetect extension feed for --civi-ver=$civiVer. Please specify --feed or a different --civi-ver.");
+
+    if ($feedVer === NULL) {
+      throw new \RuntimeException("Cannot autodetect extension feed for --civi-ver=$civiVer. Please specify --feed or a different --civi-ver. Alternatively, you may need to fix the Internet connection or clear the civici cache dir.");
     }
 
     if ($includeDev) {
