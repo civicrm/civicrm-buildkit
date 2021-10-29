@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "18f0d647934bbb76fa2d638a4faa8686",
+    "content-hash": "1d64093012346fa1be86b2b9196133a9",
     "packages": [
         {
             "name": "civicrm/composer-downloads-plugin",
@@ -55,6 +55,9 @@
                 }
             ],
             "description": "Composer plugin for downloading additional files within any composer package.",
+            "support": {
+                "source": "https://github.com/civicrm/composer-downloads-plugin/tree/v3.0.1"
+            },
             "time": "2020-11-02T04:00:42+00:00"
         },
         {
@@ -177,6 +180,10 @@
                 "parser",
                 "php"
             ],
+            "support": {
+                "issues": "https://github.com/nikic/PHP-Parser/issues",
+                "source": "https://github.com/nikic/PHP-Parser/tree/1.x"
+            },
             "time": "2015-07-14T17:31:05+00:00"
         },
         {
@@ -291,6 +298,9 @@
                 "polyfill",
                 "portable"
             ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-ctype/tree/master"
+            },
             "time": "2019-02-06T07:57:58+00:00"
         },
         {
@@ -350,6 +360,9 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/yaml/tree/v3.4.24"
+            },
             "time": "2019-03-25T07:48:46+00:00"
         },
         {
@@ -383,6 +396,10 @@
                 "MIT"
             ],
             "description": "Parser for .gitignore (and sparse-checkout, and anything else using the same format) files",
+            "support": {
+                "issues": "https://github.com/TOGoS/PHPGitIgnore/issues",
+                "source": "https://github.com/TOGoS/PHPGitIgnore/tree/master"
+            },
             "time": "2019-04-19T19:16:58+00:00"
         },
         {
@@ -402,9 +419,7 @@
             "require": {
                 "nikic/php-parser": "^1.4"
             },
-            "require-dev": {
-                "phpunit/phpunit": "3.7.*"
-            },
+            "default-branch": true,
             "bin": [
                 "bin/php-symbol-diff",
                 "bin/git-php-symbol-diff"
@@ -426,6 +441,10 @@
                 }
             ],
             "description": "Identify changes in PHP code by symbol (class/method)",
+            "support": {
+                "issues": "https://github.com/totten/php-symbol-diff/issues",
+                "source": "https://github.com/totten/php-symbol-diff/tree/master"
+            },
             "time": "2015-08-06T08:23:13+00:00"
         }
     ],
