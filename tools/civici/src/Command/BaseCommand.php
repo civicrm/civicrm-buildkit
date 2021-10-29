@@ -1,19 +1,11 @@
 <?php
 namespace Civici\Command;
 
-use Civici\Application;
 use Symfony\Component\Console\Command\Command;
-use Civici\GitRepo;
-use Civici\Util\ArrayUtil;
-use Civici\Util\Filesystem;
-use Civici\Util\Process as ProcessUtil;
-use Civici\Util\Process;
 use Civici\Util\ProcessBatch;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-
 
 class BaseCommand extends Command {
 
@@ -116,6 +108,8 @@ class BaseCommand extends Command {
   /**
    * @param string $civiVer
    *   Ex: '5.3.0', '5.3', 'master'
+   * @param bool $includeDev
+   *   Whether to include development extension releases (alphas/betas).
    * @return string
    */
   protected function detectFeedUrl($civiVer, $includeDev) {
