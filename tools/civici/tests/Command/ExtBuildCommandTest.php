@@ -4,6 +4,7 @@ namespace Civici\Command;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ExtBuildCommandTest extends \Civici\CiviciTestCase {
+
   public function setup(): void {
     parent::setup();
   }
@@ -52,7 +53,7 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
       // '%^\w*$%',
 
       '%Done%',
-      '%%'
+      '%%',
     ];
 
     $allOutput = $commandTester->getDisplay(FALSE);
@@ -108,7 +109,7 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
       // '%civibuild snapshot \'foobar\'%',
 
       '%Done%',
-      '%%'
+      '%%',
     ];
 
     $allOutput = $commandTester->getDisplay(FALSE);
@@ -167,7 +168,7 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
       // '%^\w*$%',
 
       '%Done%',
-      '%%'
+      '%%',
     ];
 
     $allOutput = $commandTester->getDisplay(FALSE);
