@@ -16,9 +16,9 @@ in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
     pkgs_2105.nodejs-14_x
     pkgs_2105.apacheHttpd
     pkgs_1809.mailcatcher
-    pkgs.memcached
+    pkgs_2105.memcached
     pkgs_1809.mysql57
-    pkgs.redis
+    pkgs_2105.redis
     bkpkgs.transifexClient
 
 ]
