@@ -4,7 +4,7 @@
 #!ttl 10 years
 #!require symfony/var-dumper: ~3.0
 #!require symfony/yaml: ~3.0
-#!require clippy/std: ~0.3.2
+#!require clippy/std: ~0.3.3
 namespace Clippy;
 
 use Symfony\Component\Console\Output\OutputInterface;
@@ -37,7 +37,10 @@ $c['app']->command('dump', function($allTasks) {
   ]);
 });
 
-$c['app']->command('run [-N|--dry-run] [--threshold=]', function($dryRun, $threshold = 90, SymfonyStyle $io, $allTasks, $findTasks, $isPartitionFull, $cmdr) {
+$c['app']->command('run [-N|--dry-run] [--threshold=]', function($dryRun, $threshold, SymfonyStyle $io, $allTasks, $findTasks, $isPartitionFull, $cmdr) {
+  if (empty($threshold)) {
+    $threshold = 90;
+  }
   $exitCode = 0;
   $partitions = uniq(...array_column($allTasks, 'partitions'));
   $levels = uniq(array_column($allTasks, 'level'));
