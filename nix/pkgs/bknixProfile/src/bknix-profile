@@ -29,6 +29,12 @@ case "$1" in
     if [ -e "$PRFDIR/etc/bash_completion.d/git-completion.bash" ]; then
       echo "source \"$PRFDIR/etc/bash_completion.d/git-completion.bash\" ;"
     fi
+
+    if [ -d "$PRFDIR/share/bash-completion/completions/" ]; then
+      for FILE in "$PRFDIR/share/bash-completion/completions/"* ; do
+        echo "source \"$FILE\""
+      done
+    fi
     ;;
 
   *)
