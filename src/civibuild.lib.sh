@@ -1045,7 +1045,6 @@ function backdrop_download() {
       patch database.inc < "$PRJDIR/app/drupal-patches/mysql8-drupal.patch"
     fi
   popd
-  make_link "$WEB_ROOT/web" "$PRJDIR/extern/drush-lib/backdrop" "drush"
 }
 
 ###############################################################################
@@ -1433,25 +1432,4 @@ function cvutil_ed() {
     mv "$file" "$file".bak
     sed "$replacement" < "$file".bak > "$file"
   fi
-}
-
-###############################################################################
-## Make a symlink... gently.
-## usage: make_link <workdir> <from> <to>
-function make_link() {
-  local workdir="$1"
-  local from="$2"
-  local to="$3"
-  pushd "$workdir" >> /dev/null
-    if [ -L "$to" ]; then
-      local oldLink=$(readlink "$to")
-      if [ -n "$oldLink" -a "$oldLink" != "$from" ]; then
-        rm -f "$to"
-      fi
-    fi
-    if [ ! -e "$to" ]; then
-      ln -s "$from" "$to"
-    fi
-    ## FIXME: ideally, provide a notice if the file-exists and is *not* the expected link
-  popd >> /dev/null
 }
