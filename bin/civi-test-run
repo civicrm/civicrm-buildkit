@@ -114,10 +114,12 @@ function task_phpunit_core_extension() {
 
 function task_mixin() {
   pushd "$CIVI_CORE"
-    if ! $GUARD ./tools/mixin/bin/test-all "$JUNITDIR" ; then
-      EXITCODES="$EXITCODES mixin"
+    if [ -f tools/mixin/bin/test-all ]; then
+      if ! $GUARD ./tools/mixin/bin/test-all "$JUNITDIR" ; then
+        EXITCODES="$EXITCODES mixin"
+      fi
+      $GUARD phpunit-xml-cleanup "$JUNITDIR"/*.xml
     fi
-    $GUARD phpunit-xml-cleanup "$JUNITDIR"/*.xml
   popd
 }
 
