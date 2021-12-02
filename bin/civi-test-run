@@ -47,6 +47,7 @@ function show_help() {
   echo "  <suites>            A list of one more of the following:"
   echo "                        - all"
   echo "                        - karma"
+  echo "                        - mixin"
   echo "                        - phpunit-api3"
   echo "                        - phpunit-api4"
   echo "                        - phpunit-civi"
@@ -109,6 +110,15 @@ function task_phpunit_core_extension() {
 
  $GUARD phpunit-xml-cleanup "$JUNITDIR"/*.xml
 
+}
+
+function task_mixin() {
+  pushd "$CIVI_CORE"
+    if ! $GUARD ./tools/mixin/bin/test-all "$JUNITDIR" ; then
+      EXITCODES="$EXITCODES mixin"
+    fi
+    $GUARD phpunit-xml-cleanup "$JUNITDIR"/*.xml
+  popd
 }
 
 function test_core_extenions() {
@@ -297,6 +307,12 @@ if [ "$SUITES" = "all" ]; then
       SUITES="$SUITES phpunit-core-exts"
     fi
 
+    if [ -f "tools/mixin/bin/test-all" ]; then
+      SUITES="$SUITES mixin"
+    else
+      echo "Skip unavailable suite: mixin"
+    fi
+
   popd >> /dev/null
 elif [[ " $SUITES " =~ \ all\  ]]; then
   echo "The \"all\" target should not be mixed with other targets."
@@ -316,6 +332,7 @@ export TIME_FUNC
 for TESTTYPE in $SUITES ; do
   case "$TESTTYPE" in
     karma)  task_karma ;;
+    mixin) task_mixin ;;
     upgrade)  CIVIVER=$(getCiviVer) ; task_upgrade 5.13.3-multilingual_af_bg_en* "@4.5.9..$CIVIVER:10" ;;
     upgrade@*)  task_upgrade $(echo $TESTTYPE | sed s'/^upgrade//' ) ;;
     phpunit-e2e)  PHP_APC_CLI=on task_phpunit E2E_AllTests ;;
