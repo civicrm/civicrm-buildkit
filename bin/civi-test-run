@@ -119,6 +119,8 @@ function task_mixin() {
         EXITCODES="$EXITCODES mixin"
       fi
       $GUARD phpunit-xml-cleanup "$JUNITDIR"/*.xml
+    else
+      junit_placeholder
     fi
   popd
 }
@@ -182,6 +184,14 @@ function task_upgrade() {
 function junit_cleanup() {
   [ -d "$JUNITDIR" ] && $GUARD rm -rf "$JUNITDIR"
   [ ! -d "$JUNITDIR" ] && $GUARD mkdir "$JUNITDIR"
+}
+
+#################################################
+## Create a stub JUnit XML file. This is useful if we've decided to explicitly *not* run tests.
+function junit_placeholder() {
+  echo '<?xml version="1.0" encoding="UTF-8"?>' > "$JUNITDIR/none.xml"
+  echo '<testsuites>' >> "$JUNITDIR/none.xml"
+  echo '</testsuites>' >> "$JUNITDIR/none.xml"
 }
 
 function task_phpunit_drupal() {
