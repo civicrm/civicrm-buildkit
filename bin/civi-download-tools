@@ -743,10 +743,6 @@ pushd $PRJDIR >> /dev/null
   make_link "$PRJDIR/bin" "../extern/phpunit8/phpunit8.phar" "phpunit8"
   make_link "$PRJDIR/bin" "../extern/phpunit9/phpunit9.phar" "phpunit9"
 
-  [ ! -d "$HOME/.drush" ] && mkdir "$HOME/.drush"
-  [ ! -d "$HOME/.drush/command" ] && mkdir "$HOME/.drush/command"
-  make_link "$HOME/.drush/command" "$PRJDIR/extern/drush-lib/backdrop" "backdrop"
-
   ## Download joomlatools-console
   install_joomlatools_console "$JOOMLATOOLS_CONSOLE_VERSION"
 
