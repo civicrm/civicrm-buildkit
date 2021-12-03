@@ -9,5 +9,5 @@ rec {
   v2111 = import (import  ./21.11.nix) {};
 
   bkit = import ../pkgs;
-  default = v1909;
+  default = v2111;
 }

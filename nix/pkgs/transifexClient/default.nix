@@ -1,5 +1,5 @@
 # with import <nixpkgs> {};
-with import (import ../../pins/21.05.nix) {};
+with (import ../../pins).default;
 with python37.pkgs;
 
 let

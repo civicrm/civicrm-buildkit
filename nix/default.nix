@@ -1,6 +1,6 @@
 let
 
-    pkgs = import (import ./pins/21.05.nix) {};
+    pkgs = (import ./pins).default;
     stdenv = pkgs.stdenv;
     bkpkgs = import ./pkgs;
     profiles = import ./profiles;
