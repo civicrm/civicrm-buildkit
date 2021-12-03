@@ -2,7 +2,7 @@
  * The `base` profile defines a series of common CLI utilities that rarely change.
  */
 let
-    pkgs = import (import ../../pins/19.09.nix) {};
+    pkgs = import (import ../../pins/21.05.nix) {};
     bkpkgs = import ../../pkgs;
 in [
     pkgs.bzip2

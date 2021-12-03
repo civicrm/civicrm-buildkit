@@ -6,7 +6,7 @@
  * the branches `master` and `master-loco`
  */
 let
-    pkgs = import (import ../../pins/19.09.nix) {};
+    pkgs = import (import ../../pins/21.05.nix) {};
     bkpkgs = import ../../pkgs;
 in [
     bkpkgs.bknixPhpstormAdvisor
