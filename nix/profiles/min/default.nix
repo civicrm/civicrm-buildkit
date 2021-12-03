@@ -1,25 +1,20 @@
 /**
  * The `min` list identifies the lowest recommended versions of the system requirements.
  *
- * We rely on a mix of packages from Nix upstream v19.09 (`pkgs`), v18.09 (`pkgs_1809`), and
- * custom forks (`bkpkgs`).
+ * The `dists` var provides a list of major releases of Nix upstream (eg v19.09 <=> dists.v1909).
  */
 let
-    pkgs = import (import ../../pins/19.09.nix) {};
-    pkgs_1809 = import (import ../../pins/18.09.nix) {};
-    pkgs_2105 = import (import ../../pins/21.05.nix) {};
-    pkgs_2111 = import (import ../../pins/21.11.nix) {};
-    bkpkgs = import ../../pkgs;
+    dists = import ../../pins;
 
 in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
 
-    bkpkgs.php72
-    pkgs_2105.nodejs-14_x
-    pkgs_2111.apacheHttpd
-    pkgs_1809.mailcatcher
-    pkgs.memcached
-    bkpkgs.mysql56
-    pkgs.redis
-    bkpkgs.transifexClient
+    dists.bkit.php72
+    dists.v2105.nodejs-14_x
+    dists.v2111.apacheHttpd
+    dists.v1809.mailcatcher
+    dists.default.memcached
+    dists.bkit.mysql56
+    dists.default.redis
+    dists.bkit.transifexClient
 
 ]
