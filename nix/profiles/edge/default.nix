@@ -14,7 +14,7 @@ in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
     dists.v1809.mailcatcher
     dists.v2105.memcached
     /* dists.default.mariadb */
-    dists.bkit.mysql80
+    dists.v2111.mysql80
     dists.v2105.redis
     dists.bkit.transifexClient
 
