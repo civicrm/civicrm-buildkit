@@ -1,6 +1,6 @@
 let
 
-    pkgs = import (import ../../pins/19.09.nix) {};
+    pkgs = (import ../../pins).default;
     stdenv = pkgs.stdenv;
 
 in stdenv.mkDerivation rec {

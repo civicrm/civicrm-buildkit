@@ -2,11 +2,12 @@
  * The `base` profile defines a series of common CLI utilities that rarely change.
  */
 let
-    pkgs = import (import ../../pins/19.09.nix) {};
-    bkpkgs = import ../../pkgs;
+    dists = import ../../pins;
+    pkgs = dists.v2105;
+
 in [
     pkgs.bzip2
-    bkpkgs.bknixProfile
+    dists.bkit.bknixProfile
     pkgs.curl
     pkgs.gettext
     pkgs.git

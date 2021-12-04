@@ -1,6 +1,6 @@
 let
 
-    pkgs = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.03.tar.gz) {};
+    pkgs = (import ./pins).default;
     stdenv = pkgs.stdenv;
     bkpkgs = import ./pkgs;
     profiles = import ./profiles;
