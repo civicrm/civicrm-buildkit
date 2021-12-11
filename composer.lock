@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "45fe07ee506e8e548cb5d23e755e84e0",
+    "content-hash": "6ef64967da56f9bc26fc6803cea9b919",
     "packages": [
         {
             "name": "civicrm/composer-downloads-plugin",
@@ -55,10 +55,7 @@
                 }
             ],
             "description": "Composer plugin for downloading additional files within any composer package.",
-            "support": {
-                "source": "https://github.com/civicrm/composer-downloads-plugin/tree/v3.0.1"
-            },
-            "time": "2020-11-02T05:26:23+00:00"
+            "time": "2020-11-02T04:00:42+00:00"
         },
         {
             "name": "civicrm/upgrade-test",
@@ -66,12 +63,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/civicrm/civicrm-upgrade-test.git",
-                "reference": "318cb5d9cecd75b83bbceb999735fd62dfe2ae7a"
+                "reference": "b4de1004fd6e3b6c37f90ab4458cf29755b42d2e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/318cb5d9cecd75b83bbceb999735fd62dfe2ae7a",
-                "reference": "318cb5d9cecd75b83bbceb999735fd62dfe2ae7a",
+                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/b4de1004fd6e3b6c37f90ab4458cf29755b42d2e",
+                "reference": "b4de1004fd6e3b6c37f90ab4458cf29755b42d2e",
                 "shasum": ""
             },
             "bin": [
@@ -90,7 +87,7 @@
             ],
             "description": "Collection of scripts and data-files for testing CiviCRM upgrades",
             "homepage": "https://github.com/civicrm/civicrm-upgrade-test",
-            "time": "2021-06-03T02:50:54+00:00"
+            "time": "2021-12-10T22:06:31+00:00"
         },
         {
             "name": "drupal/coder",
@@ -175,10 +172,6 @@
                 "parser",
                 "php"
             ],
-            "support": {
-                "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/1.x"
-            },
             "time": "2015-07-14T17:31:05+00:00"
         },
         {
@@ -293,9 +286,6 @@
                 "polyfill",
                 "portable"
             ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-ctype/tree/master"
-            },
             "time": "2019-02-06T07:57:58+00:00"
         },
         {
@@ -355,9 +345,6 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "support": {
-                "source": "https://github.com/symfony/yaml/tree/v3.4.24"
-            },
             "time": "2019-03-25T07:48:46+00:00"
         },
         {
@@ -391,10 +378,6 @@
                 "MIT"
             ],
             "description": "Parser for .gitignore (and sparse-checkout, and anything else using the same format) files",
-            "support": {
-                "issues": "https://github.com/TOGoS/PHPGitIgnore/issues",
-                "source": "https://github.com/TOGoS/PHPGitIgnore/tree/master"
-            },
             "time": "2019-04-19T19:16:58+00:00"
         },
         {
@@ -455,5 +438,5 @@
     "platform-overrides": {
         "php": "7.1"
     },
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "1.1.0"
 }

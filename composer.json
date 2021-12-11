@@ -20,7 +20,7 @@
   "require": {
     "php": ">=5.6",
     "totten/php-symbol-diff": "dev-master#54f869ca68a3cd75f3386f8490870369733d2c23",
-    "civicrm/upgrade-test": "dev-master#318cb5d9cecd75b83bbceb999735fd62dfe2ae7a",
+    "civicrm/upgrade-test": "dev-master#b4de1004fd6e3b6c37f90ab4458cf29755b42d2e",
     "drupal/coder": "dev-8.x-2.x-civi#5fa299b7790535b9f5098417f848a173cb6ce4d4",
     "civicrm/composer-downloads-plugin": "^3.0",
     "squizlabs/php_codesniffer": ">=2.7 <4.0"
