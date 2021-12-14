@@ -115,3 +115,7 @@ if [ -e "$WMF_ROLES_FILE" ]; then
   drush -y user-add-role "Engage Direct Mail" "engage"
 
 fi
+# These are used by thank you emails, eoy emails, can be removed when we
+# are no longer using the drupal emails.
+drush vset thank_you_from_address "dev@example.org"
+drush vset thank_you_from_name "dev site"
