@@ -41,7 +41,6 @@ civicrm_install_cv
 pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   drush -y updatedb
-  drush -y cc all
   drush -y en civicrm toolbar locale garland
   ## disable annoying/unneeded modules
   drush -y dis overlay
