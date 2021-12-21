@@ -34,18 +34,23 @@ if [[ "$CIVI_VERSION" =~ ^4.[0123456](\.([0-9]|alpha|beta)+)?$ ]] ; then
   CIVI_EXT_URL="${CMS_URL}/sites/${DRUPAL_SITE_DIR}/ext"
 fi
 
-civicrm_install
+civicrm_install_cv
 
 ###############################################################################
 ## Extra configuration
 pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   drush -y updatedb
+  drush -y cc all
   drush -y en civicrm toolbar locale garland
   ## disable annoying/unneeded modules
   drush -y dis overlay
 
   cv ev 'if(is_callable(array("CRM_Core_BAO_CMSUser","synchronize"))){CRM_Core_BAO_CMSUser::synchronize(FALSE);}else{CRM_Utils_System::synchronizeUsers();}'
+
+  ## Setup CiviCRM
+  echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign","CiviGrant"]}' \
+    | drush cvapi setting.create --in=json
 
   ## Setup theme
   #above# drush -y en garland
