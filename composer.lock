@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "381f7198ed38b1150cf73f4c81595b89",
+    "content-hash": "09e77e21351ff208f593d1710e521e30",
     "packages": [
         {
             "name": "civicrm/composer-downloads-plugin",
