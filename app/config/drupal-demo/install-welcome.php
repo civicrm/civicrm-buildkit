@@ -25,7 +25,7 @@ Just login with...
 ... and click the <a href="/civicrm"><strong>CiviCRM</strong></a> link (upper left-hand corner of your screen)
 
 <p><strong>Any data you enter on this demo site is "publicly available" due to the open login. Please do not enter real email addresses or other personal information.</strong> The demo database is reset periodically.</p>
-
+<p>There is also a user with the username advisor and the password advisor who has more limited access granted by Access Control</p>
 <h3>New to CiviCRM?</h3>
 <ul>
 <li>Learn about how you can use CiviCRM from our new <strong><a href="https://docs.civicrm.org/user/en/stable/" target="_blank" title="Opens Understanding CiviCRM book in a new window">online book</a></strong>.</li>
