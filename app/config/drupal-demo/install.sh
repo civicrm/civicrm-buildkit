@@ -79,6 +79,25 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
     remove "change own password"
 EOPERM
 
+ ## Setup advisor user
+  # This gives us a user with more limited permissions.
+  # specifically the user does not have 'edit all contacts'
+  # or 'view all contacts'. However, they will be able to view
+  # some by virtue of an acl
+  drush role-create advisor
+  drush scr "$PRJDIR/src/drush/perm.php" <<EOPERM
+    role "advisor"
+    add 'access toolbar'
+    add "access CiviCRM"
+    add "access CiviReport"
+    add 'view debug output'
+    add 'access CiviContribute'
+    add 'view report sql'
+    add 'merge duplicate contacts'
+EOPERM
+  drush -y user-create --password="advisor" --mail="jenny@example.com" "advisor"
+  drush -y user-add-role advisor "advisor"
+
   ## Setup demo user
   drush -y en civicrm_webtest
   drush -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
