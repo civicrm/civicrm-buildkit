@@ -23,10 +23,10 @@ $c['fmtNames()'] = function($ppl, $ids, $extras, SymfonyStyle $io) {
   foreach ($ids as $id) {
     $p = $ppl[$id];
     if (!empty($p['organization'])) {
-      $orgs[$p['organization']][] = $p['name'];
+      $orgs[$p['organization']][] = $p['name'] ?? $p['github'];
     }
     else {
-      $names[] = $p['name'];
+      $names[] = $p['name'] ?? $p['github'];
     }
   }
   foreach ($extras as $extra) {
@@ -36,7 +36,7 @@ $c['fmtNames()'] = function($ppl, $ids, $extras, SymfonyStyle $io) {
     $names[] = sprintf("%s - %s", $orgName, implode(', ', $orgPpl));
   }
 
-  usort($names, function($a,$b) {
+  usort($names, function($a, $b) {
     return strnatcmp(mb_strtolower($a), mb_strtolower($b));
   });
   return $names;
