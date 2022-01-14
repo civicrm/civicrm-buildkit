@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "09e77e21351ff208f593d1710e521e30",
+    "content-hash": "51b784e278da0b824dcd590e9220b198",
     "packages": [
         {
             "name": "civicrm/composer-downloads-plugin",
@@ -71,7 +71,6 @@
                 "reference": "e4e7a73d034adcb14ced2de7bf6a284d3ec4dc81",
                 "shasum": ""
             },
-            "default-branch": true,
             "bin": [
                 "civicrm-upgrade-test"
             ],
@@ -279,7 +278,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "BackEndTea@gmail.com"
+                    "email": "backendtea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
@@ -422,6 +421,10 @@
                 }
             ],
             "description": "Identify changes in PHP code by symbol (class/method)",
+            "support": {
+                "issues": "https://github.com/totten/php-symbol-diff/issues",
+                "source": "https://github.com/totten/php-symbol-diff/tree/master"
+            },
             "time": "2015-08-06T08:23:13+00:00"
         }
     ],
@@ -442,5 +445,5 @@
     "platform-overrides": {
         "php": "7.1"
     },
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "1.1.0"
 }
