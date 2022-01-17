@@ -193,6 +193,19 @@ if grep -q . "$TMP/php.txt" ; then
   fi
 fi
 
+## Run PHPCS (CSS files)
+PHPCS_CSS_EXIT=0
+if grep -q . "$TMP/css.txt" ; then
+  echo "=============================[ phpcs (css) ]============================"
+  if [ -n "$CHECKSTYLE_OUT" ]; then
+    xargs $BINDIR/phpcs --standard="$PHPCS_STD" --report=checkstyle < "$TMP/css.txt" > "$CHECKSTYLE_OUT/checkstyle-phpcs-css.xml"
+    PHPCS_CSS_EXIT=$?
+  else
+    xargs $BINDIR/phpcs --standard="$PHPCS_STD" < "$TMP/css.txt"
+    PHPCS_CSS_EXIT=$?
+  fi
+fi
+
 ## Run jshint
 JSHINT_EXIT=0
 if grep -q . "$TMP/js.txt" ; then
@@ -210,9 +223,12 @@ fi
 if [ "$PHPCS_EXIT" -gt 0 -o "$PHPL_EXIT" -gt 0 ]; then
   echo "Found PHP errors" >> /dev/stderr
 fi
+if [ "$PHPCS_CSS_EXIT" -gt 0 ]; then
+  echo "Found CSS errors" >> /dev/stderr
+fi
 if [ "$JSHINT_EXIT" -gt 0 ]; then
   echo "Found JS errors" >> /dev/stderr
 fi
-if [ "$PHPCS_EXIT" -gt 0 -o "$PHPL_EXIT" -gt 0 -o "$JSHINT_EXIT" -gt 0 ]; then
+if [ "$PHPCS_EXIT" -gt 0 -o "$PHPL_EXIT" -gt 0 -o "$PHPCS_CSS_EXIT" -gt 0 -o "$JSHINT_EXIT" -gt 0 ]; then
   exit 1
 fi
