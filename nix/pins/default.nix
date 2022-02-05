@@ -7,6 +7,7 @@ rec {
   v2009 = import (import  ./20.09.nix) {};
   v2105 = import (import  ./21.05.nix) {};
   v2111 = import (import  ./21.11.nix) {};
+  v2205 = import (import  ./22.05-pre.nix) {};
 
   bkit = import ../pkgs;
   default = v2111;

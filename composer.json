@@ -15,7 +15,10 @@
     "platform": {
       "php": "7.1"
     },
-    "bin-dir": "bin"
+    "bin-dir": "bin",
+    "allow-plugins": {
+      "civicrm/composer-downloads-plugin": true
+    }
   },
   "require": {
     "php": ">=5.6",
