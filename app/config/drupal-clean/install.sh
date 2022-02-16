@@ -38,6 +38,11 @@ civicrm_install_cv
 
 ###############################################################################
 ## Extra configuration
+pushd "$CIVI_CORE" >> /dev/null
+  ## Generating `civicrm.config.php` is necessary for `extern/*.php` and its E2E tests
+  ./bin/setup.sh -g
+popd >> /dev/null
+
 pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   drush -y updatedb
