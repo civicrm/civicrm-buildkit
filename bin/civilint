@@ -36,16 +36,17 @@ function git_default_files() {
   git diff --name-only --cached
 }
 
-## Split files into categories (PHP-files, JS-files, skip-files).
-## usage: cat file-list.txt | split_files phpfiles.txt jsfiles.txt skipfiles.txt
+## Split files into categories (PHP-files, JS-files, CSS-files, skip-files).
+## usage: cat file-list.txt | split_files phpfiles.txt jsfiles.txt cssfiles.txt skipfiles.txt
 function split_files() {
   local phpfiles="$1"
   local jsfiles="$2"
-  local skipfiles="$3"
+  local cssfiles="$3"
+  local skipfiles="$4"
 
   local check_traits=$(php -r 'echo version_compare(PHP_VERSION, "5.4.0", ">=") ? "1" : "0";')
 
-  touch "$phpfiles" "$jsfiles" "$skipfiles"
+  touch "$phpfiles" "$jsfiles" "$cssfiles" "$skipfiles"
 
   while read file; do
     if [ ! -e "$file" ]; then
@@ -70,6 +71,9 @@ function split_files() {
 
     elif [[ "$file" =~ \.js$ ]]; then
       echo "$file" >> "$jsfiles"
+
+    elif [[ "$file" =~ \.css$ ]]; then
+      echo "$file" >> "$cssfiles"
 
     elif [[ "$file" =~ \.tpl$ ]]; then
       echo "$file" >> "$skipfiles"
@@ -144,22 +148,23 @@ if [ -z "$1" ]; then
     show_help
     exit 2
   fi
-  git_default_files | split_files "$TMP/php.txt" "$TMP/js.txt" "$TMP/skip.txt"
+  git_default_files | split_files "$TMP/php.txt" "$TMP/js.txt" "$TMP/css.txt" "$TMP/skip.txt"
 elif [ "$1" == "-" ]; then
-  split_files "$TMP/php.txt" "$TMP/js.txt" "$TMP/skip.txt"
+  split_files "$TMP/php.txt" "$TMP/js.txt" "$TMP/css.txt" "$TMP/skip.txt"
 elif [ "$1" == "-h" ]; then
   show_help
   exit 0
 else
   for f in "$@" ; do
     echo $f
-  done | split_files "$TMP/php.txt" "$TMP/js.txt" "$TMP/skip.txt"
+  done | split_files "$TMP/php.txt" "$TMP/js.txt" "$TMP/css.txt" "$TMP/skip.txt"
 fi
 
-if cat "$TMP/php.txt" "$TMP/js.txt" "$TMP/skip.txt" | grep -q  . ;then
+if cat "$TMP/php.txt" "$TMP/js.txt" "$TMP/css.txt" "$TMP/skip.txt" | grep -q  . ;then
   echo "===========================[ Identify Files ]==========================="
   show_files "PHP Files:" "$TMP/php.txt"
   show_files "Javascript Files:" "$TMP/js.txt"
+  show_files "CSS Files:" "$TMP/css.txt"
   show_files "Skip Files:" "$TMP/skip.txt"
 fi
 
@@ -188,6 +193,19 @@ if grep -q . "$TMP/php.txt" ; then
   fi
 fi
 
+## Run PHPCS (CSS files)
+PHPCS_CSS_EXIT=0
+if grep -q . "$TMP/css.txt" ; then
+  echo "=============================[ phpcs (css) ]============================"
+  if [ -n "$CHECKSTYLE_OUT" ]; then
+    xargs $BINDIR/phpcs --standard="$PHPCS_STD" --report=checkstyle < "$TMP/css.txt" > "$CHECKSTYLE_OUT/checkstyle-phpcs-css.xml"
+    PHPCS_CSS_EXIT=$?
+  else
+    xargs $BINDIR/phpcs --standard="$PHPCS_STD" < "$TMP/css.txt"
+    PHPCS_CSS_EXIT=$?
+  fi
+fi
+
 ## Run jshint
 JSHINT_EXIT=0
 if grep -q . "$TMP/js.txt" ; then
@@ -205,9 +223,12 @@ fi
 if [ "$PHPCS_EXIT" -gt 0 -o "$PHPL_EXIT" -gt 0 ]; then
   echo "Found PHP errors" >> /dev/stderr
 fi
+if [ "$PHPCS_CSS_EXIT" -gt 0 ]; then
+  echo "Found CSS errors" >> /dev/stderr
+fi
 if [ "$JSHINT_EXIT" -gt 0 ]; then
   echo "Found JS errors" >> /dev/stderr
 fi
-if [ "$PHPCS_EXIT" -gt 0 -o "$PHPL_EXIT" -gt 0 -o "$JSHINT_EXIT" -gt 0 ]; then
+if [ "$PHPCS_EXIT" -gt 0 -o "$PHPL_EXIT" -gt 0 -o "$PHPCS_CSS_EXIT" -gt 0 -o "$JSHINT_EXIT" -gt 0 ]; then
   exit 1
 fi
