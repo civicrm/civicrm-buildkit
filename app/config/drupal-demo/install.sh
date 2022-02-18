@@ -112,6 +112,8 @@ EOPERM
     add 'access my cases and activities'
     add 'add cases'
     add 'delete in CiviCase'
+    add 'close own manual batches'
+    add 'edit own manual batches'
     add 'administer CiviCampaign'
     add 'manage campaign'
     add 'reserve campaign contacts'
