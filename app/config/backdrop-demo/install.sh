@@ -35,7 +35,7 @@ pushd "$CMS_ROOT" >> /dev/null
   php "$SITE_CONFIG_DIR/module-enable.php" civicrm
   ## Setup CiviCRM
   echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign","CiviGrant"]}' \
-    | drush cvapi setting.create --in=json
+    | cv api setting.create --in=json
   civicrm_apply_demo_defaults
   ver=$(civicrm_get_ver "$CIVI_CORE")
   phpversioncheck=$(php -r "echo version_compare('$ver', '5.19', '>=');")
@@ -44,7 +44,7 @@ pushd "$CMS_ROOT" >> /dev/null
   fi
 
   ## Setup welcome page
-  drush -y scr "$SITE_CONFIG_DIR/install-welcome.php"
+  cv scr "$SITE_CONFIG_DIR/install-welcome.php"
 
   ## Setup demo user
   backdrop_user "$DEMO_USER" "$DEMO_EMAIL" "$DEMO_PASS"
@@ -56,10 +56,10 @@ pushd "$CMS_ROOT" >> /dev/null
   cv en --ignore-missing $CIVI_DEMO_EXTS
 
   ## Demo sites always disable email and often disable cron
-  drush cvapi StatusPreference.create ignore_severity=critical name=checkOutboundMail
-  drush cvapi StatusPreference.create ignore_severity=critical name=checkLastCron
+  cv api StatusPreference.create ignore_severity=critical name=checkOutboundMail
+  cv api StatusPreference.create ignore_severity=critical name=checkLastCron
 
   ## Setup CiviCRM dashboards
-  INSTALL_DASHBOARD_USERS="$ADMIN_USER;$DEMO_USER" drush scr "$SITE_CONFIG_DIR/install-dashboard.php"
+  INSTALL_DASHBOARD_USERS="$ADMIN_USER;$DEMO_USER" cv scr "$SITE_CONFIG_DIR/install-dashboard.php"
 
 popd >> /dev/null
