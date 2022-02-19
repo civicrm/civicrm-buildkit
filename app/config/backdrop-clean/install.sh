@@ -40,11 +40,8 @@ pushd "$CMS_ROOT" >> /dev/null
   fi
 
   ## Setup demo user
-  # drush -y en civicrm_webtest
-  drush -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
+  backdrop_user "$DEMO_USER" "$DEMO_EMAIL" "$DEMO_PASS"
   if [ $phpversioncheck ]; then
-    echo 'INSERT IGNORE INTO users_roles (uid,role) SELECT uid, "civicrm_webtest_user" FROM users WHERE name = @ENV[DEMO_USER];' \
-      | env DEMO_USER="$DEMO_USER" amp sql -Ncms -e
-    #drush -y user-add-role civicrm_webtest_user "$DEMO_USER"
+    backdrop_user_role "$DEMO_USER" "civicrm_webtest_user"
   fi
 popd >> /dev/null

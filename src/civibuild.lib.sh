@@ -1033,6 +1033,22 @@ function backdrop_uninstall() {
 }
 
 ###############################################################################
+## Backdrop - Create a user
+## usage: backdrop_user USERNAME EMAIL PASSWORD
+function backdrop_user() {
+  env NEW_USER="$1" NEW_EMAIL="$2" NEW_PASS="$3" \
+    cv ev --user=admin '$ps=["name"=>getenv("NEW_USER"), "mail"=>getenv("NEW_EMAIL"), "pass"=>getenv("NEW_PASS")]; $u=entity_create("user", $ps); $u->save();'
+}
+
+###############################################################################
+## Add a role to a user
+## usage: backdrop_user_role USERNAME ROLENAME
+function backdrop_user_role() {
+  echo 'INSERT IGNORE INTO users_roles (uid,role) SELECT uid, @ENV[THE_ROLE] FROM users WHERE name = @ENV[THE_USER];' \
+    | env THE_USER="$1" THE_ROLE="$2" amp sql -Ncms -e
+}
+
+###############################################################################
 ## Backdrop - Download to WEB_ROOT/web. Apply core patches (eg for MySQL 8) as required.
 function backdrop_download() {
   cvutil_assertvars backdrop_download WEB_ROOT CMS_VERSION PRJDIR CACHE_DIR
