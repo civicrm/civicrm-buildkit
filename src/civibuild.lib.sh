@@ -706,7 +706,7 @@ function civicrm_apply_demo_defaults() {
   cv api MailSettings.create id=1 is_default=1 domain=example.org debug=1
   cv en --ignore-missing 'civigrant'
   if [ -z "$NO_SAMPLE_DATA" ]; then
-    cv -vv ev 'eval(file_get_contents("php://stdin"));' <<EOPHP
+    cv -v ev 'eval(file_get_contents("php://stdin"));' <<EOPHP
       \$cid = civicrm_api3('Domain', 'getvalue', array(
         'id' => 1,
         'return' => 'contact_id'
