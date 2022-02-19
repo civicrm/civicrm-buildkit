@@ -706,7 +706,7 @@ function civicrm_apply_demo_defaults() {
   cv api MailSettings.create id=1 is_default=1 domain=example.org debug=1
   cv en --ignore-missing 'civigrant'
   if [ -z "$NO_SAMPLE_DATA" ]; then
-    cv -vv ev 'eval(file_get_contents("php://stdin"));' <<EOPHP
+    cv -v ev 'eval(file_get_contents("php://stdin"));' <<EOPHP
       \$cid = civicrm_api3('Domain', 'getvalue', array(
         'id' => 1,
         'return' => 'contact_id'
@@ -1030,6 +1030,22 @@ function backdrop_uninstall() {
   if [ -n "$DRUPAL_SITE_DIR" -a -d "$PRIVATE_ROOT/$DRUPAL_SITE_DIR" ]; then
     rm -rf "$PRIVATE_ROOT/$DRUPAL_SITE_DIR"
   fi
+}
+
+###############################################################################
+## Backdrop - Create a user
+## usage: backdrop_user USERNAME EMAIL PASSWORD
+function backdrop_user() {
+  env NEW_USER="$1" NEW_EMAIL="$2" NEW_PASS="$3" \
+    cv ev --user=admin '$ps=["name"=>getenv("NEW_USER"), "mail"=>getenv("NEW_EMAIL"), "pass"=>getenv("NEW_PASS")]; $u=entity_create("user", $ps); $u->save();'
+}
+
+###############################################################################
+## Add a role to a user
+## usage: backdrop_user_role USERNAME ROLENAME
+function backdrop_user_role() {
+  echo 'INSERT IGNORE INTO users_roles (uid,role) SELECT uid, @ENV[THE_ROLE] FROM users WHERE name = @ENV[THE_USER];' \
+    | env THE_USER="$1" THE_ROLE="$2" amp sql -Ncms -e
 }
 
 ###############################################################################

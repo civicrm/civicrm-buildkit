@@ -20,5 +20,5 @@ backdrop_install
 ## Extra configuration
 
 pushd "$CMS_ROOT" >> /dev/null
-  drush -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
+  backdrop_user "$DEMO_USER" "$DEMO_EMAIL" "$DEMO_PASS"
 popd >> /dev/null
