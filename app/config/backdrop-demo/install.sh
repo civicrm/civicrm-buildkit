@@ -34,7 +34,7 @@ civicrm_install
 pushd "$CMS_ROOT" >> /dev/null
   php "$SITE_CONFIG_DIR/module-enable.php" civicrm
   ## Setup CiviCRM
-  echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign","CiviGrant"]}' \
+  echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign"]}' \
     | cv api setting.create --in=json
   civicrm_apply_demo_defaults
   ver=$(civicrm_get_ver "$CIVI_CORE")
