@@ -47,8 +47,13 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   drush -y dis overlay
 
   ## Setup CiviCRM
-  echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign"]}' \
-    | drush cvapi setting.create --in=json
+  if cv ev 'exit(version_compare(CRM_Utils_System::version(), "5.47.alpha", "<") ?0:1);' ; then
+    echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign","CiviGrant"]}' \
+      | drush cvapi setting.create --in=json
+  else
+    echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign"]}' \
+      | drush cvapi setting.create --in=json
+  fi
   ## Note: CiviGrant disabled by default. If you enable, update the permissions as well.
   civicrm_apply_demo_defaults
   cv ev 'if(is_callable(array("CRM_Core_BAO_CMSUser","synchronize"))){CRM_Core_BAO_CMSUser::synchronize(FALSE);}else{CRM_Utils_System::synchronizeUsers();}'
