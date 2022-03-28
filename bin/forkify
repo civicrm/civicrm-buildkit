@@ -56,14 +56,10 @@ URL_SUFFIX=".git"
 if [ -z "$REMOTE" -o -z "$ACTION" ]; then
   PROG=$(basename "$0")
   echo "Work with fork remotes for all repos"
-  ## todo: rework as "forkify add-remotes foo git@lab.civicrm.org:foo"; use regex to guess --short/--long
   echo "usage: $PROG <add-remotes | set-remotes | fetch> <REMOTE> [<URL_PREFIX>]" >&2
   echo "example: $PROG add-remotes myremote 'git@github.com:myuser/civicrm-'" >&2
   echo "example: $PROG set-remotes myremote 'git@lab.civicrm.org:myuser/'" >&2
   echo "example: $PROG fetch myremote" >&2
-  echo ""
-  echo "Note: Default of --short or --long depends on the chosen domain."
-  echo "Gitlab projects tends to use short; Github projects tend to use long"
   exit 1
 fi
 
