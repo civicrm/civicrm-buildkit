@@ -236,6 +236,10 @@ function civibuild_parse() {
         CMS_SQL_SKIP=1
         ;;
 
+      --no-test)
+        TEST_SQL_SKIP=1
+        ;;
+
       --patch)
         PATCHES="$PATCHES|$1"
         shift
