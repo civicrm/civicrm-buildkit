@@ -89,7 +89,7 @@ services:
     enabled: true
     init:
       - 'loco-mysql-init'
-    run: 'mysqld --datadir="$LOCO_SVC_VAR/data"'
+    run: 'mysqld --defaults-file="$LOCO_SVC_VAR/conf/my.cnf" --datadir="$LOCO_SVC_VAR/data"'
     pid_file: '$LOCO_SVC_VAR/run/mysql.pid'
     message: |-
       MySQL is running on "<comment>$LOCALHOST:$MYSQLD_PORT</comment>". The default credentials are user="<comment>root</comment>" and password="".
