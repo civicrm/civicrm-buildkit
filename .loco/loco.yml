@@ -95,6 +95,13 @@ services:
       MySQL is running on "<comment>$LOCALHOST:$MYSQLD_PORT</comment>". The default credentials are user="<comment>root</comment>" and password="".
         URL: <comment>mysql://root:@$LOCALHOST:$MYSQLD_PORT</comment>
 
+  ## Load timezone data into MySQL.
+  ## IMHO, it would make more sense to use `mysqld --init-file`... but it's futzy (across versions).
+  ## Many `mysql.com` versions have very limited syntax ("\n" handling). `mariadb` doesn't even seem to read the file...
+  mysql-tz:
+    depends: ['mysql']
+    run: 'loco-mysql-wait 300 && mysql_tzinfo_to_sql "$TZDIR" | mysql mysql && sleep 86400'
+
   ## NOTE: This a non-service setup task. Strictly speaking, it also runs in install-{ci,developer}.sh, but we keep it
   ## here so that it reruns automatically - which should help if a dev-user is twiddling the ports.
   buildkit:
