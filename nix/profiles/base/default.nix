@@ -19,6 +19,7 @@ in [
     pkgs.ncurses
     pkgs.patch
     pkgs.rsync
+    dists.bkit.tzdata
     pkgs.unzip
     pkgs.which
     pkgs.zip
