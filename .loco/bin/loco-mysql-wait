@@ -1,0 +1,56 @@
+#!/usr/bin/env php
+<?php
+
+// Wait for MySQL to come online. The exit code indicates success or failure.
+//
+// usage: loco-mysql-wait [max_wait_sec=600] [interval_sec=0.5] [window_down_sec=0.5]
+// example: loco-mysql-wait 60 && echo 'Yay' || echo 'Uh oh'
+
+function connect(): PDO {
+  $pdoOptions = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_PERSISTENT         => false,
+  ];
+  return new PDO('mysql:host=' . getenv('LOCALHOST'). ';port=' . getenv('MYSQLD_PORT') . ';charset=utf8mb4', 'root', '', $pdoOptions);
+}
+
+function is_online(): bool {
+  try {
+    $c = connect();
+    foreach ($c->query('SELECT version()') as $row) {
+      return TRUE;
+    }
+  }
+  catch (\Exception $e) {
+    // fprintf(STDERR, "%s: %s\n%s\n", get_class($e), $e->getMessage(), $e->getTraceAsString());
+  }
+  return FALSE;
+}
+
+function wait_for_mysql($maxWait, $interval, $windDown) {
+  $options = sprintf('maxWait=%s, interval=%s, windDown=%s', $maxWait, $interval, $windDown);
+  fprintf(STDERR, "Waiting for MySQL (%s)...\n", $options);
+
+  $start = microtime(1);
+  $end = $start + $maxWait;
+  do {
+    if (is_online()) {
+      fprintf(STDERR, "\n");
+      usleep($windDown * 1000 * 1000);
+      return 0;
+    }
+    fprintf(STDERR, ".");
+    usleep(1000 * $interval * 1000);
+  } while (microtime(1) < $end);
+  fprintf(STDERR, "\nFailed to connect to MySQL (%s)\n", $options);
+  return 1;
+}
+
+// ------------------------------------------------------------------------ //
+
+exit(wait_for_mysql(
+  $argv[1] ?? (10 * 60),
+  $argv[2] ?? 0.5,
+  $argv[3] ?? 0.5
+));

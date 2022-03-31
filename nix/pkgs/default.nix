@@ -28,6 +28,9 @@ in rec {
    transifexClient = import ./transifexClient/default.nix;
    ramdisk = callPackage (fetchTarball https://github.com/totten/ramdisk/archive/v0.1.1.tar.gz) {};
 
+   # We don't actually modify the tzdata package, but we should have a singular pinning so that it same pkg is used in different flows.
+   tzdata = pkgs.tzdata;
+
    # On entirely new worker-node, loco doesn't want to build from tarball. *hrm*. Workaround: Get a prebuilt PHAR.
    # loco = callPackage (fetchTarball https://github.com/totten/loco/archive/v0.4.2.tar.gz) {};
    # loco = callPackage /PATH/TO/src/loco {};

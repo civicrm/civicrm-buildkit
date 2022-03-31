@@ -13,12 +13,14 @@ in [
     pkgs.git
     pkgs.gitAndTools.hub
     pkgs.gnugrep
+    pkgs.gnused
     pkgs.gnutar
     pkgs.hostname
     pkgs.moreutils
     pkgs.ncurses
     pkgs.patch
     pkgs.rsync
+    dists.bkit.tzdata
     pkgs.unzip
     pkgs.which
     pkgs.zip
