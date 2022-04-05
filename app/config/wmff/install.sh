@@ -115,7 +115,17 @@ if [ -e "$WMF_ROLES_FILE" ]; then
   drush -y user-add-role "Engage Direct Mail" "engage"
 
 fi
-# These are used by thank you emails, eoy emails, can be removed when we
-# are no longer using the drupal emails.
-drush vset thank_you_from_address "dev@example.org"
-drush vset thank_you_from_name "dev site"
+
+# Create directories and settings for audit file processing
+mkdir -p ${CMS_ROOT}/sites/default/files/wmf_audit/logs
+drush vset wmf_audit_log_archive_dir "${CMS_ROOT}/sites/default/files/wmf_audit/logs"
+for processor in adyen amazon astropay ingenico; do
+  mkdir -p ${CMS_ROOT}/sites/default/files/wmf_audit/$processor/incoming
+  mkdir -p ${CMS_ROOT}/sites/default/files/wmf_audit/$processor/completed
+  mkdir -p ${CMS_ROOT}/sites/default/files/wmf_audit/$processor/logs
+  drush vset ${processor}_audit_recon_files_dir "${CMS_ROOT}/sites/default/files/wmf_audit/$processor/incoming"
+  drush vset ${processor}_audit_recon_completed_dir "${CMS_ROOT}/sites/default/files/wmf_audit/$processor/completed"
+  drush vset ${processor}_audit_working_log_dir "${CMS_ROOT}/sites/default/files/wmf_audit/$processor/logs"
+  drush vset ${processor}_audit_log_search_past_days 7
+done;
+mkdir /var/spool/prometheus/
