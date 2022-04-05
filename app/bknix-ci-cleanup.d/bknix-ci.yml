@@ -3,12 +3,14 @@ tasks:
   - { templateSet: BKNIX_CI, vars: {HOME: '/home/jenkins', PROFILE: 'min'} }
   - { templateSet: BKNIX_CI, vars: {HOME: '/home/jenkins', PROFILE: 'max'} }
   - { templateSet: BKNIX_CI, vars: {HOME: '/home/jenkins', PROFILE: 'old'} }
-  - { templateSet: BKNIX_CI, vars: {HOME: '/home/jenkins', PROFILE: 'edge'} }
+# Edge builds (php81) currently fail to cleanup. But all edge jobs use fixed# sites, so cleanup isn't strictly necessary. Disable temporarily.
+#  - { templateSet: BKNIX_CI, vars: {HOME: '/home/jenkins', PROFILE: 'edge'} }
   - { templateSet: BKNIX_CI, vars: {HOME: '/home/publisher', PROFILE: 'dfl'} }
   - { templateSet: BKNIX_CI, vars: {HOME: '/home/publisher', PROFILE: 'min'} }
   - { templateSet: BKNIX_CI, vars: {HOME: '/home/publisher', PROFILE: 'max'} }
   - { templateSet: BKNIX_CI, vars: {HOME: '/home/publisher', PROFILE: 'old'} }
-  - { templateSet: BKNIX_CI, vars: {HOME: '/home/publisher', PROFILE: 'edge'} }
+# Edge builds (php81) currently fail to cleanup. But all edge jobs use fixed# sites, so cleanup isn't strictly necessary. Disable temporarily.
+#  - { templateSet: BKNIX_CI, vars: {HOME: '/home/publisher', PROFILE: 'edge'} }
 
 templateSets:
   BKNIX_CI:
