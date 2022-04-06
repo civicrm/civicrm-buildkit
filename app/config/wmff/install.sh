@@ -128,4 +128,5 @@ for processor in adyen amazon astropay ingenico; do
   drush vset ${processor}_audit_working_log_dir "${CMS_ROOT}/sites/default/files/wmf_audit/$processor/logs"
   drush vset ${processor}_audit_log_search_past_days 7
 done;
-mkdir /var/spool/prometheus/
+mkdir ${CMS_ROOT}/sites/default/files/prometheus/
+drush vset metrics_reporting_prometheus_path "${CMS_ROOT}/sites/default/files/prometheus/"
