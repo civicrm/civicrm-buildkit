@@ -15,6 +15,7 @@ mkdir "$WEB_ROOT"
 composer create-project drupal/recommended-project:"$CMS_VERSION" "$WEB_ROOT" --no-interaction
 
 pushd "$WEB_ROOT" >> /dev/null
+  composer_allow_common_plugins
   composer require drupal/userprotect
   composer require drupal/devel
   ## Some D8 builds include a specific revision of phpunit, but Civi uses standalone phpunit (PHAR)

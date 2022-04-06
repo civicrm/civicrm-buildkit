@@ -556,6 +556,14 @@ function api4_download_conditional() {
   esac
 }
 
+## Allow common composer plugins
+function composer_allow_common_plugins() {
+  local PLG
+  for PLG in  "composer/installers"  "drupal/core-composer-scaffold" "drupal/core-project-message" "cweagans/composer-patches" "civicrm/civicrm-asset-plugin" "civicrm/composer-downloads-plugin" "civicrm/composer-compile-plugin" ; do
+    composer config --no-interaction allow-plugins."$PLG" true
+  done
+}
+
 ###############################################################################
 ## Download CiviCRM (via composer, into an existing D8/composer project)
 ##
