@@ -87,29 +87,21 @@ function task_phpunit() {
   $GUARD phpunit-xml-cleanup "$JUNITDIR"/*.xml
 }
 
-## usage: task_phpunit_core_extension <extension-dir> <junit-file> [<phpunit-group>]
+## usage: task_phpunit_core_extension <extension-dirname> <junit-name>
 function task_phpunit_core_extension() {
+  EXTENSION="$1"
+  JUNIT_NAME=${2:-$EXTENSION}
 
- EXTENSION="$1"
- if [ ! -z "$2" ]; then
-   FILENAME="junit-$2.xml"
- else
-   FILENAME="junit-$EXTENSION.xml"
- fi
- if [ -z "$3" ]; then
-   GROUP=""
- else
-   GROUP="--group $3"
- fi
+  pushd "$CIVI_CORE/ext/$EXTENSION"
+    for GROUP in headless e2e ; do
+      if ! $GUARD $(getPhpunitVer) --printer='Civi\Test\TAP' --log-junit="$JUNITDIR/junit-${JUNIT_NAME}-${GROUP}.xml" --group "$GROUP" ; then
+       EXITCODES="$EXITCODES $EXTENSION-$GROUP"
+     fi
+     echo "Found EXITCODES=\"$EXITCODES\""
+   done
+  popd
 
- pushd "$CIVI_CORE/ext/$EXTENSION"
- if ! $GUARD $(getPhpunitVer) --printer='Civi\Test\TAP' --log-junit="$JUNITDIR/$FILENAME" $GROUP; then
-   EXITCODES="$EXITCODES $EXTENSION"
- fi
- echo "Found EXITCODES=\"$EXITCODES\""
-
- $GUARD phpunit-xml-cleanup "$JUNITDIR"/*.xml
-
+  $GUARD phpunit-xml-cleanup "$JUNITDIR"/*.xml
 }
 
 function task_mixin() {
@@ -143,8 +135,7 @@ function test_afform_extensions() {
   $GUARD civibuild restore "$BLDNAME"
   cv en afform
   cv en --ignore-missing authx
-  task_phpunit_core_extension "$(basename $DIR)/mock" "afform-mock-e2e" e2e
-  task_phpunit_core_extension "$(basename $DIR)/mock" "afform-mock-headless" headless
+  task_phpunit_core_extension "$(basename $DIR)/mock" "afform-mock"
   $GUARD civibuild restore "$BLDNAME"
 }
 
