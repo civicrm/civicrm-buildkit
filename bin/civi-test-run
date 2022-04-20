@@ -131,12 +131,14 @@ function test_core_extenions() {
 
 function test_afform_extensions() {
   DIR="$1"
-  task_phpunit_core_extension "$(basename $DIR)/core" "afform-core"
-  $GUARD civibuild restore "$BLDNAME"
-  cv en afform
-  cv en --ignore-missing authx
-  task_phpunit_core_extension "$(basename $DIR)/mock" "afform-mock"
-  $GUARD civibuild restore "$BLDNAME"
+  pushd "$DIR"
+    task_phpunit_core_extension "$(basename $DIR)/core" "afform-core"
+    $GUARD civibuild restore "$BLDNAME"
+    cv en afform
+    cv en --ignore-missing authx
+    task_phpunit_core_extension "$(basename $DIR)/mock" "afform-mock"
+    $GUARD civibuild restore "$BLDNAME"
+  popd
 }
 
 function task_karma() {
