@@ -97,6 +97,8 @@ EOPERM
     add "access CiviReport"
     add 'view debug output'
     add 'access CiviContribute'
+    add 'access CiviMember'
+    add 'access CiviEvent'
     add 'view report sql'
     add 'merge duplicate contacts'
 EOPERM
