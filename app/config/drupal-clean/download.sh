@@ -4,7 +4,7 @@
 
 ###############################################################################
 
-[ -z "$CMS_VERSION" ] && CMS_VERSION=7.x
+[ -z "$CMS_VERSION" ] && CMS_VERSION=7
 
 drupal_download
 
