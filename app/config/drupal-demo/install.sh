@@ -98,6 +98,7 @@ EOPERM
     add 'view debug output'
     add 'access CiviContribute'
     add 'access CiviMember'
+    add 'view event info'
     add 'access CiviEvent'
     add 'view report sql'
     add 'merge duplicate contacts'
