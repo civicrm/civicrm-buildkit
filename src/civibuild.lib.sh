@@ -1045,7 +1045,7 @@ function backdrop_uninstall() {
 ## usage: backdrop_user USERNAME EMAIL PASSWORD
 function backdrop_user() {
   env NEW_USER="$1" NEW_EMAIL="$2" NEW_PASS="$3" \
-    cv ev --user=admin '$ps=["name"=>getenv("NEW_USER"), "mail"=>getenv("NEW_EMAIL"), "pass"=>getenv("NEW_PASS")]; $u=entity_create("user", $ps); $u->save();'
+    cv ev --level=cms-only --user=admin '$ps=["name"=>getenv("NEW_USER"), "mail"=>getenv("NEW_EMAIL"), "pass"=>getenv("NEW_PASS")]; $u=entity_create("user", $ps); $u->save();'
 }
 
 ###############################################################################
