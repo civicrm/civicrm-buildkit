@@ -244,6 +244,7 @@ function cvutil_inject_settings() {
     \$civibuild['WEB_ROOT'] = '$WEB_ROOT';
     \$civibuild['CMS_ROOT'] = '$CMS_ROOT';
     \$civibuild['CMS_VERSION'] = '$CMS_VERSION';
+    \$civibuild['CMS_URL'] = '$CMS_URL';
     $PREAMBLE
 
     if (file_exists(\$civibuild['PRJDIR'].'/src/civibuild.settings.php')) {
@@ -1352,18 +1353,42 @@ function git_cache_deref_remotes() {
 }
 
 ###############################################################################
+## Joomla - Download to the code ($CMS_ROOT)
+## usage: joomla_download
+function joomla_download() {
+  cvutil_assertvars joomla_install CMS_ROOT CMS_VERSION
+  local parent=$(dirname "$CMS_ROOT")
+  local child=$(basename "$CMS_ROOT")
+  joomla site:download --release="$CMS_VERSION" --www="$parent" "$child"
+}
+
+###############################################################################
 ## Joomla -- Generate config files and setup database
 ## usage: joomla_install
 function joomla_install() {
+  cvutil_assertvars joomla_install CMS_ROOT CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME
+
   local parent=$(dirname "$CMS_ROOT")
   local child=$(basename "$CMS_ROOT")
   joomla site:install -v \
     --www "$parent" \
     -L "$CMS_DB_USER:$CMS_DB_PASS" -H "$CMS_DB_HOST" -P "$CMS_DB_PORT" --mysql-database "$CMS_DB_NAME" \
     --overwrite \
+    --skip-create-statement \
     --skip-exists-check \
     "$child"
+
   cvutil_php_nodbg amp datadir "$CMS_ROOT/logs" "$CMS_ROOT/tmp"
+
+  ## Non-conformant: there's nothing like 'app/joomla-configuration.d/'
+}
+
+###############################################################################
+## usage: joomla_extension_installfile <zip-file>
+function joomla_extension_installfile() {
+  local parent=$(dirname "$CMS_ROOT")
+  local child=$(basename "$CMS_ROOT")
+  joomla extension:installfile --www="$parent" -- "$child" "$@"
 }
 
 ###############################################################################
