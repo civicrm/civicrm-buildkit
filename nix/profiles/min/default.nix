@@ -13,7 +13,7 @@ in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
     dists.v2111.apacheHttpd
     dists.v1809.mailcatcher
     dists.default.memcached
-    dists.bkit.mysql57
+    dists.v1809.mysql57
     dists.default.redis
     dists.bkit.transifexClient
 
