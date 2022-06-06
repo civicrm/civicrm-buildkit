@@ -602,6 +602,7 @@ function civicrm_download_composer_d8() {
     9.2*) echo 'No Extra Patch required' ; ;;
     9.1*) echo 'No Extra Patch required' ; ;;
     9*) echo 'No Extra Patch required' ; ;;
+    ^9) echo 'No Extra Patch required' ; ;;
     8.9*) echo 'No Extra Patch required' ; ;;
     *) EXTRA_COMPOSER+=( 'pear/pear_exception:1.0.1 as 1.0.0') ## weird conflict in drupal-composer/drupal-project
   esac 
