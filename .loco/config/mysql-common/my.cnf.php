@@ -11,7 +11,7 @@ function matchVer($pat) {return (bool) preg_match($pat, ver());}
 [mysqld]
 skip-external-locking
 key_buffer_size = 256M
-max_allowed_packet = 1M
+max_allowed_packet = 16M
 table_open_cache = 256
 sort_buffer_size = 1M
 read_buffer_size = 1M
