@@ -39,6 +39,8 @@ LoadModule proxy_fcgi_module modules/mod_proxy_fcgi.so
 
 ServerAdmin you@example.com
 ServerName localhost:{{HTTPD_PORT}}
+TraceEnable Off
+
 <Directory />
     AllowOverride none
     Require all denied
