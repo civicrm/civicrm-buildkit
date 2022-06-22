@@ -119,7 +119,7 @@ fi
 # Create directories and settings for audit file processing
 mkdir -p ${CMS_ROOT}/sites/default/files/wmf_audit/logs
 drush vset wmf_audit_log_archive_dir "${CMS_ROOT}/sites/default/files/wmf_audit/logs"
-for processor in adyen amazon astropay ingenico; do
+for processor in adyen amazon astropay ingenico braintree; do
   mkdir -p ${CMS_ROOT}/sites/default/files/wmf_audit/$processor/incoming
   mkdir -p ${CMS_ROOT}/sites/default/files/wmf_audit/$processor/completed
   mkdir -p ${CMS_ROOT}/sites/default/files/wmf_audit/$processor/logs
