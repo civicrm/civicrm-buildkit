@@ -50,7 +50,7 @@
       "cv": {"version": "0.3.26", "url": "https://download.civicrm.org/cv/cv.phar-v{$version}", "path": "bin/cv", "type": "phar"},
       "drush8": {"version": "8.4.11", "url": "https://github.com/drush-ops/drush/releases/download/{$version}/drush.phar", "path": "extern/drush8.phar", "type": "phar"},
       "drush-backdrop": {"version": "1.x-1.x", "url": "https://github.com/backdrop-contrib/backdrop-drush-extension/archive/{$version}.zip", "path": "extern/drush-lib/backdrop"},
-      "git-scan": {"version": "2021-06-28-92b3e512", "url": "https://download.civicrm.org/git-scan/git-scan.phar-{$version}", "path": "bin/git-scan", "type": "phar"},
+      "git-scan": {"version": "2022-07-15", "url": "https://github.com/totten/git-scan/releases/download/{$version}/git-scan-{$version}.phar", "path": "bin/git-scan", "type": "phar"},
       "phpunit4": {"version": "4.8.21", "url": "https://phar.phpunit.de/phpunit-{$version}.phar", "path": "extern/phpunit4/phpunit4.phar", "type": "phar"},
       "phpunit5": {"version": "5.x", "url": "https://phar.phpunit.de/phpunit-5.phar", "path": "extern/phpunit5/phpunit5.phar", "type": "phar"},
       "phpunit6": {"version": "6.x", "url": "https://phar.phpunit.de/phpunit-6.phar", "path": "extern/phpunit6/phpunit6.phar", "type": "phar"},
