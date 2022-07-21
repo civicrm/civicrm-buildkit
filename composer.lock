@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d9b595a024e54bc8c128ea10bc93cf1a",
+    "content-hash": "a2388fd793da953611891df6b3797f21",
     "packages": [
         {
             "name": "civicrm/composer-downloads-plugin",
@@ -62,23 +62,28 @@
         },
         {
             "name": "civicrm/upgrade-test",
-            "version": "dev-master",
+            "version": "0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/civicrm/civicrm-upgrade-test.git",
-                "reference": "7ad93f58a26791e41ae04ed97ee01d17368ed343"
+                "reference": "61f7b607f86c555489b5d4a59fa59207af0526f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/7ad93f58a26791e41ae04ed97ee01d17368ed343",
-                "reference": "7ad93f58a26791e41ae04ed97ee01d17368ed343",
+                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/61f7b607f86c555489b5d4a59fa59207af0526f6",
+                "reference": "61f7b607f86c555489b5d4a59fa59207af0526f6",
                 "shasum": ""
             },
-            "default-branch": true,
             "bin": [
-                "civicrm-upgrade-test"
+                "bin/civicrm-upgrade-examples",
+                "bin/civicrm-upgrade-test"
             ],
             "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Civi\\UpgradeTest\\": "src/"
+                }
+            },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "AGPL-3.0"
@@ -92,9 +97,9 @@
             "description": "Collection of scripts and data-files for testing CiviCRM upgrades",
             "homepage": "https://github.com/civicrm/civicrm-upgrade-test",
             "support": {
-                "source": "https://github.com/civicrm/civicrm-upgrade-test/tree/master"
+                "source": "https://github.com/civicrm/civicrm-upgrade-test/tree/0.5"
             },
-            "time": "2022-02-24T02:35:01+00:00"
+            "time": "2022-07-21T10:16:39+00:00"
         },
         {
             "name": "drupal/coder",
@@ -453,7 +458,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "totten/php-symbol-diff": 20,
-        "civicrm/upgrade-test": 20,
         "drupal/coder": 20
     },
     "prefer-stable": false,
@@ -465,5 +469,5 @@
     "platform-overrides": {
         "php": "7.1"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.1.0"
 }
