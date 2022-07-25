@@ -806,7 +806,6 @@ fi
 check_php_ext mysqli recommended   ## >= 4.7.12
 check_php_ext openssl recommended
 check_php_ext session recommended
-check_php_ext soap recommended
 check_php_ext zip recommended
 
 check_command node recommended "WARNING: Failed to locate command \"node\". NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
