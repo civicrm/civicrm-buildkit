@@ -13,6 +13,7 @@ mv "$WEB_ROOT/drupal" "$WEB_ROOT/web"
 
 pushd "$WEB_ROOT/web" >> /dev/null
   drush8 dl -y devel-1 libraries userprotect
+  composer_allow_common_plugins
   composer update psr/log ## Some D8 builds are too specific
   ## Some D8 builds include a specific revision of phpunit, but Civi uses standalone phpunit (PHAR)
   if composer info | grep -q ^phpunit/phpunit\ ; then
