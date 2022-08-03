@@ -20,6 +20,8 @@ LOCKFILE="$TMPDIR/civi-download-tools.lock"
 LOCKTIMEOUT=90
 HUB_VERSION="2.14.2"
 JOOMLATOOLS_CONSOLE_VERSION="v1.5.9"
+COMPOSER_VERSION="2.3.10"
+COMPOSER_URL="https://github.com/composer/composer/releases/download/${COMPOSER_VERSION}/composer.phar"
 IS_QUIET=
 IS_FORCE=
 IS_FULL=
@@ -297,6 +299,21 @@ function get_hub_url() {
   esac
 
   echo https://github.com/github/hub/releases/download/v${VERSION}/hub-${PLATFORM}-${VERSION}.${FORMAT}
+}
+
+function install_composer() {
+  if [ -z "$IS_FORCE" -a -e "$PRJDIR/bin/composer" -a "$(cat $PRJDIR/extern/composer.txt)" == "$COMPOSER_VERSION" ]; then
+    echo_comment "[[composer ($PRJDIR/bin/composer) already exists. Skipping.]]"
+  else
+    if [ -z "$COMPOSER_URL" ]; then
+      echo "[[Skip composer. Could not determine binary.]]"
+    else
+      echo "[[Download composer]]"
+      download_url "$COMPOSER_URL" "$PRJDIR/bin/composer"
+      chmod ugo+x "$PRJDIR/bin/composer"
+      echo "$COMPOSER_VERSION" > "$PRJDIR/extern/composer.txt"
+    fi
+  fi
 }
 
 ###############################################################################
@@ -676,14 +693,7 @@ pushd $PRJDIR >> /dev/null
   [ -f "$PRJDIR/extern/phpunit5/phpunit6.phar" ] && rm -f "$PRJDIR/extern/phpunit5/phpunit6.phar" "$PRJDIR/extern/phpunit5/phpunit6.phar"
 
   ## Download "composer"
-  if [ -z "$IS_FORCE" -a -f "$PRJDIR/bin/composer" ]; then
-    echo_comment "[[Composer binary ($PRJDIR/bin/composer) already exists. Skipping.]]"
-  else
-    echo "[[Download composer]]"
-    download_url "https://getcomposer.org/installer" "$TMPDIR/composer-installer"
-    php "$TMPDIR/composer-installer" -- --install-dir="$PRJDIR/bin"
-    mv "$PRJDIR/bin/composer.phar" "$PRJDIR/bin/composer"
-  fi
+  install_composer
 
   ## Download dependencies (via composer)
   COMPOSER_MD5=$(cat composer.json composer.lock | php -r 'echo md5(file_get_contents("php://stdin"));')
