@@ -670,6 +670,8 @@ pushd $PRJDIR >> /dev/null
     [ -z "$AMPHOME" ] && check_datafile_ownership "$HOME/.amp/apache.d"
   fi
 
+  [ ! -d "$PRJDIR/extern" ] && mkdir "$PRJDIR/extern"
+
   ## Cleanup previous PHAR downloads before composer-downloads-plugin takes a crack at it.
   [ -f "$PRJDIR/extern/_phpunit4.txt" ] && rm -f "$PRJDIR/extern/phpunit4/phpunit4.phar" "$PRJDIR/extern/_phpunit4.txt"
   [ -f "$PRJDIR/extern/_phpunit5.txt" ] && rm -f "$PRJDIR/extern/phpunit5/phpunit5.phar" "$PRJDIR/extern/_phpunit5.txt"
@@ -724,8 +726,6 @@ pushd $PRJDIR >> /dev/null
       popd >> /dev/null
     done
   fi
-
-  [ ! -d "$PRJDIR/extern" ] && mkdir "$PRJDIR/extern"
 
   ## Cleanup old civix tarballs
   [ -d "$PRJDIR/extern/civix" ] && rm -rf "$PRJDIR/extern/civix"
