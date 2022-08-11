@@ -31,30 +31,28 @@ function errdump(...$args) {
   fwrite(STDERR, var_dump($args, 1));
 }
 
+function app_usage() {
+  errprintf("usage: fetch-universe [--dry-run] [--feeds=lab,extdir,static] <base-dir>\n");
+}
+
 function parse_args(array $args, array $all_feeds): array {
   array_shift($args);
   $options = [
     'dryRun' => FALSE,
     'basedir' => NULL,
-    'feeds' => [],
+    'feeds' => array_keys($all_feeds),
   ];
   while (!empty($args)) {
     $arg = array_shift($args);
     if (substr($arg, 0, 2) === '--') {
-      $optionName = substr($arg, 2);
-      switch ($optionName) {
+      $keyValue = explode('=', substr($arg, 2), 2);
+      switch ($keyValue[0]) {
         case 'dry-run':
           $options['dryRun'] = TRUE;
           break;
 
-        case 'lab':
-        case 'extdir':
-        case 'static':
-          $options['feeds'][] = $optionName;
-          break;
-
-        case 'all':
-          $options['feeds'] = array_keys($all_feeds);
+        case 'feeds':
+          $options['feeds'] = explode(',', $keyValue[1]);
           break;
 
         default:
@@ -67,19 +65,15 @@ function parse_args(array $args, array $all_feeds): array {
     }
   }
 
-  if (empty($options['feeds'])) {
-    $options['feeds'] = array_keys($all_feeds);
-  }
-
   if (empty( $options['basedir'])) {
     errprintf("Missing base directory\n");
-    errprintf("usage: fetch-universe <base-dir>\n");
+    app_usage();
     exit(1);
   }
 
   if (!file_exists($options['basedir']) || !is_dir($options['basedir'])) {
     errprintf("Missing base directory\n");
-    errprintf("usage: fetch-universe <base-dir>\n");
+    app_usage();
     exit(1);
   }
 
