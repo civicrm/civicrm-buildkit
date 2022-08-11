@@ -31,6 +31,61 @@ function errdump(...$args) {
   fwrite(STDERR, var_dump($args, 1));
 }
 
+function parse_args(array $args, array $all_feeds): array {
+  array_shift($args);
+  $options = [
+    'dryRun' => FALSE,
+    'basedir' => NULL,
+    'feeds' => [],
+  ];
+  while (!empty($args)) {
+    $arg = array_shift($args);
+    if (substr($arg, 0, 2) === '--') {
+      $optionName = substr($arg, 2);
+      switch ($optionName) {
+        case 'dry-run':
+          $options['dryRun'] = TRUE;
+          break;
+
+        case 'lab':
+        case 'extdir':
+        case 'static':
+          $options['feeds'][] = $optionName;
+          break;
+
+        case 'all':
+          $options['feeds'] = array_keys($all_feeds);
+          break;
+
+        default:
+          errprintf("Unrecognized option: $arg\n");
+          exit(1);
+      }
+    }
+    else {
+      $options['basedir'] = realpath($arg);
+    }
+  }
+
+  if (empty($options['feeds'])) {
+    $options['feeds'] = array_keys($all_feeds);
+  }
+
+  if (empty( $options['basedir'])) {
+    errprintf("Missing base directory\n");
+    errprintf("usage: fetch-universe <base-dir>\n");
+    exit(1);
+  }
+
+  if (!file_exists($options['basedir']) || !is_dir($options['basedir'])) {
+    errprintf("Missing base directory\n");
+    errprintf("usage: fetch-universe <base-dir>\n");
+    exit(1);
+  }
+
+  return $options;
+}
+
 ########################################################################################
 ## Feeds
 
@@ -153,20 +208,36 @@ function feed_merge($feeds) {
 }
 
 ########################################################################################
+
+class TaskList {
+  private $tasks = [];
+  public function add(string $title, $callback) {
+    $this->tasks[] = [$title, $callback];
+  }
+  public function runAll($dryRun = FALSE) {
+    foreach ($this->tasks as $task) {
+      [$title, $callback] = $task;
+      if ($dryRun) {
+        errprintf("DRY RUN: $title\n");
+      }
+      else {
+        errprintf($title . "\n");
+        $callback();
+      }
+    }
+  }
+}
+
+########################################################################################
 ## Parse inputs
-if (empty($argv[1])) {
-  errprintf("Missing base directory\n");
-  errprintf("usage: fetch-universe <base-dir>\n");
-  exit(1);
-}
 
-$basedir = realpath($argv[1]);
-
-if (!file_exists($basedir) || !is_dir($basedir)) {
-  errprintf("Missing base directory\n");
-  errprintf("usage: fetch-universe <base-dir>\n");
-  exit(1);
-}
+$all_feeds = [
+  'extdir' => 'feed_extdir',
+  'static' => 'feed_static',
+  'lab' => 'feed_labdir',
+];
+$options = parse_args($argv, $all_feeds);
+$basedir = $options['basedir'];
 
 ########################################################################################
 ## Main data loading
@@ -174,38 +245,54 @@ if (!file_exists($basedir) || !is_dir($basedir)) {
 $statuses = array(); // array(string $key => int $code)
 $deprecated = array('civicrm-drupal', 'civicrm-org-site', 'api4', 'civicrm-setup');
 
-$repos = feed_merge([feed_extdir(), feed_static(), feed_labdir()]);
+$feeds = [];
+foreach ($all_feeds as $feed_name => $feed_func) {
+  if (in_array($feed_name, $options['feeds'])) {
+    $feeds[] = $feed_func();
+  }
+}
+$repos = feed_merge($feeds);
+$taskList = new TaskList();
 
 foreach ($repos as $key => $ext) {
   $dir = "$basedir/" . $ext['type'] . "/$key";
   $oldDir = "$basedir/$key";
 
   if (!is_dir(dirname($dir))) {
-    mkdir(dirname($dir));
+    $taskList->add("Init dir ($dir)", function() use ($dir) {
+      mkdir(dirname($dir));
+    });
   }
 
   if (is_dir($oldDir) && !is_dir($dir)) {
-    errprintf("Move %s => %s\n", $oldDir, $dir);
-    rename($oldDir, $dir);
+    $taskList->add("Move ($oldDir => $dir)", function() use ($oldDir, $dir) {
+      rename($oldDir, $dir);
+    });
   }
 
-  if (empty($ext['git_url'])) {
-    errprintf("$key does not have git_url\n");
-    $statuses[$key] = 1;
-  }
-  elseif (file_exists($dir)) {
-    run($dir, sprintf("git remote set-url origin %s", escapeshellarg($ext['git_url'])));
-    $statuses[$key] = run($dir, "git pull");
-  }
-  else {
-    $branchExpr = empty($ext['git_branch']) ? '' : ('-b ' . escapeshellarg($ext['git_branch']));
-    $statuses[$key] = run($basedir, sprintf("git clone %s %s %s", escapeshellarg($ext['git_url']), escapeshellarg($dir), $branchExpr));
-  }
+  $taskList->add("Fetch ($dir)", function() use ($dir, $ext, &$statuses) {
+    if (empty($ext['git_url'])) {
+      errprintf("$key does not have git_url\n");
+      $statuses[$key] = 1;
+    }
+    elseif (file_exists($dir)) {
+      run($dir, sprintf("git remote set-url origin %s", escapeshellarg($ext['git_url'])));
+      $statuses[$key] = run($dir, "git pull");
+    }
+    else {
+      $branchExpr = empty($ext['git_branch']) ? '' : ('-b ' . escapeshellarg($ext['git_branch']));
+      $statuses[$key] = run($basedir, sprintf("git clone %s %s %s", escapeshellarg($ext['git_url']), escapeshellarg($dir), $branchExpr));
+    }
+  });
 
-  if (file_exists("$dir/composer.json") && $statuses[$key] == 0) {
-    $statuses[$key] = run($dir, "composer install --no-scripts");
-  }
+  $taskList->add("Resolve dependencies ($dir)", function() use ($dir, $ext, &$statuses) {
+    if (file_exists("$dir/composer.json") && $statuses[$key] == 0) {
+      $statuses[$key] = run($dir, "composer install --no-scripts");
+    }
+  });
 }
+
+$taskList->runAll($options['dryRun']);
 
 $msgs = array();
 foreach ($deprecated as $key) {
