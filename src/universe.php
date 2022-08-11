@@ -76,6 +76,10 @@ return function() {
       'git_url' => 'https://github.com/colemanw/webform_civicrm',
       'type' => 'drupal-module',
     ),
+    'click-and-pledge' => [
+      'git_url' => 'https://github.com/ClickandPledge/wordpress-civicrm',
+      'type' => 'wp-plugin',
+    ],
   );
 
   // These repos all live in `github.com/civicrm', have basic names, and use default branches.
@@ -135,6 +139,20 @@ return function() {
       'git_url' => 'https://github.com/civicrm/' . $subRepo,
       'type' => $type,
     );
+  }
+
+  $wporgPlugins = [
+    'civicrm-admin-utilities',
+    'civicrm-contribution-page-widget',
+    'civicrm-wp-member-sync',
+    'civicrm-wp-profile-sync',
+    'civievent-widget',
+  ];
+  foreach ($wporgPlugins as $name) {
+    $result[$name] = [
+      'svn_url' => 'https://plugins.svn.wordpress.org/' . $name . '/trunk',
+      'type' => 'wp-plugin',
+    ];
   }
 
   return $result;
