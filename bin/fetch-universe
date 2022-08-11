@@ -1,5 +1,9 @@
-#!/usr/bin/env php
+#!/usr/bin/env pogo
 <?php
+
+#!depdir '../extern/fetch-universe'
+#!ttl 10 years
+#!require rubobaquero/phpquery: '^0.9.15'
 
 ########################################################################################
 ## General utilities
@@ -89,10 +93,23 @@ function parse_args(array $args, array $all_feeds): array {
  * @return array
  */
 function feed_extdir() {
-  $extdirUrl = 'https://civicrm.org/extdir/git-urls';
+  $extdirUrl = 'https://civicrm.org/extension-git-urls';
+  // $extdirUrl = '/tmp/feed.html';
   errprintf("Fetch URL (%s)\n", $extdirUrl);
-  $json = json_decode(file_get_contents($extdirUrl), 1);
-  return feed_normalize($json, ['type' => 'ext']);
+  $raw = file_get_contents($extdirUrl);
+
+  phpQuery::newDocumentHTML($raw);
+  $repos = [];
+  foreach (pq('.egu-extension') as $row) {
+    $key = trim(pq($row)->children('.egu-key')->text());
+    $repos[$key] = [
+      'title' => trim(pq($row)->children('.egu-title')->text()),
+      'git_url' => trim(pq($row)->children('.egu-url')->text()),
+      'type' => 'ext',
+    ];
+  }
+
+  return feed_normalize($repos, ['type' => 'ext']);
 }
 
 /**
