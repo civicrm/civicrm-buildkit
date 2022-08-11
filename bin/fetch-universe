@@ -31,6 +31,55 @@ function errdump(...$args) {
   fwrite(STDERR, var_dump($args, 1));
 }
 
+function app_usage() {
+  errprintf("usage: fetch-universe [--dry-run] [--feeds=lab,extdir,static] <base-dir>\n");
+}
+
+function parse_args(array $args, array $all_feeds): array {
+  array_shift($args);
+  $options = [
+    'dryRun' => FALSE,
+    'basedir' => NULL,
+    'feeds' => array_keys($all_feeds),
+  ];
+  while (!empty($args)) {
+    $arg = array_shift($args);
+    if (substr($arg, 0, 2) === '--') {
+      $keyValue = explode('=', substr($arg, 2), 2);
+      switch ($keyValue[0]) {
+        case 'dry-run':
+          $options['dryRun'] = TRUE;
+          break;
+
+        case 'feeds':
+          $options['feeds'] = explode(',', $keyValue[1]);
+          break;
+
+        default:
+          errprintf("Unrecognized option: $arg\n");
+          exit(1);
+      }
+    }
+    else {
+      $options['basedir'] = realpath($arg);
+    }
+  }
+
+  if (empty( $options['basedir'])) {
+    errprintf("Missing base directory\n");
+    app_usage();
+    exit(1);
+  }
+
+  if (!file_exists($options['basedir']) || !is_dir($options['basedir'])) {
+    errprintf("Missing base directory\n");
+    app_usage();
+    exit(1);
+  }
+
+  return $options;
+}
+
 ########################################################################################
 ## Feeds
 
@@ -89,141 +138,9 @@ function feed_labdir() {
  * @return array
  */
 function feed_static() {
-  $core = array(
-    'civicrm-core' => array(
-      'git_url' => 'https://github.com/civicrm/civicrm-core',
-      'type' => 'core',
-    ),
-    'civicrm-backdrop-1.x' => array(
-      'git_url' => 'https://github.com/civicrm/civicrm-backdrop',
-      'git_branch' => '1.x-master',
-      'type' => 'core',
-    ),
-    'civicrm-buildkit' => array(
-      'git_url' => 'https://github.com/civicrm/civicrm-buildkit',
-      'type' => 'tools',
-    ),
-    'civicrm-drupal-6.x' => array(
-      'git_url' => 'https://github.com/civicrm/civicrm-drupal',
-      'git_branch' => '6.x-master',
-      'type' => 'core',
-    ),
-    'civicrm-drupal-7.x' => array(
-      'git_url' => 'https://github.com/civicrm/civicrm-drupal',
-      'git_branch' => '7.x-master',
-      'type' => 'core',
-    ),
-    'civicrm-drupal-8.x' => array(
-      'git_url' => 'https://github.com/civicrm/civicrm-drupal-8',
-      'type' => 'core',
-    ),
-    'civicrm-joomla' => array(
-      'git_url' => 'https://github.com/civicrm/civicrm-joomla',
-      'type' => 'core',
-    ),
-    'civicrm-packages' => array(
-      'git_url' => 'https://github.com/civicrm/civicrm-packages',
-      'type' => 'core',
-    ),
-    'civicrm-setup' => array(
-      'git_url' => 'https://github.com/civicrm/civicrm-setup',
-      'type' => 'lib',
-    ),
-    'civicrm-wordpress' => array(
-      'git_url' => 'https://github.com/civicrm/civicrm-wordpress',
-      'type' => 'core',
-    ),
-    'civihr' => array(
-      'git_url' => 'https://github.com/civicrm/civihr',
-      'git_branch' => 'staging',
-      'type' => 'ext',
-    ),
-    'com.webaccessglobal.module.civimobile' => array(
-      'git_url' => 'https://github.com/webaccess/com.webaccessglobal.module.civimobile',
-      'type' => 'ext',
-    ),
-    'civix' => array(
-      'git_url' => 'https://github.com/totten/civix',
-      'type' => 'tools',
-    ),
-    'coworker' => array(
-      'git_url' => 'https://lab.civicrm.org/dev/coworker',
-      'type' => 'tools',
-    ),
-    'cf-civicrm' => array(
-      'git_url' => 'https://github.com/mecachisenros/cf-civicrm',
-      'type' => 'wp-plugin',
-    ),
-    'civicrm_entity' => array(
-      'git_url' => 'https://git.drupalcode.org/project/civicrm_entity',
-      'type' => 'drupal-module',
-    ),
-    'webform_civicrm' => array(
-      'git_url' => 'https://github.com/colemanw/webform_civicrm',
-      'type' => 'drupal-module',
-    ),
-  );
-
-  // These repos all have basic names and use default branch.
-  $subRepos = array(
-    'l10n' => 'core',
-    'civicrm-upgrade-test' => 'core',
-
-    'civicrm-dev-docs' => 'docs',
-    'civicrm-infra' => 'docs',
-    'civicrm-sysadmin-guide' => 'docs',
-    'civicrm-user-guide' => 'docs',
-    'release-management' => 'docs',
-
-    'apachesolr_civiAttachments' => 'drupal-module',
-
-    'civicrm-l10n-extensions' => 'ext',
-    'org.civicrm.doctorwhen' => 'ext',
-    'org.civicrm.module.cividiscount' => 'ext',
-    'org.civicrm.shoreditch' => 'ext',
-    'org.civicrm.sms.twilio' => 'ext',
-    'org.civicrm.styleguide' => 'ext',
-    'org.civicrm.volunteer ' => 'ext',
-
-    'civicrm-cxn-rpc' => 'lib',
-    'composer-compile-lib ' => 'lib',
-    'composer-compile-plugin ' => 'lib',
-    'composer-downloads-plugin ' => 'lib',
-    'jquery' => 'lib',
-    'jqueryui' => 'lib',
-    'mosaico' => 'lib',
-    'zetacomponents-mail' => 'lib',
-
-    'civicon' => 'misc',
-    'civicrm-ac' => 'misc',
-    'civicrm-botdylan' => 'misc',
-    'civicrm-community-messages' => 'misc',
-    'civicrm-dist-manager' => 'misc',
-    'civicrm-docs' => 'misc',
-    'civicrm-extdir-example' => 'misc',
-    'civicrm-org-platform' => 'misc',
-    'civicrm-pingback' => 'misc',
-    'civicrm-statistics'=> 'misc',
-    'cxnapp' => 'misc',
-    'pr-report' => 'misc',
-    'probot-civicrm' => 'misc',
-
-    'civistrings' => 'tools',
-    'coder' => 'tools',
-    'cv' => 'tools',
-    'cv-nodejs' => 'tools',
-    'phpunit-xml-cleanup ' => 'tools',
-
-    'civicrm-demo-wp' => 'wp-plugin',
-  );
-  foreach ($subRepos as $subRepo => $type) {
-    $core[$subRepo] = array(
-      'git_url' => 'https://github.com/civicrm/' . $subRepo,
-      'type' => $type,
-    );
-  }
-
-  return feed_normalize($core);
+  $f = require dirname(__DIR__) . '/src/universe.php';
+  $list = $f();
+  return feed_normalize($list);
 }
 
 /**
@@ -237,11 +154,11 @@ function feed_normalize($feed, $defaults = []) {
   foreach ($feed as $key => $repo) {
     $repo['key'] = $key;
 
-    if (preg_match('/^git@(lab\.civicrm\.org|github\.com):(.*)/', $repo['git_url'], $m)) {
+    if (isset($repo['git_url']) && preg_match('/^git@(lab\.civicrm\.org|github\.com):(.*)/', $repo['git_url'], $m)) {
       $userRepo = preg_replace('/\.git$/', '', $m[2]);
       $repo['git_url'] = sprintf('https://%s/%s.git', $m[1], $userRepo);
     }
-    elseif (preg_match(';^https?://(lab\.civicrm\.org|github\.com)/(.*);', $repo['git_url'], $m)) {
+    elseif (isset($repo['git_url']) && preg_match(';^https?://(lab\.civicrm\.org|github\.com)/(.*);', $repo['git_url'], $m)) {
       $userRepo = preg_replace('/\.git$/', '', $m[2]);
       $repo['git_url'] = sprintf('https://%s/%s.git', $m[1], $userRepo);
     }
@@ -266,7 +183,7 @@ function feed_merge($feeds) {
   $srcIds = []; // Flag git URLs/branches that have been visited already.
   foreach ($feeds as $feed) {
     foreach ($feed as $key => $repo) {
-      $srcId = $repo['git_url'] . '#' . ($repo['git_branch'] ?? 'DEFAULT');
+      $srcId = ($repo['git_url'] ?? '') . ($repo['svn_url'] ?? '') . '#' . ($repo['git_branch'] ?? 'DEFAULT');
       if (isset($all[$key])) {
         errprintf("skip duplicate key (%s) from (%s)\n", $key, $srcId);
         continue;
@@ -285,20 +202,36 @@ function feed_merge($feeds) {
 }
 
 ########################################################################################
+
+class TaskList {
+  private $tasks = [];
+  public function add(string $title, $callback) {
+    $this->tasks[] = [$title, $callback];
+  }
+  public function runAll($dryRun = FALSE) {
+    foreach ($this->tasks as $task) {
+      [$title, $callback] = $task;
+      if ($dryRun) {
+        errprintf("DRY RUN: $title\n");
+      }
+      else {
+        errprintf($title . "\n");
+        $callback();
+      }
+    }
+  }
+}
+
+########################################################################################
 ## Parse inputs
-if (empty($argv[1])) {
-  errprintf("Missing base directory\n");
-  errprintf("usage: fetch-universe <base-dir>\n");
-  exit(1);
-}
 
-$basedir = realpath($argv[1]);
-
-if (!file_exists($basedir) || !is_dir($basedir)) {
-  errprintf("Missing base directory\n");
-  errprintf("usage: fetch-universe <base-dir>\n");
-  exit(1);
-}
+$all_feeds = [
+  'extdir' => 'feed_extdir',
+  'static' => 'feed_static',
+  'lab' => 'feed_labdir',
+];
+$options = parse_args($argv, $all_feeds);
+$basedir = $options['basedir'];
 
 ########################################################################################
 ## Main data loading
@@ -306,38 +239,60 @@ if (!file_exists($basedir) || !is_dir($basedir)) {
 $statuses = array(); // array(string $key => int $code)
 $deprecated = array('civicrm-drupal', 'civicrm-org-site', 'api4', 'civicrm-setup');
 
-$repos = feed_merge([feed_extdir(), feed_static(), feed_labdir()]);
+$feeds = [];
+foreach ($all_feeds as $feed_name => $feed_func) {
+  if (in_array($feed_name, $options['feeds'])) {
+    $feeds[] = $feed_func();
+  }
+}
+$repos = feed_merge($feeds);
+$taskList = new TaskList();
 
 foreach ($repos as $key => $ext) {
   $dir = "$basedir/" . $ext['type'] . "/$key";
   $oldDir = "$basedir/$key";
 
   if (!is_dir(dirname($dir))) {
-    mkdir(dirname($dir));
+    $taskList->add("Init dir ($dir)", function() use ($dir) {
+      mkdir(dirname($dir));
+    });
   }
 
   if (is_dir($oldDir) && !is_dir($dir)) {
-    errprintf("Move %s => %s\n", $oldDir, $dir);
-    rename($oldDir, $dir);
+    $taskList->add("Move ($oldDir => $dir)", function() use ($oldDir, $dir) {
+      rename($oldDir, $dir);
+    });
   }
 
-  if (empty($ext['git_url'])) {
-    errprintf("$key does not have git_url\n");
-    $statuses[$key] = 1;
-  }
-  elseif (file_exists($dir)) {
-    run($dir, sprintf("git remote set-url origin %s", escapeshellarg($ext['git_url'])));
-    $statuses[$key] = run($dir, "git pull");
-  }
-  else {
-    $branchExpr = empty($ext['git_branch']) ? '' : ('-b ' . escapeshellarg($ext['git_branch']));
-    $statuses[$key] = run($basedir, sprintf("git clone %s %s %s", escapeshellarg($ext['git_url']), escapeshellarg($dir), $branchExpr));
-  }
+  $taskList->add("Fetch ($dir)", function() use ($basedir, $dir, $ext, &$statuses) {
+    if (empty($ext['git_url']) && empty($ext['svn_url'])) {
+      errprintf("$key does not have git_url or svn_url\n");
+      $statuses[$key] = 1;
+    }
+    elseif (!empty($ext['git_url']) && file_exists($dir)) {
+      run($dir, sprintf("git remote set-url origin %s", escapeshellarg($ext['git_url'])));
+      $statuses[$key] = run($dir, "git pull");
+    }
+    elseif (!empty($ext['git_url'])) {
+      $branchExpr = empty($ext['git_branch']) ? '' : ('-b ' . escapeshellarg($ext['git_branch']));
+      $statuses[$key] = run($basedir, sprintf("git clone %s %s %s", escapeshellarg($ext['git_url']), escapeshellarg($dir), $branchExpr));
+    }
+    elseif (!empty($ext['svn_url']) && file_exists($dir)) {
+      $statuses[$key] = run($dir, "svn update");
+    }
+    elseif (!empty($ext['svn_url'])) {
+      $statuses[$key] = run($basedir, sprintf("svn co %s %s", escapeshellarg($ext['svn_url']), escapeshellarg($dir)));
+    }
+  });
 
-  if (file_exists("$dir/composer.json") && $statuses[$key] == 0) {
-    $statuses[$key] = run($dir, "composer install --no-scripts");
-  }
+  $taskList->add("Resolve dependencies ($dir)", function() use ($dir, $ext, &$statuses) {
+    if (file_exists("$dir/composer.json") && $statuses[$key] == 0) {
+      $statuses[$key] = run($dir, "composer install --no-scripts");
+    }
+  });
 }
+
+$taskList->runAll($options['dryRun']);
 
 $msgs = array();
 foreach ($deprecated as $key) {

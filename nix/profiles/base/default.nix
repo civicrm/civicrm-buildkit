@@ -20,6 +20,7 @@ in [
     pkgs.ncurses
     pkgs.patch
     pkgs.rsync
+    pkgs.subversion
     dists.bkit.tzdata
     pkgs.unzip
     pkgs.which
