@@ -65,7 +65,11 @@ return function() {
       'type' => 'tools',
     ),
     'cf-civicrm' => array(
-      'git_url' => 'https://github.com/mecachisenros/cf-civicrm',
+      'git_url' => 'https://github.com/WPCV/cf-civicrm',
+      'type' => 'wp-plugin',
+    ),
+    'wpcv-woo-civi-integration' => array(
+      'git_url' => 'https://github.com/WPCV/wpcv-woo-civi-integration',
       'type' => 'wp-plugin',
     ),
     'civicrm_entity' => array(

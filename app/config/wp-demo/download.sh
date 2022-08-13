@@ -28,7 +28,10 @@ pushd "$WEB_ROOT/web/wp-content/plugins" >> /dev/null
   git clone ${CACHE_DIR}/civicrm/civicrm-demo-wp.git                  -b master          civicrm-demo-wp
   git clone ${CACHE_DIR}/civicrm/civivolunteer.git                    -b "$VOL_VERSION"  civicrm/civicrm/tools/extensions/civivolunteer
   git clone ${CACHE_DIR}/ginkgostreet/org.civicrm.angularprofiles.git -b "$NG_PRFL_VERSION" civicrm/civicrm/tools/extensions/org.civicrm.angularprofiles
-  git clone "${CACHE_DIR}/civicrm/org.civicrm.contactlayout.git"      -b "master"        civicrm/tools/extensions/org.civicrm.contactlayout
+  git clone "${CACHE_DIR}/civicrm/org.civicoop.civirules.git"              -b "master"  civicrm/civicrm/tools/extensions/org.civicoop.civirules
+  git clone "${CACHE_DIR}/TechToThePeople/civisualize.git"                 -b "master"  civicrm/civicrm/tools/extensions/civisualize
+  git clone "${CACHE_DIR}/civicrm/org.civicrm.module.cividiscount.git"     -b "master"  civicrm/civicrm/tools/extensions/cividiscount
+  git clone "${CACHE_DIR}/civicrm/org.civicrm.contactlayout.git"           -b "master"  civicrm/civicrm/tools/extensions/org.civicrm.contactlayout
 
 
   cd civicrm
