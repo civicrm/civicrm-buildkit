@@ -123,7 +123,6 @@ return function() {
     'civicrm-dist-manager' => 'misc',
     'civicrm-docs' => 'misc',
     'civicrm-extdir-example' => 'misc',
-    'civicrm-org-platform' => 'misc',
     'civicrm-pingback' => 'misc',
     'civicrm-statistics' => 'misc',
     'cxnapp' => 'misc',
