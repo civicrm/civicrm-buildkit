@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "41a1323939f89a9afbfb2ff527a94125",
+    "content-hash": "5909379c6c936b8874d1b59ef2b9a706",
     "packages": [
         {
             "name": "civicrm/composer-downloads-plugin",
@@ -96,6 +96,9 @@
             ],
             "description": "Collection of scripts and data-files for testing CiviCRM upgrades",
             "homepage": "https://github.com/civicrm/civicrm-upgrade-test",
+            "support": {
+                "source": "https://github.com/civicrm/civicrm-upgrade-test/tree/0.5"
+            },
             "time": "2022-07-21T10:16:39+00:00"
         },
         {
@@ -115,6 +118,7 @@
             "require-dev": {
                 "phpunit/phpunit": ">=3.7 <6"
             },
+            "default-branch": true,
             "type": "phpcodesniffer-standard",
             "autoload": {
                 "psr-0": {
@@ -270,12 +274,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Ctype\\": ""
-                },
                 "files": [
                     "bootstrap.php"
-                ]
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Ctype\\": ""
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -420,6 +424,7 @@
             "require": {
                 "nikic/php-parser": "^1.4"
             },
+            "default-branch": true,
             "bin": [
                 "bin/php-symbol-diff",
                 "bin/git-php-symbol-diff"
@@ -441,6 +446,10 @@
                 }
             ],
             "description": "Identify changes in PHP code by symbol (class/method)",
+            "support": {
+                "issues": "https://github.com/totten/php-symbol-diff/issues",
+                "source": "https://github.com/totten/php-symbol-diff/tree/master"
+            },
             "time": "2015-08-06T08:23:13+00:00"
         }
     ],
@@ -460,5 +469,5 @@
     "platform-overrides": {
         "php": "7.2"
     },
-    "plugin-api-version": "1.1.0"
+    "plugin-api-version": "2.3.0"
 }
