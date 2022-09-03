@@ -313,30 +313,30 @@ foreach ($repos as $key => $ext) {
     $statuses[$key] = 1;
   }
   elseif (!empty($ext['git_url']) && file_exists($dir)) {
-    $taskList->add("Update $key ($dir) via git", function() use ($basedir, $dir, $ext, &$statuses) {
+    $taskList->add("Update $key ($dir) via git", function() use ($basedir, $dir, $ext, &$statuses, $key) {
       run($dir, sprintf("git remote set-url origin %s", escapeshellarg($ext['git_url'])));
       $statuses[$key] = run($dir, "git pull");
     });
   }
   elseif (!empty($ext['git_url'])) {
-    $taskList->add("Download $key ($dir) via git", function() use ($basedir, $dir, $ext, &$statuses) {
+    $taskList->add("Download $key ($dir) via git", function() use ($basedir, $dir, $ext, &$statuses, $key) {
       $branchExpr = empty($ext['git_branch']) ? '' : ('-b ' . escapeshellarg($ext['git_branch']));
       $statuses[$key] = run($basedir, sprintf("git clone %s %s %s", escapeshellarg($ext['git_url']), escapeshellarg($dir), $branchExpr));
     });
   }
   elseif (!empty($ext['svn_url']) && file_exists($dir)) {
-    $taskList->add("Update $key ($dir) via svn", function() use ($basedir, $dir, $ext, &$statuses) {
+    $taskList->add("Update $key ($dir) via svn", function() use ($basedir, $dir, $ext, &$statuses, $key) {
       $statuses[$key] = run($dir, "svn update");
     });
   }
   elseif (!empty($ext['svn_url'])) {
-    $taskList->add("Download $key ($dir) via svn", function() use ($basedir, $dir, $ext, &$statuses) {
+    $taskList->add("Download $key ($dir) via svn", function() use ($basedir, $dir, $ext, &$statuses, $key) {
       $statuses[$key] = run($basedir, sprintf("svn co %s %s", escapeshellarg($ext['svn_url']), escapeshellarg($dir)));
     });
   }
 
   if (!empty($options['deps'])) {
-    $taskList->add("Resolve dependencies ($dir)", function() use ($dir, $ext, &$statuses) {
+    $taskList->add("Resolve dependencies ($dir)", function() use ($dir, $ext, &$statuses, $key) {
       if (file_exists("$dir/composer.json") && $statuses[$key] == 0) {
         $statuses[$key] = run($dir, "composer install --no-scripts");
       }
