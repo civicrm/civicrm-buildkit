@@ -280,7 +280,7 @@ $basedir = $options['basedir'];
 ## Main data loading
 
 $statuses = array(); // array(string $key => int $code)
-$deprecated = array('civicrm-drupal', 'civicrm-org-site', 'api4', 'civicrm-setup');
+$deprecated = array('civicrm-drupal', 'civicrm-org-site', 'api4', 'civicrm-setup', 'civicrm-org-platform');
 
 $feeds = [];
 foreach ($all_feeds as $feed_name => $feed_func) {
