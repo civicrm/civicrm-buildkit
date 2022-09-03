@@ -105,12 +105,12 @@ return function() {
     'org.civicrm.shoreditch' => 'ext',
     'org.civicrm.sms.twilio' => 'ext',
     'org.civicrm.styleguide' => 'ext',
-    'org.civicrm.volunteer ' => 'ext',
+    'org.civicrm.volunteer' => 'ext',
 
     'civicrm-cxn-rpc' => 'lib',
-    'composer-compile-lib ' => 'lib',
-    'composer-compile-plugin ' => 'lib',
-    'composer-downloads-plugin ' => 'lib',
+    'composer-compile-lib' => 'lib',
+    'composer-compile-plugin' => 'lib',
+    'composer-downloads-plugin' => 'lib',
     'jquery' => 'lib',
     'jqueryui' => 'lib',
     'mosaico' => 'lib',
@@ -134,7 +134,7 @@ return function() {
     'coder' => 'tools',
     'cv' => 'tools',
     'cv-nodejs' => 'tools',
-    'phpunit-xml-cleanup ' => 'tools',
+    'phpunit-xml-cleanup' => 'tools',
 
     'civicrm-demo-wp' => 'wp-plugin',
   );
