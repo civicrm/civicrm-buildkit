@@ -269,8 +269,14 @@ function install_profile_systemd() {
 
     echo "Activating systemd services for \"$PREFIX\""
     systemctl daemon-reload
-    systemctl enable /etc/systemd/system/${PREFIX}*service
-    systemctl start ${PREFIX}
+    if [ -z "$SYSTEMD_ENABLE" -o "yes" == "$SYSTEMD_ENABLE" ]; then
+      systemctl enable /etc/systemd/system/${PREFIX}*service
+    else
+      systemctl disable /etc/systemd/system/${PREFIX}*service
+    fi
+    if [ -z "$SYSTEMD_START" -o "yes" == "$SYSTEMD_START" ]; then
+      systemctl start ${PREFIX}
+    fi
 
     echo "Cleaning temp files"
     rm -rf "$SYSDTMP"
