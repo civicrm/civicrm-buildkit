@@ -52,9 +52,21 @@ function is_profile_online() {
   return $result
 }
 
+function usage() {
+  local prog=$(basename "$0")
+  echo "usage: $prog <user> <profile>"
+  echo "example: $prog $USER min"
+}
+
 ## usage: main <user> <profile>
 function main() {
   local slept=0
+
+  if [ -z "$1" -o -z "$2" ]; then
+    usage
+    exit 3
+  fi
+
   while true; do
     if is_profile_online "$1" "$2" ; then
       echo OK
