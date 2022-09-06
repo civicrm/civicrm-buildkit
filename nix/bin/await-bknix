@@ -79,6 +79,9 @@ function main() {
     exit 3
   fi
 
+  echo "System uptime: $(uptime)"
+  echo "Ensuring that user $1 has active profile $2."
+
   while true; do
     if is_profile_online "$1" "$2" ; then
       echo OK
