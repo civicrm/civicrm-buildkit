@@ -46,7 +46,7 @@ function is_profile_online() {
 
   if [ -z "$svcs" ]; then
     echo "Failed to identify services for \"$1 $2\""
-    exit 1
+    result=1
   fi
   for svc in $svcs ; do
     if systemctl is-active --quiet "$svc" ; then
