@@ -1,0 +1,68 @@
+#!/bin/bash
+
+## Usage: await-bknix <profile>
+## Purpose: Check to see if "profile" is online. Sleep+poll until it comes online.
+
+######################################################################
+
+SLEEP=5
+MAX_SLEEP=900
+
+######################################################################
+
+## usage: get_profile_svcs <user> <profile>
+function get_profile_svcs() {
+  for svc in bknix-${1}-${2}{,-apache-vdr,-buildkit,-mailcatcher,-mysql,-mysqld,-php-fpm,-redis} ; do
+    if [ -f "/etc/systemd/system/$svc.service" ]; then
+      echo -n " $svc"
+    fi
+  done
+}
+
+## usage: check_profile <user> <profile>
+function is_profile_online() {
+  local result=0
+  local svcs=$(get_profile_svcs "$1" "$2")
+  local found=""
+  local missing=""
+
+  if [ -z "$svcs" ]; then
+    echo "Failed to identify services for \"$1 $2\""
+    exit 1
+  fi
+  for svc in $svcs ; do
+    if systemctl is-active --quiet "$svc" ; then
+      found="$found $svc"
+    else
+      missing="$missing $svc"
+      result=1
+    fi
+  done
+  [ -n "$found" ] && echo "Found services:${found}"
+  [ -n "$missing" ] && echo "Missing services:${missing}"
+  return $result
+}
+
+## usage: main <user> <profile>
+function main() {
+  local slept=0
+  while true; do
+    if is_profile_online "$1" "$2" ; then
+      echo OK
+      break
+    fi
+
+    if [ $slept -lt $MAX_SLEEP ]; then
+      echo "Waiting..."
+      sleep "$SLEEP"
+      slept=$(($SLEEP + $slept ))
+      echo "Slept total=$slept"
+    else
+      echo "Services did not come online after $slept seconds. Giving up."
+      exit 2
+    fi
+  done
+}
+
+######################################################################
+main "$1" "$2"
