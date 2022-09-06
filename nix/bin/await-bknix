@@ -1,0 +1,100 @@
+#!/bin/bash
+
+## Usage: await-bknix <profile>
+## Purpose: Check to see if "profile" is online. Sleep+poll until it comes online.
+
+######################################################################
+
+## Polling interval
+SLEEP=5
+
+## Maximum amount of time to spend polling. After MAX_SLEEP, give up
+MAX_SLEEP=600
+
+######################################################################
+
+## Find systemd services for the given user/profile
+##
+## usage: get_profile_svcs <user> <profile>
+## return: Displays space-delimited list of service names
+function get_profile_svcs() {
+  for svc in bknix-${1}-${2}{,-apache-vdr,-buildkit,-mailcatcher,-mysql,-mysqld,-php-fpm,-redis} ; do
+    if [ -f "/etc/systemd/system/$svc.service" ]; then
+      echo -n " $svc"
+    fi
+  done
+}
+
+## Check if the user/profile is online
+##
+## usage: check_profile <user> <profile>
+## return: Exit code indicates online/offline setatus
+function is_profile_online() {
+  local result=0
+  local svcs=$(get_profile_svcs "$1" "$2")
+  local found=""
+  local missing=""
+  local tgt_user="$1"
+  local tgt_profile="$2"
+
+  if [ -e "/nix/var/nix/profiles/bknix-${tgt_profile}/bin/php" -o -e "/nix/var/nix/profiles/per-user/${tgt_user}/bknix-${tgt_profile}/bin/php" ]; then
+    echo "Found profile binaries"
+  else
+    echo "Missing profile binaries"
+    result=1
+  fi
+
+  if [ -z "$svcs" ]; then
+    echo "Failed to identify services for \"$1 $2\""
+    exit 1
+  fi
+  for svc in $svcs ; do
+    if systemctl is-active --quiet "$svc" ; then
+      found="$found $svc"
+    else
+      missing="$missing $svc"
+      result=1
+    fi
+  done
+  [ -n "$found" ] && echo "Found services:${found}"
+  [ -n "$missing" ] && echo "Missing services:${missing}"
+  return $result
+}
+
+function usage() {
+  local prog=$(basename "$0")
+  echo "usage: $prog <user> <profile>"
+  echo "example: $prog $USER min"
+}
+
+## Check if the user/profile is online. Wait until it is.
+##
+## usage: main <user> <profile>
+## return: n/a
+function main() {
+  local slept=0
+
+  if [ -z "$1" -o -z "$2" ]; then
+    usage
+    exit 3
+  fi
+
+  while true; do
+    if is_profile_online "$1" "$2" ; then
+      echo OK
+      break
+    fi
+
+    if [ $slept -lt $MAX_SLEEP ]; then
+      echo "Waiting..."
+      sleep "$SLEEP"
+      slept=$(($SLEEP + $slept ))
+    else
+      echo "Services did not come online after $slept seconds. Giving up."
+      exit 2
+    fi
+  done
+}
+
+######################################################################
+main "$1" "$2"
