@@ -80,8 +80,11 @@ function download_extract($baseDir, $archiveUrl, $verbose, $cacheTtl) {
 
   if ($isDownload) {
     if ($cacheTtl < 0 || !file_exists($archiveFile) || is_older_than($archiveFile, time() - $cacheTtl)) {
+      $tempArchiveFile = dirname($archiveFile) . DIRECTORY_SEPARATOR . '.get-' . getmypid() . '-' . basename($archiveFile);
       echo "[[Download $archiveUrl to $archiveFile]]\n";
-      file_put_contents($archiveFile, file_get_contents($archiveUrl));
+      file_put_contents($tempArchiveFile, fopen($archiveUrl, 'r'));
+      if (file_exists($archiveFile)) unlink($archiveFile);
+      rename($tempArchiveFile, $archiveFile);
     }
   }
 
