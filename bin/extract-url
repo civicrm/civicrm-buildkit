@@ -5,6 +5,8 @@
 ## Bootstrap
 
 ini_set('display_errors', 1);
+require_once dirname(__DIR__) . '/src/PidLock.php';
+define('CACHE_LOCK_WAIT', 10*60);
 
 ###############################################################################
 function main($argv) {
@@ -79,12 +81,27 @@ function download_extract($baseDir, $archiveUrl, $verbose, $cacheTtl) {
   }
 
   if ($isDownload) {
-    if ($cacheTtl < 0 || !file_exists($archiveFile) || is_older_than($archiveFile, time() - $cacheTtl)) {
-      $tempArchiveFile = dirname($archiveFile) . DIRECTORY_SEPARATOR . '.get-' . getmypid() . '-' . basename($archiveFile);
-      echo "[[Download $archiveUrl to $archiveFile]]\n";
-      file_put_contents($tempArchiveFile, fopen($archiveUrl, 'r'));
-      if (file_exists($archiveFile)) unlink($archiveFile);
-      rename($tempArchiveFile, $archiveFile);
+    if (is_stale($archiveFile, $cacheTtl)) {
+      $tempPrefix = dirname($archiveFile) . DIRECTORY_SEPARATOR . '.' . basename($archiveFile);
+
+      $lock = new PidLock(NULL, "{$tempPrefix}.lock", getmypid());
+      if (!$lock->acquire(CACHE_LOCK_WAIT)) {
+        fwrite(STDERR, "Failed to lock cache for $archiveUrl\n");
+        exit(1);
+      }
+
+      if (!is_stale($archiveFile, $cacheTtl)) {
+        echo "[[Found cache $archiveFile from concurrent process]]\n";
+      } else {
+        echo "[[Downloading $archiveUrl to $archiveFile]]\n";
+        $tempArchiveFile = "{$tempPrefix}.get";
+        remove_file($tempArchiveFile);
+        file_put_contents($tempArchiveFile, fopen($archiveUrl, 'r'));
+        remove_file($archiveFile);
+        rename($tempArchiveFile, $archiveFile);
+      }
+
+      $lock->release();
     }
   }
 
@@ -110,9 +127,22 @@ function download_extract($baseDir, $archiveUrl, $verbose, $cacheTtl) {
   }
 }
 
-function is_older_than($file, $timestamp) {
+function is_older_than(string $file, int $timestamp): bool {
   $stat = stat($file);
   return $stat['mtime'] < $timestamp;
+}
+
+function is_stale(string $file, int $cacheTtl): bool {
+  clearstatcache();
+  return $cacheTtl < 0 || !file_exists($file) || is_older_than($file, time() - $cacheTtl);
+}
+
+function remove_file(string $file): void {
+  if (file_exists($file)) {
+    if (!unlink($file)) {
+      throw new \RuntimeException("Failed to remove $file");
+    }
+  }
 }
 
 /**
