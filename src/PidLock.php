@@ -8,6 +8,7 @@
  * is released or stolen).
  */
 class PidLock {
+
   /**
    * @var string
    */
@@ -19,7 +20,9 @@ class PidLock {
   private $lockFile;
 
   /**
-   * @var int pid of the current process
+   * Pid of the current process.
+   *
+   * @var int
    */
   private $pid;
 
@@ -31,7 +34,7 @@ class PidLock {
    * @param string|null $lockFile the file which represents the lock; if null, autogenerate
    * @param int|null $pid the process which holds the lock; if null, the current process
    */
-  function __construct($file, $lockFile = NULL, $pid = NULL) {
+  public function __construct($file, $lockFile = NULL, $pid = NULL) {
     $this->file = $file;
     $this->lockFile = $lockFile ? $lockFile : "{$file}.lock";
     $this->pid = $pid ? $pid : posix_getpid();
@@ -41,8 +44,9 @@ class PidLock {
    * @param int $wait max time to wait to acquire lock (seconds)
    * @return bool TRUE if acquired; else false
    */
-  function acquire($wait) {
-    $totalDelay = 0; // total total spent waiting so far (seconds)
+  public function acquire($wait) {
+    // total total spent waiting so far (seconds)
+    $totalDelay = 0;
     $nextDelay = 0;
     while ($totalDelay < $wait) {
       if ($nextDelay) {
@@ -70,7 +74,7 @@ class PidLock {
     return FALSE;
   }
 
-  function release() {
+  public function release() {
     if (file_exists($this->lockFile)) {
       $lockPid = (int) trim(file_get_contents($this->lockFile));
       if ($lockPid == $this->pid) {
@@ -79,7 +83,8 @@ class PidLock {
     }
   }
 
-  function steal() {
+  public function steal() {
     file_put_contents($this->lockFile, $this->pid);
   }
+
 }
