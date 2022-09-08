@@ -1,0 +1,26 @@
+#!/bin/bash
+
+## Similar to time, but a bit more verbose -- eg shows start message as well.
+## Makes it easier to interpret when watching a console in CI.
+
+START_EXPR=$(date)
+START_TS=$(date '+%s')
+
+echo "###[ vtime ]##########################################################" 1>&2
+echo "## Command: $@" 1>&2
+echo "## Started: $START_EXPR" 1>&2
+echo "######################################################################" 1>&2
+
+"$@"
+EXITCODE=$?
+END_EXPR=$(date)
+END_TS=$(date '+%s')
+
+echo "###[ vtime ]##########################################################" 1>&2
+echo "## Command: $@" 1>&2
+echo "## Started: $START_EXPR" 1>&2
+echo "## Finished: $END_EXPR" 1>&2
+echo "## Duration: $(( $END_TS - $START_TS ))" 1>&2
+echo "######################################################################" 1>&2
+
+exit $EXITCODE
