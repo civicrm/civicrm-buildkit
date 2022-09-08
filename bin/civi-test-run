@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+TIMER=vtime
 
 function getPhpunitVer() {
   CIVIVER=$(getCiviVer)
@@ -75,7 +76,7 @@ function show_help() {
 function task_phpunit() {
   SUITE="$1"
 
-  if ! $GUARD phpunit-each $EXCLUDE_GROUP "$CIVI_CORE" "$JUNITDIR" $SUITE ; then
+  if ! $GUARD $TIMER phpunit-each $EXCLUDE_GROUP "$CIVI_CORE" "$JUNITDIR" $SUITE ; then
     EXITCODES="$EXITCODES phpunit"
   fi
   echo "Found EXITCODES=\"$EXITCODES\""
@@ -103,7 +104,7 @@ function task_phpunit_expr() {
   [ ! -d "$JUNITDIR" ] && mkdir -p "$JUNITDIR"
 
   pushd "$WORK_DIR"
-    if ! $GUARD $PHPUNIT $EXCLUDE_GROUP --log-junit "$JUNITDIR/$SUITE_NAME.xml" "$@" ; then
+    if ! $GUARD $TIMER $PHPUNIT $EXCLUDE_GROUP --log-junit "$JUNITDIR/$SUITE_NAME.xml" "$@" ; then
       EXITCODES="$EXITCODES phpunit"
     fi
     echo "Found EXITCODES=\"$EXITCODES\""
@@ -119,7 +120,7 @@ function task_phpunit_core_extension() {
 
   pushd "$CIVI_CORE/ext/$EXTENSION"
     for GROUP in headless e2e ; do
-      if ! $GUARD $(getPhpunitVer) --printer='Civi\Test\TAP' --log-junit="$JUNITDIR/junit-${JUNIT_NAME}-${GROUP}.xml" --group "$GROUP" ; then
+      if ! $GUARD $TIMER $(getPhpunitVer) --printer='Civi\Test\TAP' --log-junit="$JUNITDIR/junit-${JUNIT_NAME}-${GROUP}.xml" --group "$GROUP" ; then
        EXITCODES="$EXITCODES $EXTENSION-$GROUP"
      fi
      echo "Found EXITCODES=\"$EXITCODES\""
@@ -132,7 +133,7 @@ function task_phpunit_core_extension() {
 function task_mixin() {
   pushd "$CIVI_CORE"
     if [ -f tools/mixin/bin/test-all ]; then
-      if ! $GUARD ./tools/mixin/bin/test-all "$JUNITDIR" ; then
+      if ! $GUARD $TIMER ./tools/mixin/bin/test-all "$JUNITDIR" ; then
         EXITCODES="$EXITCODES mixin"
       fi
       $GUARD phpunit-xml-cleanup "$JUNITDIR"/*.xml
@@ -172,7 +173,7 @@ function task_karma() {
     ADMIN_USER=$(cv ev 'echo $GLOBALS["_CV"]["ADMIN_USER"];')
     cv api -U "$ADMIN_USER" contact.get id=user_contact_id
     if [ -f karma.conf.js ]; then
-      if ! $GUARD karma start --browsers PhantomJS --single-run --reporters dots,junit ; then
+      if ! $GUARD $TIMER karma start --browsers PhantomJS --single-run --reporters dots,junit ; then
         EXITCODES="$EXITCODES karma"
       fi
       echo "Found EXITCODES=\"$EXITCODES\""
@@ -207,7 +208,7 @@ function task_upgrade() {
 ## Ex: task_upgrade @4.3..4.6.30
 function task_upgrade_legacy() {
   ## Run the tests -- DB upgrade tests
-  if  ! $GUARD civibuild upgrade-test $BLDNAME $@ ; then
+  if  ! $GUARD $TIMER civibuild upgrade-test $BLDNAME $@ ; then
     EXITCODES="$EXITCODES upgrade-test"
   fi
   echo "Found EXITCODES=\"$EXITCODES\""
