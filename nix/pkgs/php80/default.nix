@@ -1,7 +1,7 @@
 # Make a version of php with extensions and php.ini options
 
 let
-    pkgs = import (import ../../pins/21.05.nix) {};
+    pkgs = import (import ../../pins/22.05.nix) {};
     ## TEST ME: Do we need to set config.php.mysqlnd = true?
 
     phpExtras = import ../phpExtras/default.nix {
