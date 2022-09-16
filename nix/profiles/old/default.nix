@@ -10,8 +10,8 @@ in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
 
     dists.bkit.php71
     dists.default.nodejs-14_x
-    dists.v2111.apacheHttpd
-    dists.v2111.mailhog
+    dists.default.apacheHttpd
+    dists.default.mailhog
     dists.v1803.memcached
     dists.bkit.mysql56
     dists.v1803.redis
