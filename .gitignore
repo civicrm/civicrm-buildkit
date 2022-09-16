@@ -22,6 +22,7 @@ bin/bower
 bin/bower.bat
 bin/box
 bin/civici
+bin/civicrm-upgrade-examples
 bin/civicrm-upgrade-test
 bin/civicrm-upgrade-test.bat
 bin/civistrings
