@@ -11,7 +11,7 @@ in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
     dists.bkit.php81
     dists.v2105.nodejs-14_x
     dists.v2111.apacheHttpd
-    dists.v1809.mailcatcher
+    dists.v2111.mailhog
     dists.v2105.memcached
     /* dists.default.mariadb */
     dists.v2111.mysql80

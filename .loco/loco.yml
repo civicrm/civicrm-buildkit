@@ -69,9 +69,9 @@ services:
     pid_file: '$LOCO_SVC_VAR/php-fpm.pid'
     message: 'PHP-FPM is running on "<comment>$LOCALHOST:$PHPFPM_PORT</comment>"'
 
-  mailcatcher:
-    run: 'mailcatcher --ip "$LOCALHOST" --smtp-port "$MAIL_SMTP_PORT" --http-port "$MAIL_HTTP_PORT" -f'
-    message: 'Mailcatcher is running on "<comment>smtp://$LOCALHOST:$MAIL_SMTP_PORT</comment>" and "<comment>http://$LOCALHOST:$MAIL_HTTP_PORT</comment>"'
+  mailhog:
+    run: 'MailHog -ui-bind-addr "$LOCALHOST:$MAIL_HTTP_PORT" -api-bind-addr "$LOCALHOST:$MAIL_HTTP_PORT" -smtp-bind-addr "$LOCALHOST:$MAIL_SMTP_PORT"'
+    message: 'Mailhog is running on "<comment>smtp://$LOCALHOST:$MAIL_SMTP_PORT</comment>" and "<comment>http://$LOCALHOST:$MAIL_HTTP_PORT</comment>"'
 
   ## apache-vdr uses a "virtual document root" to host a wildcard domain;
   ## Formula: "http://{SUBDOMAIN}.{HTTPD_DOMAIN}:{HTTPD_PORT}/" <==> "./build/{SUBDOMAIN}/"
