@@ -3,7 +3,7 @@
  */
 let
     dists = import ../../pins;
-    pkgs = dists.v2105;
+    pkgs = dists.default;
 
 in [
     pkgs.bzip2
