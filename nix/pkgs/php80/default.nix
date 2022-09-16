@@ -9,7 +9,7 @@ let
       php = pkgs.php80; ## Compile PECL extensions with our preferred version of PHP
     };
 
-    phpIniSnippet1 = builtins.readFile ./php.ini;
+    phpIniSnippet1 = builtins.readFile ../phpCommon/php.ini;
     phpIniSnippet2 = ''
       apc.enable_cli = ''${PHP_APC_CLI}
     '';

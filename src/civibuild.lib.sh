@@ -43,7 +43,7 @@ function cvutil_php_nodbg() {
   local cmd=$(which "$1")
   [ -z "$cmd" ] && cvutil_fatal "Failed to locate $cmd"
   shift
-  php -d xdebug.remote_enable=off "$cmd" "$@"
+  XDEBUG_PORT= XDEBUG_MODE=off php -d xdebug.remote_enable=off "$cmd" "$@"
 }
 
 ###############################################################################

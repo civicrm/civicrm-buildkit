@@ -17,3 +17,6 @@ pm.min_spare_servers = 1
 pm.max_spare_servers = 3
 chdir = /
 env[NIX_SSL_CERT_FILE] = $NIX_SSL_CERT_FILE
+env[XDEBUG_MODE] = $XDEBUG_MODE
+env[XDEBUG_PORT] = $XDEBUG_PORT
+env[XDEBUG_CONFIG] = $XDEBUG_CONFIG

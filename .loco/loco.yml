@@ -22,7 +22,12 @@ default_environment:
  - MYSQLD_PORT=3307
  - PHPFPM_PORT=9009
  - REDIS_PORT=6380
- - XDEBUG_PORT=9000
+
+ ## XDEBUG_*: Enable or disable main XDebug options
+ #- XDEBUG_MODE=off
+ - XDEBUG_MODE=develop,debug
+ - XDEBUG_PORT=9003
+ #- XDEBUG_CONFIG=...
 
  ## RAMDISK_SIZE: Most daemons (including MySQL) store runtime data in a ramdisk.
  - RAMDISK_SIZE=600
