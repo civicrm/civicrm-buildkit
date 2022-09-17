@@ -23,7 +23,11 @@ environment:
  - MYSQLD_PORT=3309
  - PHPFPM_PORT=9011
  - REDIS_PORT=6382
- - XDEBUG_PORT=9000
+
+ ## XDEBUG_*: Enable or disable main XDebug options
+ - XDEBUG_MODE=off
+ #- XDEBUG_PORT=9003
+ #- XDEBUG_CONFIG=...
 
  ## CIVIBUILD_ADMIN_PASS: When creating an administrative user, set the default password.
  # - CIVIBUILD_ADMIN_PASS=admin

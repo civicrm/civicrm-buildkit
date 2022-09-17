@@ -23,7 +23,7 @@ let
     phpIniSnippet = ../phpCommon/php.ini;
     phpIni = pkgs.runCommand "php.ini"
     { options = ''
-            zend_extension=${phpPkgs.xdebug}/lib/php/extensions/xdebug.so
+            zend_extension=${phpExtras.xdebug3}/lib/php/extensions/xdebug.so
             extension=${phpPkgs.redis}/lib/php/extensions/redis.so
             extension=${phpPkgs.yaml}/lib/php/extensions/yaml.so
             extension=${phpPkgs.memcached}/lib/php/extensions/memcached.so
@@ -46,7 +46,7 @@ let
 
     phpOverride = stdenv.mkDerivation rec {
         name = "bknix-php72";
-        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.apcu phpPkgs.apcu_bc phpPkgs.yaml phpPkgs.memcached phpPkgs.imagick phpExtras.timecop phpExtras.runkit7_3 pkgs.makeWrapper pkgs.cacert];
+        buildInputs = [phpRuntime phpExtras.xdebug3 phpPkgs.redis phpPkgs.apcu phpPkgs.apcu_bc phpPkgs.yaml phpPkgs.memcached phpPkgs.imagick phpExtras.timecop phpExtras.runkit7_3 pkgs.makeWrapper pkgs.cacert];
         buildCommand = ''
           makeWrapper ${phpRuntime}/bin/phar $out/bin/phar
           makeWrapper ${phpRuntime}/bin/php $out/bin/php --add-flags -c --add-flags "${phpIni}"

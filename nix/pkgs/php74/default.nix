@@ -1,9 +1,8 @@
 # Make a version of php with extensions and php.ini options
 
 let
-    pkgs = import (import ../../pins/21.05.nix) {};
-    ## TEST ME: Do we need to set config.php.mysqlnd = true?
-
+    dists = import ../../pins;
+    pkgs = dists.v2205;
     phpExtras = import ../phpExtras/default.nix {
       pkgs = pkgs;
       php = pkgs.php74; ## Compile PECL extensions with our preferred version of PHP

@@ -16,9 +16,13 @@ environment:
  - HTTPD_VDROOT=$BKIT/build
  - HTTPD_VISIBILITY=local
 
- ## *_PORT: Most daemons run on auxiliary/non-standard TCP/UDP ports.
+ ## MYSQL_*: Like most daemons, run MySQL on auxiliary/non-standard TCP/UDP ports.
  - MYSQLD_PORT=3310
- - XDEBUG_PORT=9000
+
+ ## XDEBUG_*: Enable or disable main XDebug options
+ - XDEBUG_MODE=off
+ #- XDEBUG_PORT=9003
+ #- XDEBUG_CONFIG=...
 
  ## LOCALHOST: Bind services to a local IP address.
  - LOCALHOST=127.0.0.1

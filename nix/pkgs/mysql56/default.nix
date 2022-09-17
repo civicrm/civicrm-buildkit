@@ -3,8 +3,8 @@
  * It's derived from a recent mysql57 build script.
  */
 let
-#  nixpkgs = import (import ../../pins/18.03.nix) {};
-  nixpkgs = import (import ../../pins/19.09.nix) {};
+  dists = import ../../pins;
+  nixpkgs = dists.v1909;
   allPkgs = nixpkgs // pkgs;
   callPackage = path: overrides:
     let f = import path;

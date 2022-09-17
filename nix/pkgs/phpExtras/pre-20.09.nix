@@ -70,4 +70,14 @@ in rec {
     buildInputs = [ ];
   };
 
+  xdebug3 = buildPecl {
+    pname = "xdebug";
+    version = "3.1.4";
+    sha256 = "QZWSb59sToAv90m7LKhaxQY2cZpy5TieNy4171I1Bfk=";
+    configureFlags = [ ];
+    nativeBuildInputs = [ pkgs.pkg-config ];
+    buildInputs = [ ];
+    zendExtension = true;
+  };
+
 }
