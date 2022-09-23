@@ -269,10 +269,11 @@ function install_profile_systemd() {
 
     echo "Activating systemd services for \"$PREFIX\""
     systemctl daemon-reload
+    local svcs=$( cd /etc/systemd/system/ && ls ${PREFIX}*service | sed 's;\.service$;;' )
     if [ -z "$SYSTEMD_ENABLE" -o "yes" == "$SYSTEMD_ENABLE" ]; then
-      systemctl enable /etc/systemd/system/${PREFIX}*service
+      systemctl enable $svcs
     else
-      systemctl disable /etc/systemd/system/${PREFIX}*service
+      systemctl disable $svcs
     fi
     if [ -z "$SYSTEMD_START" -o "yes" == "$SYSTEMD_START" ]; then
       systemctl start ${PREFIX}
