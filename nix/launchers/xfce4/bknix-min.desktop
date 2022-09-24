@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Path={{BUILDKIT}}
+Exec=xfce4-terminal --active-tab --title 'min#1' -e 'use-bknix min -s' --tab --title 'min#2' -e 'use-bknix min -s' --tab --title 'min#3' -e 'use-bknix min -s'  --tab --title 'min#4' -e 'use-bknix min -s'
+Icon=org.xfce.terminalemulator
+StartupNotify=true
+Terminal=false
+OnlyShowIn=XFCE;
+X-AppStream-Ignore=True
+Name=bknix-min
+Comment=Use the command line with minimum PHP/MySQL/etc versions

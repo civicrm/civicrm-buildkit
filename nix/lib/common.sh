@@ -453,3 +453,24 @@ function get_bkits_by_user() {
     done
   done
 }
+
+## usage: install_xfce4_launchers
+function install_xfce4_launchers() {
+  local desktop="$HOME/Desktop"
+
+  echo "Symlink README.md"
+  ln -sf "$BKNIXSRC/launchers/xfce4/README.md" "$desktop/README.md"
+
+  for PRF in dfl min max edge old ; do
+    if [ -e "/nix/var/nix/profiles/per-user/cividev/bknix-$PRF" -o -e "/nix/var/nix/profiles/bknix-$PRF" ]; then
+      echo "Enable bknix-$PRF.desktop"
+      cat "$BKNIXSRC/launchers/xfce4/bknix-$PRF.desktop" \
+        | sed "s;{{BUILDKIT}};$BUILDKIT;g" \
+        > "$desktop/bknix-$PRF.desktop"
+      chmod +x "$desktop/bknix-$PRF.desktop"
+    else
+      echo "Disable bknix-$PRF.desktop"
+      [ -f "$desktop/bknix-$PRF.desktop" ] && rm -f "$desktop/bknix-$PRF.desktop"
+    fi
+  done
+}
