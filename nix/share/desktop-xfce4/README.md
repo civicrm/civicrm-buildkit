@@ -66,7 +66,7 @@ This build includes multiple versions of PHP and MySQL, organized as _profiles_:
    * Download updates:
       ```
       git pull
-      PROFILES='dfl min max edge' ./nix/bin/install-developer.sh
+      PROFILES='dfl min max edge' ./nix/bin/install-desktop.sh xfce4
       ```
 
 ## System Summary
