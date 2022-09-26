@@ -458,14 +458,15 @@ function get_bkits_by_user() {
 function install_xfce4_launchers() {
   local desktop="$HOME/Desktop"
   local buildkit=$( dirname "$BKNIXSRC")
+  local share="$BKNIXSRC/share/desktop-xfce4"
 
   echo "Symlink README.md"
-  ln -sf "$BKNIXSRC/share/desktop-xfce4/README.md" "$desktop/README.md"
+  ln -sf "$share/README.md" "$desktop/README.md"
 
   for PRF in dfl min max edge old ; do
     if [ -e "/nix/var/nix/profiles/per-user/cividev/bknix-$PRF" -o -e "/nix/var/nix/profiles/bknix-$PRF" ]; then
       echo "Enable bknix-$PRF.desktop"
-      cat "$BKNIXSRC/share/desktop-xfce4/bknix-$PRF.desktop" \
+      cat "$share/bknix-$PRF.desktop" \
         | sed "s;{{BUILDKIT}};$buildkit;g" \
         > "$desktop/bknix-$PRF.desktop"
       chmod +x "$desktop/bknix-$PRF.desktop"
@@ -475,9 +476,14 @@ function install_xfce4_launchers() {
     fi
   done
 
+  for file in mailhog.desktop site-list.desktop ; do
+    echo "Copy $file"
+    cp "$share/$file" "$desktop/$file"
+  done
+
   if [ ! -e  "$BKNIXSRC/etc/bashrc.local" ]; then
     echo "Copy bashrc.local"
     [ ! -d "$BKNIXSRC/etc" ] && mkdir "$BKNIXSRC/etc"
-    ln -sf "$BKNIXSRC/share/desktop-xfce4/bashrc.local" "$BKNIXSRC/etc/bashrc.local"
+    ln -sf "$share/bashrc.local" "$BKNIXSRC/etc/bashrc.local"
   fi
 }
