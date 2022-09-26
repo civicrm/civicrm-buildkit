@@ -1,0 +1,8 @@
+alias ls='ls --color=auto'
+alias lsc='ls --color=auto -F'
+alias lsx='ls --color=auto -Fl'
+alias cp='cp -i'
+alias mv='mv -i'
+alias rm='rm -i'
+
+export CIVIBUILD_ADMIN_PASS=admin

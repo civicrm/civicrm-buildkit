@@ -473,4 +473,10 @@ function install_xfce4_launchers() {
       [ -f "$desktop/bknix-$PRF.desktop" ] && rm -f "$desktop/bknix-$PRF.desktop"
     fi
   done
+
+  if [ ! -e  "$BKNIXSRC/etc/bashrc.local" ]; then
+    echo "Copy bashrc.local"
+    [ ! -d "$BKNIXSRC/etc" ] && mkdir "$BKNIXSRC/etc"
+    ln -sf "$BKNIXSRC/launchers/xfce4/bashrc.local" "$BKNIXSRC/etc/bashrc.local"
+  fi
 }
