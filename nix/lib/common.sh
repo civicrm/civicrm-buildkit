@@ -459,12 +459,12 @@ function install_xfce4_launchers() {
   local desktop="$HOME/Desktop"
 
   echo "Symlink README.md"
-  ln -sf "$BKNIXSRC/launchers/xfce4/README.md" "$desktop/README.md"
+  ln -sf "$BKNIXSRC/share/desktop-xfce4/README.md" "$desktop/README.md"
 
   for PRF in dfl min max edge old ; do
     if [ -e "/nix/var/nix/profiles/per-user/cividev/bknix-$PRF" -o -e "/nix/var/nix/profiles/bknix-$PRF" ]; then
       echo "Enable bknix-$PRF.desktop"
-      cat "$BKNIXSRC/launchers/xfce4/bknix-$PRF.desktop" \
+      cat "$BKNIXSRC/share/desktop-xfce4/bknix-$PRF.desktop" \
         | sed "s;{{BUILDKIT}};$BUILDKIT;g" \
         > "$desktop/bknix-$PRF.desktop"
       chmod +x "$desktop/bknix-$PRF.desktop"
@@ -477,6 +477,6 @@ function install_xfce4_launchers() {
   if [ ! -e  "$BKNIXSRC/etc/bashrc.local" ]; then
     echo "Copy bashrc.local"
     [ ! -d "$BKNIXSRC/etc" ] && mkdir "$BKNIXSRC/etc"
-    ln -sf "$BKNIXSRC/launchers/xfce4/bashrc.local" "$BKNIXSRC/etc/bashrc.local"
+    ln -sf "$BKNIXSRC/share/desktop-xfce4/bashrc.local" "$BKNIXSRC/etc/bashrc.local"
   fi
 }
