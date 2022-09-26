@@ -62,7 +62,8 @@ This build includes multiple versions of PHP and MySQL, organized as _profiles_:
       ```
 2. Buildkit also downloads servers (Apache, PHP, MySQL, etc). You may update these every few months.
    * Open the "bknix-dfl" terminal
-   * If you have already launched the servers (`loco run`), then stop them.
+   * If you have already launched the servers (`loco run`), then stop them (`Ctrl-C`)
+     and delete any runtime data (`loco clean`).
    * Download updates:
       ```
       git pull
@@ -76,7 +77,13 @@ Here is a general description how this virtual desktop is configured:
 * Install Debian "bullseye" with XFCE4.
 * Uninstall large consumer packages that are unlikely to be used (multimedia, word-processing, etc).
 * In /etc/sudoers.d, grant broad access to user "cividev".
-* Install "git", "curl", "wget".
-* Install civicrm-buildkit in the developer-workstation style ("./nix/bin/install-developer.sh").
-* Install Visual Studio Code (DEB).
-* In the desktop and nav-bar, add icons to launch terminals (bknix-dfl, bknix-min, etc)
+* Install "git", "curl", "wget", "psmisc".
+* Install civicrm-buildkit in the desktop style ("./nix/bin/install-desktop.sh xfce4").
+* In "bknix-dfl", start servers, create stateless helper sites (`civibuild create site-list`, `civibuild create phpmyadmin`), and stop servers.
+* Install Visual Studio Code (DEB) and gedit.
+* Tweak desktop:
+    * Add some likely keyboard layouts
+    * In the nav-bar, copy icons to launch terminals (bknix-dfl, bknix-min, etc)
+    * In "File Manager", add short-cut to "buildkit/build"
+    * In browser, copy bookmarks for "Site list" and "Mailhog"
+    * Tweak keyboard speed (eg repeat ~500ms ~25hz)
