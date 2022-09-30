@@ -1,0 +1,53 @@
+{
+    "workbench.colorTheme": "Default Light+",
+    "editor.minimap.enabled": false,
+    "launch": {
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "Listen for Xdebug",
+                "type": "php",
+                "request": "launch",
+                "port": 9003
+            },
+            {
+                "name": "Run PHPUnit (headless)",
+                "type": "php",
+                "request": "launch",
+                "program": "${env:BKIT}/bin/phpunit8",
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "XDEBUG_MODE": "debug,develop",
+                    "XDEBUG_CONFIG": "client_port=${port}",
+                    "CIVICRM_UF": "UnitTests"
+                },
+                "runtimeArgs": [
+                    "${env:BKIT}/bin/phpunit8",
+                    "--debug",
+                    "${file}"
+                    // To focus on a specific test, hack this line:
+                    // "--filter=testIndirectNest"
+                ],
+                "port": 0
+            },            {
+                "name": "Run PHPUnit (E2E)",
+                "type": "php",
+                "request": "launch",
+                "program": "${env:BKIT}/bin/phpunit8",
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "XDEBUG_MODE": "debug,develop",
+                    "XDEBUG_CONFIG": "client_port=${port}"
+                },
+                "runtimeArgs": [
+                    "${env:BKIT}/bin/phpunit8",
+                    "--debug",
+                    "${file}"
+                    // To focus on a specific test, hack this line:
+                    // "--filter=testMyFunctionName"
+                ],
+                "port": 0
+            }
+        ]
+    }
+}

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Path={{BUILDKIT}}
+Exec=xfce4-terminal --active-tab --title 'max#1' -e 'use-bknix max -s' --tab --title 'max#2' -e 'use-bknix max -s' --tab --title 'max#3' -e 'use-bknix max -s'  --tab --title 'max#4' -e 'use-bknix max -s'
+Icon=org.xfce.terminalemulator
+StartupNotify=true
+Terminal=false
+OnlyShowIn=XFCE;
+X-AppStream-Ignore=True
+Name=bknix-max
+Comment=Use the command line with maximum supported PHP/MySQL/etc versions

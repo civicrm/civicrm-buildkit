@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Path={{BUILDKIT}}
+Exec=xfce4-terminal --active-tab --title 'dfl#1' -e 'use-bknix dfl -s' --tab --title 'dfl#2' -e 'use-bknix dfl -s' --tab --title 'dfl#3' -e 'use-bknix dfl -s'  --tab --title 'dfl#4' -e 'use-bknix dfl -s'
+Icon=org.xfce.terminalemulator
+StartupNotify=true
+Terminal=false
+OnlyShowIn=XFCE;
+X-AppStream-Ignore=True
+Name=bknix-dfl
+Comment=Use the command line with typical PHP/MySQL/etc versions

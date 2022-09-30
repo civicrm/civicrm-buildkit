@@ -453,3 +453,47 @@ function get_bkits_by_user() {
     done
   done
 }
+
+## usage: install_xfce4_launchers
+function install_xfce4_launchers() {
+  local desktop="$HOME/Desktop"
+  local buildkit=$( dirname "$BKNIXSRC")
+  local share="$BKNIXSRC/share/desktop-xfce4"
+
+  echo "Symlink README.md"
+  ln -sf "$share/README.md" "$desktop/README.md"
+
+  for PRF in dfl min max edge old ; do
+    if [ -e "/nix/var/nix/profiles/per-user/cividev/bknix-$PRF" -o -e "/nix/var/nix/profiles/bknix-$PRF" ]; then
+      echo "Enable bknix-$PRF.desktop"
+      cat "$share/bknix-$PRF.desktop" \
+        | sed "s;{{BUILDKIT}};$buildkit;g" \
+        > "$desktop/bknix-$PRF.desktop"
+      chmod +x "$desktop/bknix-$PRF.desktop"
+    else
+      echo "Disable bknix-$PRF.desktop"
+      [ -f "$desktop/bknix-$PRF.desktop" ] && rm -f "$desktop/bknix-$PRF.desktop"
+    fi
+  done
+
+  for file in mailhog.desktop site-list.desktop ; do
+    echo "Copy $file"
+    cp "$share/$file" "$desktop/$file"
+  done
+
+  if [ ! -e  "$BKNIXSRC/etc/bashrc.local" ]; then
+    echo "Copy bashrc.local"
+    [ ! -d "$BKNIXSRC/etc" ] && mkdir "$BKNIXSRC/etc"
+    ln -sf "$share/bashrc.local" "$BKNIXSRC/etc/bashrc.local"
+  fi
+
+  echo "Sync civicrm.settings.d"
+  if [ ! -d /etc/civicrm.settings.d ]; then
+    sudo mkdir /etc/civicrm.settings.d
+    sudo chown $USER /etc/civicrm.settings.d
+  fi
+  if [ ! -e "/etc/civicrm.settings.d/000-global.php" ]; then
+    cp "$share/civicrm.settings.d/000-global.php" "/etc/civicrm.settings.d/000-global.php"
+    ln -sf "/etc/civicrm.settings.d/000-global.php" "$desktop/000-global.php"
+  fi
+}

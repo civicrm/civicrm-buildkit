@@ -1,0 +1,17 @@
+## If one launches `*.desktop` for 'xfce4-terminal ... use-bknix', then it may bypass ~/.bashrc.
+if [ -z "$NIX_PROFILES" ]; then
+  if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
+    . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+  elif [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+    . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+  fi
+fi
+
+alias ls='ls --color=auto'
+alias lsc='ls --color=auto -F'
+alias lsx='ls --color=auto -Fl'
+alias cp='cp -i'
+alias mv='mv -i'
+alias rm='rm -i'
+
+export CIVIBUILD_ADMIN_PASS=admin
