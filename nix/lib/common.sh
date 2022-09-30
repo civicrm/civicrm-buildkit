@@ -486,4 +486,14 @@ function install_xfce4_launchers() {
     [ ! -d "$BKNIXSRC/etc" ] && mkdir "$BKNIXSRC/etc"
     ln -sf "$share/bashrc.local" "$BKNIXSRC/etc/bashrc.local"
   fi
+
+  echo "Sync civicrm.settings.d"
+  if [ ! -d /etc/civicrm.settings.d ]; then
+    sudo mkdir /etc/civicrm.settings.d
+    sudo chown $USER /etc/civicrm.settings.d
+  fi
+  if [ ! -e "/etc/civicrm.settings.d/000-global.php" ]; then
+    cp "$share/civicrm.settings.d/000-global.php" "/etc/civicrm.settings.d/000-global.php"
+    ln -sf "/etc/civicrm.settings.d/000-global.php" "$desktop/000-global.php"
+  fi
 }
