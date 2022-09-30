@@ -16,6 +16,7 @@ pm.start_servers = 2
 pm.min_spare_servers = 1
 pm.max_spare_servers = 3
 chdir = /
+env[MAIL_SMTP_PORT] = $MAIL_SMTP_PORT
 env[NIX_SSL_CERT_FILE] = $NIX_SSL_CERT_FILE
 env[XDEBUG_MODE] = $XDEBUG_MODE
 env[XDEBUG_PORT] = $XDEBUG_PORT
