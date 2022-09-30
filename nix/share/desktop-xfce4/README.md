@@ -1,4 +1,4 @@
-# Welcome, cividev (v2.0-alpha-arm64)
+# Welcome, cividev (v2.0-alpha)
 
 Welcome to the "cividev" virtual desktop. This environment is optimized for doing
 application developing for CiviCRM.
@@ -6,10 +6,10 @@ application developing for CiviCRM.
 ## Desktop Localization
 
 * Keyboard
-    * To change the active keyboard layout, look in the top navbar. Click on the flag.
+    * To change the active keyboard layout, look in the main navbar. Click on the flag.
     * To add another keyboard, right-click on the flag. Choose "Keyboard settings" and "Layouts".
 * Timezone
-    * To change timezone, look in the top navbar. Right-click on the date/time.
+    * To change timezone, look in the main navbar. Right-click on the date/time.
       Choose "Properties". For "Timezone", type the name of your continent (eg "Europe/" or "America/").
 
 ## Quick Start
@@ -39,8 +39,14 @@ application developing for CiviCRM.
    * Tip: Look at the summary provided by "civibuild".
      There will be a URL and username/password.
      Hold down "Ctrl" and click on the site URL.
-* Open the site in VS Code
-   * Enter the command `code build/dmaster` or `code build/wpmaster`
+* Open the CiviCRM code
+    ```bash
+    ## Locate the folder with CiviCRM source code. If you don't
+    find -name Civi.php | xargs dirname
+
+    # Open that folder in Visual Studio Code
+    code ./dmaster/web/sites/all/modules/civicrm
+    ```
 
 ## Profiles
 
@@ -77,13 +83,23 @@ Here is a general description how this virtual desktop is configured:
 * Install Debian "bullseye" with XFCE4.
 * Uninstall large consumer packages that are unlikely to be used (multimedia, word-processing, etc).
 * In /etc/sudoers.d, grant broad access to user "cividev".
+* Install VM guest tools for:
+	* x86: VirtualBox (`virtualbox-guest-x11` via `fasttrack`), VMWare (`open-vm-tools-desktop`), QEMU (`qemu-guest-agent spice-vdagent`)
+	* arm64: QEMU (`qemu-guest-agent spice-vdagent`)
 * Install "git", "curl", "wget", "psmisc".
 * Install civicrm-buildkit in the desktop style ("./nix/bin/install-desktop.sh xfce4").
 * In "bknix-dfl", start servers, create stateless helper sites (`civibuild create site-list`, `civibuild create phpmyadmin`), and stop servers.
 * Install Visual Studio Code (DEB) and gedit.
 * Tweak desktop:
     * Add some likely keyboard layouts
-    * In the nav-bar, copy icons to launch terminals (bknix-dfl, bknix-min, etc)
+    * In main nav-bar, add browser icon. Add terminal submenu. (bknix-dfl, bknix-min, etc). Remove secondary navbar.
     * In "File Manager", add short-cut to "buildkit/build"
-    * In browser, copy bookmarks for "Site list" and "Mailhog"
+    * In browser, copy bookmarks for "Site list", "phpMyAdmin", and "Mailhog"
     * Tweak keyboard speed (eg repeat ~500ms ~25hz)
+    * In VS Code:
+        * Add PHP Extension Pack
+        * Set theme to "Default Light+"
+        * Disable minimap
+        * Add launch config to `~/.config/Code/User/settings.json` ("Listen for XDebug", "Run PHPUnit (headless)", "Run PHPUnit (E2E)")
+    * In "Display", set resolution to 1440x900
+* Cleanup `buildkit/build`, `.ssh`, browser cache, APT cache, nix-collect-garbage
