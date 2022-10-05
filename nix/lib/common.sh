@@ -324,6 +324,8 @@ function download_buildkit() {
     git clone https://github.com/civicrm/civicrm-buildkit "$BKIT"
   else
     pushd "$BKIT"
+      ## Work-around: package-lock.json is particularly prone to get weird/uncommitted changes.
+      [ -f package-lock.json ] && git checkout -- package-lock.json
       git pull
     popd
   fi
