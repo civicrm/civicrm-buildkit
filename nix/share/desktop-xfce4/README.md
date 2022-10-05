@@ -59,20 +59,27 @@ This build includes multiple versions of PHP and MySQL, organized as _profiles_:
 
 ## Buildkit Updates
 
-1. Buildkit includes a collection of portable CLI tools. You may update these every few weeks.
+1. This VM includes buildkit, a collection of portable CLI tools. You may update these every few weeks. Here's how:
    * Open the "bknix-dfl" terminal
    * Download updates:
       ```
       git pull
       civi-download-tools
       ```
-2. Buildkit also downloads servers (Apache, PHP, MySQL, etc). You may update these every few months.
-   * Open the "bknix-dfl" terminal
-   * If you have already launched the servers (`loco run`), then stop them (`Ctrl-C`)
-     and delete any runtime data (`loco clean`).
+2. This VM also includes servers (Apache, PHP, MySQL, etc). You may update these every few months. Here's how:
+   * If you previously launched the servers (`loco run`), then destroy them.
+      * Stop the active processes (`Ctrl-C`)
+      * Delete any runtime data (`loco clean`)
+      * Close the terminal
+   * Open a basic terminal
    * Download updates:
       ```
+      cd ~/buildkit
       git pull
+      ```
+   * (*It is possible that the previous command will download an updated README. If so, close/reopen the README.*)
+   * Apply the updates:
+      ```
       PROFILES='dfl min max edge' ./nix/bin/install-desktop.sh xfce4
       ```
 
