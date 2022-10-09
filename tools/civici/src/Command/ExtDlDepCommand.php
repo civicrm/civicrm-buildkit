@@ -57,7 +57,7 @@ class ExtDlDepCommand extends BaseCommand {
 
   protected function initialize(InputInterface $input, OutputInterface $output) {
     $to = $input->getOption('to');
-    if ($to && $to{strlen($to) - 1} !== DIRECTORY_SEPARATOR) {
+    if ($to && $to[strlen($to) - 1] !== DIRECTORY_SEPARATOR) {
       $to .= DIRECTORY_SEPARATOR;
       $input->setOption('to', $to);
     }
