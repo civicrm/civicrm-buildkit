@@ -49,7 +49,7 @@
       "codecept-php7": {"version": "2.3.6", "url": "https://codeception.com/releases/{$version}/codecept.phar", "path": "bin/_codecept-php7.phar", "type": "phar"},
       "coworker": {"version": "v0.2", "url": "https://download.civicrm.org/coworker/coworker.phar-{$version}", "path": "bin/coworker", "type": "phar"},
       "cv": {"version": "0.3.28", "url": "https://download.civicrm.org/cv/cv.phar-v{$version}", "path": "bin/cv", "type": "phar"},
-      "drush8": {"version": "8.4.11", "url": "https://github.com/drush-ops/drush/releases/download/{$version}/drush.phar", "path": "extern/drush8.phar", "type": "phar"},
+      "drush8": {"version": "8.4.12", "url": "https://download.civicrm.org/cv/drush.phar-{$version}", "path": "extern/drush8.phar", "type": "phar"},
       "drush-backdrop": {"version": "1.x-1.x", "url": "https://github.com/backdrop-contrib/backdrop-drush-extension/archive/{$version}.zip", "path": "extern/drush-lib/backdrop"},
       "git-scan": {"version": "2022-07-15", "url": "https://github.com/totten/git-scan/releases/download/{$version}/git-scan-{$version}.phar", "path": "bin/git-scan", "type": "phar"},
       "phpunit4": {"version": "4.8.21", "url": "https://phar.phpunit.de/phpunit-{$version}.phar", "path": "extern/phpunit4/phpunit4.phar", "type": "phar"},
