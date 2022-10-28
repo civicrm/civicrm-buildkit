@@ -88,4 +88,14 @@ in rec {
     zendExtension = true;
   };
 
+  ## XDebug 3.2 adds support for PHP 8.2. It's currently in RC. Once it goes stable, consider making it default.
+  xdebug32rc = buildPecl {
+    version = "3.2.0RC1";
+    pname = "xdebug";
+    sha256 = "691kSkrlzgWUX8kxvGFM+OSFBabintHBPbzNb7CKzkQ=";
+    doCheck = true;
+    checkTarget = "test";
+    zendExtension = true;
+  };
+
 }
