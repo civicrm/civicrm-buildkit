@@ -2,7 +2,7 @@
 <?php
 #!depdir '../extern/find-stale-builds'
 #!ttl 10 years
-#!require symfony/finder: ~2.6.1
+#!require symfony/finder: ~4.4
 
 ## Generate a list of "stale" builds - either:
 ## - The build is objectively old.
