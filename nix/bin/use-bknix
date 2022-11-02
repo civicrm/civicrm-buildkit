@@ -105,7 +105,7 @@ fi
 
 case "$MODE" in
   env)
-    CODE=`cd "$BKIT" && loco env -c "$USE_LOCO_FILE" --export`
+    CODE=`cd "$BKIT" && SHELL_VERBOSITY= loco env -c "$USE_LOCO_FILE" --export`
     echo "$CODE"
     eval "$CODE"
     echo "export PS1=\"[${TXT_CYAN}bknix-$PROFILE${TXT_RESET}:${TXT_GREEN}\w${TXT_RESET}] \" ;"
