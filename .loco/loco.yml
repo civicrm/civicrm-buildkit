@@ -33,7 +33,7 @@ default_environment:
  - RAMDISK_SIZE=600
 
  ## CIVICRM_LOCALES: When pre-generating CiviCRM datasets, limit the number of locales.
- - CIVICRM_LOCALES=en_US,fr_FR
+ - CIVICRM_LOCALES=en_US,fr_FR,de_DE
 
  ## CIVIBUILD_ADMIN_PASS: When creating an administrative user, set the default password.
  # - CIVIBUILD_ADMIN_PASS=admin
