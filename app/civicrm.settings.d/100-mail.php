@@ -7,7 +7,7 @@ if (
   // This looks like local nix-based developer workstation...
   && !empty(getenv('MAIL_SMTP_PORT') && function_exists('posix_getlogin') && !in_array(posix_getlogin(), ['jenkins', 'publisher']))
   // This is a regular web/cli process -- not a phpunit process.
-  && !class_exists('PHPUnit\Framework\Testcase', FALSE)
+  && !class_exists('PHPUnit\Framework\TestCase', FALSE) && CIVICRM_UF !== 'UnitTests'
 ) {
   $GLOBALS['civicrm_setting']['domain']['mailing_backend'] = [
     'outBound_option' => 0,
