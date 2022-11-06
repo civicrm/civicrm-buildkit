@@ -35,14 +35,16 @@ if [[ "$CIVI_VERSION" =~ ^4.[0123456](\.([0-9]|alpha|beta)+)?$ ]] ; then
   CIVI_EXT_URL="${CMS_URL}/sites/${DRUPAL_SITE_DIR}/ext"
 fi
 
+pushd "$CIVI_CORE" >> /dev/null
+  ## (1) Generating `civicrm.config.php` is necessary for `extern/*.php` and its E2E tests
+  ## (2) If you've switched branches and triggered `reinstall`, then you need to refresh composer deps/autoloader before installing
+  ./bin/setup.sh -Dg
+popd >> /dev/null
+
 civicrm_install_cv
 
 ###############################################################################
 ## Extra configuration
-pushd "$CIVI_CORE" >> /dev/null
-  ## Generating `civicrm.config.php` is necessary for `extern/*.php` and its E2E tests
-  ./bin/setup.sh -g
-popd >> /dev/null
 
 pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
