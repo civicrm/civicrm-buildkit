@@ -21,15 +21,32 @@ $c['versionSpec'] = function (InputInterface $input) {
   assertThat($stagingBaseDir && file_exists($stagingBaseDir), 'Environment variable RELEASE_TMPDIR should reference a local data dir');
 
   $jsonUrl = $input->getArgument('json-url');
-  assertThat(preg_match(';^(gs://civicrm-build/.*)/civicrm-(.+)-([0-9]+)\.json;', $jsonUrl, $m), "Malformed JSON URL");
-  return array(
-    'json' => $jsonUrl,
-    'stagingDir' => $stagingBaseDir . '/' . md5($jsonUrl) . '/' . $m[2],
-    'gitDir' => getcwd(),
-    'prefix' => $m[1],
-    'version' => $m[2],
-    'timestamp' => $m[3],
-  );
+  // ex: gs://civicrm-build/5.54/civicrm-5.54.2-202211050234.json
+  // ex: gs://civicrm-build/5.51-security/civicrm-5.51.3-202211032104.json
+  if (preg_match(';^(gs://civicrm-build/.*)/civicrm-(.+)-([0-9]+)\.json;', $jsonUrl, $m)) {
+    return [
+      'json' => $jsonUrl,
+      'stagingDir' => $stagingBaseDir . '/' . md5($jsonUrl) . '/' . $m[2],
+      'gitDir' => getcwd(),
+      'prefix' => $m[1],
+      'version' => $m[2],
+      'timestamp' => $m[3],
+    ];
+  }
+
+  // ex: gs://civicrm/civicrm-stable/5.51.0/civicrm-5.51.0.json
+  if (preg_match(';^(gs://civicrm/civicrm-stable/.*)/civicrm-(.+)\.json;', $jsonUrl, $m)) {
+    return [
+      'json' => $jsonUrl,
+      'stagingDir' => $stagingBaseDir . '/' . md5($jsonUrl) . '/' . $m[2],
+      'gitDir' => getcwd(),
+      'prefix' => $m[1],
+      'version' => $m[2],
+      'timestamp' => NULL,
+    ];
+  }
+
+  throw new \Exception("Malformed JSON URL");
 };
 
 $c['runner'] = $c->autowiredObject(new class() {
@@ -267,9 +284,15 @@ $c['gitlabUpload()'] = function (string $projectUrl, string $verNum, array $asse
  */
 $c['task_get()'] = function (array $versionSpec, $input, $io, $gsutil) {
   $io->section('Get the RC or nightly build');
-  $fileUrls = $gsutil->list($versionSpec['prefix'] . '/civicrm-*' . $versionSpec['version'] . '*' . $versionSpec['timestamp'] . '*');
+  $filePat = $versionSpec['prefix'] . '/civicrm-*' . $versionSpec['version'] . '*' . (empty($versionSpec['timestamp']) ? '' : ($versionSpec['timestamp'] . '*'));
+  $fileUrls = $gsutil->list($filePat);
   foreach ($fileUrls as $fileUrl) {
-    $filePath = $versionSpec['stagingDir'] . '/' . str_replace('-' . $versionSpec['timestamp'], '', basename($fileUrl));
+    if (empty($versionSpec['timestamp'])) {
+      $filePath = $versionSpec['stagingDir'] . '/' . basename($fileUrl);
+    }
+    else {
+      $filePath = $versionSpec['stagingDir'] . '/' . str_replace('-' . $versionSpec['timestamp'], '', basename($fileUrl));
+    }
     if (file_exists($filePath)) {
       if (!$input->getOption('force')) {
         $io->writeln("Skipped item: <comment>$filePath</comment> already exists");
