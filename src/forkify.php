@@ -21,6 +21,7 @@ namespace Clippy;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 $c = clippy()->register(plugins());
@@ -48,7 +49,7 @@ $c['app']->command("remote:set-url $globalOptions remote url-prefix", function (
 })->setAliases(['set-remotes'])
   ->setDescription('Update parallel remotes across Civi-related repos');;
 
-$c['app']->command("fetch $globalOptions remotes*", function ($remotes, SymfonyStyle $io, Repos $repos, callable $passthru) {
+$c['app']->command("remote:fetch $globalOptions remotes*", function ($remotes, SymfonyStyle $io, Repos $repos, callable $passthru) {
   foreach ($remotes as $remote) {
     $remoteUrls = $repos->remoteUrls($remote, '!!not-applicable');
     $repos->walk($remoteUrls, function ($name, $path, $remote) use ($io, $passthru) {
@@ -56,7 +57,7 @@ $c['app']->command("fetch $globalOptions remotes*", function ($remotes, SymfonyS
       $passthru('git fetch {{0|s}}', [$remote]);
     });
   }
-});
+})->setAliases(['fetch']);
 
 $c['app']->command("branch:create $globalOptions target source", function ($target, $source, SymfonyStyle $io, Repos $repos, callable $passthru) {
   $branchPairs = $repos->branchPairs($target, $source);
@@ -73,35 +74,38 @@ $c['app']->command("branch:create $globalOptions target source", function ($targ
 
 $c['app']->command("branch:update $globalOptions [--merge] [--ff-only] [--rebase] target source", function ($target, $source, SymfonyStyle $io, Repos $repos, callable $passthru, $pickMergeOpts) {
   $branchPairs = $repos->branchPairs($target, $source);
+  $mergeOpts = $pickMergeOpts();
 
-  $repos->walk($branchPairs, function ($name, $path, $tgtRemote, $tgtBranch, $srcRemote, $srcBranch) use ($io, $passthru, $pickMergeOpts) {
+  $repos->walk($branchPairs, function ($name, $path, $tgtRemote, $tgtBranch, $srcRemote, $srcBranch) use ($io, $passthru, $mergeOpts) {
     $io->writeln("<comment>$path</comment>: Update branch <comment>$tgtRemote/$tgtBranch</comment> from <comment>$srcRemote/$srcBranch</comment>");
     assertThat($tgtRemote && $tgtBranch && $srcRemote && $srcBranch, "Target and source must be fully specified (remote/branch).");
     $params = [
-      'MERGE' => $pickMergeOpts(),
+      'MERGE_OPTS' => $mergeOpts,
       'TGT_BR' => $tgtBranch,
       'TGT_RM' => $tgtRemote,
       'SRC_BR' => $srcBranch,
       'SRC_RM' => $srcRemote,
     ];
-    $passthru('git checkout {{TGT_BR|s}} && git pull {{MERGE}} {{SRC_RM|s}} {{SRC_BR|s}} && git push {{TGT_RM}} {{TGT_BR}}', $params);
+    $passthru('git checkout {{TGT_BR|s}} && git pull {{MERGE_OPTS}} {{SRC_RM|s}} {{SRC_BR|s}} && git push {{TGT_RM}} {{TGT_BR}}', $params);
   });
 })->setAliases(['update'])
   ->setDescription('Pull and push updates for parallel branches across Civi-related repos');
 
 $c['app']->command("branch:pull $globalOptions [--merge] [--ff-only] [--rebase] target source", function ($target, $source, SymfonyStyle $io, Repos $repos, callable $passthru, $pickMergeOpts) {
   $branchPairs = $repos->branchPairs($target, $source);
+  $mergeOpts = $pickMergeOpts();
 
-  $repos->walk($branchPairs, function ($name, $path, $tgtRemote, $tgtBranch, $srcRemote, $srcBranch) use ($io, $passthru, $pickMergeOpts) {
+  $repos->walk($branchPairs, function ($name, $path, $tgtRemote, $tgtBranch, $srcRemote, $srcBranch) use ($io, $passthru, $mergeOpts) {
     $io->writeln("<comment>$path</comment>: Update branch <comment>$tgtRemote/$tgtBranch</comment> from <comment>$srcRemote/$srcBranch</comment>");
+    assertThat(!$tgtRemote && $tgtBranch, "Target must only specify branch name (no remote)");
     assertThat($srcRemote && $srcBranch, "Source must be fully specified (remote/branch).");
     $params = [
-      'MERGE' => $pickMergeOpts(),
+      'MERGE_OPTS' => $mergeOpts,
       'TGT_BR' => $tgtBranch,
       'SRC_BR' => $srcBranch,
       'SRC_RM' => $srcRemote,
     ];
-    $passthru('git checkout {{TGT_BR|s}} && git pull {{MERGE}} {{SRC_RM|s}} {{SRC_BR|s}}', $params);
+    $passthru('git checkout {{TGT_BR|s}} && git pull {{MERGE_OPTS}} {{SRC_RM|s}} {{SRC_BR|s}}', $params);
   });
 })->setAliases(['pull'])
   ->setDescription('Pull updates into parallel branches across Civi-related repos');
@@ -121,7 +125,9 @@ $c['app']->command("branch:push $globalOptions [-f|--force] [-u|--set-upstream] 
 })->setAliases(['push']);
 
 $c['app']->command("branch:checkout $globalOptions branch", function ($branch, SymfonyStyle $io, Repos $repos, callable $passthru) {
-  $branches = $repos->branches($branch);
+  $branches = array_filter($repos->branches($branch), function($b) {
+      return $b['name'] !== 'drupal@6.x';
+  });
   $repos->walk($branches, function ($name, $path, $remote, $branch) use ($io, $passthru) {
     $io->writeln("<comment>$path</comment>: Checkout branch <comment>$branch</comment>");
     $passthru('git checkout {{0|s}}', [$branch]);
@@ -184,8 +190,8 @@ class Repos {
    */
   public function branches(string $branchExpr): array {
     [$remote, $branch] = $this->parseRemoteBranch($branchExpr);
-    return rekeyItems(['name', 'path', 'branch', 'remote'], [
-      ['core', '.', $branch, $remote],
+    return rekeyItems(['name', 'path', 'remote', 'branch'], [
+      ['core', '.', $remote, $branch],
       ['backdrop@1.x', './backdrop', $remote, "1.x-$branch"],
       ['drupal@6.x', './drupal', $remote, "6.x-$branch"],
       ['drupal@7.x', './drupal', $remote, "7.x-$branch"],
@@ -280,7 +286,7 @@ class Repos {
 
 $c['repos'] = $c->autowiredObject(new Repos());
 
-$c['pickMergeOpts()'] = function(InputInterface $input) {
+$c['pickMergeOpts()'] = function(SymfonyStyle $io, InputInterface $input) {
   if (!$input->hasOption('ff-only') || !$input->hasOption('merge') || !$input->hasOption('rebase')) {
     throw new \Exception("Command is defined incorrectly. Must have options [--ff-only] [--merge] [--rebase]");
   }
@@ -293,9 +299,24 @@ $c['pickMergeOpts()'] = function(InputInterface $input) {
   elseif ($input->getOption('rebase')) {
     return '--rebase';
   }
-  else {
-    throw new \Exception("Must specify an update style: --merge or --rebase or --ff-only");
+
+  $choice = $io->askQuestion(new ChoiceQuestion('How should updates be applied?', [
+    'f' => 'Fast forward',
+    'm' => 'Merge',
+    'r' => 'Rebase',
+  ]));
+  switch ($choice) {
+    case 'f':
+      return '--ff-only';
+
+    case 'm':
+      return '';
+
+    case 'r':
+      return '--rebase';
   }
+
+  throw new \Exception("Must specify an update style: --merge or --rebase or --ff-only");
 };
 
 $c['passthru()'] = function (string $cmd, array $params = [], ?Cmdr $cmdr = NULL, ?InputInterface $input = NULL, ?SymfonyStyle $io = NULL) {
@@ -305,7 +326,7 @@ $c['passthru()'] = function (string $cmd, array $params = [], ?Cmdr $cmdr = NULL
   if ($input->getOption('step')) {
     $extraVerbosity = OutputInterface::VERBOSITY_VERBOSE - $io->getVerbosity();
     $io->writeln($cmdDesc);
-    $confirmation = ($io->ask('<comment>Execute this command?</comment> [<info>Y</info>/<info>n</info>/<info>q</info>] ', NULL, function ($value) {
+    $confirmation = ($io->ask('<info>Execute this command?</info> [<comment>Y</comment>/<comment>n</comment>/<comment>q</comment>] ', NULL, function ($value) {
       $value = ($value === NULL) ? 'y' : mb_strtolower($value);
       if (!in_array($value, ['y', 'n', 'q'])) {
         throw new InvalidArgumentException("Invalid choice ($value)");
@@ -317,6 +338,7 @@ $c['passthru()'] = function (string $cmd, array $params = [], ?Cmdr $cmdr = NULL
         return;
 
       case 'y':
+      case NULL:
         break;
 
       case 'q':
