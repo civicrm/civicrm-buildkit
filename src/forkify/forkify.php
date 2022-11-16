@@ -10,7 +10,7 @@
 ##
 ## TIP: The `-N` or `--dry-run` is quite helpful for inspecting operation.
 
-#!depdir './forkify-dep'
+#!depdir './deps'
 #!require clippy/std: ~0.3.5
 #!require clippy/container: '~1.2'
 
