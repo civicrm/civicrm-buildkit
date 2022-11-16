@@ -10,12 +10,60 @@
 ##
 ## TIP: The `-N` or `--dry-run` is quite helpful for inspecting operation.
 
+###############################################################################
+#### TOC
+##
+## - Documentation (Code Conventions)
+## - Imports
+## - Commands
+## - Services (Helpers/Utilities)
+
+###############################################################################
+#### Documentation (Code Conventions)
+##
+## `forkify` is built on the clippy/silly framework, which allows you to define multiple commands using a pithy,
+## type-checked notation. Suppose you want to support this command-line call:
+##
+##   forkify do:stuff -f hello-world.txt
+##
+## You would declare the `do:stuff` command like so:
+##
+##   $c['app']->command("do:stuff [-f|--force] filename", function (bool $force, string $filename, SymfonyStyle $io) {
+##
+## This example declaration has two parts:
+##
+##   - CLI SIGNATURE: The command is named `do:stuff` and accepts a CLI option `--force` (aliased as `-f`)
+##     along with a CLI argument `filename`.
+##   - PHP CALLBACK: The callback receives the CLI option (`bool $force`), CLI argument (`string $filename`), and
+##     a container-based service (`SymfonyStyle $io`). This is a dependency-injection mechanism -- you may inject
+##     any parameters as you need, as long as they correspond to options/arguments/services.
+##
+## Some commonly injected services are:
+##
+##   - `SymfonyStyle $io`: High-level helper for interacting with a user (input+output)
+##   - `InputInterface $input`: Basic CLI input data
+##   - `OutputInterface $output`: Basic CLI output methods
+##   - `Repos $repos`: Methods for finding/visiting the various git repos
+##
+## Additionally, you may add more container-based services, e.g.
+##
+##   $c['myService'] = function(injectedData...) { return 'service-object'; }
+##   $c['myService'] = $c->autowiredObject(new MyServiceClass());
+##   $c['myMethod()'] = function(params..., injectedData...) { return 'my-result';}
+##
+## See also:
+##
+## * https://github.com/clippy-php/std
+## * https://github.com/clippy-php/container
+## * https://github.com/mnapoli/silly/
+
+###############################################################################
+#### Imports
+
 #!depdir './deps'
 #!require clippy/std: ~0.3.5
 #!require clippy/container: '~1.2'
 
-###############################################################################
-## Bootstrap
 namespace Clippy;
 
 use Symfony\Component\Console\Exception\InvalidArgumentException;
@@ -27,8 +75,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 $c = clippy()->register(plugins());
 
 ###############################################################################
-## Commands
-
+#### Commands
 $globalOptions = '[-N|--dry-run] [-A|--expect-all] [-S|--step]';
 
 $c['app']->command("remote:add $globalOptions remote url-prefix", function ($remote, $urlPrefix, SymfonyStyle $io, Repos $repos, callable $passthru) {
@@ -146,7 +193,7 @@ $c['app']->command("branch:delete $globalOptions [-f|--force] branch", function 
 })->setDescription('Delete parallel branches across Civi-related repos');
 
 ###############################################################################
-## Utilities
+#### Services (Helpers/Utilities)
 
 /**
  * Get information about (and send tasks to) the various Civi-related repos.
