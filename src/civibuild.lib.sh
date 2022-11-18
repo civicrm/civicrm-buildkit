@@ -1231,6 +1231,44 @@ function drupal8_uninstall() {
 }
 
 ###############################################################################
+## Drupal -- Enable locales in Drupal. Download PO files and import them into Drupal's database.
+##
+## This is similar to "l10n_update", but with better caching (i.e. caches are shared among builds;
+## i.e. there's an explicit TTL; i.e. we don't need to do any network I/O for a "civibuild reinstall").
+##
+## Usage: drupal7_add_locales <language-list> <targets...>
+## Example: drupal7_add_locales de_DE,fr_FR,nl_NL drupal-7.x views-7.x-3.x
+function drupal7_add_locales() {
+  local CSV="$1"
+  local TTL=86400
+  shift
+  local ADD_LOCALES=$( echo "$CSV" | awk 'BEGIN {RS=","; FS="_"} {print $1}' | sort -u | grep -v ^en )
+  if [ -z "$ADD_LOCALES" ]; then
+    return
+  fi
+
+  drush language-add $ADD_LOCALES
+
+  for ADD_LOCALE in $ADD_LOCALES; do
+    PO_FILES=()
+    for TARGET in "$@" ; do
+
+      ## Download PO files to the cache.
+      ## ex: views-7.x-3.x  ==>  https://ftp.drupal.org/files/translations/7.x/views/views-7.x-3.x.de.po  ==>  views-7.x-3.x.de.po
+      ## ex: drupal-7.x     ==>  https://ftp.drupal.org/files/translations/7.x/drupal/drupal-7.x.de.po    ==>  drupal-7.x.de.po
+
+      if [[ $TARGET =~ ([a-zA-Z0-9_]+)-(.*) ]]; then
+        local PROJECT="${BASH_REMATCH[1]}"
+        local VERSION="${BASH_REMATCH[2]}"
+        http_cache_setup "https://ftp.drupal.org/files/translations/7.x/${PROJECT}/${TARGET}.${ADD_LOCALE}.po" "${CACHE_DIR}/drupal/translations/${TARGET}.${ADD_LOCALE}.po" "$TTL"
+        PO_FILES+=( "${CACHE_DIR}/drupal/translations/${TARGET}.${ADD_LOCALE}.po" )
+      fi
+    done
+    drush language-import-translations "${ADD_LOCALE}" "${PO_FILES[@]}"
+  done
+}
+
+###############################################################################
 ## Drupal -- Compute the name of the multi-site subdir
 ## Usage: _drupal_multisite_dir <url> <site-id>
 ## Note: <site-id> is 0 for the default/base site
