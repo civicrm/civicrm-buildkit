@@ -1,0 +1,15 @@
+[33mUsage:[0m
+  run <build-name>[/<ms-id>] [options]
+
+[33mArguments:[0m
+[32m  <build-name>[0m         The name of the sub-directory to build
+[32m  <ms-id>[0m              The unique id for a site within a multisite build
+
+[33mOptions:[0m
+[32m  -h, --help[0m           Displays help for a command
+[32m  --eval <code>[0m        Run an impromptu fragment of shell code (with the civibuild environment/functions)
+[32m  --script <file>[0m      Run a script fragment of shell code (in the civibuild environment/functions)
+
+[33mNB:[0m For more civibuild documentation see https://docs.civicrm.org/dev/en/latest/tools/civibuild/
+
+[0m

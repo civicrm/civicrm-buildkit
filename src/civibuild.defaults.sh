@@ -324,6 +324,7 @@ DECLARED_ACTIONS="
   install reinstall
   list
   phpunit-info
+  run
   show
   snapshot snapshots
   restore restore-all
