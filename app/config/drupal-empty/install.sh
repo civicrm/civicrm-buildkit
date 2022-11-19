@@ -25,8 +25,7 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   drush -y en toolbar locale garland
   ## disable annoying/unneeded modules
   drush -y dis overlay
-
-  drupal7_add_locales "${CIVICRM_LOCALES:-de_DE}" drupal-7.x views-7.x-3.x
+  drupal7_po_import
 
   ## Setup theme
   #above# drush -y en garland

@@ -1231,41 +1231,66 @@ function drupal8_uninstall() {
 }
 
 ###############################################################################
-## Drupal -- Enable locales in Drupal. Download PO files and import them into Drupal's database.
+## Drupal -- Download PO files for drupal modules.
 ##
-## This is similar to "l10n_update", but with better caching (i.e. caches are shared among builds;
-## i.e. there's an explicit TTL; i.e. we don't need to do any network I/O for a "civibuild reinstall").
+## This is similar to "l10n_update", but it doesn't require any active D7 site, so it
+## can use a shared cache (across many drupal builds), and it doesn't require any network I/O
+## during typical "civibuild reinstall".
 ##
-## Usage: drupal7_add_locales <language-list> <targets...>
-## Example: drupal7_add_locales de_DE,fr_FR,nl_NL drupal-7.x views-7.x-3.x
-function drupal7_add_locales() {
+## Usage: drupal7_po_download <language-list> <translation-projects...>
+## Example: drupal7_po_download de_DE,fr_FR,nl_NL drupal-7.x views-7.x-3.x
+function drupal7_po_download() {
+  cvutil_assertvars drupal7_po_download WEB_ROOT
+
   local CSV="$1"
   local TTL=86400
   shift
-  local ADD_LOCALES=$( echo "$CSV" | awk 'BEGIN {RS=","; FS="_"} {print $1}' | sort -u | grep -v ^en )
-  if [ -z "$ADD_LOCALES" ]; then
+  local NEW_LOCALES=$( echo "$CSV" | awk 'BEGIN {RS=","; FS="_"} {print $1}' | sort -u | grep -v ^en )
+  if [ -z "$NEW_LOCALES" ]; then
     return
   fi
 
-  drush language-add $ADD_LOCALES
+  mkdir -p "${WEB_ROOT}/web/sites/all/translations"
 
-  for ADD_LOCALE in $ADD_LOCALES; do
-    PO_FILES=()
+  for NEW_LOCALE in $NEW_LOCALES; do
     for TARGET in "$@" ; do
 
       ## Download PO files to the cache.
-      ## ex: views-7.x-3.x  ==>  https://ftp.drupal.org/files/translations/7.x/views/views-7.x-3.x.de.po  ==>  views-7.x-3.x.de.po
-      ## ex: drupal-7.x     ==>  https://ftp.drupal.org/files/translations/7.x/drupal/drupal-7.x.de.po    ==>  drupal-7.x.de.po
+      ## ex: views-7.x-3.x  ==>  https://ftp.drupal.org/files/translations/7.x/views/views-7.x-3.x.fr.po  ==>  sites/all/translations/de/views-7.x-3.x.fr.po
+      ## ex: drupal-7.x     ==>  https://ftp.drupal.org/files/translations/7.x/drupal/drupal-7.x.fr.po    ==>  sites/all/translations/de/drupal-7.x.fr.po
 
       if [[ $TARGET =~ ([a-zA-Z0-9_]+)-(.*) ]]; then
         local PROJECT="${BASH_REMATCH[1]}"
         local VERSION="${BASH_REMATCH[2]}"
-        http_cache_setup "https://ftp.drupal.org/files/translations/7.x/${PROJECT}/${TARGET}.${ADD_LOCALE}.po" "${CACHE_DIR}/drupal/translations/${TARGET}.${ADD_LOCALE}.po" "$TTL"
-        PO_FILES+=( "${CACHE_DIR}/drupal/translations/${TARGET}.${ADD_LOCALE}.po" )
+        http_cache_setup "https://ftp.drupal.org/files/translations/7.x/${PROJECT}/${TARGET}.${NEW_LOCALE}.po" "${CACHE_DIR}/drupal/translations/${TARGET}.${NEW_LOCALE}.po" "$TTL"
+        cp "${CACHE_DIR}/drupal/translations/${TARGET}.${NEW_LOCALE}.po" "${WEB_ROOT}/web/sites/all/translations/"
       fi
     done
-    drush language-import-translations "${ADD_LOCALE}" "${PO_FILES[@]}"
   done
+}
+
+###############################################################################
+## Drupal - Load PO files
+##
+## Find any "*.po" files in D7 (sites/all/translations). Activate the associated languages and import the strings.
+##
+## usage: drupal7_po_import
+function drupal7_po_import() {
+  cvutil_assertvars drupal7_po_import WEB_ROOT
+
+  ## Find folders like "sites/all/translations/de/" which contain files like "drupal-7.x.fr.po"
+  local NEW_LOCALES=$(_drupal7_po_locales)
+  drush language-add $NEW_LOCALES
+
+  for NEW_LOCALE in $NEW_LOCALES ; do
+    find "${WEB_ROOT}/web/sites/all/translations" -name "*.${NEW_LOCALE}.po" | while read POFILE ; do
+      drush language-import-translations "${NEW_LOCALE}" "${POFILE}"
+    done
+  done
+}
+
+function _drupal7_po_locales() {
+  find "${WEB_ROOT}/web/sites/all/translations" -name '*.po' | sed 's;\(.*\)\.\(\w\w\)\.po;\2;' | sort -u
 }
 
 ###############################################################################
