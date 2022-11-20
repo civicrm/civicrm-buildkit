@@ -1355,6 +1355,32 @@ function _drupal_multisite_dir() {
 }
 
 ###############################################################################
+## Backdrop - Determine version of the codebase
+## usage: _backdrop_version <x|x.y|x.y.z>
+## example: VER=$(_backdrop_version x.y)
+function _backdrop_version() {
+  pushd "${WEB_ROOT}/web" >> /dev/null
+    case "$1" in
+      x)
+        php -r 'require_once "core/includes/bootstrap.inc"; [$x]=explode(".",BACKDROP_VERSION); echo "$x\n";'
+        ;;
+
+      x.y)
+        php -r 'require_once "core/includes/bootstrap.inc"; [$x,$y]=explode(".",BACKDROP_VERSION); echo "$x.$y\n";'
+        ;;
+
+      x.y-1)
+        php -r 'require_once "core/includes/bootstrap.inc"; [$x,$y]=explode(".",BACKDROP_VERSION); $y--; echo "$x.$y\n";'
+        ;;
+
+      x.y.z)
+        php -r 'require_once "core/includes/bootstrap.inc"; [$x,$y,$z]=explode(".",BACKDROP_VERSION); echo "$x.$y.$z\n";'
+        ;;
+    esac
+  popd >> /dev/null
+}
+
+###############################################################################
 ## add hook shims to a repo
 ## usage: git_set_hooks <canonical-repo-name> <repo-path> <relative-hook-path>
 function git_set_hooks() {
