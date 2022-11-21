@@ -1276,7 +1276,10 @@ function backdrop_po_import() {
   cvutil_assertvars backdrop_po_download WEB_ROOT
   #local SPOOL="${WEB_ROOT}/web/files/translations"  ## Suggested by some BD docs, but it doesn't seem to be required, and it's extraneously wiped on reinstalls.
   local SPOOL="${WEB_ROOT}/web/sites/all/translations"
-  _drupalx_po_import "$SPOOL" "$@"
+  echo "FIXME: The function backdrop_po_import() should be updated to handle imports on Backdrop" > "$SPOOL/FIXME.txt"
+  echo "WARNING: Skipped backdrop_po_import(). Not yet supported on Backdrop." 1>&2
+  # Issue: At time of writing, our copy of drush-language doesn't seem to work on Backdrop.
+  #_drupalx_po_import "$SPOOL" "$@"
 }
 
 ###############################################################################
