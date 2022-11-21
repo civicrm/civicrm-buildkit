@@ -1355,29 +1355,82 @@ function _drupal_multisite_dir() {
 }
 
 ###############################################################################
-## Backdrop - Determine version of the codebase
-## usage: _backdrop_version <x|x.y|x.y.z>
-## example: VER=$(_backdrop_version x.y)
-function _backdrop_version() {
-  pushd "${WEB_ROOT}/web" >> /dev/null
-    case "$1" in
-      x)
-        php -r 'require_once "core/includes/bootstrap.inc"; [$x]=explode(".",BACKDROP_VERSION); echo "$x\n";'
-        ;;
+## Drupal vX - Determine version of the codebase
+## usage: _drupalx_version <x|x.y|x.y.z>
+## example: VER=$(_drupalx_version x.y)
+function _drupalx_version() {
+  pushd "${WEB_ROOT}" >> /dev/null
+    ## Is it Backdrop?
+    if [ -e "web/core/modules/layout/layout.module" ]; then
+      case "$1" in
+        x)
+          php -r 'require_once "web/core/includes/bootstrap.inc"; [$x]=explode(".",BACKDROP_VERSION); echo "$x\n";'
+          return
+          ;;
 
-      x.y)
-        php -r 'require_once "core/includes/bootstrap.inc"; [$x,$y]=explode(".",BACKDROP_VERSION); echo "$x.$y\n";'
-        ;;
+        x.y)
+          php -r 'require_once "web/core/includes/bootstrap.inc"; [$x,$y]=explode(".",BACKDROP_VERSION); echo "$x.$y\n";'
+          return
+          ;;
 
-      x.y-1)
-        ## Find the "x.y" version, and rewind by 1. This is useful if you have checked out developmental/pre-release and need a resource from the prior stable.
-        php -r 'require_once "core/includes/bootstrap.inc"; [$x,$y]=explode(".",BACKDROP_VERSION); $y--; echo "$x.$y\n";'
-        ;;
+        x.y-1)
+          ## Find the "x.y" version, and rewind by 1. This is useful if you have checked out developmental/pre-release and need a resource from the prior stable.
+          php -r 'require_once "web/core/includes/bootstrap.inc"; [$x,$y]=explode(".",BACKDROP_VERSION); $y--; echo "$x.$y\n";'
+          return
+          ;;
 
-      x.y.z)
-        php -r 'require_once "core/includes/bootstrap.inc"; [$x,$y,$z]=explode(".",BACKDROP_VERSION); echo "$x.$y.$z\n";'
-        ;;
-    esac
+        x.y.z)
+          php -r 'require_once "web/core/includes/bootstrap.inc"; [$x,$y,$z]=explode(".",BACKDROP_VERSION); echo "$x.$y.$z\n";'
+          return
+          ;;
+      esac
+    fi
+    ## Is it Drupal 7?
+    if [ -e "web/modules/system/system.module" ]; then
+      case "$1" in
+        x)
+          php -r 'require_once "web/includes/bootstrap.inc"; [$x]=explode(".",VERSION); echo "$x\n";'
+          return
+          ;;
+
+        x.y|x.y.z)
+          ## Note: d7 releases don't use third digit, so x.y is a full/canonical version.
+          php -r 'require_once "web/includes/bootstrap.inc"; [$x,$y]=explode(".",VERSION); echo "$x.$y\n";'
+          return
+          ;;
+
+        x.y-1)
+          ## Find the "x.y" version, and rewind by 1. This is useful if you have checked out developmental/pre-release and need a resource from the prior stable.
+          php -r 'require_once "web/includes/bootstrap.inc"; [$x,$y]=explode(".",VERSION); $y--; echo "$x.$y\n";'
+          return
+          ;;
+      esac
+    fi
+    ## Is it D8+?
+    if [ -e "web/core/core.services.yml" ]; then
+      case "$1" in
+        x)
+          php -r '$l = require "vendor/composer/installed.php"; [$x] = explode(".", $l["versions"]["drupal/core"]["pretty_version"]); echo "$x\n";'
+          return
+          ;;
+
+        x.y)
+          php -r '$l = require "vendor/composer/installed.php"; [$x,$y] = explode(".", $l["versions"]["drupal/core"]["pretty_version"]); echo "$x.$y\n";'
+          return
+          ;;
+
+        x.y-1)
+          php -r '$l = require "vendor/composer/installed.php"; [$x,$y] = explode(".", $l["versions"]["drupal/core"]["pretty_version"]); $y--; echo "$x.$y\n";'
+          return
+          ;;
+
+        x.y.z)
+          php -r '$l = require "vendor/composer/installed.php"; [$x,$y,$z] = explode(".", $l["versions"]["drupal/core"]["pretty_version"]); echo "$x.$y.$z\n";'
+          return
+          ;;
+
+      esac
+    fi
   popd >> /dev/null
 }
 
