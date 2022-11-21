@@ -1239,7 +1239,7 @@ function drupal8_uninstall() {
 ## Usage: drupal7_po_download <language-list> <translation-projects...>
 ## Example: drupal7_po_download de_DE,fr_FR,nl_NL drupal-7.x views-7.x-3.x
 function drupal7_po_download() {
-  cvutil_assertvars backdrop_po_download WEB_ROOT
+  cvutil_assertvars drupal7_po_download WEB_ROOT
   local SPOOL="${WEB_ROOT}/web/sites/all/translations"
   _drupalx_po_download "$SPOOL" "$@"
 }
@@ -1254,6 +1254,32 @@ function drupal7_po_import() {
   cvutil_assertvars drupal7_po_import WEB_ROOT
   local SPOOL="${WEB_ROOT}/web/sites/all/translations"
   _drupalx_po_import "$SPOOL" "$@"
+}
+
+###############################################################################
+## Drupal 8 - Download PO files for drupal modules.
+##
+## Usage: drupal8_po_download <language-list> <translation-projects...>
+## Example: drupal8_po_download de_DE,fr_FR,nl_NL drupal-8.x
+function drupal8_po_download() {
+  cvutil_assertvars drupal8_po_download WEB_ROOT
+  local SPOOL="${WEB_ROOT}/share/translations"
+  _drupalx_po_download "$SPOOL" "$@"
+}
+
+###############################################################################
+## Drupal 8 - Load PO files into database
+##
+## Find any "*.po" files in D8 (l10n/*.po). Activate the associated languages and import the strings.
+##
+## Usage: drupal8_po_import
+function drupal8_po_import() {
+  cvutil_assertvars drupal8_po_import WEB_ROOT
+  local SPOOL="${WEB_ROOT}/share/translations"
+  echo "FIXME: The function drupal8_po_import() should be updated to handle imports on Drupal 8+" > "$SPOOL/FIXME.txt"
+  echo "WARNING: Skipped drupal8_po_import(). Not yet supported on Backdrop." 1>&2
+  # Issue: At time of writing, our copy of drush-language doesn't seem to work on Drupal 9.
+  #_drupalx_po_import "$SPOOL" "$@"
 }
 
 ###############################################################################
@@ -1303,16 +1329,18 @@ function _drupalx_po_download() {
   for NEW_LOCALE in $NEW_LOCALES; do
     for TARGET in "$@" ; do
 
-      ## Download PO files to the cache.
-      ## ex: views-7.x-3.x     ==>  https://ftp.drupal.org/files/translations/7.x/views/views-7.x-3.x.fr.po                      ==>  files/translations/views-7.x-3.x.fr.po
-      ## ex: drupal-7.x        ==>  https://ftp.drupal.org/files/translations/7.x/drupal/drupal-7.x.fr.po                        ==>  sites/all/translations/de/drupal-7.x.fr.po
-      ## ex: backdropcms-1.23  ==>  https://localize.backdropcms.org/files/l10n_packager/1.23/backdropcms/backdropcms-1.23.fr.po ==>  files/translations/backdropcms-1.23.fr.po
+      ## Download PO files. Retain in a cache. Install to the $SPOOL dir.
+      ## ex: devel-7.x-1.x     ==>  https://ftp.drupal.org/files/translations/7.x/devel/devel-7.x-1.x.fr.po                      ==>  SPOOL/devel-7.x-1.x.fr.po
+      ## ex: devel-5.0.x       ==>  https://ftp.drupal.org/files/translations/all/devel/devel-5.0.x.fr.po                        ==>  SPOOL/devel-5.0.x.fr.po
+      ## ex: drupal-7.x        ==>  https://ftp.drupal.org/files/translations/7.x/drupal/drupal-7.x.fr.po                        ==>  SPOOL/drupal-7.x.fr.po
+      ## ex: backdropcms-1.23  ==>  https://localize.backdropcms.org/files/l10n_packager/1.23/backdropcms/backdropcms-1.23.fr.po ==>  SPOOL/backdropcms-1.23.fr.po
 
       if [[ $TARGET =~ ([a-zA-Z0-9_]+)-(.*) ]]; then
         local PROJECT="${BASH_REMATCH[1]}"
         local VERSION="${BASH_REMATCH[2]}"
 
-        local PO_URL="https://ftp.drupal.org/files/translations/7.x/${PROJECT}/${TARGET}.${NEW_LOCALE}.po"
+        local PO_SET=$( [[ "$VERSION" == *"7.x"* ]] && echo 7.x || echo all )
+        local PO_URL="https://ftp.drupal.org/files/translations/${PO_SET}/${PROJECT}/${TARGET}.${NEW_LOCALE}.po"
         if [ "$PROJECT" = "backdropcms" ]; then
           PO_URL="https://localize.backdropcms.org/files/l10n_packager/${VERSION}/backdropcms/backdropcms-${VERSION}.${NEW_LOCALE}.po"
         fi

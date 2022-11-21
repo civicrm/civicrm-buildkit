@@ -21,5 +21,6 @@ pushd "$WEB_ROOT" >> /dev/null
     composer remove phpunit/phpunit
     composer install --no-dev --no-interaction
   fi
+  drupal8_po_download "${CIVICRM_LOCALES:-de_DE}" "drupal-$( _drupalx_version x.y ).x" devel-5.0.x
   civicrm_download_composer_d8
 popd >> /dev/null

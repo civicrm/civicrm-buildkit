@@ -20,6 +20,7 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   drush8 -y updatedb
   drush8 cc drush -y
+  drupal8_po_import
 
   ## Setup demo user
   drush8 -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"

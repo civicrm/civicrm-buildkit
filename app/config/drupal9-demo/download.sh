@@ -25,6 +25,7 @@ pushd "$WEB_ROOT" >> /dev/null
     composer remove phpunit/phpunit
     composer install --no-dev --no-interaction
   fi
+  drupal8_po_download "${CIVICRM_LOCALES:-de_DE}" "drupal-$( _drupalx_version x.y ).x" devel-5.0.x
   civicrm_download_composer_d8
   git clone "${CACHE_DIR}/civicrm/civivolunteer.git"                       -b "$VOL_VERSION"       vendor/civicrm/civicrm-core/tools/extensions/civivolunteer
   git clone "${CACHE_DIR}/ginkgostreet/org.civicrm.angularprofiles.git"    -b "$NG_PRFL_VERSION"   vendor/civicrm/civicrm-core/tools/extensions/org.civicrm.angularprofiles

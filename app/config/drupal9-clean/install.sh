@@ -37,6 +37,8 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   ## make sure drush functions are loaded
   drush8 cc drush -y
 
+  drupal8_po_import
+
   ## Setup CiviCRM -- But not in 'clean' config!
   #echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign"]}' \
   #  | drush8 cvapi setting.create --in=json
