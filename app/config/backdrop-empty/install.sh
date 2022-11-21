@@ -21,5 +21,5 @@ backdrop_install
 
 pushd "$CMS_ROOT" >> /dev/null
   backdrop_user "$DEMO_USER" "$DEMO_EMAIL" "$DEMO_PASS"
-  #backdrop_po_import   ### Not currently supported by drush-backdrop/drush-language
+  backdrop_po_import
 popd >> /dev/null

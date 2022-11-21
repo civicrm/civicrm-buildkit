@@ -1370,6 +1370,7 @@ function _backdrop_version() {
         ;;
 
       x.y-1)
+        ## Find the "x.y" version, and rewind by 1. This is useful if you have checked out developmental/pre-release and need a resource from the prior stable.
         php -r 'require_once "core/includes/bootstrap.inc"; [$x,$y]=explode(".",BACKDROP_VERSION); $y--; echo "$x.$y\n";'
         ;;
 

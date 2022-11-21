@@ -52,6 +52,8 @@ pushd "$CMS_ROOT" >> /dev/null
     backdrop_user_role "$DEMO_USER" "civicrm_webtest_user"
   fi
 
+  backdrop_po_import
+
   ## Setup demo extensions
   cv en --ignore-missing $CIVI_DEMO_EXTS
 

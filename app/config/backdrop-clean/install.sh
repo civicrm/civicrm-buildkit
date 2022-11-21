@@ -44,4 +44,6 @@ pushd "$CMS_ROOT" >> /dev/null
   if [ $phpversioncheck ]; then
     backdrop_user_role "$DEMO_USER" "civicrm_webtest_user"
   fi
+
+  backdrop_po_import
 popd >> /dev/null
