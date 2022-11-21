@@ -1231,6 +1231,118 @@ function drupal8_uninstall() {
 }
 
 ###############################################################################
+## Drupal 7 - Download PO files for drupal modules.
+##
+## This is similar to "l10n_update", but it doesn't require an active D7 site or database,
+## so it works well with 'download' phase and with a shared cache.
+##
+## Usage: drupal7_po_download <language-list> <translation-projects...>
+## Example: drupal7_po_download de_DE,fr_FR,nl_NL drupal-7.x views-7.x-3.x
+function drupal7_po_download() {
+  cvutil_assertvars backdrop_po_download WEB_ROOT
+  local SPOOL="${WEB_ROOT}/web/sites/all/translations"
+  _drupalx_po_download "$SPOOL" "$@"
+}
+
+###############################################################################
+## Drupal 7 - Load PO files into database
+##
+## Find any "*.po" files in D7 (sites/all/translations/*.po). Activate the associated languages and import the strings.
+##
+## Usage: drupal7_po_import
+function drupal7_po_import() {
+  cvutil_assertvars drupal7_po_import WEB_ROOT
+  local SPOOL="${WEB_ROOT}/web/sites/all/translations"
+  _drupalx_po_import "$SPOOL" "$@"
+}
+
+###############################################################################
+## Backdrop - Download PO files for Backdrop modules.
+##
+## Usage: backdrop_po_download <language-list> <translation-projects...>
+## Example: backdrop_po_download de_DE,fr_FR,nl_NL backdropcms-1.23
+function backdrop_po_download() {
+  cvutil_assertvars backdrop_po_download WEB_ROOT
+  #local SPOOL="${WEB_ROOT}/web/files/translations"  ## Suggested by some BD docs, but it doesn't seem to be required, and it's extraneously wiped on reinstalls.
+  local SPOOL="${WEB_ROOT}/web/sites/all/translations"
+  _drupalx_po_download "$SPOOL" "$@"
+}
+
+###############################################################################
+## Backdrop - Load PO files into database
+##
+## Usage: backdrop_po_import
+function backdrop_po_import() {
+  cvutil_assertvars backdrop_po_download WEB_ROOT
+  #local SPOOL="${WEB_ROOT}/web/files/translations"  ## Suggested by some BD docs, but it doesn't seem to be required, and it's extraneously wiped on reinstalls.
+  local SPOOL="${WEB_ROOT}/web/sites/all/translations"
+  _drupalx_po_import "$SPOOL" "$@"
+}
+
+###############################################################################
+## D7/BD - Download PO files
+##
+## Usage: _drupalx_po_download <spool-dir> <language-list> <translation-projects...>
+## Example: _drupalx_po_download "$WEB_ROOT/translations" "de_DE,fr_FR,nl_NL" drupal-7.x views-7.x-3.x
+function _drupalx_po_download() {
+  local SPOOL="$1"
+  shift
+  local CSV="$1"
+  local TTL=86400
+  shift
+  local NEW_LOCALES=$( echo "$CSV" | awk 'BEGIN {RS=","; FS="_"} {print $1}' | sort -u | grep -v ^en )
+  if [ -z "$NEW_LOCALES" ]; then
+    return
+  fi
+
+  mkdir -p "${SPOOL}"
+
+  for NEW_LOCALE in $NEW_LOCALES; do
+    for TARGET in "$@" ; do
+
+      ## Download PO files to the cache.
+      ## ex: views-7.x-3.x     ==>  https://ftp.drupal.org/files/translations/7.x/views/views-7.x-3.x.fr.po                      ==>  files/translations/views-7.x-3.x.fr.po
+      ## ex: drupal-7.x        ==>  https://ftp.drupal.org/files/translations/7.x/drupal/drupal-7.x.fr.po                        ==>  sites/all/translations/de/drupal-7.x.fr.po
+      ## ex: backdropcms-1.23  ==>  https://localize.backdropcms.org/files/l10n_packager/1.23/backdropcms/backdropcms-1.23.fr.po ==>  files/translations/backdropcms-1.23.fr.po
+
+      if [[ $TARGET =~ ([a-zA-Z0-9_]+)-(.*) ]]; then
+        local PROJECT="${BASH_REMATCH[1]}"
+        local VERSION="${BASH_REMATCH[2]}"
+
+        local PO_URL="https://ftp.drupal.org/files/translations/7.x/${PROJECT}/${TARGET}.${NEW_LOCALE}.po"
+        if [ "$PROJECT" = "backdropcms" ]; then
+          PO_URL="https://localize.backdropcms.org/files/l10n_packager/${VERSION}/backdropcms/backdropcms-${VERSION}.${NEW_LOCALE}.po"
+        fi
+
+        http_cache_setup "$PO_URL" "${CACHE_DIR}/drupal/translations/${TARGET}.${NEW_LOCALE}.po" "$TTL"
+        cp "${CACHE_DIR}/drupal/translations/${TARGET}.${NEW_LOCALE}.po" "${SPOOL}/"
+      fi
+    done
+  done
+}
+
+###############################################################################
+## D7/BD - Load PO files
+##
+## Find any "*.po" files in BD (files/translations/*.po). Activate the associated languages and import the strings.
+##
+## usage: _drupalx_po_import <spool-dir>
+function _drupalx_po_import() {
+  local SPOOL="$1"
+
+  ## Find any files named '*.XX.po` (eg `webform-4.x.fr.po`). The `XX` locale should be active.
+  local NEW_LOCALES=$(find "${SPOOL}" -name '*.po' | sed 's;\(.*\)\.\(\w\w\)\.po;\2;' | sort -u)
+  drush en -y locale
+  drush language-add $NEW_LOCALES
+
+  for NEW_LOCALE in $NEW_LOCALES ; do
+    find "${SPOOL}" -name "*.${NEW_LOCALE}.po" | while read POFILE ; do
+      drush language-import-translations "${NEW_LOCALE}" "${POFILE}"
+    done
+  done
+}
+
+###############################################################################
 ## Drupal -- Compute the name of the multi-site subdir
 ## Usage: _drupal_multisite_dir <url> <site-id>
 ## Note: <site-id> is 0 for the default/base site
@@ -1240,6 +1352,32 @@ function _drupal_multisite_dir() {
   else
     php -r '$p = parse_url($argv[1]); if (!empty($p["port"])) echo $p["port"] . "."; echo $p["host"];' -- "$1"
   fi
+}
+
+###############################################################################
+## Backdrop - Determine version of the codebase
+## usage: _backdrop_version <x|x.y|x.y.z>
+## example: VER=$(_backdrop_version x.y)
+function _backdrop_version() {
+  pushd "${WEB_ROOT}/web" >> /dev/null
+    case "$1" in
+      x)
+        php -r 'require_once "core/includes/bootstrap.inc"; [$x]=explode(".",BACKDROP_VERSION); echo "$x\n";'
+        ;;
+
+      x.y)
+        php -r 'require_once "core/includes/bootstrap.inc"; [$x,$y]=explode(".",BACKDROP_VERSION); echo "$x.$y\n";'
+        ;;
+
+      x.y-1)
+        php -r 'require_once "core/includes/bootstrap.inc"; [$x,$y]=explode(".",BACKDROP_VERSION); $y--; echo "$x.$y\n";'
+        ;;
+
+      x.y.z)
+        php -r 'require_once "core/includes/bootstrap.inc"; [$x,$y,$z]=explode(".",BACKDROP_VERSION); echo "$x.$y.$z\n";'
+        ;;
+    esac
+  popd >> /dev/null
 }
 
 ###############################################################################

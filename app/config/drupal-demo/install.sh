@@ -45,6 +45,7 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   drush -y en civicrm toolbar locale garland login_destination userprotect
   ## disable annoying/unneeded modules
   drush -y dis overlay
+  drupal7_po_import
 
   ## Setup CiviCRM
   if cv ev 'exit(version_compare(CRM_Utils_System::version(), "5.47.alpha", "<") ?0:1);' ; then

@@ -25,6 +25,7 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   drush -y en toolbar locale garland
   ## disable annoying/unneeded modules
   drush -y dis overlay
+  drupal7_po_import
 
   ## Setup theme
   #above# drush -y en garland
