@@ -403,6 +403,7 @@ for TESTTYPE in $SUITES ; do
     phpunit-eway) task_phpunit_core_extension ewaysingle ;;
     phpunit-afform) test_afform_extensions "$CIVI_CORE/ext/afform" ;;
     phpunit-authx) task_phpunit_core_extension authx ;;
+    phpunit-searchkit) task_phpunit_core_extension search_kit ;;
     phpunit-core-exts) test_core_extenions ;;
     *) echo "unrecognized suite: $TESTTYPE"; exit 2 ;;
   esac
