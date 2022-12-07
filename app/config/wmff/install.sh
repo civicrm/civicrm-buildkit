@@ -54,7 +54,15 @@ EOSQL
 ## Extra configuration
 pushd "$CMS_ROOT"
 drush -y en civicrm
-cv en --ignore-missing search_kit wmf-civicrm
+## Install rpow first to avoid issues around redis caching.
+## I didn't quite work out the mechanism for cache related issues
+## but rpow seems to get jiggy before it really should with Redis caching.
+## see https://phabricator.wikimedia.org/T324630
+## Installing search_kit first means that the managed searches
+## get installed the first time - but note search_kit will be installed
+## as part of installing core civicrm from 5.57, so this might be obsolete.
+# Enabling wmf-civicrm enables all our other extensions, as they are dependencies.
+cv en --ignore-missing rpow search_kit wmf-civicrm
 
 drush -y en --debug `cat sites/default/enabled_modules`
 
