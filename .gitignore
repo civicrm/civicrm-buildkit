@@ -43,6 +43,7 @@ bin/drush.complete.sh.bat
 bin/drush.php
 bin/drush.php.bat
 bin/drush8
+bin/find-stale-builds
 bin/forkify
 bin/git-php-symbol-diff
 bin/git-scan
