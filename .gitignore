@@ -42,6 +42,7 @@ bin/drush.complete.sh.bat
 bin/drush.php
 bin/drush.php.bat
 bin/drush8
+bin/forkify
 bin/git-php-symbol-diff
 bin/git-scan
 bin/git-scan.bat
@@ -75,7 +76,6 @@ bin/wp.bat
 build/
 extern/
 node_modules/
-src/forkify/deps
 vagrant/*/.vagrant
 vendor/
 web/

@@ -60,7 +60,7 @@
 ###############################################################################
 #### Imports
 
-#!depdir './deps'
+#!ttl 10 years
 #!require clippy/std: ~0.3.5
 #!require clippy/container: '~1.2'
 
