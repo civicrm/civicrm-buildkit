@@ -1,7 +1,6 @@
 #!/usr/bin/env pogo
 <?php
 
-#!depdir '../extern/fetch-universe'
 #!ttl 10 years
 #!require rubobaquero/phpquery: '^0.9.15'
 
@@ -176,7 +175,7 @@ function feed_labdir() {
  * @return array
  */
 function feed_static() {
-  $f = require dirname(pogo_script_dir()) . '/src/universe.php';
+  $f = require dirname(pogo_script_dir()) . '/universe.php';
   $list = $f();
   return feed_normalize($list);
 }
