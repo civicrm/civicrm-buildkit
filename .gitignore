@@ -73,6 +73,7 @@ bin/protractor
 bin/webdriver-manager
 bin/wp
 bin/wp.bat
+bin/zipdiff
 build/
 extern/
 node_modules/
