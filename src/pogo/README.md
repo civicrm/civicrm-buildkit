@@ -16,4 +16,7 @@ Suppose we have a small script named `snafu`. This would have a few files:
     * It loops through each script `src/pogo/*.php` and makes the `bin/*` stubs.)
     * Wrappers are derived from `src/pogo/wrapper.sh`.
     * If you modify `wrapper.sh`, then you should re-run `civi-download-tools` (to re-create the stubs). 
-* If you would like to edit `src/pogo/snafu.php` and get IDE auto-completion, then point your IDE to `extern/snafu-phpX.Y`
+
+__TIP__: If you use an IDE (and if your system supports symlinks), then open
+`extern/snafu-phpX.Y` as the IDE project.  This will provide access to the
+script (*symlinked*) as well as all PHP libraries.
