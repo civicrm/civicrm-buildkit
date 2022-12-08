@@ -16,6 +16,7 @@ app/snapshot/
 app/tmp/
 bin/amp
 bin/amp.bat
+bin/bknix-ci-cleanup
 bin/boris
 bin/boris.bat
 bin/bower

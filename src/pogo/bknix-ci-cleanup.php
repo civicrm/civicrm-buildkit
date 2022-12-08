@@ -1,6 +1,5 @@
 #!/usr/bin/env pogo
 <?php
-#!depdir '../extern/bknix-ci-cleanup'
 #!ttl 10 years
 #!require symfony/var-dumper: ~3.0
 #!require symfony/yaml: ~3.0
