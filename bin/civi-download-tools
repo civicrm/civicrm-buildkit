@@ -757,7 +757,8 @@ pushd $PRJDIR >> /dev/null
       cp "$POGO_TPL" "$POGO_STUB"
     fi
     if [ -n "$IS_POGO_PREFETCH" -a -z "$IS_QUIET" -a ! -d "$POGO_DEPS" ]; then
-      "$PRJDIR/bin/pogo" --get --dl="$POGO_DEPS" -- "$PRJDIR/src/pogo/$POGO_BASENAME.php"
+      env PATH="$PRJDIR/bin:$PATH" \
+        "$PRJDIR/bin/pogo" --get --dl="$POGO_DEPS" -- "$PRJDIR/src/pogo/$POGO_BASENAME.php"
     fi
   done
 
