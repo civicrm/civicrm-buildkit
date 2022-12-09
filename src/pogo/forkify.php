@@ -109,7 +109,9 @@ $c['app']->command("remote:fetch $globalOptions remotes*", function ($remotes, S
 $c['app']->command("branch:create $globalOptions target source", function ($target, $source, SymfonyStyle $io, Repos $repos, callable $passthru) {
   $branchPairs = $repos->branchPairs($target, $source);
   $repos->walk($branchPairs, function ($name, $path, $tgtRemote, $tgtBranch, $srcRemote, $srcBranch) use ($io, $passthru) {
-    $io->writeln("<comment>$path</comment>: Create branch <comment>$tgtRemote/$tgtBranch</comment> from <comment>$srcRemote/$srcBranch</comment>");
+    $tgtName = ($tgtRemote ? "$tgtRemote/$tgtBranch" : "$tgtBranch");
+    $srcName = ($srcRemote ? "$srcRemote/$srcBranch" : "$srcBranch");
+    $io->writeln("<comment>$path</comment>: Create branch <comment>$tgtName</comment> from <comment>$srcName</comment>");
     $passthru('git branch {{0|s}} {{1|s}}', [$tgtBranch, "$srcRemote/$srcBranch"]);
     if ($tgtRemote) {
       $passthru('git config branch.{{0|s}}.remote {{1|s}}', [$tgtBranch, $tgtRemote]);
@@ -191,6 +193,35 @@ $c['app']->command("branch:delete $globalOptions [-f|--force] branch", function 
       [$mode, $branch, '(Ignore missing branch)']);
   });
 })->setDescription('Delete parallel branches across Civi-related repos');
+
+// Not yet tested
+// $c['app']->command("wf:rc $globalOptions", function (callable $runSubcommand) {
+//   $runSubcommand("checkout -A master");
+//   $runSubcommand("pull -A --ff-only master origin/master");
+//
+//   // Parse version.xml
+//   $xmlObj = \simplexml_load_string(file_get_contents("xml/version.xml"));
+//   $oldVer = (string) $xmlObj->version_no;
+//   [$major, $minor, $patch] = explode('.', $oldVer);
+//
+//   $rcMajorMinor = $major . '.' . $minor;
+//   $devMajorMinor = $major . '.' . (1 + $minor);
+//
+//   // TODO: Describe the selected versions that will be twiddled.
+//
+//   // Bump master to '5.X.beta1'
+//   echo "TODO passthru ./tools/bin/scripts/set-version.php {$rcMajorMinor}.beta1 --commit\n";
+//   $runSubcommand("push -A origin master");
+//
+//   // Make RC branch for `5.X` (as of 5.X.beta1).
+//   $runSubcommand("branch $rcMajorMinor origin/master");
+//   $runSubcommand("push -A -u origin $rcMajorMinor");
+//
+//   // Bump master to `5.Y.alpha1`
+//   $runSubcommand("checkout -A master");
+//   echo "TODO: passthru ./tools/bin/scripts/set-version.php {$devMajorMinor}.alpha1 --commit\n";
+//   $runSubcommand("push -A origin master");
+// })->setDescription('Create new RC and bump up version numbers.');
 
 ###############################################################################
 #### Services (Helpers/Utilities)
@@ -365,6 +396,19 @@ $c['pickMergeOpts()'] = function(SymfonyStyle $io, InputInterface $input) {
 
   throw new \Exception("Must specify an update style: --merge or --rebase or --ff-only");
 };
+
+// $c['runSubcommand()'] = function (string $cmd, array $params = [], ?Cmdr $cmdr = NULL, ?Application $app = NULL, ?InputInterface $input = NULL) {
+//   $opts = array_filter([
+//     $input->getOption('dry-run') ? '--dry-run' : NULL,
+//     $input->getOption('expect-all') ? '--expect-all' : NULL,
+//     $input->getOption('step') ? '--step' : NULL,
+//   ]);
+//   $cmdParts = explode(" ", $cmd, 2);
+//   array_splice($cmdParts, 1, 0, $opts);
+//   $fullCmd = $cmdr->escape(implode(' ', $cmdParts), $params);
+//   echo "[[ TODO: $fullCmd ]]\n";
+//   // $app->runCommand($fullCmd);
+// };
 
 $c['passthru()'] = function (string $cmd, array $params = [], ?Cmdr $cmdr = NULL, ?InputInterface $input = NULL, ?SymfonyStyle $io = NULL) {
   $cmdDesc = '<comment>$</comment> ' . $cmdr->escape($cmd, $params) . ' <comment>[[in ' . getcwd() . ']]</comment>';
