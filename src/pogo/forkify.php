@@ -96,7 +96,10 @@ $c['app']->command("remote:set-url $globalOptions remote url-prefix", function (
 })->setAliases(['set-remotes'])
   ->setDescription('Update parallel remotes across Civi-related repos');;
 
-$c['app']->command("remote:fetch $globalOptions remotes*", function ($remotes, SymfonyStyle $io, Repos $repos, callable $passthru) {
+$c['app']->command("remote:fetch $globalOptions [remotes]*", function ($remotes, SymfonyStyle $io, Repos $repos, callable $passthru) {
+  if (empty($remotes)) {
+    $remotes[] = 'origin';
+  }
   foreach ($remotes as $remote) {
     $remoteUrls = $repos->remoteUrls($remote, '!!not-applicable');
     $repos->walk($remoteUrls, function ($name, $path, $remote) use ($io, $passthru) {
@@ -193,6 +196,25 @@ $c['app']->command("branch:delete $globalOptions [-f|--force] branch", function 
       [$mode, $branch, '(Ignore missing branch)']);
   });
 })->setDescription('Delete parallel branches across Civi-related repos');
+
+$c['app']->command("status $globalOptions", function (SymfonyStyle $io, Repos $repos, callable $passthru) {
+  $remoteUrls = $repos->remoteUrls('origin', '!!not-applicable');
+  $repos->walk($remoteUrls, function ($name, $path, $remote) use ($io, $passthru) {
+    $io->writeln("[<comment>$path</comment>]: Check status");
+    $passthru('git status', []);
+  });
+})->setDescription("Display local status across Civi-related repos");
+
+$c['app']->command('wf:unimplemented', function (SymfonyStyle $io) {
+  $io->error([
+    "The \"givi\" command included some workflow helpers (\"givi begin\", \"givi resume\", \"givi review\").",
+    "These subcommands were dropped during a bigger code reorganiztion. If you would like these subcommands to be restored, please file an issue or PR.",
+    // Well, specifically, I used them for a few months back in `$ancientYear` -- and then moved on to other commands.
+    // We never really advertised these, so I doubt anyone else used them. Won't bother porting
+    // them unless someone actually uses them.
+  ]);
+  return 1;
+})->setAliases(['begin', 'resume', 'review'])->setDescription("(Unimplemented)");
 
 // Not yet tested
 // $c['app']->command("wf:rc $globalOptions", function (callable $runSubcommand) {
