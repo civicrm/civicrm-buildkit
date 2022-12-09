@@ -176,11 +176,16 @@ $c['app']->command("branch:push $globalOptions [-f|--force] [-u|--set-upstream] 
   });
 })->setAliases(['push']);
 
-$c['app']->command("branch:checkout $globalOptions branch", function ($branch, SymfonyStyle $io, Repos $repos, callable $passthru) {
+$c['app']->command("branch:checkout $globalOptions branch [--core=] [--packages=] [--backdrop=] [--drupal=] [--joomla=] [--wordpress=]", function ($branch, SymfonyStyle $io, Repos $repos, callable $passthru, InputInterface $input) {
   $branches = array_filter($repos->branches($branch), function($b) {
       return $b['name'] !== 'drupal@6.x';
   });
-  $repos->walk($branches, function ($name, $path, $remote, $branch) use ($io, $passthru) {
+  $repos->walk($branches, function ($name, $path, $remote, $branch) use ($io, $input, $passthru) {
+    if ($input->hasOption($name) && $input->getOption($name)) {
+      // Caller requested a different branch for this repo (e.g. "givi checkout master --core=my-wip-pr")
+      $branch = $input->getOption($name);
+    }
+
     $io->writeln("<comment>$path</comment>: Checkout branch <comment>$branch</comment>");
     $passthru('git checkout {{0|s}}', [$branch]);
   });
