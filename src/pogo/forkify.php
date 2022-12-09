@@ -76,7 +76,7 @@ $c = clippy()->register(plugins());
 
 ###############################################################################
 #### Commands
-$globalOptions = '[-N|--dry-run] [-A|--expect-all] [-S|--step]';
+$globalOptions = '[-N|--dry-run] [-A|--expect-all] [-S|--step] [--root=]';
 
 $c['app']->command("remote:add $globalOptions remote url-prefix", function ($remote, $urlPrefix, SymfonyStyle $io, Repos $repos, callable $passthru) {
   $remoteUrls = $repos->remoteUrls($remote, $urlPrefix);
@@ -218,6 +218,7 @@ $c['app']->command('wf:unimplemented', function (SymfonyStyle $io) {
 
 // Not yet tested
 // $c['app']->command("wf:rc $globalOptions", function (callable $runSubcommand) {
+//   chdir(root)
 //   $runSubcommand("checkout -A master");
 //   $runSubcommand("pull -A --ff-only master origin/master");
 //
@@ -263,6 +264,18 @@ class Repos {
    */
   protected $input;
 
+  private function getPath(string $subdir) {
+    if ($this->input->hasOption('root') && $this->input->getOption('root')) {
+      $base = rtrim($this->input->getOption('root'), '/' . DIRECTORY_SEPARATOR);
+    }
+    else {
+      $base = '.';
+    }
+    return ($subdir === '.')
+      ? $base
+      : ($base . DIRECTORY_SEPARATOR . $subdir);
+  }
+
   /**
    * @param string $remote
    * @param string $urlPrefix
@@ -272,13 +285,13 @@ class Repos {
   public function remoteUrls(string $remote, string $urlPrefix): array {
     $suffix = '.git';
     return rekeyItems(['name', 'path', 'remote', 'url'], [
-      ['core', '.', $remote, "{$urlPrefix}core{$suffix}"],
-      ['backdrop', './backdrop', $remote, "{$urlPrefix}backdrop{$suffix}"],
-      ['drupal', './drupal', $remote, "{$urlPrefix}drupal{$suffix}"],
-      ['drupal-8', './drupal-8', $remote, "{$urlPrefix}drupal-8{$suffix}"],
-      ['joomla', './joomla', $remote, "{$urlPrefix}joomla{$suffix}"],
-      ['packages', './packages', $remote, "{$urlPrefix}packages{$suffix}"],
-      ['wordpress', './WordPress', $remote, "{$urlPrefix}wordpress{$suffix}"],
+      ['core', $this->getPath('.'), $remote, "{$urlPrefix}core{$suffix}"],
+      ['backdrop', $this->getPath('backdrop'), $remote, "{$urlPrefix}backdrop{$suffix}"],
+      ['drupal', $this->getPath('drupal'), $remote, "{$urlPrefix}drupal{$suffix}"],
+      ['drupal-8', $this->getPath('drupal-8'), $remote, "{$urlPrefix}drupal-8{$suffix}"],
+      ['joomla', $this->getPath('joomla'), $remote, "{$urlPrefix}joomla{$suffix}"],
+      ['packages', $this->getPath('packages'), $remote, "{$urlPrefix}packages{$suffix}"],
+      ['wordpress', $this->getPath('WordPress'), $remote, "{$urlPrefix}wordpress{$suffix}"],
     ]);
   }
 
@@ -291,14 +304,14 @@ class Repos {
   public function branches(string $branchExpr): array {
     [$remote, $branch] = $this->parseRemoteBranch($branchExpr);
     return rekeyItems(['name', 'path', 'remote', 'branch'], [
-      ['core', '.', $remote, $branch],
-      ['backdrop@1.x', './backdrop', $remote, "1.x-$branch"],
-      ['drupal@6.x', './drupal', $remote, "6.x-$branch"],
-      ['drupal@7.x', './drupal', $remote, "7.x-$branch"],
-      ['drupal-8', './drupal-8', $remote, $branch],
-      ['joomla', './joomla', $remote, $branch],
-      ['packages', './packages', $remote, $branch],
-      ['wordpress', './WordPress', $remote, $branch],
+      ['core', $this->getPath('.'), $remote, $branch],
+      ['backdrop@1.x', $this->getPath('backdrop'), $remote, "1.x-$branch"],
+      ['drupal@6.x', $this->getPath('drupal'), $remote, "6.x-$branch"],
+      ['drupal@7.x', $this->getPath('drupal'), $remote, "7.x-$branch"],
+      ['drupal-8', $this->getPath('drupal-8'), $remote, $branch],
+      ['joomla', $this->getPath('joomla'), $remote, $branch],
+      ['packages', $this->getPath('packages'), $remote, $branch],
+      ['wordpress', $this->getPath('WordPress'), $remote, $branch],
     ]);
   }
 
@@ -315,14 +328,14 @@ class Repos {
     [$srcRemote, $srcBranch] = $this->parseRemoteBranch($src);
 
     return rekeyItems(['name', 'path', 'tgtRemote', 'tgtBranch', 'srcRemote', 'srcBranch'], [
-      ['core', '.', $tgtRemote, $tgtBranch, $srcRemote, $srcBranch],
-      ['backdrop@1.x', './backdrop', $tgtRemote, "1.x-$tgtBranch", $srcRemote, "1.x-$srcBranch"],
-      ['drupal@6.x', './drupal', $tgtRemote, "6.x-$tgtBranch", $srcRemote, "6.x-$srcBranch"],
-      ['drupal@7.x', './drupal', $tgtRemote, "7.x-$tgtBranch", $srcRemote, "7.x-$srcBranch"],
-      ['drupal-8', './drupal-8', $tgtRemote, $tgtBranch, $srcRemote, $srcBranch],
-      ['joomla', './joomla', $tgtRemote, $tgtBranch, $srcRemote, $srcBranch],
-      ['packages', './packages', $tgtRemote, $tgtBranch, $srcRemote, $srcBranch],
-      ['wordpress', './WordPress', $tgtRemote, $tgtBranch, $srcRemote, $srcBranch],
+      ['core', $this->getPath('.'), $tgtRemote, $tgtBranch, $srcRemote, $srcBranch],
+      ['backdrop@1.x', $this->getPath('backdrop'), $tgtRemote, "1.x-$tgtBranch", $srcRemote, "1.x-$srcBranch"],
+      ['drupal@6.x', $this->getPath('drupal'), $tgtRemote, "6.x-$tgtBranch", $srcRemote, "6.x-$srcBranch"],
+      ['drupal@7.x', $this->getPath('drupal'), $tgtRemote, "7.x-$tgtBranch", $srcRemote, "7.x-$srcBranch"],
+      ['drupal-8', $this->getPath('drupal-8'), $tgtRemote, $tgtBranch, $srcRemote, $srcBranch],
+      ['joomla', $this->getPath('joomla'), $tgtRemote, $tgtBranch, $srcRemote, $srcBranch],
+      ['packages', $this->getPath('packages'), $tgtRemote, $tgtBranch, $srcRemote, $srcBranch],
+      ['wordpress', $this->getPath('WordPress'), $tgtRemote, $tgtBranch, $srcRemote, $srcBranch],
     ]);
   }
 
