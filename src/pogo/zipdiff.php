@@ -21,6 +21,8 @@ namespace Clippy;
 ###########################################
 ## Imports
 
+#!ttl 10 years
+
 #!require sebastian/diff: ~4.0.4
 use SebastianBergmann\Diff\Differ;
 use SebastianBergmann\Diff\Output\StrictUnifiedDiffOutputBuilder;

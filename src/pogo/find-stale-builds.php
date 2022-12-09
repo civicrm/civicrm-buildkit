@@ -1,6 +1,5 @@
 #!/usr/bin/env pogo
 <?php
-#!depdir '../extern/find-stale-builds'
 #!ttl 10 years
 #!require symfony/finder: ~4.4
 

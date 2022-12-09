@@ -744,6 +744,23 @@ pushd $PRJDIR >> /dev/null
     cp "$PRJDIR/src/drush/drush8.tmpl" "$PRJDIR/bin/drush8"
   fi
 
+  ## Setup aliases for pogo scripts
+  POGO_TPL="$PRJDIR/src/pogo/wrapper.sh"
+  IS_POGO_PREFETCH=$(php -r 'echo version_compare(PHP_VERSION, "7.3.0", ">=") ? "1" : "";')
+  ## A few less-used scripts don't install on php72. For php72, we'll get dependencies lazily.
+  ls src/pogo/*.php | while read POGO_PHP ; do
+    POGO_BASENAME=$( basename "$POGO_PHP" | sed 's;\.php$;;' )
+    POGO_STUB="$PRJDIR/bin/$POGO_BASENAME"
+    POGO_DEPS="$PRJDIR/extern/$POGO_BASENAME-php{PHP_XY}"
+    if [ ! -e "$POGO_STUB" -o "$POGO_TPL" -nt "$POGO_STUB" ]; then
+      echo_comment "[[$POGO_BASENAME updated ($POGO_STUB => $PRJDIR/$POGO_PHP)]]"
+      cp "$POGO_TPL" "$POGO_STUB"
+    fi
+    if [ -n "$IS_POGO_PREFETCH" -a -z "$IS_QUIET" -a ! -d "$POGO_DEPS" ]; then
+      pogo --get --dl="$POGO_DEPS" -- "$PRJDIR/src/pogo/$POGO_BASENAME.php"
+    fi
+  done
+
   ## Setup phpunit aliases for CLI usage
   make_link "$PRJDIR/bin" "drush8" "drush"
   make_link "$PRJDIR/bin" "../extern/phpunit4/phpunit4.phar" "phpunit4"

@@ -16,12 +16,14 @@ app/snapshot/
 app/tmp/
 bin/amp
 bin/amp.bat
+bin/bknix-ci-cleanup
 bin/boris
 bin/boris.bat
 bin/bower
 bin/bower.bat
 bin/box
 bin/civici
+bin/civicredits
 bin/civicrm-upgrade-examples
 bin/civicrm-upgrade-test
 bin/civicrm-upgrade-test.bat
@@ -42,6 +44,9 @@ bin/drush.complete.sh.bat
 bin/drush.php
 bin/drush.php.bat
 bin/drush8
+bin/fetch-universe
+bin/find-stale-builds
+bin/forkify
 bin/git-php-symbol-diff
 bin/git-scan
 bin/git-scan.bat
@@ -72,6 +77,7 @@ bin/protractor
 bin/webdriver-manager
 bin/wp
 bin/wp.bat
+bin/zipdiff
 build/
 extern/
 node_modules/
