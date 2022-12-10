@@ -35,10 +35,18 @@ if [[ "$CIVI_VERSION" =~ ^4.[0123456](\.([0-9]|alpha|beta)+)?$ ]] ; then
   CIVI_EXT_URL="${CMS_URL}/sites/${DRUPAL_SITE_DIR}/ext"
 fi
 
-civicrm_install
+
+# If you've switched branches and triggered `reinstall`, then you need to refresh composer deps/autoloader before installing
+(cd "$CIVI_CORE" && composer install)
+
+civicrm_install_cv
+
+## Generating `civicrm.config.php` is necessary for `extern/*.php` and its E2E tests
+(cd "$CIVI_CORE" && ./bin/setup.sh -g)
 
 ###############################################################################
 ## Extra configuration
+
 pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   drush -y updatedb
@@ -49,11 +57,9 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   ## Setup CiviCRM
   if cv ev 'exit(version_compare(CRM_Utils_System::version(), "5.47.alpha", "<") ?0:1);' ; then
-    echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign","CiviGrant"]}' \
-      | drush cvapi setting.create --in=json
+    cv vset '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign","CiviGrant"]}'
   else
-    echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign"]}' \
-      | drush cvapi setting.create --in=json
+    cv vset '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign"]}'
   fi
   ## Note: CiviGrant disabled by default. If you enable, update the permissions as well.
   civicrm_apply_demo_defaults

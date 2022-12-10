@@ -34,10 +34,17 @@ if [[ "$CIVI_VERSION" =~ ^4.[0123456](\.([0-9]|alpha|beta)+)?$ ]] ; then
   CIVI_EXT_URL="${CMS_URL}/sites/${DRUPAL_SITE_DIR}/ext"
 fi
 
-civicrm_install
+# If you've switched branches and triggered `reinstall`, then you need to refresh composer deps/autoloader before installing
+(cd "$CIVI_CORE" && composer install)
+
+civicrm_install_cv
+
+## Generating `civicrm.config.php` is necessary for `extern/*.php` and its E2E tests
+(cd "$CIVI_CORE" && ./bin/setup.sh -g)
 
 ###############################################################################
 ## Extra configuration
+
 pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   drush -y updatedb
@@ -47,6 +54,9 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   drupal7_po_import
 
   cv ev 'if(is_callable(array("CRM_Core_BAO_CMSUser","synchronize"))){CRM_Core_BAO_CMSUser::synchronize(FALSE);}else{CRM_Utils_System::synchronizeUsers();}'
+
+  ## Setup CiviCRM
+  cv vset '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign"]}'
 
   ## Setup theme
   #above# drush -y en garland
