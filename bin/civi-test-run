@@ -83,6 +83,7 @@ function task_phpunit() {
 
   if [ $SUITE = 'E2E_AllTests' ]; then
       $GUARD civibuild restore "$BLDNAME"
+      $GUARD cv flush --cwd="$CIVI_CORE" ## This is smelly. It begs the question of "what is leaking between tests".
   fi
 
   $GUARD phpunit-xml-cleanup "$JUNITDIR"/*.xml
@@ -151,6 +152,7 @@ function test_core_extenions() {
     elif [ -f "$DIR/phpunit.xml.dist" ]; then
       task_phpunit_core_extension "$(basename $DIR)"
       $GUARD civibuild restore "$BLDNAME"
+      $GUARD cv flush --cwd="$CIVI_CORE" ## This is smelly. It begs the question of "what is leaking between tests".
     fi
   done
 }
@@ -160,10 +162,12 @@ function test_afform_extensions() {
   pushd "$DIR"
     task_phpunit_core_extension "$(basename $DIR)/core" "afform-core"
     $GUARD civibuild restore "$BLDNAME"
+    $GUARD cv flush --cwd="$CIVI_CORE" ## This is smelly. It begs the question of "what is leaking between tests".
     cv en afform
     cv en --ignore-missing authx
     task_phpunit_core_extension "$(basename $DIR)/mock" "afform-mock"
     $GUARD civibuild restore "$BLDNAME"
+    $GUARD cv flush --cwd="$CIVI_CORE" ## This is smelly. It begs the question of "what is leaking between tests".
   popd
 }
 
@@ -200,6 +204,7 @@ function task_upgrade() {
   fi
 
   $GUARD civibuild restore "$BLDNAME"
+  $GUARD cv flush --cwd="$CIVI_CORE" ## This is smelly. It begs the question of "what is leaking between tests".
 }
 
 ## Execute the upgrade test suite (via 'civicrm-upgrade-test' bash script).
