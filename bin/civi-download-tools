@@ -759,6 +759,8 @@ pushd $PRJDIR >> /dev/null
     if [ -n "$IS_POGO_PREFETCH" -a -z "$IS_QUIET" -a ! -d "$POGO_DEPS" ]; then
       env PATH="$PRJDIR/bin:$PATH" \
         "$PRJDIR/bin/pogo" --get --dl="$POGO_DEPS" -- "$PRJDIR/src/pogo/$POGO_BASENAME.php"
+      ## TIP: Looking to save a little disk? You could use `--phar` instead of bash stubs. But then it's
+      ## more clicks to edit in an IDE, and you lose support for splitting PHP dependencies.
     fi
   done
 
