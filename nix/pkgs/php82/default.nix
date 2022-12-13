@@ -10,13 +10,13 @@ let
 
     phpIniSnippet1 = builtins.readFile ../phpCommon/php.ini;
     phpIniSnippet2 = ''
+      apc.enable_cli = ''${PHP_APC_CLI}
     '';
-    ## TODO(phpIniSnippet2):  apc.enable_cli = ''${PHP_APC_CLI}
 
 in pkgs.php82.buildEnv {
 
-  ## TODO: apcu_bc
-  extensions = { all, enabled }: with all; enabled++ [ apcu imagick memcached opcache redis tidy yaml phpExtras.xdebug32 phpExtras.runkit7_4 ];
+  ## EVALUATE: apcu_bc
+  extensions = { all, enabled }: with all; enabled++ [ phpExtras.xdebug32 redis tidy apcu yaml memcached imagick opcache phpExtras.runkit7_4 ];
   extraConfig = phpIniSnippet1 + phpIniSnippet2;
 
 }
