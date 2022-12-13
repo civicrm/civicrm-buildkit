@@ -2,6 +2,6 @@
  * v22.05 with unofficial php82 backport (`totten/nixpkgs @ php82-v2205`)
  */
 fetchTarball {
-  url = "https://github.com/totten/nixpkgs/archive/8a7a88cc553b68e982d4cb5c687d81e69daaa537.tar.gz";
-  sha256 = "1yx84hjif5c75jzyrafpi8r00hgm99dd47n3xpaarp3p0nbp2d6g";
+  url = "https://github.com/totten/nixpkgs/archive/d66b84e4b96bd996179b634517e24cbefdbb3f52.tar.gz";
+  sha256 = "0966j5qb801s49magl29pkxckx146xgn214w1gdawisifs5q9f14";
 }
