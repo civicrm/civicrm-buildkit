@@ -80,6 +80,7 @@ in rec {
   };
 
   xdebug3 = buildPecl {
+    ## XDebug 3.1 supports php72, php73, php74, php80, php81 (https://xdebug.org/docs/compat)
     version = "3.1.4";
     pname = "xdebug";
     sha256 = "QZWSb59sToAv90m7LKhaxQY2cZpy5TieNy4171I1Bfk=";
@@ -88,11 +89,11 @@ in rec {
     zendExtension = true;
   };
 
-  ## XDebug 3.2 adds support for PHP 8.2. It's currently in RC. Once it goes stable, consider making it default.
-  xdebug32rc = buildPecl {
-    version = "3.2.0RC1";
+  xdebug32 = buildPecl {
+    ## XDebug 3.2 supports php80, php81, php82 (https://xdebug.org/docs/compat)
+    version = "3.2.0";
     pname = "xdebug";
-    sha256 = "691kSkrlzgWUX8kxvGFM+OSFBabintHBPbzNb7CKzkQ=";
+    sha256 = "d2myDuza31++n1glEsELOU+1dbb3qMOjqC22iD4AMrc=";
     doCheck = true;
     checkTarget = "test";
     zendExtension = true;

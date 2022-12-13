@@ -16,7 +16,7 @@ let
 in pkgs.php82.buildEnv {
 
   ## TODO: apcu_bc apcu tidy phpExtras.runkit7_4
-  extensions = { all, enabled}: with all; enabled++ [ imagick memcached opcache redis yaml phpExtras.xdebug32rc ];
+  extensions = { all, enabled}: with all; enabled++ [ imagick memcached opcache redis yaml phpExtras.xdebug32 ];
   extraConfig = phpIniSnippet1 + phpIniSnippet2;
 
 }
