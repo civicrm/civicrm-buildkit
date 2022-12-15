@@ -1,8 +1,8 @@
 #!/usr/bin/env pogo
 <?php
 #!ttl 10 years
-#!require symfony/var-dumper: ~3.0
-#!require symfony/yaml: ~3.0
+#!require symfony/var-dumper: ~3.0|~4.4
+#!require symfony/yaml: ~3.0|~4.4
 #!require clippy/std: ~0.3.4
 namespace Clippy;
 
@@ -163,7 +163,12 @@ $c['allTasks'] = function($createTask, $cmdr, $ymlConfig) {
  */
 $c['ymlConfig'] = function($io) {
 
-  $files = (array) glob(dirname(__DIR__) . '/app/bknix-ci-cleanup.d/*.yml');
+  $glob = dirname(pogo_script_dir(), 2) . '/app/bknix-ci-cleanup.d/*.yml';
+  $files = (array) glob($glob);
+  if (empty($files)) {
+    throw new \RuntimeException("Failed to find configuration files: $glob");
+  }
+
   $ymlConfig = ['templates' => [], 'templateSets' => [], 'tasks' => []];
   foreach ($files as $file) {
     $io->writeln("<comment>PARSING</comment>: Config file <info>$file</info>");
