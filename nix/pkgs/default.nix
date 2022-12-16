@@ -25,6 +25,7 @@ in rec {
    php74 = import ./php74/default.nix;
    php80 = import ./php80/default.nix;
    php81 = import ./php81/default.nix;
+   php82 = import ./php82/default.nix;
    transifexClient = import ./transifexClient/default.nix;
    ramdisk = callPackage (fetchTarball https://github.com/totten/ramdisk/archive/v0.1.1.tar.gz) {};
 

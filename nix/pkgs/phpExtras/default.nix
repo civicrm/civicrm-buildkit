@@ -27,8 +27,8 @@ in rec {
   ## runkit7 v4.x: Only series to support PHP 8
   runkit7_4 = buildPecl {
     pname = "runkit7";
-    version = "4.0.0a3";
-    sha256 = "029c3kn64v2qfl9m0g3nag6awp920grfdplmwj6848l90k9czpis";
+    version = "4.0.0a6";
+    sha256 = "28ldfLgy4WBMyr85VjT2GG1DGDJ19j8OgmNVL2kdDNg=";
     configureFlags = [ ];
     nativeBuildInputs = [ pkgs.pkg-config ];
     buildInputs = [ ];
@@ -80,9 +80,20 @@ in rec {
   };
 
   xdebug3 = buildPecl {
+    ## XDebug 3.1 supports php72, php73, php74, php80, php81 (https://xdebug.org/docs/compat)
     version = "3.1.4";
     pname = "xdebug";
     sha256 = "QZWSb59sToAv90m7LKhaxQY2cZpy5TieNy4171I1Bfk=";
+    doCheck = true;
+    checkTarget = "test";
+    zendExtension = true;
+  };
+
+  xdebug32 = buildPecl {
+    ## XDebug 3.2 supports php80, php81, php82 (https://xdebug.org/docs/compat)
+    version = "3.2.0";
+    pname = "xdebug";
+    sha256 = "d2myDuza31++n1glEsELOU+1dbb3qMOjqC22iD4AMrc=";
     doCheck = true;
     checkTarget = "test";
     zendExtension = true;
