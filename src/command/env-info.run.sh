@@ -49,9 +49,9 @@ env_report_cmd mysqldump --version
 env_report_cmd node --version
 env_report_cmd php --version
 env_report_cmd php-fpm --version
-env_report_cmd phpunit5 --version
-env_report_cmd phpunit6 --version
-env_report_cmd phpunit7 --version
+#env_report_cmd phpunit5 --version
+#env_report_cmd phpunit6 --version
+#env_report_cmd phpunit7 --version
 env_report_cmd phpunit8 --version
 env_report_cmd phpunit9 --version
 env_report_cmd pogo --version
