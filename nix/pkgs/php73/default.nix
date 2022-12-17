@@ -16,7 +16,8 @@ let
 in pkgs.php73.buildEnv {
 
   ## EVALUATE: apcu_bc
-  extensions = { all, enabled}: with all; enabled++ [ phpExtras.xdebug3 redis tidy apcu apcu_bc yaml memcached imagick opcache phpExtras.runkit7_3 phpExtras.timecop ];
+  ## DISABLED: With current versions, `php73` + `phpExtras.timecop` is unstable. In web-browsing, 10-30% of page-loads cause segfaults in php-fpm.
+  extensions = { all, enabled}: with all; enabled++ [ phpExtras.xdebug3 redis tidy apcu apcu_bc yaml memcached imagick opcache phpExtras.runkit7_3 ];
   extraConfig = phpIniSnippet1 + phpIniSnippet2;
 
 }
