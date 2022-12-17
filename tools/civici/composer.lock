@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "84816c9530c3e7cf8e4daf843d7797d7",
+    "content-hash": "a55f974ee50473d79454835b9d52d4da",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -314,6 +314,42 @@
                 }
             ],
             "time": "2022-06-20T21:43:03+00:00"
+        },
+        {
+            "name": "lesser-evil/shell-verbosity-is-evil",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/totten/shell-verbosity-is-evil.git",
+                "reference": "4195bce7e3adaeda6d4747a1f3ec3c39b124f169"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/totten/shell-verbosity-is-evil/zipball/4195bce7e3adaeda6d4747a1f3ec3c39b124f169",
+                "reference": "4195bce7e3adaeda6d4747a1f3ec3c39b124f169",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "LesserEvil\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tim Otten",
+                    "email": "totten@civicrm.org"
+                }
+            ],
+            "support": {
+                "issues": "https://github.com/totten/shell-verbosity-is-evil/issues",
+                "source": "https://github.com/totten/shell-verbosity-is-evil/tree/v1.0.0"
+            },
+            "time": "2022-11-02T23:02:43+00:00"
         },
         {
             "name": "psr/container",

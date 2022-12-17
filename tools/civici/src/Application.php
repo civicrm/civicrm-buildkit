@@ -1,5 +1,6 @@
 <?php
 namespace Civici;
+use LesserEvil\ShellVerbosityIsEvil;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -39,6 +40,12 @@ class Application extends \Symfony\Component\Console\Application {
 
   protected static function isPhar() {
     return preg_match(';^phar:;', __FILE__);
+  }
+
+  protected function configureIO(InputInterface $input, OutputInterface $output) {
+    ShellVerbosityIsEvil::doWithoutEvil(function() use ($input, $output) {
+      parent::configureIO($input, $output);
+    });
   }
 
 }
