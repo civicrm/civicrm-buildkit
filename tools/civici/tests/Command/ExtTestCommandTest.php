@@ -30,7 +30,7 @@ class ExtTestCommandTest extends \Civici\CiviciTestCase {
 
       '%Run PHPUnit group \(e2e\)%',
       '%\$ cd \'.*/org.example.civixexample\'%',
-      '%\$ phpunit7 .*  --group e2e --log-junit \'/tmp/myjunit/e2e.xml\'%',
+      '%\$ phpunit8 .*  --group e2e --log-junit \'/tmp/myjunit/e2e.xml\'%',
       '%^\w*$%',
 
       '%Restore database%',
@@ -40,7 +40,7 @@ class ExtTestCommandTest extends \Civici\CiviciTestCase {
 
       '%Run PHPUnit group \(headless\)%',
       '%\$ cd \'.*/org.example.civixexample\'%',
-      '%\$ phpunit7 .* --group headless --log-junit \'/tmp/myjunit/headless.xml\'%',
+      '%\$ phpunit8 .* --group headless --log-junit \'/tmp/myjunit/headless.xml\'%',
       '%^\w*$%',
 
       '%Done%',

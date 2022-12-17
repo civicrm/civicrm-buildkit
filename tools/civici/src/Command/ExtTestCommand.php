@@ -43,7 +43,7 @@ Example:
 
 Optional environment variables:
 
-  PHPUNIT_BIN (Name of the phpunit binary; default: phpunit7)
+  PHPUNIT_BIN (Name of the phpunit binary; default: phpunit8)
 ')
       ->addOption('dry-run', 'N', InputOption::VALUE_NONE, 'Do not execute')
       ->addOption('info', NULL, InputOption::VALUE_REQUIRED, 'Path of the XML file for the desired extension', getenv('PWD') . DIRECTORY_SEPARATOR . 'info.xml')
@@ -88,7 +88,7 @@ Optional environment variables:
     }
 
     if (file_exists("$targetDir/phpunit.xml.dist")) {
-      $phpunit = getenv('PHPUNIT_BIN') ? getenv('PHPUNIT_BIN') : 'phpunit7';
+      $phpunit = getenv('PHPUNIT_BIN') ? getenv('PHPUNIT_BIN') : 'phpunit8';
       $batch->add("<info>Restore database</info>", $restore);
       if ($phpunit !== 'phpunit5') {
         $e2eCmd = "$phpunit --printer '\Civi\Test\TAP'  --group e2e";
