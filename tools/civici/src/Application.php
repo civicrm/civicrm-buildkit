@@ -13,10 +13,6 @@ class Application extends \Symfony\Component\Console\Application {
    * Primary entry point for execution of the standalone command.
    */
   public static function main($binDir) {
-    if (self::isPhar() && !self::isInternalHost()) {
-      fwrite(STDERR, "civici.phar is intended for use on internal civicrm.org infra\n");
-      exit(1);
-    }
     $application = new Application('civici', '@package_version@');
     $application->run();
   }
@@ -43,11 +39,6 @@ class Application extends \Symfony\Component\Console\Application {
 
   protected static function isPhar() {
     return preg_match(';^phar:;', __FILE__);
-  }
-
-  protected static function isInternalHost() {
-    $fqdn = @gethostbyaddr(gethostbyname(gethostname()));
-    return preg_match(';\.(civicrm\.org|nifty-buffer-107523\.internal)$;', $fqdn);
   }
 
 }
