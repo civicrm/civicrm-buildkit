@@ -53,7 +53,7 @@ Optional environment variables:
 
   protected function initialize(InputInterface $input, OutputInterface $output) {
     $junitDir = $input->getOption('junit-dir');
-    if ($junitDir && $junitDir{strlen($junitDir) - 1} !== DIRECTORY_SEPARATOR) {
+    if ($junitDir && $junitDir[strlen($junitDir) - 1] !== DIRECTORY_SEPARATOR) {
       $junitDir .= DIRECTORY_SEPARATOR;
       $input->setOption('junit-dir', $junitDir);
     }

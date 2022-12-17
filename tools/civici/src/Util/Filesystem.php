@@ -81,7 +81,7 @@ class Filesystem extends \Symfony\Component\Filesystem\Filesystem {
   }
 
   public function withTrailingSlash($path) {
-    if ($path && $path{strlen($path) - 1} !== DIRECTORY_SEPARATOR) {
+    if ($path && $path[strlen($path) - 1] !== DIRECTORY_SEPARATOR) {
       $path .= DIRECTORY_SEPARATOR;
     }
     return $path;

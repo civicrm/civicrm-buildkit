@@ -81,7 +81,7 @@ class BaseCommand extends Command {
 
     if ($def->hasOption('build-root')) {
       $buildRoot = $input->getOption('build-root');
-      if ($buildRoot && $buildRoot{strlen($buildRoot) - 1} !== DIRECTORY_SEPARATOR) {
+      if ($buildRoot && $buildRoot[strlen($buildRoot) - 1] !== DIRECTORY_SEPARATOR) {
         $buildRoot .= DIRECTORY_SEPARATOR;
         $input->setOption('build-root', $buildRoot);
       }
