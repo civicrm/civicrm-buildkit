@@ -659,6 +659,28 @@ function civicrm_install() {
 }
 
 ###############################################################################
+## Generate config files and setup database. (Use either newer or older installer, depending on version).
+function civicrm_install_transitional() {
+  cvutil_assertvars civicrm_install CIVI_CORE
+
+  ## If installing an older version, provide continuity (for purposes of test matrices/contrib tests/etc).
+  if civicrm_check_ver '<' 5.57.alpha1 ; then
+
+    civicrm_install
+
+  ## Newer versions should use 'cv core:install' to match regular web-installer
+  else
+    # If you've switched branches and triggered `reinstall`, then you need to refresh composer deps/autoloader before installing
+    (cd "$CIVI_CORE" && composer install)
+
+    civicrm_install_cv
+
+    ## Generating `civicrm.config.php` is necessary for `extern/*.php` and its E2E tests
+    (cd "$CIVI_CORE" && ./bin/setup.sh -g)
+  fi
+}
+
+###############################################################################
 ## Generate config files and setup database (via cv)
 function civicrm_install_cv() {
   cvutil_assertvars civicrm_install CIVI_CORE CIVI_DB_DSN CMS_URL CIVI_SITE_KEY
@@ -922,6 +944,20 @@ function civicrm_get_ver() {
       php -r 'require "civicrm-version.php"; $a = civicrmVersion(); echo $a["version"];'
     fi
   popd >> /dev/null
+}
+
+###############################################################################
+## Check if the civicrm matches some condition
+## usage: civicrm_check_ver <op> <target>
+## example: if civicrm_check_ver '>=' '5.43' ; then echo NEW; else echo OLD; fi
+function civicrm_check_ver() {
+  cvutil_assertvars civicrm_check_ver CIVI_CORE
+  local ver=$( civicrm_get_ver "$CIVI_CORE" )
+  if env ACTUAL="$ver" OP="$1" EXPECT="$2" php -r 'exit(version_compare(getenv("ACTUAL"), getenv("EXPECT"), getenv("OP"))?0:1);'; then
+    return 0
+  else
+    return 1
+  fi
 }
 
 ###############################################################################
