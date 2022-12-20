@@ -28,7 +28,7 @@ CIVI_FILES="${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}/files/civicrm"
 CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
 CIVI_UF="Drupal"
 
-civicrm_install
+civicrm_install_transitional
 
 ###############################################################################
 ## Extra configuration
