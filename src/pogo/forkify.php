@@ -187,7 +187,9 @@ $c['app']->command("branch:checkout $globalOptions branch [--core=] [--packages=
     }
 
     $io->writeln("<comment>$path</comment>: Checkout branch <comment>$branch</comment>");
-    $passthru('git checkout {{0|s}}', [$branch]);
+    $passthru('git checkout {{0|s}}', [
+      $remote ? "$remote/$branch" : $branch
+    ]);
   });
 })->setAliases(['checkout'])
   ->setDescription('Checkout parallel branches across Civi-related repos');
