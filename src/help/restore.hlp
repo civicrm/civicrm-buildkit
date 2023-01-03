@@ -12,7 +12,7 @@
 [32m  --civi-sql <sql-file>[0m  The path to a SQL backup of the CiviCRM DB [Optional]
 [32m  --no-civi[0m              Skip resetting the CiviCRM DB [Optional]
 [32m  --no-test[0m              Skip resetting the Test DB [Optional]
-
+[32m  -f, --force[0m            Force an extra flush after restoring [Optional]
 
 [33mNB:[0m For more civibuild documentation see https://docs.civicrm.org/dev/en/latest/tools/civibuild/
 
