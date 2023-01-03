@@ -34,7 +34,7 @@ if [[ "$CIVI_VERSION" =~ ^4.[0123456](\.([0-9]|alpha|beta)+)?$ ]] ; then
   CIVI_EXT_URL="${CMS_URL}/sites/${DRUPAL_SITE_DIR}/ext"
 fi
 
-civicrm_install
+civicrm_install_transitional
 
 ###############################################################################
 ## Extra configuration
