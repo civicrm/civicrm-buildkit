@@ -177,9 +177,7 @@ $c['app']->command("branch:push $globalOptions [-f|--force] [-u|--set-upstream] 
 })->setAliases(['push']);
 
 $c['app']->command("branch:checkout $globalOptions branch [--core=] [--packages=] [--backdrop=] [--drupal=] [--joomla=] [--wordpress=]", function ($branch, SymfonyStyle $io, Repos $repos, callable $passthru, InputInterface $input) {
-  $branches = array_filter($repos->branches($branch), function($b) {
-      return $b['name'] !== 'drupal@6.x';
-  });
+  $branches = $repos->branches($branch);
   $repos->walk($branches, function ($name, $path, $remote, $branch) use ($io, $input, $passthru) {
     if ($input->hasOption($name) && $input->getOption($name)) {
       // Caller requested a different branch for this repo (e.g. "givi checkout master --core=my-wip-pr")
@@ -313,7 +311,6 @@ class Repos {
     return rekeyItems(['name', 'path', 'remote', 'branch'], [
       ['core', $this->getPath('.'), $remote, $branch],
       ['backdrop@1.x', $this->getPath('backdrop'), $remote, "1.x-$branch"],
-      ['drupal@6.x', $this->getPath('drupal'), $remote, "6.x-$branch"],
       ['drupal@7.x', $this->getPath('drupal'), $remote, "7.x-$branch"],
       ['drupal-8', $this->getPath('drupal-8'), $remote, $branch],
       ['joomla', $this->getPath('joomla'), $remote, $branch],
@@ -337,7 +334,6 @@ class Repos {
     return rekeyItems(['name', 'path', 'tgtRemote', 'tgtBranch', 'srcRemote', 'srcBranch'], [
       ['core', $this->getPath('.'), $tgtRemote, $tgtBranch, $srcRemote, $srcBranch],
       ['backdrop@1.x', $this->getPath('backdrop'), $tgtRemote, "1.x-$tgtBranch", $srcRemote, "1.x-$srcBranch"],
-      ['drupal@6.x', $this->getPath('drupal'), $tgtRemote, "6.x-$tgtBranch", $srcRemote, "6.x-$srcBranch"],
       ['drupal@7.x', $this->getPath('drupal'), $tgtRemote, "7.x-$tgtBranch", $srcRemote, "7.x-$srcBranch"],
       ['drupal-8', $this->getPath('drupal-8'), $tgtRemote, $tgtBranch, $srcRemote, $srcBranch],
       ['joomla', $this->getPath('joomla'), $tgtRemote, $tgtBranch, $srcRemote, $srcBranch],
