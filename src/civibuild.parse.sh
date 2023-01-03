@@ -127,7 +127,7 @@ function civibuild_parse() {
     shift
 
     case "$OPTION" in
-      -h|--help|-?)
+      -h|--help|-\?)
         civibuild_app_usage
         ;;
 
@@ -196,7 +196,7 @@ function civibuild_parse() {
         shift
         ;;
 
-      --force)
+      -f|--force)
         FORCE_DOWNLOAD=1
         FORCE_INSTALL=1
         ;;

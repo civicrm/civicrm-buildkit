@@ -26,8 +26,8 @@
 [32m  --demo-email[0m         Email of the CMS's demo user
 [32m  --no-sample-data[0m     Instead of loading the sample dataset, load a minimal dataset
 
-[32m  --force[0m             If necessary, destroy pre-existing files/directories/DBs
-                      (For "reinstall", "--force" is implicit.)
+[32m  -f, --force[0m          If necessary, destroy pre-existing files/directories/DBs
+                       (For "reinstall", "--force" is implicit.)
 
 [33mNB:[0m Before running the "create" command you must first run "amp config" (see https://docs.civicrm.org/dev/en/latest/tools/buildkit/#amp-config). For more civibuild documentation see https://docs.civicrm.org/dev/en/latest/tools/civibuild/
 
