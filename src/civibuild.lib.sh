@@ -1400,6 +1400,9 @@ function _drupalx_po_import() {
   ## Find any files named '*.XX.po` (eg `webform-4.x.fr.po`). The `XX` locale should be active.
   local NEW_LOCALES=$(find "${SPOOL}" -name '*.po' | sed 's;\(.*\)\.\(\w\w\)\.po;\2;' | sort -u)
   drush en -y locale
+  if [ -z "$NEW_LOCALES" ]; then
+    return
+  fi
   drush language-add $NEW_LOCALES
 
   for NEW_LOCALE in $NEW_LOCALES ; do
