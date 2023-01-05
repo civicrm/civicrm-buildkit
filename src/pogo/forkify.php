@@ -68,6 +68,7 @@ namespace Clippy;
 
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -186,7 +187,7 @@ $c['app']->command("branch:checkout $globalOptions branch [--core=] [--packages=
 
     $io->writeln("<comment>$path</comment>: Checkout branch <comment>$branch</comment>");
     $passthru('git checkout {{0|s}}', [
-      $remote ? "$remote/$branch" : $branch
+      $remote ? "$remote/$branch" : $branch,
     ]);
   });
 })->setAliases(['checkout'])
@@ -222,34 +223,48 @@ $c['app']->command('wf:unimplemented', function (SymfonyStyle $io) {
 })->setAliases(['begin', 'resume', 'review'])->setDescription("(Unimplemented)");
 
 // Not yet tested
-// $c['app']->command("wf:rc $globalOptions", function (callable $runSubcommand) {
-//   chdir(root)
-//   $runSubcommand("checkout -A master");
-//   $runSubcommand("pull -A --ff-only master origin/master");
-//
-//   // Parse version.xml
-//   $xmlObj = \simplexml_load_string(file_get_contents("xml/version.xml"));
-//   $oldVer = (string) $xmlObj->version_no;
-//   [$major, $minor, $patch] = explode('.', $oldVer);
-//
-//   $rcMajorMinor = $major . '.' . $minor;
-//   $devMajorMinor = $major . '.' . (1 + $minor);
-//
-//   // TODO: Describe the selected versions that will be twiddled.
-//
-//   // Bump master to '5.X.beta1'
-//   echo "TODO passthru ./tools/bin/scripts/set-version.php {$rcMajorMinor}.beta1 --commit\n";
-//   $runSubcommand("push -A origin master");
-//
-//   // Make RC branch for `5.X` (as of 5.X.beta1).
-//   $runSubcommand("branch $rcMajorMinor origin/master");
-//   $runSubcommand("push -A -u origin $rcMajorMinor");
-//
-//   // Bump master to `5.Y.alpha1`
-//   $runSubcommand("checkout -A master");
-//   echo "TODO: passthru ./tools/bin/scripts/set-version.php {$devMajorMinor}.alpha1 --commit\n";
-//   $runSubcommand("push -A origin master");
-// })->setDescription('Create new RC and bump up version numbers.');
+$c['app']->command("wf:rc $globalOptions", function (callable $runSubcommand, Repos $repos, SymfonyStyle $io, callable $passthru) {
+  chdir($repos->getPath('.'));
+
+  $io->section("\nCheckout latest \"master\" branches");
+  // $runSubcommand("checkout -A master");
+  $runSubcommand("pull -A --ff-only master origin/master");
+
+  $io->section("\nConfirm versions");
+  $xmlObj = \simplexml_load_string(file_get_contents("xml/version.xml"));
+  $oldVer = (string) $xmlObj->version_no;
+  [$major, $minor, $patch] = explode('.', $oldVer);
+
+  $rcMajorMinor = $major . '.' . $minor;
+  $devMajorMinor = $major . '.' . (1 + $minor);
+
+  $io->text("Branch <comment>master</comment> currently has version <comment>$oldVer</comment>.");
+  $io->newLine();
+  $io->text("The update will:");
+  $io->newLine();
+  $io->listing([
+    "Raise the version to <comment>$rcMajorMinor.beta1</comment>.",
+    "Create branch <comment>$rcMajorMinor</comment>.",
+    "Raise the version to <comment>$devMajorMinor.alpha1</comment>.",
+  ]);
+
+  if (!$io->confirm("Proceed with updates?")) {
+    throw new \RuntimeException("User aborted");
+  }
+
+  $io->section("\nRaise version to \"$rcMajorMinor.beta1\"");
+  $passthru('./tools/bin/scripts/set-version.php {{0|s}} --commit', ["{$rcMajorMinor}.beta1"]);
+  $passthru('git push origin master');
+
+  $io->section("\nMake branch \"$rcMajorMinor\"");
+  $runSubcommand("branch $rcMajorMinor origin/master");
+  $runSubcommand("push -A -u origin $rcMajorMinor");
+
+  $io->section("\nRaise version to \"$devMajorMinor.alpha1\"");
+  $runSubcommand("checkout -A master");
+  $passthru('./tools/bin/scripts/set-version.php {{0|s}} --commit', ["{$devMajorMinor}.alpha1"]);
+  $runSubcommand("push -A origin master");
+})->setDescription('Create new RC and bump up version numbers.');
 
 ###############################################################################
 #### Services (Helpers/Utilities)
@@ -269,7 +284,7 @@ class Repos {
    */
   protected $input;
 
-  private function getPath(string $subdir) {
+  public function getPath(string $subdir) {
     if ($this->input->hasOption('root') && $this->input->getOption('root')) {
       $base = rtrim($this->input->getOption('root'), '/' . DIRECTORY_SEPARATOR);
     }
@@ -435,18 +450,33 @@ $c['pickMergeOpts()'] = function(SymfonyStyle $io, InputInterface $input) {
   throw new \Exception("Must specify an update style: --merge or --rebase or --ff-only");
 };
 
-// $c['runSubcommand()'] = function (string $cmd, array $params = [], ?Cmdr $cmdr = NULL, ?Application $app = NULL, ?InputInterface $input = NULL) {
-//   $opts = array_filter([
-//     $input->getOption('dry-run') ? '--dry-run' : NULL,
-//     $input->getOption('expect-all') ? '--expect-all' : NULL,
-//     $input->getOption('step') ? '--step' : NULL,
-//   ]);
-//   $cmdParts = explode(" ", $cmd, 2);
-//   array_splice($cmdParts, 1, 0, $opts);
-//   $fullCmd = $cmdr->escape(implode(' ', $cmdParts), $params);
-//   echo "[[ TODO: $fullCmd ]]\n";
-//   // $app->runCommand($fullCmd);
-// };
+$c['runSubcommand()'] = function (string $cmd, array $params = [], ?Cmdr $cmdr = NULL, ?Application $app = NULL, ?InputInterface $input = NULL, ?OutputInterface $output = NULL) use ($c) {
+  $cmdParts = explode(' ', $cmd, 2);
+  foreach (['dry-run', 'expect-all', 'step'] as $passthruOption) {
+    if ($input->getOption($passthruOption)) {
+      array_splice($cmdParts, 1, 0, ["--{$passthruOption}"]);
+    }
+  }
+  $fullCmd = $cmdr->escape(implode(' ', $cmdParts), $params);
+  if ($output->isVerbose()) {
+    $output->write('<comment>SUBCOMMAND$</comment> ');
+    $output->writeln($fullCmd, OutputInterface::OUTPUT_RAW);
+  }
+
+  $stringInput = new StringInput($fullCmd);
+  $command = $app->find($stringInput->getFirstArgument());
+  try {
+    $oldInput = $c['input'];
+    $c['input'] = $stringInput;
+    $result = $command->run($stringInput, $output);
+    if (!empty($result)) {
+      throw new \RuntimeException("Subcommand failed ($fullCmd) => ($result)");
+    }
+  }
+  finally {
+    $c['input'] = $oldInput;
+  }
+};
 
 $c['passthru()'] = function (string $cmd, array $params = [], ?Cmdr $cmdr = NULL, ?InputInterface $input = NULL, ?SymfonyStyle $io = NULL) {
   $cmdDesc = '<comment>$</comment> ' . $cmdr->escape($cmd, $params) . ' <comment>[[in ' . getcwd() . ']]</comment>';
