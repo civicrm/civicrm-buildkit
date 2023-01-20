@@ -24,6 +24,11 @@ templateSets:
     - { level: 2, template: MYCNF_CLEANUP, vars: {DAYS: 14} }
     - { level: 3, template: MYCNF_CLEANUP, vars: {DAYS: 7} }
     - { level: 4, template: MYCNF_CLEANUP, vars: {DAYS: 1} }
+    - { level: 0, template: SNAPSHOT_CLEANUP, vars: {DAYS: 90} }
+    - { level: 1, template: SNAPSHOT_CLEANUP, vars: {DAYS: 60} }
+    - { level: 2, template: SNAPSHOT_CLEANUP, vars: {DAYS: 30} }
+    - { level: 3, template: SNAPSHOT_CLEANUP, vars: {DAYS: 15} }
+    - { level: 4, template: SNAPSHOT_CLEANUP, vars: {DAYS: 5} }
 
 templates:
   CIVIBUILD_CLEANUP:
@@ -44,3 +49,9 @@ templates:
     cmd: 'find {{HOME|s}}/_bknix/amp/{{PROFILE|s}}/my.cnf.d -name my.cnf-\* -ctime +{{DAYS|s}} -delete'
     paths:
       - '{{HOME}}/_bknix/amp/{{PROFILE}}'
+
+  SNAPSHOT_CLEANUP:
+    condition: 'test "$HOME" = {{HOME|s}} -a -d {{HOME|s}}/bknix-{{PROFILE|s}}/build/.civibuild/snapshot'
+    cmd: 'find {{HOME|s}}/bknix-{{PROFILE|s}}/build/.civibuild/snapshot -name \*gz -ctime +{{DAYS|s}} -delete'
+    paths:
+      - '{{HOME}}/bknix-{{PROFILE}}/build'
