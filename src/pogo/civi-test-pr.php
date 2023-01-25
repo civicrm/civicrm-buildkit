@@ -1,6 +1,18 @@
 #!/usr/bin/env pogo
 <?php
 
+## The "civi-test-pr" script is used to run a PR tests. Some examples:
+##
+## $ civi-test-pr --patch=https://github.com/civicrm/civicrm-core/pull/1234 all
+## $ civi-test-pr --patch=https://github.com/civicrm/civicrm-core/pull/1234 phpunit-api3 phpunit-api4
+## $ use-bknix min -r civi-test-pr --patch=https://github.com/civicrm/civicrm-core/pull/1234 phpunit-e2e --type=wp-demo
+## $ use-bknix max -r civi-test-pr --patch=https://github.com/civicrm/civicrm-core/pull/1234 phpunit-e2e
+##
+## The script can be used in a few ways:
+## - In a Jenkins/GHPRB environment, it will use env-vars to choose things like "CiviCRM Version" and "Build Name".
+## - In a local/interactive environment, it will prompt for those same variables.
+## - For development/inspection, you can use `--dry-run`s and `--step` wise execution.
+
 ###############################################################################
 #### Imports
 
@@ -129,6 +141,19 @@ $c['timeFunc'] = function(): string {
 ###############################################################################
 #### Helpers
 
+/**
+ * Run a command semi-interactively. (Respect the '--dry-run' and '--step' options.)
+ *
+ * TODO: Move the 'passthru()' implementation up to `Cmdr::task()`
+ *
+ * @param string $cmd
+ * @param array $params
+ * @param \Clippy\Cmdr|null $cmdr
+ * @param \Symfony\Component\Console\Input\InputInterface|null $input
+ * @param \Symfony\Component\Console\Style\SymfonyStyle|null $io
+ * @return void
+ * @throws \Exception
+ */
 $c['passthru()'] = function (string $cmd, array $params = [], ?Cmdr $cmdr = NULL, ?InputInterface $input = NULL, ?SymfonyStyle $io = NULL) {
   $cmdDesc = '<comment>$</comment> ' . $cmdr->escape($cmd, $params) . ' <comment>[[in ' . getcwd() . ']]</comment>';
   $extraVerbosity = 0;
@@ -170,7 +195,6 @@ $c['passthru()'] = function (string $cmd, array $params = [], ?Cmdr $cmdr = NULL
     $io->setVerbosity($io->getVerbosity() - $extraVerbosity);
   }
 };
-
 
 ###############################################################################
 ## Go
