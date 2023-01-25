@@ -52,6 +52,7 @@ bin/git-scan
 bin/git-scan.bat
 bin/grunt
 bin/hub
+bin/import-rn
 bin/joomla
 bin/joomla.bat
 bin/jshint
