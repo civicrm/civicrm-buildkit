@@ -35,7 +35,6 @@ TXT_WHITE='\[\033[0;37m\]'
 MODE=env
 USE_LOCO_FILE=""
 PROFILE=
-RECURSE_OPT=
 
 if [ -z "$OWNER" ]; then
   OWNER=$USER
@@ -52,7 +51,6 @@ while [ -n "$1" ]; do
     -r|--run) MODE=run ; ;;
     -N|--worker-n)
       USE_LOCO_FILE=".loco/worker-n.yml"
-      RECURSE_OPT=--worker-n
       if [ "x$EXECUTOR_NUMBER" = "x" ]; then
         echo "Error: The --worker-n option requires EXECUTOR_NUMBER" 1>&2
         exit 1
@@ -125,45 +123,36 @@ if [ ! -d "$BKIT" ]; then
   echo "WARNING: Could not find suitable BKIT in \"$HOME\" (eg \"bknix\", \"buildkit\", \"bknix-min\")" >&2
 fi
 
+function createScript() {
+  CODE=`cd "$BKIT" && SHELL_VERBOSITY= loco env -c "$USE_LOCO_FILE" --export`
+  echo "$CODE"
+  eval "$CODE"
+  echo "export PS1=\"[${TXT_CYAN}bknix-$PROFILE${TXT_RESET}:${TXT_GREEN}\w${TXT_RESET}] \" ;"
+  bknix-profile env
+  if [ -f "$BKIT/nix/etc/bashrc.local" ]; then
+    echo "source \"$BKIT/nix/etc/bashrc.local\""
+  fi
+  echo
+}
+
+## Note: "mktemp" in BSD and GNU work differently, but this formulation seems close enough to be portable.
+TMPFILE=$(mktemp -t .use-bknix.XXXXXXXX)
+function cleanup_bashrc() {
+  rm -f "$TMPFILE"
+}
+trap cleanup_bashrc EXIT
+createScript > "$TMPFILE"
+
 case "$MODE" in
   env)
-    CODE=`cd "$BKIT" && SHELL_VERBOSITY= loco env -c "$USE_LOCO_FILE" --export`
-    echo "$CODE"
-    eval "$CODE"
-    echo "export PS1=\"[${TXT_CYAN}bknix-$PROFILE${TXT_RESET}:${TXT_GREEN}\w${TXT_RESET}] \" ;"
-    bknix-profile env
-    if [ -f "$BKIT/nix/etc/bashrc.local" ]; then
-      echo "source \"$BKIT/nix/etc/bashrc.local\""
-    fi
-    echo
+    cat "$TMPFILE"
     ;;
   shell)
-    ## We will can ourselves in --env mode and use that as the bash --rcfile.
-
     ## Bash v4(?) would support '--rcfile <( ...some command ... )'; but for
     ## backward compat, we explicitly make a temp file.
-
-    ## Note: "mktemp" in BSD and GNU work differently, but this formulation seems close enough to be portable.
-    TMPFILE=$(mktemp -t .use-bknix.XXXXXXXX)
-    function cleanup_bashrc() {
-      rm -f "$TMPFILE"
-    }
-    trap cleanup_bashrc EXIT
-
-    "$0" "$PROFILE" $RECURSE_OPT --env > "$TMPFILE"
     bash --rcfile "$TMPFILE" -i
     ;;
   run)
-    ## We will call ourselves in --env mode, load that, and then run the given command..
-
-    ## Note: "mktemp" in BSD and GNU work differently, but this formulation seems close enough to be portable.
-    TMPFILE=$(mktemp -t .use-bknix.XXXXXXXX)
-    function cleanup_bashrc() {
-      rm -f "$TMPFILE"
-    }
-    trap cleanup_bashrc EXIT
-
-    "$0" "$PROFILE" $RECURSE_OPT --env > "$TMPFILE"
     source "$TMPFILE"
     "$@"
     ;;
