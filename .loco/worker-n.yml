@@ -100,16 +100,11 @@ services:
     pid_file: '$LOCO_SVC_VAR/run/mysql.pid'
     message: 'MySQL is running on "<comment>$LOCALHOST:$MYSQLD_PORT</comment>". The default credentials are user="<comment>root</comment>" and password="".'
 
-  ## Load timezone data into MySQL.
-  ## IMHO, it would make more sense to use `mysqld --init-file`... but it's futzy (across versions).
-  ## Many `mysql.com` versions have very limited syntax ("\n" handling). `mariadb` doesn't even seem to read the file...
-  mysql-tz:
-    depends: ['mysql']
-    run: 'loco-mysql-wait 300 && mysql_tzinfo_to_sql "$TZDIR" | mysql mysql && sleep 259200'
-
-  buildkit:
+  mysetup:
     init:
+      - 'loco-mysql-wait 300'
       - 'loco-buildkit-init'
+      - 'mysql_tzinfo_to_sql "$TZDIR" | mysql mysql'
     message: 'Buildkit (<comment>$BKIT</comment>) is configured to use these services. It produces builds in "<comment>$HTTPD_VDROOT</comment>".'
 
 
