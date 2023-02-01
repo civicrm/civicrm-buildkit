@@ -38,7 +38,7 @@ $phpunitFlags = [];
 ###############################################################################
 ## Main
 
-$c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--patch=] $phpunitSynopsis suites*", function (SymfonyStyle $io, callable $passthru) use ($c) {
+$c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--patch=] [--loco] $phpunitSynopsis suites*", function (SymfonyStyle $io, callable $passthru, bool $loco, Cmdr $cmdr) use ($c) {
   // Resolve these values before we start composing commands.
   [$c['buildType'], $c['buildName'], $c['buildDir'], $c['civiVer'], $c['patchUrl'], $c['junitDir'], $c['timeFunc'], $c['phpunitArgs']];
 
@@ -47,6 +47,20 @@ $c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--patch=] $phpuni
     return 1;
   }
 
+  $io->section("\nReport on environment");
+  $passthru('civibuild env-info');
+
+  if ($loco) {
+    $io->section("\nSetup daemons");
+    $passthru("loco start -f"); /* force - if someone left old/dirty configs, overwrite them */
+    $stopLoco = new AutoCleanup(function() use ($passthru, $io) {
+      $io->section("\nShutdown daemons");
+      $passthru("loco stop");
+      $passthru("loco clean");
+    });
+  }
+
+  $io->section("\nReset working data");
   if (is_dir($c['junitDir'])) {
     $passthru('rm -rf {{0|s}}', [$c['junitDir']]);
   }
@@ -55,16 +69,16 @@ $c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--patch=] $phpuni
   }
   $passthru('mkdir -p {{0|s}}', [$c['junitDir']]);
 
-  $passthru('civibuild env-info');
+  $io->section("\nBuild test site");
   $passthru('civibuild download {{0|s}} --type {{1|s}} --civi-ver {{2|s}} --patch {{3|s}}', [
     $c['buildName'],
     $c['buildType'],
     $c['civiVer'],
     $c['patchUrl'],
   ]);
-
   $passthru('civibuild install {{0|s}}', [$c['buildName']]);
 
+  $io->section("\nRun tests");
   $passthru('TIME_FUNC={{3|s}} civi-test-run -b {{0|s}} -j {{1|s}} {{2}}', [
     $c['buildName'],
     $c['junitDir'],
@@ -142,6 +156,26 @@ $c['timeFunc'] = function(): string {
 #### Helpers
 
 /**
+ * Define a local cleanup object (which will run on-destruct).
+ */
+class AutoCleanup {
+
+  protected $callback;
+
+  /**
+   * @param $callback
+   */
+  public function __construct($callback) {
+    $this->callback = $callback;
+  }
+
+  public function __destruct() {
+    call_user_func($this->callback);
+  }
+
+}
+
+/**
  * Run a command semi-interactively. (Respect the '--dry-run' and '--step' options.)
  *
  * TODO: Move the 'passthru()' implementation up to `Cmdr::task()`
@@ -189,7 +223,25 @@ $c['passthru()'] = function (string $cmd, array $params = [], ?Cmdr $cmdr = NULL
 
   try {
     $io->setVerbosity($io->getVerbosity() + $extraVerbosity);
-    $cmdr->passthru($cmd, $params);
+    $process = $cmdr->process($cmd, $params);
+
+    $io->writeln("<comment>\$</comment> " . $process->getCommandLine() . " <comment>[[in " . $process->getWorkingDirectory() . "]]</comment>", OutputInterface::VERBOSITY_VERBOSE);
+
+    // These do not work well for `loco start` (v0.6.2) on Linux.
+    //   $cmdr->passthru($cmd, $params);
+    //   passthru($process->getCommandLine());
+    // So instead, we use proc_open(). This also has the upshot of preserving color-coding from the subprocess...
+
+    $desc = [];
+    $pipes = [];
+    $p = proc_open($process->getCommandLine(), $desc, $pipes);
+    $ret = proc_close($p);
+
+    if ($ret !== 0) {
+      $io->writeln("<error>Command failed:</error> " . $process->getCommandLine() . " <comment>[[in " . $process->getWorkingDirectory() . "]]</comment>", OutputInterface::VERBOSITY_VERBOSE);
+      throw new CmdrProcessException($process);
+    }
+
   }
   finally {
     $io->setVerbosity($io->getVerbosity() - $extraVerbosity);
