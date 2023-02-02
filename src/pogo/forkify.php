@@ -61,15 +61,12 @@
 #### Imports
 
 #!ttl 10 years
-#!require clippy/std: ~0.3.5
+#!require clippy/std: ~0.4.2
 #!require clippy/container: '~1.2'
 
 namespace Clippy;
 
-use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\StringInput;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -79,57 +76,57 @@ $c = clippy()->register(plugins());
 #### Commands
 $globalOptions = '[-N|--dry-run] [-A|--expect-all] [-S|--step] [--root=]';
 
-$c['app']->command("remote:add $globalOptions remote url-prefix", function ($remote, $urlPrefix, SymfonyStyle $io, Repos $repos, callable $passthru) {
+$c['app']->command("remote:add $globalOptions remote url-prefix", function ($remote, $urlPrefix, SymfonyStyle $io, Repos $repos, Taskr $taskr) {
   $remoteUrls = $repos->remoteUrls($remote, $urlPrefix);
-  $repos->walk($remoteUrls, function ($name, $path, $remote, $url) use ($io, $passthru) {
+  $repos->walk($remoteUrls, function ($name, $path, $remote, $url) use ($io, $taskr) {
     $io->writeln("<comment>$path</comment>: Add remote <comment>$remote</comment> (<comment>$url</comment>)");
-    $passthru('git remote add {{0|s}} {{1|s}}', [$remote, $url]);
+    $taskr->passthru('git remote add {{0|s}} {{1|s}}', [$remote, $url]);
   });
 })->setAliases(['add-remotes'])
   ->setDescription('Add parallel remotes across Civi-related repos');
 
-$c['app']->command("remote:set-url $globalOptions remote url-prefix", function ($remote, $urlPrefix, SymfonyStyle $io, Repos $repos, callable $passthru) {
+$c['app']->command("remote:set-url $globalOptions remote url-prefix", function ($remote, $urlPrefix, SymfonyStyle $io, Repos $repos, Taskr $taskr) {
   $remoteUrls = $repos->remoteUrls($remote, $urlPrefix);
-  $repos->walk($remoteUrls, function ($name, $path, $remote, $url) use ($io, $passthru) {
+  $repos->walk($remoteUrls, function ($name, $path, $remote, $url) use ($io, $taskr) {
     $io->writeln("<comment>$path</comment>: Update remote <comment>$remote</comment> (<comment>$url</comment>)");
-    $passthru('git remote set-url {{0|s}} {{1|s}}', [$remote, $url]);
+    $taskr->passthru('git remote set-url {{0|s}} {{1|s}}', [$remote, $url]);
   });
 })->setAliases(['set-remotes'])
   ->setDescription('Update parallel remotes across Civi-related repos');;
 
-$c['app']->command("remote:fetch $globalOptions [remotes]*", function ($remotes, SymfonyStyle $io, Repos $repos, callable $passthru) {
+$c['app']->command("remote:fetch $globalOptions [remotes]*", function ($remotes, SymfonyStyle $io, Repos $repos, Taskr $taskr) {
   if (empty($remotes)) {
     $remotes[] = 'origin';
   }
   foreach ($remotes as $remote) {
     $remoteUrls = $repos->remoteUrls($remote, '!!not-applicable');
-    $repos->walk($remoteUrls, function ($name, $path, $remote) use ($io, $passthru) {
+    $repos->walk($remoteUrls, function ($name, $path, $remote) use ($io, $taskr) {
       $io->writeln("[<comment>$path</comment>]: Fetch remote <comment>$remote</comment>");
-      $passthru('git fetch {{0|s}}', [$remote]);
+      $taskr->passthru('git fetch {{0|s}}', [$remote]);
     });
   }
 })->setAliases(['fetch']);
 
-$c['app']->command("branch:create $globalOptions target source", function ($target, $source, SymfonyStyle $io, Repos $repos, callable $passthru) {
+$c['app']->command("branch:create $globalOptions target source", function ($target, $source, SymfonyStyle $io, Repos $repos, Taskr $taskr) {
   $branchPairs = $repos->branchPairs($target, $source);
-  $repos->walk($branchPairs, function ($name, $path, $tgtRemote, $tgtBranch, $srcRemote, $srcBranch) use ($io, $passthru) {
+  $repos->walk($branchPairs, function ($name, $path, $tgtRemote, $tgtBranch, $srcRemote, $srcBranch) use ($io, $taskr) {
     $tgtName = ($tgtRemote ? "$tgtRemote/$tgtBranch" : "$tgtBranch");
     $srcName = ($srcRemote ? "$srcRemote/$srcBranch" : "$srcBranch");
     $io->writeln("<comment>$path</comment>: Create branch <comment>$tgtName</comment> from <comment>$srcName</comment>");
-    $passthru('git branch {{0|s}} {{1|s}}', [$tgtBranch, "$srcRemote/$srcBranch"]);
+    $taskr->passthru('git branch {{0|s}} {{1|s}}', [$tgtBranch, "$srcRemote/$srcBranch"]);
     if ($tgtRemote) {
-      $passthru('git config branch.{{0|s}}.remote {{1|s}}', [$tgtBranch, $tgtRemote]);
-      $passthru('git config branch.{{0|s}}.merge refs/heads/{{1|s}}', [$tgtBranch, $tgtBranch]);
+      $taskr->passthru('git config branch.{{0|s}}.remote {{1|s}}', [$tgtBranch, $tgtRemote]);
+      $taskr->passthru('git config branch.{{0|s}}.merge refs/heads/{{1|s}}', [$tgtBranch, $tgtBranch]);
     }
   });
 })->setAliases(['branch'])
   ->setDescription('Create parallel branches across Civi-related repos');
 
-$c['app']->command("branch:update $globalOptions [--merge] [--ff-only] [--rebase] target source", function ($target, $source, SymfonyStyle $io, Repos $repos, callable $passthru, $pickMergeOpts) {
+$c['app']->command("branch:update $globalOptions [--merge] [--ff-only] [--rebase] target source", function ($target, $source, SymfonyStyle $io, Repos $repos, Taskr $taskr, $pickMergeOpts) {
   $branchPairs = $repos->branchPairs($target, $source);
   $mergeOpts = $pickMergeOpts();
 
-  $repos->walk($branchPairs, function ($name, $path, $tgtRemote, $tgtBranch, $srcRemote, $srcBranch) use ($io, $passthru, $mergeOpts) {
+  $repos->walk($branchPairs, function ($name, $path, $tgtRemote, $tgtBranch, $srcRemote, $srcBranch) use ($io, $taskr, $mergeOpts) {
     $io->writeln("<comment>$path</comment>: Update branch <comment>$tgtRemote/$tgtBranch</comment> from <comment>$srcRemote/$srcBranch</comment>");
     assertThat($tgtRemote && $tgtBranch && $srcRemote && $srcBranch, "Target and source must be fully specified (remote/branch).");
     $params = [
@@ -139,16 +136,16 @@ $c['app']->command("branch:update $globalOptions [--merge] [--ff-only] [--rebase
       'SRC_BR' => $srcBranch,
       'SRC_RM' => $srcRemote,
     ];
-    $passthru('git checkout {{TGT_BR|s}} && git pull {{MERGE_OPTS}} {{SRC_RM|s}} {{SRC_BR|s}} && git push {{TGT_RM}} {{TGT_BR}}', $params);
+    $taskr->passthru('git checkout {{TGT_BR|s}} && git pull {{MERGE_OPTS}} {{SRC_RM|s}} {{SRC_BR|s}} && git push {{TGT_RM}} {{TGT_BR}}', $params);
   });
 })->setAliases(['update'])
   ->setDescription('Pull and push updates for parallel branches across Civi-related repos');
 
-$c['app']->command("branch:pull $globalOptions [--merge] [--ff-only] [--rebase] target source", function ($target, $source, SymfonyStyle $io, Repos $repos, callable $passthru, $pickMergeOpts) {
+$c['app']->command("branch:pull $globalOptions [--merge] [--ff-only] [--rebase] target source", function ($target, $source, SymfonyStyle $io, Repos $repos, Taskr $taskr, $pickMergeOpts) {
   $branchPairs = $repos->branchPairs($target, $source);
   $mergeOpts = $pickMergeOpts();
 
-  $repos->walk($branchPairs, function ($name, $path, $tgtRemote, $tgtBranch, $srcRemote, $srcBranch) use ($io, $passthru, $mergeOpts) {
+  $repos->walk($branchPairs, function ($name, $path, $tgtRemote, $tgtBranch, $srcRemote, $srcBranch) use ($io, $taskr, $mergeOpts) {
     $io->writeln("<comment>$path</comment>: Update branch <comment>$tgtRemote/$tgtBranch</comment> from <comment>$srcRemote/$srcBranch</comment>");
     assertThat(!$tgtRemote && $tgtBranch, "Target must only specify branch name (no remote)");
     assertThat($srcRemote && $srcBranch, "Source must be fully specified (remote/branch).");
@@ -158,14 +155,14 @@ $c['app']->command("branch:pull $globalOptions [--merge] [--ff-only] [--rebase] 
       'SRC_BR' => $srcBranch,
       'SRC_RM' => $srcRemote,
     ];
-    $passthru('git checkout {{TGT_BR|s}} && git pull {{MERGE_OPTS}} {{SRC_RM|s}} {{SRC_BR|s}}', $params);
+    $taskr->passthru('git checkout {{TGT_BR|s}} && git pull {{MERGE_OPTS}} {{SRC_RM|s}} {{SRC_BR|s}}', $params);
   });
 })->setAliases(['pull'])
   ->setDescription('Pull updates into parallel branches across Civi-related repos');
 
-$c['app']->command("branch:push $globalOptions [-f|--force] [-u|--set-upstream] remote branch", function ($remote, $branch, $force, $setUpstream, SymfonyStyle $io, Repos $repos, callable $passthru) {
+$c['app']->command("branch:push $globalOptions [-f|--force] [-u|--set-upstream] remote branch", function ($remote, $branch, $force, $setUpstream, SymfonyStyle $io, Repos $repos, Taskr $taskr) {
   $branches = $repos->branches("$remote/$branch");
-  $repos->walk($branches, function ($name, $path, $remote, $branch) use ($io, $passthru, $force, $setUpstream) {
+  $repos->walk($branches, function ($name, $path, $remote, $branch) use ($io, $taskr, $force, $setUpstream) {
     $io->writeln("<comment>$path</comment>: Push branch <comment>$branch</comment> to <comment>$remote</comment>");
     $params = [
       'SETUP' => $setUpstream ? '-u' : '',
@@ -173,41 +170,41 @@ $c['app']->command("branch:push $globalOptions [-f|--force] [-u|--set-upstream] 
       'REMOTE' => $remote,
       'BRANCH' => $branch,
     ];
-    $passthru('git push {{FORCE}} {{SETUP}} {{REMOTE|s}} {{BRANCH|s}}', $params);
+    $taskr->passthru('git push {{FORCE}} {{SETUP}} {{REMOTE|s}} {{BRANCH|s}}', $params);
   });
 })->setAliases(['push']);
 
-$c['app']->command("branch:checkout $globalOptions branch [--core=] [--packages=] [--backdrop=] [--drupal=] [--joomla=] [--wordpress=]", function ($branch, SymfonyStyle $io, Repos $repos, callable $passthru, InputInterface $input) {
+$c['app']->command("branch:checkout $globalOptions branch [--core=] [--packages=] [--backdrop=] [--drupal=] [--joomla=] [--wordpress=]", function ($branch, SymfonyStyle $io, Repos $repos, Taskr $taskr, InputInterface $input) {
   $branches = $repos->branches($branch);
-  $repos->walk($branches, function ($name, $path, $remote, $branch) use ($io, $input, $passthru) {
+  $repos->walk($branches, function ($name, $path, $remote, $branch) use ($io, $input, $taskr) {
     if ($input->hasOption($name) && $input->getOption($name)) {
       // Caller requested a different branch for this repo (e.g. "givi checkout master --core=my-wip-pr")
       $branch = $input->getOption($name);
     }
 
     $io->writeln("<comment>$path</comment>: Checkout branch <comment>$branch</comment>");
-    $passthru('git checkout {{0|s}}', [
+    $taskr->passthru('git checkout {{0|s}}', [
       $remote ? "$remote/$branch" : $branch,
     ]);
   });
 })->setAliases(['checkout'])
   ->setDescription('Checkout parallel branches across Civi-related repos');
 
-$c['app']->command("branch:delete $globalOptions [-f|--force] branch", function ($branch, $force, SymfonyStyle $io, Repos $repos, callable $passthru) {
+$c['app']->command("branch:delete $globalOptions [-f|--force] branch", function ($branch, $force, SymfonyStyle $io, Repos $repos, Taskr $taskr) {
   $branches = $repos->branches($branch);
-  $repos->walk($branches, function ($name, $path, $remote, $branch) use ($io, $passthru, $force) {
+  $repos->walk($branches, function ($name, $path, $remote, $branch) use ($io, $taskr, $force) {
     $io->writeln("<comment>$path</comment>: Delete branch <comment>$branch</comment>");
     $mode = $force ? '-D' : '-d';
-    $passthru('git show-ref --quiet refs/heads/{{1|s}} && git branch {{0|s}} {{1|s}} || echo {{2|s}}',
+    $taskr->passthru('git show-ref --quiet refs/heads/{{1|s}} && git branch {{0|s}} {{1|s}} || echo {{2|s}}',
       [$mode, $branch, '(Ignore missing branch)']);
   });
 })->setDescription('Delete parallel branches across Civi-related repos');
 
-$c['app']->command("status $globalOptions", function (SymfonyStyle $io, Repos $repos, callable $passthru) {
+$c['app']->command("status $globalOptions", function (SymfonyStyle $io, Repos $repos, Taskr $taskr) {
   $remoteUrls = $repos->remoteUrls('origin', '!!not-applicable');
-  $repos->walk($remoteUrls, function ($name, $path, $remote) use ($io, $passthru) {
+  $repos->walk($remoteUrls, function ($name, $path, $remote) use ($io, $taskr) {
     $io->writeln("[<comment>$path</comment>]: Check status");
-    $passthru('git status', []);
+    $taskr->passthru('git status', []);
   });
 })->setDescription("Display local status across Civi-related repos");
 
@@ -223,7 +220,7 @@ $c['app']->command('wf:unimplemented', function (SymfonyStyle $io) {
 })->setAliases(['begin', 'resume', 'review'])->setDescription("(Unimplemented)");
 
 // Not yet tested
-$c['app']->command("wf:rc $globalOptions", function (callable $runSubcommand, Repos $repos, SymfonyStyle $io, callable $passthru) {
+$c['app']->command("wf:rc $globalOptions", function (callable $runSubcommand, Repos $repos, SymfonyStyle $io, Taskr $taskr) {
   chdir($repos->getPath('.'));
 
   $io->section("\nCheckout latest \"master\" branches");
@@ -253,8 +250,8 @@ $c['app']->command("wf:rc $globalOptions", function (callable $runSubcommand, Re
   }
 
   $io->section("\nRaise version to \"$rcMajorMinor.beta1\"");
-  $passthru('./tools/bin/scripts/set-version.php {{0|s}} --commit', ["{$rcMajorMinor}.beta1"]);
-  $passthru('git push origin master');
+  $taskr->passthru('./tools/bin/scripts/set-version.php {{0|s}} --commit', ["{$rcMajorMinor}.beta1"]);
+  $taskr->passthru('git push origin master');
 
   $io->section("\nMake branch \"$rcMajorMinor\"");
   $runSubcommand("branch $rcMajorMinor origin/master");
@@ -262,7 +259,7 @@ $c['app']->command("wf:rc $globalOptions", function (callable $runSubcommand, Re
 
   $io->section("\nRaise version to \"$devMajorMinor.alpha1\"");
   $runSubcommand("checkout -A master");
-  $passthru('./tools/bin/scripts/set-version.php {{0|s}} --commit', ["{$devMajorMinor}.alpha1"]);
+  $taskr->passthru('./tools/bin/scripts/set-version.php {{0|s}} --commit', ["{$devMajorMinor}.alpha1"]);
   $runSubcommand("push -A origin master");
 })->setDescription('Create new RC and bump up version numbers.');
 
@@ -450,76 +447,20 @@ $c['pickMergeOpts()'] = function(SymfonyStyle $io, InputInterface $input) {
   throw new \Exception("Must specify an update style: --merge or --rebase or --ff-only");
 };
 
-$c['runSubcommand()'] = function (string $cmd, array $params = [], ?Cmdr $cmdr = NULL, ?Application $app = NULL, ?InputInterface $input = NULL, ?OutputInterface $output = NULL) use ($c) {
-  $cmdParts = explode(' ', $cmd, 2);
-  foreach (['dry-run', 'expect-all', 'step'] as $passthruOption) {
-    if ($input->getOption($passthruOption)) {
-      array_splice($cmdParts, 1, 0, ["--{$passthruOption}"]);
-    }
+$c['runSubcommand()'] = function (string $cmd, array $params = [], ?Taskr $taskr = NULL, ?InputInterface $input = NULL) use ($c) {
+  if ($input->getOption('expect-all')) {
+    $cmdParts = explode(' ', $cmd, 2);
+    array_splice($cmdParts, 1, 0, ["--expect-all"]);
+    $cmd = implode(' ', $cmdParts);
   }
-  $fullCmd = $cmdr->escape(implode(' ', $cmdParts), $params);
-  if ($output->isVerbose()) {
-    $output->write('<comment>SUBCOMMAND$</comment> ');
-    $output->writeln($fullCmd, OutputInterface::OUTPUT_RAW);
-  }
-
-  $stringInput = new StringInput($fullCmd);
-  $command = $app->find($stringInput->getFirstArgument());
-  try {
-    $oldInput = $c['input'];
-    $c['input'] = $stringInput;
-    $result = $command->run($stringInput, $output);
-    if (!empty($result)) {
-      throw new \RuntimeException("Subcommand failed ($fullCmd) => ($result)");
-    }
-  }
-  finally {
-    $c['input'] = $oldInput;
-  }
+  $taskr->subcommand($cmd, $params);
 };
 
-$c['passthru()'] = function (string $cmd, array $params = [], ?Cmdr $cmdr = NULL, ?InputInterface $input = NULL, ?SymfonyStyle $io = NULL) {
-  $cmdDesc = '<comment>$</comment> ' . $cmdr->escape($cmd, $params) . ' <comment>[[in ' . getcwd() . ']]</comment>';
-  $extraVerbosity = 0;
-
-  if ($input->getOption('step')) {
-    $extraVerbosity = OutputInterface::VERBOSITY_VERBOSE - $io->getVerbosity();
-    $io->writeln($cmdDesc);
-    $confirmation = ($io->ask('<info>Execute this command?</info> [<comment>Y</comment>/<comment>n</comment>/<comment>q</comment>] ', NULL, function ($value) {
-      $value = ($value === NULL) ? 'y' : mb_strtolower($value);
-      if (!in_array($value, ['y', 'n', 'q'])) {
-        throw new InvalidArgumentException("Invalid choice ($value)");
-      }
-      return $value;
-    }));
-    switch ($confirmation) {
-      case 'n':
-        return;
-
-      case 'y':
-      case NULL:
-        break;
-
-      case 'q':
-      default:
-        throw new \Exception('User quit application');
-    }
-  }
-
-  if ($input->getOption('dry-run')) {
-    $io->writeln('<comment>DRY-RUN</comment>' . $cmdDesc);
-    return;
-  }
-
-  try {
-    $io->setVerbosity($io->getVerbosity() + $extraVerbosity);
-    $cmdr->passthru($cmd, $params);
-  }
-  finally {
-    $io->setVerbosity($io->getVerbosity() - $extraVerbosity);
-  }
-};
-
+/**
+ * Get the present working directory (full path).
+ *
+ * @return string
+ */
 function pwd(): string {
   // exec(pwd) works better with symlinked source trees, but it's
   // probably not portable to Windows.
