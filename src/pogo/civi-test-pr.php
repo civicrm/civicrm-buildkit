@@ -17,14 +17,12 @@
 #### Imports
 
 #!ttl 10 years
-#!require clippy/std: ~0.3.5
+#!require clippy/std: ~0.4.2
 #!require clippy/container: '~1.2'
 
 namespace Clippy;
 
-use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 $c = clippy()->register(plugins());
@@ -38,7 +36,7 @@ $phpunitFlags = [];
 ###############################################################################
 ## Main
 
-$c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--patch=] [--loco] $phpunitSynopsis suites*", function (SymfonyStyle $io, callable $passthru, bool $loco, Cmdr $cmdr) use ($c) {
+$c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--patch=] [--loco] $phpunitSynopsis suites*", function (SymfonyStyle $io, Taskr $taskr, bool $loco, Cmdr $cmdr) use ($c) {
   // Resolve these values before we start composing commands.
   [$c['buildType'], $c['buildName'], $c['buildDir'], $c['civiVer'], $c['patchUrl'], $c['junitDir'], $c['timeFunc'], $c['phpunitArgs']];
 
@@ -48,38 +46,38 @@ $c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--patch=] [--loco
   }
 
   $io->section("\nReport on environment");
-  $passthru('civibuild env-info');
+  $taskr->passthru('civibuild env-info');
 
   if ($loco) {
     $io->section("\nSetup daemons");
-    $passthru("loco start -f"); /* force - if someone left old/dirty configs, overwrite them */
-    $stopLoco = new AutoCleanup(function() use ($passthru, $io) {
+    $taskr->passthru("loco start -f"); /* force - if someone left old/dirty configs, overwrite them */
+    $stopLoco = new AutoCleanup(function() use ($taskr, $io) {
       $io->section("\nShutdown daemons");
-      $passthru("loco stop");
-      $passthru("loco clean");
+      $taskr->passthru("loco stop");
+      $taskr->passthru("loco clean");
     });
   }
 
   $io->section("\nReset working data");
   if (is_dir($c['junitDir'])) {
-    $passthru('rm -rf {{0|s}}', [$c['junitDir']]);
+    $taskr->passthru('rm -rf {{0|s}}', [$c['junitDir']]);
   }
   if (is_dir($c['buildDir'])) {
-    $passthru('echo y | civibuild destroy {{0|s}}', [$c['buildName']]);
+    $taskr->passthru('echo y | civibuild destroy {{0|s}}', [$c['buildName']]);
   }
-  $passthru('mkdir -p {{0|s}}', [$c['junitDir']]);
+  $taskr->passthru('mkdir -p {{0|s}}', [$c['junitDir']]);
 
   $io->section("\nBuild test site");
-  $passthru('civibuild download {{0|s}} --type {{1|s}} --civi-ver {{2|s}} --patch {{3|s}}', [
+  $taskr->passthru('civibuild download {{0|s}} --type {{1|s}} --civi-ver {{2|s}} --patch {{3|s}}', [
     $c['buildName'],
     $c['buildType'],
     $c['civiVer'],
     $c['patchUrl'],
   ]);
-  $passthru('civibuild install {{0|s}}', [$c['buildName']]);
+  $taskr->passthru('civibuild install {{0|s}}', [$c['buildName']]);
 
   $io->section("\nRun tests");
-  $passthru('TIME_FUNC={{3|s}} civi-test-run -b {{0|s}} -j {{1|s}} {{2}}', [
+  $taskr->passthru('TIME_FUNC={{3|s}} civi-test-run -b {{0|s}} -j {{1|s}} {{2}}', [
     $c['buildName'],
     $c['junitDir'],
     implode(' ', array_map('escapeshellarg', $c['phpunitArgs'])),
@@ -155,98 +153,7 @@ $c['timeFunc'] = function(): string {
 ###############################################################################
 #### Helpers
 
-/**
- * Define a local cleanup object (which will run on-destruct).
- */
-class AutoCleanup {
-
-  protected $callback;
-
-  /**
-   * @param $callback
-   */
-  public function __construct($callback) {
-    $this->callback = $callback;
-  }
-
-  public function __destruct() {
-    call_user_func($this->callback);
-  }
-
-}
-
-/**
- * Run a command semi-interactively. (Respect the '--dry-run' and '--step' options.)
- *
- * TODO: Move the 'passthru()' implementation up to `Cmdr::task()`
- *
- * @param string $cmd
- * @param array $params
- * @param \Clippy\Cmdr|null $cmdr
- * @param \Symfony\Component\Console\Input\InputInterface|null $input
- * @param \Symfony\Component\Console\Style\SymfonyStyle|null $io
- * @return void
- * @throws \Exception
- */
-$c['passthru()'] = function (string $cmd, array $params = [], ?Cmdr $cmdr = NULL, ?InputInterface $input = NULL, ?SymfonyStyle $io = NULL) {
-  $cmdDesc = '<comment>$</comment> ' . $cmdr->escape($cmd, $params) . ' <comment>[[in ' . getcwd() . ']]</comment>';
-  $extraVerbosity = 0;
-
-  if ($input->getOption('step')) {
-    $extraVerbosity = OutputInterface::VERBOSITY_VERBOSE - $io->getVerbosity();
-    $io->writeln('<comment>COMMAND</comment>' . $cmdDesc);
-    $confirmation = ($io->ask('<info>Execute this command?</info> [<comment>Y</comment>/<comment>n</comment>/<comment>q</comment>] ', NULL, function ($value) {
-      $value = ($value === NULL) ? 'y' : mb_strtolower($value);
-      if (!in_array($value, ['y', 'n', 'q'])) {
-        throw new InvalidArgumentException("Invalid choice ($value)");
-      }
-      return $value;
-    }));
-    switch ($confirmation) {
-      case 'n':
-        return;
-
-      case 'y':
-      case NULL:
-        break;
-
-      case 'q':
-      default:
-        throw new \Exception('User quit application');
-    }
-  }
-
-  if ($input->getOption('dry-run')) {
-    $io->writeln('<comment>DRY-RUN</comment>' . $cmdDesc);
-    return;
-  }
-
-  try {
-    $io->setVerbosity($io->getVerbosity() + $extraVerbosity);
-    $process = $cmdr->process($cmd, $params);
-
-    $io->writeln("<comment>\$</comment> " . $process->getCommandLine() . " <comment>[[in " . $process->getWorkingDirectory() . "]]</comment>", OutputInterface::VERBOSITY_VERBOSE);
-
-    // These do not work well for `loco start` (v0.6.2) on Linux.
-    //   $cmdr->passthru($cmd, $params);
-    //   passthru($process->getCommandLine());
-    // So instead, we use proc_open(). This also has the upshot of preserving color-coding from the subprocess...
-
-    $desc = [];
-    $pipes = [];
-    $p = proc_open($process->getCommandLine(), $desc, $pipes);
-    $ret = proc_close($p);
-
-    if ($ret !== 0) {
-      $io->writeln("<error>Command failed:</error> " . $process->getCommandLine() . " <comment>[[in " . $process->getWorkingDirectory() . "]]</comment>", OutputInterface::VERBOSITY_VERBOSE);
-      throw new CmdrProcessException($process);
-    }
-
-  }
-  finally {
-    $io->setVerbosity($io->getVerbosity() - $extraVerbosity);
-  }
-};
+# Nevermind, all our helpers went upstream!
 
 ###############################################################################
 ## Go
