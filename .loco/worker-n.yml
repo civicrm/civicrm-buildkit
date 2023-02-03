@@ -50,6 +50,9 @@ environment:
  # CLI applications should use our stuff
  - AMPHOME=$HOME/_bknix/amp/worker-$EXECUTOR_NUMBER
  - CIVIBUILD_HOME=$HTTPD_VDROOT
+ #- CIVIBUILD_HOME=$HOME/_bknix/civibuild
+ #^^^ Would move the cache folder, which means that you could have the rest of the `build/` folder on ramdis.
+ #However, the startup script (install-runner.sh) doesn't quite play nice because it's not using worker-n.yml.
  - BKIT=$LOCO_PRJ
  - BKITBLD=$HTTPD_VDROOT
  - MYSQL_HOME=$LOCO_VAR/mysql/conf
