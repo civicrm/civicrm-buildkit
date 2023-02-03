@@ -1,0 +1,57 @@
+#!/bin/bash
+
+## Usage: await-bknix <profile>
+## Purpose: Check to see if "profile" is online. Sleep+poll until it comes online.
+##
+## This implementation relies on having a system startup script to create the flag file "/var/local/bknix-ready"
+
+######################################################################
+
+## Polling interval
+SLEEP=5
+
+## Maximum amount of time to spend polling. After MAX_SLEEP, give up
+MAX_SLEEP=600
+
+######################################################################
+
+function usage() {
+  local prog=$(basename "$0")
+  echo "usage: $prog <user> <profile>"
+  echo "example: $prog $USER min"
+}
+
+## Check if the user/profile is online. Wait until it is.
+##
+## usage: main <user> <profile>
+## return: n/a
+function main() {
+  local slept=0
+
+  if [ -z "$1" -o -z "$2" ]; then
+    usage
+    exit 3
+  fi
+
+  echo "System uptime: $(uptime)"
+  echo "Ensuring that user $1 has active profile $2."
+
+  while true; do
+    if [ -f /var/local/bknix-ready ]; then
+      echo OK
+      break
+    fi
+
+    if [ $slept -lt $MAX_SLEEP ]; then
+      echo "Waiting..."
+      sleep "$SLEEP"
+      slept=$(( $SLEEP + $slept ))
+    else
+      echo "Services did not come online after $slept seconds. Giving up."
+      exit 2
+    fi
+  done
+}
+
+######################################################################
+main "$1" "$2"

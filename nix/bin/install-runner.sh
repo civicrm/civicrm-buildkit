@@ -44,9 +44,15 @@ BKNIX_CI_TEMPLATE="runner"
 
 assert_root_user
 check_reqs
+if [ -f "/var/local/bknix-ready" ]; then
+  rm -f /var/local/bknix-ready
+fi
+
 install_cachix
 init_folder "$BKNIXSRC/examples/$BKNIX_CI_TEMPLATE" /etc/bknix-ci
 install_bin "$BINDIR"/use-bknix /usr/local/bin/use-bknix
-# install_bin "$BINDIR"/await-bknix /usr/local/bin/await-bknix
+install_bin "$BINDIR"/await-bknix.flag-file /usr/local/bin/await-bknix
 install_all_jenkins
 install_all_publisher
+
+touch /var/local/bknix-ready
