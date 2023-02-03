@@ -17,14 +17,12 @@
 #### Imports
 
 #!ttl 10 years
-#!require clippy/std: ~0.3.5
+#!require clippy/std: ~0.4.2
 #!require clippy/container: '~1.2'
 
 namespace Clippy;
 
-use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 $c = clippy()->register(plugins());
@@ -38,7 +36,7 @@ $phpunitFlags = [];
 ###############################################################################
 ## Main
 
-$c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--patch=] $phpunitSynopsis suites*", function (SymfonyStyle $io, callable $passthru) use ($c) {
+$c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--patch=] [--loco] $phpunitSynopsis suites*", function (SymfonyStyle $io, Taskr $taskr, bool $loco, Cmdr $cmdr) use ($c) {
   // Resolve these values before we start composing commands.
   [$c['buildType'], $c['buildName'], $c['buildDir'], $c['civiVer'], $c['patchUrl'], $c['junitDir'], $c['timeFunc'], $c['phpunitArgs']];
 
@@ -47,25 +45,39 @@ $c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--patch=] $phpuni
     return 1;
   }
 
+  $io->section("\nReport on environment");
+  $taskr->passthru('civibuild env-info');
+
+  if ($loco) {
+    $io->section("\nSetup daemons");
+    $taskr->passthru("loco start -f"); /* force - if someone left old/dirty configs, overwrite them */
+    $stopLoco = new AutoCleanup(function() use ($taskr, $io) {
+      $io->section("\nShutdown daemons");
+      $taskr->passthru("loco stop");
+      $taskr->passthru("loco clean");
+    });
+  }
+
+  $io->section("\nReset working data");
   if (is_dir($c['junitDir'])) {
-    $passthru('rm -rf {{0|s}}', [$c['junitDir']]);
+    $taskr->passthru('rm -rf {{0|s}}', [$c['junitDir']]);
   }
   if (is_dir($c['buildDir'])) {
-    $passthru('echo y | civibuild destroy {{0|s}}', [$c['buildName']]);
+    $taskr->passthru('echo y | civibuild destroy {{0|s}}', [$c['buildName']]);
   }
-  $passthru('mkdir -p {{0|s}}', [$c['junitDir']]);
+  $taskr->passthru('mkdir -p {{0|s}}', [$c['junitDir']]);
 
-  $passthru('civibuild env-info');
-  $passthru('civibuild download {{0|s}} --type {{1|s}} --civi-ver {{2|s}} --patch {{3|s}}', [
+  $io->section("\nBuild test site");
+  $taskr->passthru('civibuild download {{0|s}} --type {{1|s}} --civi-ver {{2|s}} --patch {{3|s}}', [
     $c['buildName'],
     $c['buildType'],
     $c['civiVer'],
     $c['patchUrl'],
   ]);
+  $taskr->passthru('civibuild install {{0|s}}', [$c['buildName']]);
 
-  $passthru('civibuild install {{0|s}}', [$c['buildName']]);
-
-  $passthru('TIME_FUNC={{3|s}} civi-test-run -b {{0|s}} -j {{1|s}} {{2}}', [
+  $io->section("\nRun tests");
+  $taskr->passthru('TIME_FUNC={{3|s}} civi-test-run -b {{0|s}} -j {{1|s}} {{2}}', [
     $c['buildName'],
     $c['junitDir'],
     implode(' ', array_map('escapeshellarg', $c['phpunitArgs'])),
@@ -141,60 +153,7 @@ $c['timeFunc'] = function(): string {
 ###############################################################################
 #### Helpers
 
-/**
- * Run a command semi-interactively. (Respect the '--dry-run' and '--step' options.)
- *
- * TODO: Move the 'passthru()' implementation up to `Cmdr::task()`
- *
- * @param string $cmd
- * @param array $params
- * @param \Clippy\Cmdr|null $cmdr
- * @param \Symfony\Component\Console\Input\InputInterface|null $input
- * @param \Symfony\Component\Console\Style\SymfonyStyle|null $io
- * @return void
- * @throws \Exception
- */
-$c['passthru()'] = function (string $cmd, array $params = [], ?Cmdr $cmdr = NULL, ?InputInterface $input = NULL, ?SymfonyStyle $io = NULL) {
-  $cmdDesc = '<comment>$</comment> ' . $cmdr->escape($cmd, $params) . ' <comment>[[in ' . getcwd() . ']]</comment>';
-  $extraVerbosity = 0;
-
-  if ($input->getOption('step')) {
-    $extraVerbosity = OutputInterface::VERBOSITY_VERBOSE - $io->getVerbosity();
-    $io->writeln('<comment>COMMAND</comment>' . $cmdDesc);
-    $confirmation = ($io->ask('<info>Execute this command?</info> [<comment>Y</comment>/<comment>n</comment>/<comment>q</comment>] ', NULL, function ($value) {
-      $value = ($value === NULL) ? 'y' : mb_strtolower($value);
-      if (!in_array($value, ['y', 'n', 'q'])) {
-        throw new InvalidArgumentException("Invalid choice ($value)");
-      }
-      return $value;
-    }));
-    switch ($confirmation) {
-      case 'n':
-        return;
-
-      case 'y':
-      case NULL:
-        break;
-
-      case 'q':
-      default:
-        throw new \Exception('User quit application');
-    }
-  }
-
-  if ($input->getOption('dry-run')) {
-    $io->writeln('<comment>DRY-RUN</comment>' . $cmdDesc);
-    return;
-  }
-
-  try {
-    $io->setVerbosity($io->getVerbosity() + $extraVerbosity);
-    $cmdr->passthru($cmd, $params);
-  }
-  finally {
-    $io->setVerbosity($io->getVerbosity() - $extraVerbosity);
-  }
-};
+# Nevermind, all our helpers went upstream!
 
 ###############################################################################
 ## Go
