@@ -7,6 +7,7 @@
 
 RAMDISKSIZE=3G
 PROFILES="dfl min max edge"
+SPLIT_BUILDKIT=0
 
 ## Services are started transactionally
 NO_SYSTEMD=1

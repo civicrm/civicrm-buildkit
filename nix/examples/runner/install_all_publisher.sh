@@ -7,6 +7,7 @@
 
 RAMDISKSIZE=250M
 PROFILES="min"
+SPLIT_BUILDKIT=0
 
 ## Services are started transactionally
 NO_SYSTEMD=1
