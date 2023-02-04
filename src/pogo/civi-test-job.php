@@ -48,8 +48,8 @@ $c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--civi-ver=] [--l
   $taskr->passthru('civibuild env-info');
 
   if ($loco) {
-    $stopLoco = $c['locoStart()']();
-    // $stopLoco = $c['locoRun()']();
+    // $stopLoco = $c['locoStart()']();
+    $stopLoco = $c['locoRun()']();
   }
 
   $io->section("\nReset working data");
