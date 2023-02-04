@@ -20,10 +20,10 @@ CiviCRM system-requirements:
 Given that you have several pieces of software (e.g. PHP + MySQL + Redis), the *launcher* or *process manager*
 is responsible for starting and stopping processes. `bknix` works with a few launchers:
 
-* `loco run`: [Loco](https://github.com/totten/loco) runs local processes in the foreground. This is useful for local development.
+* `loco run` / `loco start`: [Loco](https://github.com/totten/loco) runs local processes in the foreground. This is useful for local development.
   It can be configured by editing the YAML file ([loco.yml](../.loco/loco.yml)), by setting environment variables
   (`HTTPD_PORT` et al), and/or by editing the [configuration templates](../.loco/config).
-* `systemd`: This is the most common process manager on Linux hosts. This is useful for CI nodes. The `loco.yml`
+* `systemd`: This is the most common process manager on Linux hosts. This is useful for long-running nodes. The `loco.yml`
   can be exported to systemd notation manually (via `loco export`) or automatically (as part of `install-ci.sh`).
 
 ## Usage
@@ -110,13 +110,26 @@ complete tutorial, choose from below:
     <tr>
       <td>
         <ul>
-          <li>Run frequent tests in a mix of environments (continuous-integration)</li>
+          <li>Run long-term services with multiple profiles (continuous-integration)</li>
         </ul>
       </td>
       <td>
         <ul>
           <li><a href="doc/requirements.md">System requirements</a></li>
           <li><a href="doc/install-ci.md">Install all profiles and system services for concurrent usage (<code>install-ci.sh</code>)</a></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <ul>
+          <li>Run transactional services with multiple profiles (continuous-integration)</li>
+        </ul>
+      </td>
+      <td>
+        <ul>
+          <li><a href="doc/requirements.md">System requirements</a></li>
+          <li><a href="doc/install-runner.md">Install all profiles. Start and stop services for brief periods. (<code>install-runner.sh</code>)</a></li>
         </ul>
       </td>
     </tr>
@@ -139,7 +152,7 @@ With `nix-shell` or `install-developer.sh`, it is typical to only launch one
 | Mailcatcher (SMTP) (*loco-only*) | 1025  |
 | Mailcatcher (HTTP) (*loco-only*) | 1080  |
 
-With `install-ci.sh`, the services use a wide range of ports.
+With [`install-ci.sh`](doc/install-ci.md) or [`install-runner.sh`](doc/install-runner.md), the services use a wide range of ports.
 
 <!-- FIXME: Document use of HTTPD_PORT, MYSQLD_PORT, etc -->
 
