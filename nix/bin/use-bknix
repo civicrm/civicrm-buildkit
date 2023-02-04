@@ -56,6 +56,12 @@ while [ -n "$1" ]; do
         exit 1
       fi
       ;;
+    -N0) USE_LOCO_FILE=".loco/worker-n.yml" ; export EXECUTOR_NUMBER=0 ; ;;
+    -N1) USE_LOCO_FILE=".loco/worker-n.yml" ; export EXECUTOR_NUMBER=1 ; ;;
+    -N2) USE_LOCO_FILE=".loco/worker-n.yml" ; export EXECUTOR_NUMBER=2 ; ;;
+    -N3) USE_LOCO_FILE=".loco/worker-n.yml" ; export EXECUTOR_NUMBER=3 ; ;;
+    -N4) USE_LOCO_FILE=".loco/worker-n.yml" ; export EXECUTOR_NUMBER=4 ; ;;
+    -N5) USE_LOCO_FILE=".loco/worker-n.yml" ; export EXECUTOR_NUMBER=5 ; ;;
     *) echo "Unrecognized option: $OPT" ; exit 1 ; ;;
   esac
 
