@@ -99,7 +99,7 @@ $c['patchUrl'] = function (InputInterface $input, SymfonyStyle $io) use ($c): st
 };
 
 $c['buildName'] = function (SymfonyStyle $io): string {
-  $default = getenv('EXECUTOR_NUMBER') ? ('build-' . getenv('EXECUTOR_NUMBER')) : 'build-x';
+  $default = is_numeric(getenv('EXECUTOR_NUMBER')) ? ('build-' . getenv('EXECUTOR_NUMBER')) : 'build-x';
   return $io->ask('Build Name:', $default);
 };
 
