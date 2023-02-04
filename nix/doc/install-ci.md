@@ -1,8 +1,8 @@
-# Installation for Jenkins/CI Worker nodes
+# Installation for Jenkins/CI Worker nodes (Long Running)
 
 A Jenkins/CI worker node, we want all profiles to be used concurrently. For each profile:
 
-* There is a configuration file, `.loco/USER-PROFILE.yaml` which lists the services.
+* There is a configuration file, `.loco/USER-PROFILE.yml` which lists the services.
 * The binaries are installed to `/nix/var/nix/profiles/bknix-PROFILE/bin`
 * The data directory is `~/bknix-PROFILE`
 * Each service from the YAML file is installed in `systemd`

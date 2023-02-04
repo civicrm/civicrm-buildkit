@@ -110,6 +110,7 @@ function install_all_jenkins() {
   RAMDISKSIZE=8G
   PROFILES=${PROFILES:-dfl min max}
   HTTPD_DOMAIN=$(hostname -f)
+  SPLIT_BUILDKIT=1
 
   [ -f /etc/bknix-ci/install_all_jenkins.sh ] && source /etc/bknix-ci/install_all_jenkins.sh
 
@@ -132,6 +133,7 @@ function install_all_publisher() {
   RAMDISKSIZE=500M
   PROFILES=""
   HTTPD_DOMAIN=$(hostname -f)
+  SPLIT_BUILDKIT=1
 
   [ -f /etc/bknix-ci/install_all_publisher.sh ] && source /etc/bknix-ci/install_all_publisher.sh
 
@@ -195,14 +197,24 @@ function install_bin() {
   sudo cp -f "$src" "$dest"
 }
 
+## usage: pick_buildkit_path <USER> <PROFILE>
+function pick_buildkit_path() {
+  if [ "x1" = "x$SPLIT_BUILDKIT" ]; then
+    echo "/home/$1/bknix-$2"
+  else
+    echo "/home/$1/bknix"
+  fi
+}
+
 ## Setup the binaries, data folder, and service for a given profile.
 ##
 ## Pre-condition:
 ##   PROFILE is a name like "min" or "max"
+##   SPLIT_BUILDKIT=1 is a boolean
 ##   Optionally, HTTPD_PORT, MEMCACHED_PORT, PHPFPM_PORT, REDIS_PORT are set
 function install_profile() {
   PRFDIR="/nix/var/nix/profiles/bknix-$PROFILE"
-  BKIT="/home/$OWNER/bknix-$PROFILE"
+  BKIT=$(pick_buildkit_path "$OWNER" "$PROFILE")
   PREFIX="bknix-$OWNER-$PROFILE"
 
   install_profile_binaries "$PROFILE" "$PRFDIR"
@@ -340,8 +352,10 @@ function setup_buildkit() {
   cd "$BKIT"
 
   ./bin/civi-download-tools
-  eval $( loco env -c "$YAML" --export)
-  loco-buildkit-init
+  if [ -n "$YAML" ]; then
+    eval $( loco env -c "$YAML" --export)
+    loco-buildkit-init
+  fi
   civibuild cache-warmup
 }
 
@@ -361,7 +375,7 @@ function do_as_owner() {
     for v in "$@" ; do printf "%q " "$v" ; done
   }
 
-  local BKIT="/home/$OWNER/bknix-$PROFILE"
+  local BKIT=$(pick_buildkit_path "$OWNER" "$PROFILE")
   local FUNC="$1"
   shift
 

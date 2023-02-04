@@ -6,7 +6,7 @@ For discussion of strengths and weaknesses, see [Critical comparison](doc/compar
 
 ## Profiles
 
-A *profile* is list of packages (e.g. PHP 7.0 + MySQL 5.7 + Redis 4.0 + NodeJS 6.14).  `bknix` includes a few profiles designed around the
+A *profile* is list of packages (e.g. PHP 8.1 + MySQL 5.7 + Redis 4.0 + NodeJS 14.0).  `bknix` includes a few profiles designed around the
 CiviCRM system-requirements:
 
 * [dfl](profiles/dfl/default.nix): An in-between set of packages. This is a good default for middle-of-the-road testing/development.
@@ -20,10 +20,10 @@ CiviCRM system-requirements:
 Given that you have several pieces of software (e.g. PHP + MySQL + Redis), the *launcher* or *process manager*
 is responsible for starting and stopping processes. `bknix` works with a few launchers:
 
-* `loco run`: [Loco](https://github.com/totten/loco) runs local processes in the foreground. This is useful for local development.
+* `loco`: [Loco](https://github.com/totten/loco) runs local processes in the foreground (`loco run`) or background (`loco start`). This is useful for local development.
   It can be configured by editing the YAML file ([loco.yml](../.loco/loco.yml)), by setting environment variables
   (`HTTPD_PORT` et al), and/or by editing the [configuration templates](../.loco/config).
-* `systemd`: This is the most common process manager on Linux hosts. This is useful for CI nodes. The `loco.yml`
+* `systemd`: This is the most common process manager on Linux hosts. This is useful for long-running nodes. The `loco.yml`
   can be exported to systemd notation manually (via `loco export`) or automatically (as part of `install-ci.sh`).
 
 ## Usage
@@ -33,7 +33,7 @@ For day-to-day usage, one must first launch the services (`mysqld`, `php-fpm`, e
 ```
 me@localhost:~$ cd bknix
 me@localhost:~/bknix$ nix-shell -A min
-[nix-shell:~/bknix]$ loco run
+[nix-shell:~/bknix]$ loco start
 ...
 ======================[ Startup Summary ]======================
 [VOLUME] Loco data volume is a ram disk "/Users/myuser/bknix/.loco/var".
@@ -44,28 +44,26 @@ me@localhost:~/bknix$ nix-shell -A min
 [mysql] MySQL is running on "127.0.0.1:3307". The default credentials are user="root" and password="".
 [buildkit] Buildkit (/Users/myuser/bknix/civicrm-buildkit) is configured to use these services. It produces builds in "/Users/myuser/bknix/build".
 
-Services have been started. To shutdown, press Ctrl-C.
+Services have been started. To shutdown, run 'loco stop'.
 ===============================================================
+
+[nix-shell:~/bknix]$ civibuild create dmaster --civi-ver 5.8
+...
+
+[nix-shell:~/bknix]$ loco stop
 ```
 
 In this example, note that:
 
 * We chose the profile `min`. This determines the specific software and versions that will be available.
 * We opened a suitable shell with `cd bknix` and `nix-shell -A min`.
-* We started the processes with `loco run`.
-* The services are running in the foreground -- additional errors and log messages will be displayed on this console.
-
-After launching the services, we can open another shell and do more development tasks -- such as building a test site:
-
-```
-me@localhost:~$ cd bknix
-me@localhost:~/bknix$ nix-shell -A min
-[nix-shell:~/bknix]$ civibuild create dmaster --civi-ver 5.8
-```
+* We started the services in background with `loco start`. (To run services in the foreground, use `loco run`.)
+* After launching the services, we can create specific test-sites running on top of them.
+* When we finish, stop the services with `loco stop`.
 
 ## Choose your own adventure
 
-The example above used `nix-shell` and `loco run`. This is good for experimenting with bknix in the CLI. However, 
+The example above used `nix-shell` and `loco start`. This is good for experimenting with bknix in the CLI. However,
 if you're using an IDE or continuous-testing server, then other approaches may work better. For a more
 complete tutorial, choose from below:
 
@@ -110,13 +108,26 @@ complete tutorial, choose from below:
     <tr>
       <td>
         <ul>
-          <li>Run frequent tests in a mix of environments (continuous-integration)</li>
+          <li>Run long-term services with multiple profiles (continuous-integration)</li>
         </ul>
       </td>
       <td>
         <ul>
           <li><a href="doc/requirements.md">System requirements</a></li>
           <li><a href="doc/install-ci.md">Install all profiles and system services for concurrent usage (<code>install-ci.sh</code>)</a></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <ul>
+          <li>Run transactional services with multiple profiles (continuous-integration)</li>
+        </ul>
+      </td>
+      <td>
+        <ul>
+          <li><a href="doc/requirements.md">System requirements</a></li>
+          <li><a href="doc/install-runner.md">Install all profiles. Start and stop services for brief periods. (<code>install-runner.sh</code>)</a></li>
         </ul>
       </td>
     </tr>
@@ -139,7 +150,7 @@ With `nix-shell` or `install-developer.sh`, it is typical to only launch one
 | Mailcatcher (SMTP) (*loco-only*) | 1025  |
 | Mailcatcher (HTTP) (*loco-only*) | 1080  |
 
-With `install-ci.sh`, the services use a wide range of ports.
+With [`install-ci.sh`](doc/install-ci.md) or [`install-runner.sh`](doc/install-runner.md), the services use a wide range of ports.
 
 <!-- FIXME: Document use of HTTPD_PORT, MYSQLD_PORT, etc -->
 
