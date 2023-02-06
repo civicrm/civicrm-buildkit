@@ -78,7 +78,7 @@ function show_help() {
 function task_phpunit() {
   SUITE="$1"
 
-  if ! $GUARD $TIMER phpunit-each $TEST_FILTER "$CIVI_CORE" "$JUNITDIR" $SUITE ; then
+  if ! $GUARD $TIMER phpunit-each ${TEST_FILTER[@]} "$CIVI_CORE" "$JUNITDIR" $SUITE ; then
     EXITCODES="$EXITCODES phpunit"
   fi
   echo "Found EXITCODES=\"$EXITCODES\""
@@ -107,7 +107,7 @@ function task_phpunit_expr() {
   [ ! -d "$JUNITDIR" ] && mkdir -p "$JUNITDIR"
 
   pushd "$WORK_DIR"
-    if ! $GUARD $TIMER $PHPUNIT $TEST_FILTER --log-junit "$JUNITDIR/$SUITE_NAME.xml" "$@" ; then
+    if ! $GUARD $TIMER $PHPUNIT ${TEST_FILTER[@]} --log-junit "$JUNITDIR/$SUITE_NAME.xml" "$@" ; then
       EXITCODES="$EXITCODES phpunit"
     fi
     echo "Found EXITCODES=\"$EXITCODES\""
@@ -243,7 +243,7 @@ function junit_placeholder() {
 
 function task_phpunit_drupal() {
   $GUARD pushd "$CIVI_CORE/drupal"
-  if ! $GUARD $(getPhpunitVer) --log-junit "$JUNITDIR/phpunit_drupal.xml" $TEST_FILTER ; then
+  if ! $GUARD $(getPhpunitVer) --log-junit "$JUNITDIR/phpunit_drupal.xml" ${TEST_FILTER[@]} ; then
     EXITCODES="$EXITCODES phpunit-drupal"
   fi
   echo "Found EXITCODES=\"$EXITCODES\""
@@ -254,7 +254,7 @@ function task_phpunit_drupal() {
 
 function task_phpunit_wordpress() {
   $GUARD pushd "$CIVI_CORE/.."
-  if ! $GUARD $(getPhpunitVer) --log-junit "$JUNITDIR/phpunit_wordpress.xml" $TEST_FILTER ; then
+  if ! $GUARD $(getPhpunitVer) --log-junit "$JUNITDIR/phpunit_wordpress.xml" ${TEST_FILTER[@]} ; then
     EXITCODES="$EXITCODES phpunit-wordpress"
   fi
   echo "Found EXITCODES=\"$EXITCODES\""
@@ -265,7 +265,7 @@ function task_phpunit_wordpress() {
 
 function task_phpunit_backdrop() {
   $GUARD pushd "$CIVI_CORE/backdrop"
-  if ! $GUARD $(getPhpunitVer) --log-junit "$JUNITDIR/phpunit_backdrop.xml" $TEST_FILTER ; then
+  if ! $GUARD $(getPhpunitVer) --log-junit "$JUNITDIR/phpunit_backdrop.xml" ${TEST_FILTER[@]} ; then
     EXITCODES="$EXITCODES phpunit-backdrop"
   fi
   echo "Found EXITCODES=\"$EXITCODES\""
@@ -288,8 +288,9 @@ PRJDIR=$(dirname "$BINDIR")
 [ -z "$CIVIBUILD_HOME" ] && BLDDIR="$PRJDIR/build" || BLDDIR="$CIVIBUILD_HOME"
 EXITCODES=
 SUITES=
-TEST_FILTER=
+TEST_FILTER=()
 GUARD=
+
 
 [ -f "$PRJDIR/app/civibuild.conf" ] && source "$PRJDIR/app/civibuild.conf"
 
@@ -317,17 +318,17 @@ while [ -n "$1" ] ; do
       ;;
 
     --exclude-group)
-      TEST_FILTER="--exclude-group $1"
+      TEST_FILTER+=("--exclude-group" "$1")
       shift
       ;;
 
     --group)
-      TEST_FILTER="--group '$1'"
+      TEST_FILTER+=("--group" "$1")
       shift
       ;;
 
     --filter)
-      TEST_FILTER="--filter '$1'"
+      TEST_FILTER+=("--filter" "$1")
       shift
       ;;
 
