@@ -219,7 +219,6 @@ $c['app']->command('wf:unimplemented', function (SymfonyStyle $io) {
   return 1;
 })->setAliases(['begin', 'resume', 'review'])->setDescription("(Unimplemented)");
 
-// Not yet tested
 $c['app']->command("wf:rc $globalOptions", function (callable $runSubcommand, Repos $repos, SymfonyStyle $io, Taskr $taskr) {
   chdir($repos->getPath('.'));
 
