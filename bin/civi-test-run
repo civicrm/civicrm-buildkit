@@ -44,7 +44,9 @@ function show_help() {
   echo "  -h                  Display help"
   echo "  -b <build-name>     The name of a local site produced by civibuild (required)"
   echo "  -j <junit-dir>      The path to a folder for storing results in JUnit XML (required)"
-  echo "  --exclude-group <g> Exclude tests with a particular @group"
+  echo "  --exclude-group <g> Exclude tests with a particular @group (if supported by suite)"
+  echo "  --group <g>         Focus on tests with a particular @group (if supported by suite)"
+  ecoh "  --filter <regex>    Filter which test functions to run (if supported by suite)"
   echo "  <suites>            A list of one more of the following:"
   echo "                        - all"
   echo "                        - karma"
@@ -76,7 +78,7 @@ function show_help() {
 function task_phpunit() {
   SUITE="$1"
 
-  if ! $GUARD $TIMER phpunit-each $EXCLUDE_GROUP "$CIVI_CORE" "$JUNITDIR" $SUITE ; then
+  if ! $GUARD $TIMER phpunit-each ${PHPUNIT_ARGS[@]} "$CIVI_CORE" "$JUNITDIR" $SUITE ; then
     EXITCODES="$EXITCODES phpunit"
   fi
   echo "Found EXITCODES=\"$EXITCODES\""
@@ -105,7 +107,7 @@ function task_phpunit_expr() {
   [ ! -d "$JUNITDIR" ] && mkdir -p "$JUNITDIR"
 
   pushd "$WORK_DIR"
-    if ! $GUARD $TIMER $PHPUNIT $EXCLUDE_GROUP --log-junit "$JUNITDIR/$SUITE_NAME.xml" "$@" ; then
+    if ! $GUARD $TIMER $PHPUNIT ${PHPUNIT_ARGS[@]} --log-junit "$JUNITDIR/$SUITE_NAME.xml" "$@" ; then
       EXITCODES="$EXITCODES phpunit"
     fi
     echo "Found EXITCODES=\"$EXITCODES\""
@@ -241,7 +243,7 @@ function junit_placeholder() {
 
 function task_phpunit_drupal() {
   $GUARD pushd "$CIVI_CORE/drupal"
-  if ! $GUARD $(getPhpunitVer) --log-junit "$JUNITDIR/phpunit_drupal.xml" $EXCLUDE_GROUP ; then
+  if ! $GUARD $(getPhpunitVer) --log-junit "$JUNITDIR/phpunit_drupal.xml" ${PHPUNIT_ARGS[@]} ; then
     EXITCODES="$EXITCODES phpunit-drupal"
   fi
   echo "Found EXITCODES=\"$EXITCODES\""
@@ -252,7 +254,7 @@ function task_phpunit_drupal() {
 
 function task_phpunit_wordpress() {
   $GUARD pushd "$CIVI_CORE/.."
-  if ! $GUARD $(getPhpunitVer) --log-junit "$JUNITDIR/phpunit_wordpress.xml" $EXCLUDE_GROUP ; then
+  if ! $GUARD $(getPhpunitVer) --log-junit "$JUNITDIR/phpunit_wordpress.xml" ${PHPUNIT_ARGS[@]} ; then
     EXITCODES="$EXITCODES phpunit-wordpress"
   fi
   echo "Found EXITCODES=\"$EXITCODES\""
@@ -263,7 +265,7 @@ function task_phpunit_wordpress() {
 
 function task_phpunit_backdrop() {
   $GUARD pushd "$CIVI_CORE/backdrop"
-  if ! $GUARD $(getPhpunitVer) --log-junit "$JUNITDIR/phpunit_backdrop.xml" $EXCLUDE_GROUP ; then
+  if ! $GUARD $(getPhpunitVer) --log-junit "$JUNITDIR/phpunit_backdrop.xml" ${PHPUNIT_ARGS[@]} ; then
     EXITCODES="$EXITCODES phpunit-backdrop"
   fi
   echo "Found EXITCODES=\"$EXITCODES\""
@@ -286,8 +288,9 @@ PRJDIR=$(dirname "$BINDIR")
 [ -z "$CIVIBUILD_HOME" ] && BLDDIR="$PRJDIR/build" || BLDDIR="$CIVIBUILD_HOME"
 EXITCODES=
 SUITES=
-EXCLUDE_GROUP=
+PHPUNIT_ARGS=()
 GUARD=
+
 
 [ -f "$PRJDIR/app/civibuild.conf" ] && source "$PRJDIR/app/civibuild.conf"
 
@@ -314,10 +317,15 @@ while [ -n "$1" ] ; do
       shift
       ;;
 
-    --exclude-group)
-      EXCLUDE_GROUP="--exclude-group $1"
+    --exclude-group|--group|--filter)
+      PHPUNIT_ARGS+=("$OPTION" "$1")
       shift
       ;;
+
+    ## TODO: Not currently supported by phpunit-each
+    #--stop-on-defect|--stop-on-error|--stop-on-failure|--stop-on-warning|--stop-on-risky|--stop-on-skipped|--stop-on-incomplete|--fail-on-warning|--fail-on-risky)
+    #  PHPUNIT_ARGS+=("$OPTION")
+    #  ;;
 
     -h|--help|-?)
       show_help
