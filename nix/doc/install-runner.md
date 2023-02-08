@@ -10,12 +10,12 @@ A Jenkins/CI worker node. All binaries/profiles are preinstalled. Services are s
 
 | Service     | Worker 0     | Worker 1     | Worker 2     |
 |-------------|--------------|--------------|--------------|
-| Apache HTTP | 6000         | 6100         | 6200         |
-| Memcached   | 6006         | 6106         | 6206         |
-| MySQL       | 6001         | 6101         | 6201         |
-| PHP FPM     | 6002         | 6102         | 6202         |
+| Apache HTTP | 5000         | 5100         | 5200         |
+| Memcached   | 5006         | 5106         | 5206         |
+| MySQL       | 5001         | 5101         | 5201         |
+| PHP FPM     | 5002         | 5102         | 5202         |
 | PHP Xdebug  | 9003         | 9003         | 9003         |
-| Redis       | 6005         | 6105         | 6205         |
+| Redis       | 5005         | 5105         | 5205         |
 
 ## Initial installation
 

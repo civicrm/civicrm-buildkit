@@ -8,9 +8,9 @@ format: 'loco-0.1'
 ##
 ## | EXECUTOR_NUMBER | | HTTPD_PORT | MYSQLD_PORT |
 ## +-----------------+-+------------+-------------+
-## | 0               | | 6000       | 6001        |
-## | 1               | | 6100       | 6101        |
-## | 2               | | 6200       | 6201        |
+## | 0               | | 5000       | 5001        |
+## | 1               | | 5100       | 5101        |
+## | 2               | | 5200       | 5201        |
 ##
 ## Port numbers are chosen by the 'portnum' helper (.loco/plugin/portnum.php).
 
@@ -25,7 +25,7 @@ environment:
  - HTTPD_VISIBILITY=all
 
  ## *_PORT: Most daemons run on auxiliary/non-standard TCP/UDP ports.
- - BASE_PORT=6000
+ - BASE_PORT=5000
  - MAIL_SMTP_PORT=$(portnum "$BASE_PORT" "$EXECUTOR_NUMBER" 3)
  - MAIL_HTTP_PORT=$(portnum "$BASE_PORT" "$EXECUTOR_NUMBER" 4)
  - MEMCACHED_PORT=$(portnum "$BASE_PORT" "$EXECUTOR_NUMBER" 6)
