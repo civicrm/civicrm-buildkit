@@ -7,8 +7,8 @@ in stdenv.mkDerivation rec {
 
     name = "loco";
     src = pkgs.fetchurl {
-      url = https://github.com/totten/loco/releases/download/v0.6.2/loco-0.6.2.phar;
-      sha256 = "Y95wgEK3/6cXHPLUlsD+Cq2D/ZILZYUpr1Xn5bsYSYo=";
+      url = https://github.com/totten/loco/releases/download/v0.7.0/loco-0.7.0.phar;
+      sha256 = "6lgw9iGNmkdlApHcb0AD3wgcMwP3RxD+Po84NCYbdsA=";
       executable = true;
     };
     buildInputs = [ ];
