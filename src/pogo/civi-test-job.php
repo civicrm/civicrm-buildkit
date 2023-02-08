@@ -23,6 +23,7 @@
 namespace Clippy;
 
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 
@@ -35,7 +36,7 @@ $phpunitFlags = [];
 ###############################################################################
 ## Main
 
-$c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--civi-ver=] [--loco] $phpunitSynopsis suites*", function (SymfonyStyle $io, Taskr $taskr, bool $loco, Cmdr $cmdr) use ($c) {
+$c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--civi-ver=] [--loco] [--keep] $phpunitSynopsis suites*", function (SymfonyStyle $io, Taskr $taskr, bool $loco, Cmdr $cmdr) use ($c) {
   // Resolve these values before we start composing commands.
   [$c['buildType'], $c['buildName'], $c['buildDir'], $c['civiVer'], $c['junitDir'], $c['timeFunc'], $c['phpunitArgs']];
 
@@ -134,29 +135,49 @@ $c['timeFunc'] = function(): string {
   return 'linear:500';
 };
 
-$c['locoRun()'] = function(SymfonyStyle $io, Taskr $taskr, Cmdr $cmdr): AutoCleanup {
+$c['locoRun()'] = function(SymfonyStyle $io, Taskr $taskr, Cmdr $cmdr, InputInterface $input, OutputInterface $output): AutoCleanup {
   $io->section("\nSetup daemons");
-  $taskr->passthru('loco clean');
-  $daemons = $cmdr->process('loco run');
-  $daemons->start(function($type, $buffer) {
-    fwrite(Process::ERR === $type ? STDERR : STDOUT, $buffer);
-  });
-  $taskr->passthru('loco-mysql-wait 300 && sleep 5');
-  return new AutoCleanup(function() use ($taskr, $io, $daemons) {
-    $io->section("\nShutdown daemons");
-    $daemons->stop();
+  if (!$input->getOption('keep')) {
     $taskr->passthru('loco clean');
+  }
+  if ($input->getOption('dry-run')) {
+    $io->writeln('<comment>DRY-RUN$</comment> loco run');
+    $daemons = NULL;
+  }
+  else {
+    $daemons = $cmdr->process('loco run');
+    $daemons->start(function($type, $buffer) use ($output) {
+      $stream = (Process::ERR === $type) ? STDERR : STDOUT;
+      fwrite($stream, $buffer);
+      fflush($stream);
+    });
+  }
+  $taskr->passthru('loco-mysql-wait 300 && sleep 5');
+  return new AutoCleanup(function() use ($taskr, $io, $daemons, $input) {
+    $io->section("\nShutdown daemons");
+    if ($input->getOption('dry-run')) {
+      $io->writeln('<comment>DRY-RUN$</comment> loco run <comment>[Ctrl-C]</comment>');
+    }
+    else {
+      $daemons->stop(30, SIGINT);
+    }
+
+    $taskr->passthru($input->getOption('keep') ? 'loco stop' : 'loco clean');
   });
 };
 
-$c['locoStart()'] = function(SymfonyStyle $io, Taskr $taskr) {
+$c['locoStart()'] = function(SymfonyStyle $io, Taskr $taskr, InputInterface $input): AutoCleanup {
   $io->section("\nSetup daemons");
-  $taskr->passthru('loco clean');
+  if (!$input->getOption('keep')) {
+    $taskr->passthru('loco clean');
+  }
   $taskr->passthru('loco start');
-  return new AutoCleanup(function() use ($taskr, $io) {
+  return new AutoCleanup(function() use ($taskr, $io, $input) {
     $io->section("\nShutdown daemons");
     $taskr->passthru('loco stop');
-    $taskr->passthru('loco clean');
+    if (!$input->getOption('keep')) {
+      $taskr->passthru('loco clean');
+    }
   });
 };
 
