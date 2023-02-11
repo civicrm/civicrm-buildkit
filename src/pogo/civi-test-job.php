@@ -17,7 +17,7 @@
 #### Imports
 
 #!ttl 10 years
-#!require clippy/std: ~0.4.2
+#!require clippy/std: ~0.4.3
 #!require clippy/container: '~1.2'
 
 namespace Clippy;
@@ -172,6 +172,7 @@ $c['locoStart()'] = function(SymfonyStyle $io, Taskr $taskr, InputInterface $inp
     $taskr->passthru('loco clean');
   }
   $taskr->passthru('loco start');
+  $taskr->passthru('loco-mysql-wait 60 && sleep 3'); /* experiment: saw a slow startup once, early on */
   return new AutoCleanup(function() use ($taskr, $io, $input) {
     $io->section("\nShutdown daemons");
     $taskr->passthru('loco stop');

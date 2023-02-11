@@ -17,7 +17,7 @@
 #### Imports
 
 #!ttl 10 years
-#!require clippy/std: ~0.4.2
+#!require clippy/std: ~0.4.3
 #!require clippy/container: '~1.2'
 
 namespace Clippy;
