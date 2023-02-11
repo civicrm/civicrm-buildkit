@@ -12,7 +12,7 @@ function connect(): PDO {
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_PERSISTENT         => false,
   ];
-  return new PDO('mysql:host=' . getenv('LOCALHOST'). ';port=' . getenv('MYSQLD_PORT') . ';charset=utf8mb4', 'root', '', $pdoOptions);
+  return new PDO('mysql:host=' . getenv('LOCALHOST'). ';port=' . getenv('MYSQLD_PORT') . ';charset=utf8mb4;dbname=mysql', 'root', '', $pdoOptions);
 }
 
 function is_online(): bool {
@@ -28,7 +28,24 @@ function is_online(): bool {
   return FALSE;
 }
 
-function wait_for_mysql($maxWait, $interval, $windDown) {
+function can_create(): bool {
+  try {
+    $c = connect();
+    $tbl = 'tmp_' . rand(0, 1000);
+    $c->exec("CREATE TEMPORARY TABLE $tbl AS SELECT 1 as ONE");
+    foreach ($c->query("SELECT one FROM $tbl") as $row) {
+      if ($row['one'] == 1) {
+        return TRUE;
+      }
+    }
+  }
+  catch (\Exception $e) {
+    // fprintf(STDERR, "%s: %s\n%s\n", get_class($e), $e->getMessage(), $e->getTraceAsString());
+  }
+  return FALSE;
+}
+
+function wait_for_mysql($maxWait, $interval, $windDown, bool $tryCreate) {
   $options = sprintf('maxWait=%s, interval=%s, windDown=%s', $maxWait, $interval, $windDown);
   fprintf(STDERR, "Waiting for MySQL (%s)...\n", $options);
 
@@ -36,9 +53,11 @@ function wait_for_mysql($maxWait, $interval, $windDown) {
   $end = $start + $maxWait;
   do {
     if (is_online()) {
-      fprintf(STDERR, "\n");
-      usleep($windDown * 1000 * 1000);
-      return 0;
+      if (!$tryCreate || can_create()) {
+        fprintf(STDERR, "\n");
+        usleep($windDown * 1000 * 1000);
+        return 0;
+      }
     }
     fprintf(STDERR, ".");
     usleep(1000 * $interval * 1000);
@@ -52,5 +71,6 @@ function wait_for_mysql($maxWait, $interval, $windDown) {
 exit(wait_for_mysql(
   $argv[1] ?? (10 * 60),
   $argv[2] ?? 0.5,
-  $argv[3] ?? 0.5
+  $argv[3] ?? 0.5,
+  (bool) ($argv[4] ?? 1)
 ));
