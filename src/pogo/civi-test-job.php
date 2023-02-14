@@ -23,9 +23,7 @@
 namespace Clippy;
 
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Process\Process;
 
 $c = clippy()->register(plugins());
 
@@ -36,8 +34,8 @@ $phpunitFlags = [];
 ###############################################################################
 ## Main
 
-$c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--civi-ver=] [--loco] [--keep] $phpunitSynopsis suites*", function (SymfonyStyle $io, Taskr $taskr, bool $loco, Cmdr $cmdr) use ($c) {
-  // Resolve these values before we start composing commands.
+$c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--civi-ver=] [--loco] [--keep] $phpunitSynopsis suites*", function (SymfonyStyle $io, Taskr $taskr, bool $loco) use ($c) {
+  // First, resolve key parameters before we start composing commands. See "Key Parameters" for full details.
   [$c['buildType'], $c['buildName'], $c['buildDir'], $c['civiVer'], $c['junitDir'], $c['timeFunc'], $c['phpunitArgs']];
 
   if (!preg_match(';^(5\.|master);', $c['civiVer'])) {
@@ -49,8 +47,7 @@ $c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--civi-ver=] [--l
   $taskr->passthru('civibuild env-info');
 
   if ($loco) {
-    $stopLoco = $c['locoStart()']();
-    // $stopLoco = $c['locoRun()']();
+    $autoStopLoco = $c['locoStart()']();
   }
 
   $io->section("\nReset working data");
@@ -83,16 +80,20 @@ $c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--civi-ver=] [--l
 ###############################################################################
 ## Key parameters
 
+
+// Ex: "build-0"
 $c['buildName'] = function (SymfonyStyle $io): string {
   $default = is_numeric(getenv('EXECUTOR_NUMBER')) ? ('build-' . getenv('EXECUTOR_NUMBER')) : 'build-x';
   return $io->ask('Build Name:', $default);
 };
 
+// Ex: "/home/myuser/workspace/MyJob/junit"
 $c['junitDir'] = function (SymfonyStyle $io): string {
   $default = getenv('WORKSPACE') ? (getenv('WORKSPACE') . '/junit') : '/tmp/junit';
   return $io->ask('JUnit Dir:', $default);
 };
 
+// Ex: "/home/myuser/buildkit/build/build-0"
 $c['buildDir'] = function (string $buildName): string {
   if (getenv('BKITBLD') && file_exists(getenv('BKITBLD'))) {
     return getenv('BKITBLD') . '/' . $buildName;
@@ -102,16 +103,19 @@ $c['buildDir'] = function (string $buildName): string {
   }
 };
 
+// Ex: "drupal-clean" or "wp-demo"
 $c['buildType'] = function (SymfonyStyle $io, InputInterface $input) {
   $default = $input->getOption('type') ? $input->getOption('type') : 'drupal-clean';
   return $io->ask('Build Type', $default);
 };
 
+// Ex: "5.55" or "master"
 $c['civiVer'] = function (SymfonyStyle $io, InputInterface $input): string {
   $default = $input->getOption('civi-ver') ? $input->getOption('civi-ver') : 'master';
   return $io->ask('CiviCRM Version', $default);
 };
 
+// Ex: ['--exclude-group', 'ornery']
 $c['phpunitArgs'] = function (InputInterface $input) use ($phpunitFlags, $phpunitValues): array {
   $opts = [];
   foreach ($phpunitFlags as $phpunitFlag) {
@@ -135,36 +139,8 @@ $c['timeFunc'] = function(): string {
   return 'linear:500';
 };
 
-$c['locoRun()'] = function(SymfonyStyle $io, Taskr $taskr, Cmdr $cmdr, InputInterface $input, OutputInterface $output): AutoCleanup {
-  $io->section("\nSetup daemons");
-  if (!$input->getOption('keep')) {
-    $taskr->passthru('loco clean');
-  }
-  if ($input->getOption('dry-run')) {
-    $io->writeln('<comment>DRY-RUN$</comment> loco run');
-    $daemons = NULL;
-  }
-  else {
-    $daemons = $cmdr->process('loco run');
-    $daemons->start(function($type, $buffer) use ($output) {
-      $stream = (Process::ERR === $type) ? STDERR : STDOUT;
-      fwrite($stream, $buffer);
-      fflush($stream);
-    });
-  }
-  $taskr->passthru('loco-mysql-wait 300 && sleep 5');
-  return new AutoCleanup(function() use ($taskr, $io, $daemons, $input) {
-    $io->section("\nShutdown daemons");
-    if ($input->getOption('dry-run')) {
-      $io->writeln('<comment>DRY-RUN$</comment> loco run <comment>[Ctrl-C]</comment>');
-    }
-    else {
-      $daemons->stop(30, SIGINT);
-    }
-
-    $taskr->passthru($input->getOption('keep') ? 'loco stop' : 'loco clean');
-  });
-};
+###############################################################################
+## Utilties
 
 $c['locoStart()'] = function(SymfonyStyle $io, Taskr $taskr, InputInterface $input): AutoCleanup {
   $io->section("\nSetup daemons");
