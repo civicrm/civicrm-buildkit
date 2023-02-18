@@ -165,8 +165,7 @@ function runner_trial() {
   eval $( use-bknix min -e -N )
   cd ~/bknix
   loco start
-  mkdir -p build/trial
-  loco-mysql-wait 600 && (cd build/trial ; amp create -f)
+  loco-mysql-wait 600 && (civibuild create dempty)
   loco clean
 }
 
