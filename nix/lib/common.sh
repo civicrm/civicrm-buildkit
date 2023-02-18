@@ -148,8 +148,27 @@ function install_all_publisher() {
   unset OWNER RAMDISK RAMDISKSVC RAMDISKSIZE PROFILES PROFILE HTTPD_DOMAIN
 }
 
+## There seems to be a quirk wherein the first instance of mysqld quickly
+## flakes out. Perhaps we can provoke it
+function build_one_to_throw_away() {
+  OWNER=jenkins
+
+  echo "Perform trial run"
+  do_as_owner "$(declare -f runner_trial)" runner_trial
+}
+
 ###########################################################
 ## Install helpers
+
+function runner_trial() {
+  export EXECUTOR_NUMBER=0
+  eval $( use-bknix min -e -N )
+  cd ~/bknix
+  loco start
+  mkdir -p build/trial
+  loco-mysql-wait 600 && (cd build/trial ; amp create -f)
+  loco clean
+}
 
 function assert_root_user() {
   if [ "$USER" != "root" ]; then

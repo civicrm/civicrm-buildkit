@@ -54,5 +54,6 @@ install_bin "$BINDIR"/use-bknix /usr/local/bin/use-bknix
 install_bin "$BINDIR"/await-bknix.flag-file /usr/local/bin/await-bknix
 install_all_jenkins
 install_all_publisher
+build_one_to_throw_away
 
 touch /var/local/bknix-ready
