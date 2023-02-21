@@ -292,6 +292,18 @@ class Repos {
       : ($base . DIRECTORY_SEPARATOR . $subdir);
   }
 
+  protected function pickWordPress(): string {
+    // In standard 'dist' layout, civicrm-wordpress is a child dir. But in live WP install, it's the parent.
+    $parent = $this->getPath('..');
+    $child = $this->getPath('WordPress');
+    if (file_exists("$parent/wp-cli/civicrm.php") && !file_exists($child)) {
+      return $parent;
+    }
+    else {
+      return $child;
+    }
+  }
+
   /**
    * @param string $remote
    * @param string $urlPrefix
@@ -307,7 +319,7 @@ class Repos {
       ['drupal-8', $this->getPath('drupal-8'), $remote, "{$urlPrefix}drupal-8{$suffix}"],
       ['joomla', $this->getPath('joomla'), $remote, "{$urlPrefix}joomla{$suffix}"],
       ['packages', $this->getPath('packages'), $remote, "{$urlPrefix}packages{$suffix}"],
-      ['wordpress', $this->getPath('WordPress'), $remote, "{$urlPrefix}wordpress{$suffix}"],
+      ['wordpress', $this->pickWordPress(), $remote, "{$urlPrefix}wordpress{$suffix}"],
     ]);
   }
 
@@ -326,7 +338,7 @@ class Repos {
       ['drupal-8', $this->getPath('drupal-8'), $remote, $branch],
       ['joomla', $this->getPath('joomla'), $remote, $branch],
       ['packages', $this->getPath('packages'), $remote, $branch],
-      ['wordpress', $this->getPath('WordPress'), $remote, $branch],
+      ['wordpress', $this->pickWordPress(), $remote, $branch],
     ]);
   }
 
@@ -349,7 +361,7 @@ class Repos {
       ['drupal-8', $this->getPath('drupal-8'), $tgtRemote, $tgtBranch, $srcRemote, $srcBranch],
       ['joomla', $this->getPath('joomla'), $tgtRemote, $tgtBranch, $srcRemote, $srcBranch],
       ['packages', $this->getPath('packages'), $tgtRemote, $tgtBranch, $srcRemote, $srcBranch],
-      ['wordpress', $this->getPath('WordPress'), $tgtRemote, $tgtBranch, $srcRemote, $srcBranch],
+      ['wordpress', $this->pickWordPress(), $tgtRemote, $tgtBranch, $srcRemote, $srcBranch],
     ]);
   }
 
