@@ -13,7 +13,7 @@ assert_regex '^\(\|https://github.com/civicrm/civicrm-[a-z]*/pull/[0-9]\+/*\)$' 
 #################################################
 ## Bootstrap
 
-use_bknix
+use_bknix_tmp
 
 #################################################
 ## Inputs; if called manually, use some defaults

@@ -43,3 +43,13 @@ function use_bknix() {
     fatal "Failed to find BKITBLD for $BKPROF"
   fi
 }
+
+function use_bknix_tmp() {
+  use_bknix
+  if [ -f /etc/bknix-ci/worker-n ]; then
+    (cd "$LOCO_PRJ" && loco clean)
+    (cd "$LOCO_PRJ" && loco start)
+    trap "cd \"$LOCO_PRJ\" && loco stop" EXIT
+  fi
+  ## else: This must be a traditional system that runs with system-services.
+}

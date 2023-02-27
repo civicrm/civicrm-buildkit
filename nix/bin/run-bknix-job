@@ -21,6 +21,7 @@ function run_bknix_mock() {
   if [ ! -d "$WORKSPACE" ]; then
     mkdir "$WORKSPACE"
   fi
+  cd "$WORKSPACE"
 }
 
 function run_bknix_main() {
