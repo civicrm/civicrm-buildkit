@@ -455,6 +455,18 @@ function init_folder() {
   rsync -va --ignore-existing "$src/./" "$tgt/./"
 }
 
+function sync_folder() {
+  local src="$1"
+  local tgt="$2"
+  if [ ! -d "$tgt" ]; then
+    echo "Initializing $tgt"
+    mkdir -p "$tgt"
+  fi
+
+  echo "Syncing from $src to $tgt"
+  rsync -va "$src/./" "$tgt/./"
+}
+
 function template_render() {
   cat "$1" \
     | sed "s;%%RAMDISK%%;$RAMDISK;g" \

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR="/opt/bknix-ci/jobs"
+
+echo TODO
