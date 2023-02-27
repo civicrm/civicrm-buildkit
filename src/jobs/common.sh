@@ -25,9 +25,9 @@ function assert_regex() {
 
 ## Check that common Jenkins variables are set
 function assert_jenkins() {
-  assert_regex '^[0-9]\+$' "$EXECUTOR_NUMBER" "EXECUTOR_NUMBER must be a number"
+  assert_regex '^[0-9]\+$' "$EXECUTOR_NUMBER" "EXECUTOR_NUMBER must be a number. (If you are running manually, consider using --mock.)"
   if [ -z "$WORKSPACE" -o ! -d "$WORKSPACE" ]; then
-    fatal "WORKSPACE must be a valid path"
+    fatal "WORKSPACE must be a valid path. (If you are running manually, consider using --mock.)"
   fi
 }
 
