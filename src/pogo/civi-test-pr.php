@@ -123,7 +123,8 @@ $c['buildType'] = function (SymfonyStyle $io, InputInterface $input) {
 };
 
 $c['civiVer'] = function (SymfonyStyle $io): string {
-  $default = getenv('ghprbTargetBranch') ? getenv('ghprbTargetBranch') : 'master';
+  $default = !empty(getenv('ghprbTargetBranch')) ? getenv('ghprbTargetBranch') : 'master';
+  $default = preg_replace(';^\d.x-;', '', $default); /* D7/BD repo */
   return $io->ask('CiviCRM Version', $default);
 };
 
