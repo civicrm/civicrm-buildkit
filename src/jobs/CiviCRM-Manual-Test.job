@@ -1,0 +1,76 @@
+#!/bin/bash
+set -e
+
+assert_jenkins
+
+assert_regex '^[0-9a-z\.-]\+$' "$BLDTYPE"
+assert_regex '^[0-9a-z\.-]\+$' "$CIVIVER"
+assert_regex '^[0-9a-z\.-]*$' "$CIVICOMMIT"
+assert_regex '^[ 0-9a-z\.-]\+$' "$SUITES"
+assert_regex '^\(\|https://github.com/civicrm/civicrm-[a-z]*/pull/[0-9]\+/*\)$' "$PATCH"
+### ^^ Empty or full URL. Trailing slash optional.
+
+#################################################
+## Bootstrap
+
+use_bknix_tmp
+
+#################################################
+## Inputs; if called manually, use some defaults
+GUARD=
+
+## Build definition
+## Note: Suffixes are unique within a period of 180 days.
+BLDNAME="build-$EXECUTOR_NUMBER"
+BLDDIR="$BKITBLD/$BLDNAME"
+JUNITDIR="$WORKSPACE/junit"
+[ -n "$PATCH" ] && PATCHARGS="--patch $PATCH" || PATCHARGS=""
+EXITCODES=""
+
+export TIME_FUNC="linear:500"
+
+#################################################
+## Report details about the test environment
+set -x
+
+civibuild env-info
+
+## Reset (cleanup after previous tests)
+[ -d "$WORKSPACE/junit" ] && rm -rf "$WORKSPACE/junit"
+[ -d "$WORKSPACE/civibuild-html" ] && rm -rf "$WORKSPACE/civibuild-html"
+if [ -d "$BKITBLD/$BLDNAME" ]; then
+  echo y | civibuild destroy "$BLDNAME"
+fi
+mkdir "$WORKSPACE/junit"
+mkdir "$WORKSPACE/civibuild-html"
+
+## Download dependencies, apply, and perform fresh DB installation
+$GUARD civibuild download "$BLDNAME" --type "$BLDTYPE" --civi-ver "$CIVIVER" $PATCHARGS
+
+if [ -n "$CIVICOMMIT" ]; then
+  case "$BLDTYPE" in
+    drupal-clean)
+      CIVICOMMIT_PATH=web/sites/all/modules/civicrm
+      ;;
+    *)
+      echo "Cannot apply CIVICOMMIT=$CIVICOMMIT on BLDTYPE=$BLDTYPE"
+      exit 1
+      ;;
+  esac
+
+  $GUARD pushd "$BLDDIR/web/sites/all/modules/civicrm" >> /dev/null
+    git checkout "$CIVICOMMIT"
+  $GUARD popd >> /dev/null
+fi
+
+$GUARD civibuild install "$BLDNAME"
+
+## Report details about this build of the application
+civibuild show "$BLDNAME" \
+  --html "$WORKSPACE/civibuild-html" \
+  --last-scan "$WORKSPACE/last-scan.json" \
+  --new-scan "$WORKSPACE/new-scan.json"
+cp "$WORKSPACE/new-scan.json" "$WORKSPACE/last-scan.json"
+
+#civi-test-run -b "$BLDNAME" -j "$JUNITDIR" --exclude-group ornery all
+civi-test-run -b "$BLDNAME" -j "$JUNITDIR" $SUITES

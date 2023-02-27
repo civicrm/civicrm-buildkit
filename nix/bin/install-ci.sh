@@ -57,5 +57,6 @@ install_cachix
 init_folder "$BKNIXSRC/examples/$BKNIX_CI_TEMPLATE" /etc/bknix-ci
 install_bin "$BINDIR"/use-bknix /usr/local/bin/use-bknix
 install_bin "$BINDIR"/await-bknix /usr/local/bin/await-bknix
+install_bin "$BINDIR"/run-bknix-job /usr/local/bin/run-bknix-job
 install_all_jenkins
 install_all_publisher

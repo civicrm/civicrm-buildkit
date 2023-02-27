@@ -154,18 +154,24 @@ function build_one_to_throw_away() {
   OWNER=jenkins
 
   echo "Perform trial run"
-  do_as_owner "$(declare -f runner_trial)" runner_trial
+  do_as_owner "$(declare -f runner_trial)" runner_trial 0
+  do_as_owner "$(declare -f runner_trial)" runner_trial 1
 }
 
 ###########################################################
 ## Install helpers
 
 function runner_trial() {
-  export EXECUTOR_NUMBER=0
+  export EXECUTOR_NUMBER="$1"
   eval $( use-bknix min -e -N )
+  BLDNAME="build-$EXECUTOR_NUMBER"
+
   cd ~/bknix
+  if [ -d "build/$BLDNAME" ]; then
+    rm -rf "build/$BLDNAME" "build/$BLDNAME.sh"
+  fi
   loco start
-  loco-mysql-wait 600 && (civibuild create dempty)
+  loco-mysql-wait 600 && (civibuild create "$BLDNAME" --type drupal-empty)
   loco clean
 }
 
@@ -447,6 +453,18 @@ function init_folder() {
 
   echo "Identifying new files in $tgt using $src"
   rsync -va --ignore-existing "$src/./" "$tgt/./"
+}
+
+function sync_folder() {
+  local src="$1"
+  local tgt="$2"
+  if [ ! -d "$tgt" ]; then
+    echo "Initializing $tgt"
+    mkdir -p "$tgt"
+  fi
+
+  echo "Syncing from $src to $tgt"
+  rsync -va "$src/./" "$tgt/./"
 }
 
 function template_render() {

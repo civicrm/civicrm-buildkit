@@ -50,6 +50,7 @@ fi
 check_reqs
 install_cachix
 install_bin "$BINDIR"/use-bknix /usr/local/bin/use-bknix
+install_bin "$BINDIR"/run-bknix-job /usr/local/bin/run-bknix-job
 for PROFILE in $PROFILES ; do
   install_profile_binaries "$PROFILE" "/nix/var/nix/profiles/per-user/$USER/bknix-$PROFILE"
 done

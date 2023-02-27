@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+
+assert_jenkins
+use_bknix_tmp
+
+echo "Hello world! Did you know that HTTPD_PORT=$HTTPD_PORT?"
+which php
+php --version

@@ -1,0 +1,34 @@
+#!/bin/bash
+set -e
+
+assert_jenkins
+use_bknix_tmp
+
+BLDNAME="build-$EXECUTOR_NUMBER"
+EXITCODE=0
+
+export TIME_FUNC="linear:500"
+
+## Reset (cleanup after previous tests)
+[ -d "$WORKSPACE/junit" ] && rm -rf "$WORKSPACE/junit"
+[ -d "$WORKSPACE/civibuild-html" ] && rm -rf "$WORKSPACE/civibuild-html"
+if [ -d "$BKITBLD/$BLDNAME" ]; then
+  echo y | civibuild destroy "$BLDNAME"
+fi
+mkdir "$WORKSPACE/junit"
+mkdir "$WORKSPACE/civibuild-html"
+
+## Report details about the test environment
+civibuild env-info
+
+## Download application (with civibuild)
+civibuild download "$BLDNAME" \
+  --civi-ver "$CIVIVER" \
+  --type "drupal-clean"
+
+## Install application (with civibuild)
+civibuild install "$BLDNAME" \
+  --admin-pass "n0ts3cr3t"
+
+civi-test-run -b "$BLDNAME" -j "$WORKSPACE/junit" $SUITES
+exit $?
