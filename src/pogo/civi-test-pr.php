@@ -36,7 +36,7 @@ $phpunitFlags = [];
 ###############################################################################
 ## Main
 
-$c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--patch=] [--loco] $phpunitSynopsis suites*", function (SymfonyStyle $io, Taskr $taskr, bool $loco, Cmdr $cmdr) use ($c) {
+$c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--patch=] [--loco] [--keep] $phpunitSynopsis suites*", function (SymfonyStyle $io, Taskr $taskr, bool $loco) use ($c) {
   // Resolve these values before we start composing commands.
   [$c['buildType'], $c['buildName'], $c['buildDir'], $c['civiVer'], $c['patchUrl'], $c['junitDir'], $c['timeFunc'], $c['phpunitArgs']];
 
@@ -49,13 +49,7 @@ $c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--patch=] [--loco
   $taskr->passthru('civibuild env-info');
 
   if ($loco) {
-    $io->section("\nSetup daemons");
-    $taskr->passthru("loco start -f"); /* force - if someone left old/dirty configs, overwrite them */
-    $stopLoco = new AutoCleanup(function() use ($taskr, $io) {
-      $io->section("\nShutdown daemons");
-      $taskr->passthru("loco stop");
-      $taskr->passthru("loco clean");
-    });
+    $autoStopLoco = $c['locoStart()']();
   }
 
   $io->section("\nReset working data");
@@ -98,16 +92,19 @@ $c['patchUrl'] = function (InputInterface $input, SymfonyStyle $io) use ($c): st
   return $patchUrl;
 };
 
+// Ex: "build-0"
 $c['buildName'] = function (SymfonyStyle $io): string {
   $default = is_numeric(getenv('EXECUTOR_NUMBER')) ? ('build-' . getenv('EXECUTOR_NUMBER')) : 'build-x';
   return $io->ask('Build Name:', $default);
 };
 
+// Ex: "/home/myuser/workspace/MyJob/junit"
 $c['junitDir'] = function (SymfonyStyle $io): string {
   $default = getenv('WORKSPACE') ? (getenv('WORKSPACE') . '/junit') : '/tmp/junit';
   return $io->ask('JUnit Dir:', $default);
 };
 
+// Ex: "/home/myuser/buildkit/build/build-0"
 $c['buildDir'] = function (string $buildName): string {
   if (getenv('BKITBLD') && file_exists(getenv('BKITBLD'))) {
     return getenv('BKITBLD') . '/' . $buildName;
@@ -117,6 +114,7 @@ $c['buildDir'] = function (string $buildName): string {
   }
 };
 
+// Ex: "drupal-clean" or "wp-demo"
 $c['buildType'] = function (SymfonyStyle $io, InputInterface $input) use ($c) {
   $default = $input->getOption('type');
   if (empty($default) && preg_match(';/civicrm/(civicrm-[-\w]+)/pull;', $c['patchUrl'], $m)) {
@@ -136,12 +134,14 @@ $c['defaultBuildTypes'] = function() {
   ];
 };
 
+// Ex: "5.55" or "master"
 $c['civiVer'] = function (SymfonyStyle $io): string {
   $default = !empty(getenv('ghprbTargetBranch')) ? getenv('ghprbTargetBranch') : 'master';
   $default = preg_replace(';^\d.x-;', '', $default); /* D7/BD repo */
   return $io->ask('CiviCRM Version', $default);
 };
 
+// Ex: ['--exclude-group', 'ornery']
 $c['phpunitArgs'] = function (InputInterface $input) use ($phpunitFlags, $phpunitValues): array {
   $opts = [];
   foreach ($phpunitFlags as $phpunitFlag) {
@@ -166,9 +166,23 @@ $c['timeFunc'] = function(): string {
 };
 
 ###############################################################################
-#### Helpers
+## Utilties
 
-# Nevermind, all our helpers went upstream!
+$c['locoStart()'] = function(SymfonyStyle $io, Taskr $taskr, InputInterface $input): AutoCleanup {
+  $io->section("\nSetup daemons");
+  if (!$input->getOption('keep')) {
+    $taskr->passthru('loco clean');
+  }
+  $taskr->passthru('loco start');
+  $taskr->passthru('loco-mysql-wait 60 && sleep 3'); /* experiment: saw a slow startup once, early on */
+  return new AutoCleanup(function() use ($taskr, $io, $input) {
+    $io->section("\nShutdown daemons");
+    $taskr->passthru('loco stop');
+    if (!$input->getOption('keep')) {
+      $taskr->passthru('loco clean');
+    }
+  });
+};
 
 ###############################################################################
 ## Go
