@@ -50,6 +50,7 @@ fi
 
 install_cachix
 init_folder "$BKNIXSRC/examples/$BKNIX_CI_TEMPLATE" /etc/bknix-ci
+touch /etc/bknix-ci/worker-n
 install_bin "$BINDIR"/use-bknix /usr/local/bin/use-bknix
 install_bin "$BINDIR"/await-bknix.flag-file /usr/local/bin/await-bknix
 install_all_jenkins
