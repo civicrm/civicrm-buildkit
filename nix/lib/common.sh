@@ -154,14 +154,15 @@ function build_one_to_throw_away() {
   OWNER=jenkins
 
   echo "Perform trial run"
-  do_as_owner "$(declare -f runner_trial)" runner_trial
+  do_as_owner "$(declare -f runner_trial)" runner_trial 0
+  do_as_owner "$(declare -f runner_trial)" runner_trial 1
 }
 
 ###########################################################
 ## Install helpers
 
 function runner_trial() {
-  export EXECUTOR_NUMBER=0
+  export EXECUTOR_NUMBER="$1"
   eval $( use-bknix min -e -N )
   BLDNAME="build-$EXECUTOR_NUMBER"
 
