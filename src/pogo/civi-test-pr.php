@@ -117,9 +117,23 @@ $c['buildDir'] = function (string $buildName): string {
   }
 };
 
-$c['buildType'] = function (SymfonyStyle $io, InputInterface $input) {
-  $default = $input->getOption('type') ? $input->getOption('type') : 'drupal-clean';
+$c['buildType'] = function (SymfonyStyle $io, InputInterface $input) use ($c) {
+  $default = $input->getOption('type');
+  if (empty($default) && preg_match(';/civicrm/(civicrm-[-\w]+)/pull;', $c['patchUrl'], $m)) {
+    $default = $c['defaultBuildTypes'][$m[1]] ?? NULL;
+  }
+  $default = empty($default) ? $c['defaultBuildTypes']['*'] : $default;
   return $io->ask('Build Type', $default);
+};
+
+$c['defaultBuildTypes'] = function() {
+  // If testing a PR on civicrm-* repo, we may use the repo-name to decide on the build-type.
+  return [
+    'civicrm-backdrop' => 'backdrop-clean',
+    'civicrm-drupal-8' => 'drupal9-clean',
+    'civicrm-wordpress' => 'wp-demo',
+    '*' => 'drupal-clean',
+  ];
 };
 
 $c['civiVer'] = function (SymfonyStyle $io): string {
