@@ -1,5 +1,58 @@
 #!/usr/bin/env bash
 
-SCRIPT_DIR="/opt/bknix-ci/jobs"
+function run_bknix_help() {
+  echo "usage: run-bknix-job <PROFILE> <JOB>"
+}
 
-echo TODO
+function run_bknix_fatal() {
+  echo "$@" 1>&2
+  echo 1>&2
+  run_bknix_help 1>&2
+  exit 1
+}
+
+function run_bknix_mock() {
+  echo "Using mock Jenkins environment"
+  export EXECUTOR_NUMBER=0
+  export WORKSPACE="/tmp/mock-workspace-$USER"
+  if [ ! -d "$WORKSPACE" ]; then
+    mkdir "$WORKSPACE"
+  fi
+}
+
+function run_bknix_main() {
+  if [ -z "$BKNIX_JOBS" ]; then
+    BKNIX_JOBS="/opt/bknix-ci/jobs"
+  fi
+
+  if [ "$1" = "--mock" ]; then
+    shift
+    run_bknix_mock
+  fi
+
+  case "$1" in
+    old|min|dfl|max|edge) BKPROF="$1" ; ;;
+    *) run_bknix_fatal "Missing or invalid PROFILE" ; ;;
+  esac
+
+  local job="$2"
+  if [ ! -e "$BKNIX_JOBS/$job.job" ]; then
+    run_bknix_fatal "Missing or invalid JOB"
+  fi
+
+  if which mktemp >> /dev/null ; then
+    ## If there's a redeploy while bash is running, then bash gets stupid. Prefer to run bash scripts in temp files.
+    local tmpfile=$(mktemp -t .run-bknix-job.XXXXXXXX)
+    cat "$BKNIX_JOBS/common.sh" >> $tmpfile
+    echo >> $tmpfile
+    cat "$BKNIX_JOBS/$job.job" >> $tmpfile
+    source "$tmpfile"
+    rm -f "$tmpfile"
+  else
+    ## This system doesn't have mktemp. Too bad.
+    source "$BKNIX_JOBS/common.sh"
+    source "$BKNIX_JOBS/$job.job"
+  fi
+}
+
+run_bknix_main "$@"
