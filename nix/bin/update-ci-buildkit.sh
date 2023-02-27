@@ -27,3 +27,5 @@ for OWNER in jenkins publisher ; do
     fi
   done
 done
+
+sync_folder "$BKNIXSRC/../src/jobs" /opt/bknix-ci/jobs
