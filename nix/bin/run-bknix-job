@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
 function run_bknix_help() {
-  echo "usage: run-bknix-job <PROFILE> <JOB>"
+  echo "usage: run-bknix-job [--mock] <PROFILE> <JOB>"
+  echo
+  echo "example: run-bknix-job --mock min CiviRM-Core-Matrix"
+  echo "example: run-bknix-job \"\$BKPROF\" \"\$JOB_NAME\""
 }
 
 function run_bknix_fatal() {
@@ -28,6 +31,7 @@ function run_bknix_main() {
   if [ "$1" = "--mock" ]; then
     shift
     run_bknix_mock
+    IS_MOCK_JENKINS=1
   fi
 
   case "$1" in
