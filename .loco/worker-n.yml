@@ -55,6 +55,7 @@ environment:
  #However, the startup script (install-runner.sh) doesn't quite play nice because it's not using worker-n.yml.
  - BKIT=$LOCO_PRJ
  - BKITBLD=$HTTPD_VDROOT
+ - CIVI_TEST_MODE=loco-start-stop
  - MYSQL_HOME=$LOCO_VAR/mysql/conf
  - NODE_PATH=$BKIT/node_modules:$NODE_PATH
  - PATH=$BKIT/bin:$BKIT/node_modules/.bin:$LOCO_PRJ/.loco/bin:$PATH

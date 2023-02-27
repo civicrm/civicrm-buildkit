@@ -37,16 +37,14 @@ $phpunitFlags = [];
 ###############################################################################
 ## Main
 
-$c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--civi-ver=] [--loco] [--keep] $phpunitSynopsis suites*", function (SymfonyStyle $io, Taskr $taskr, bool $loco) use ($c) {
+$c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--civi-ver=] [--keep] $phpunitSynopsis suites*", function (SymfonyStyle $io, Taskr $taskr) use ($c) {
   // First, resolve key parameters before we start composing commands. See "Key Parameters" for full details.
   [$c['buildType'], $c['buildName'], $c['buildDir'], $c['civiVer'], $c['junitDir'], $c['timeFunc'], $c['phpunitArgs']];
 
   $io->section("\nReport on environment");
   $taskr->passthru('civibuild env-info');
 
-  if ($loco) {
-    $autoStopLoco = $c['locoStart()']();
-  }
+  $stopDaemons = $c['startDaemons()']();
 
   $io->section("\nReset working data");
   if (is_dir($c['junitDir'])) {
@@ -172,7 +170,22 @@ $c['timeFunc'] = function(): string {
 ###############################################################################
 ## Utilties
 
-$c['locoStart()'] = function(SymfonyStyle $io, Taskr $taskr, InputInterface $input): AutoCleanup {
+$c['startDaemons()'] = function() use ($c): AutoCleanup {
+  $mode = getenv('CIVI_TEST_MODE');
+  switch ($mode ?: '') {
+    case 'loco-start-stop':
+      return $c['startLocoDaemons()']();
+
+    case '':
+      return new AutoCleanup(function() {
+      });
+
+    default:
+      throw new \RuntimeException('Invalid CIVI_TEST_MODE: ' . $mode);
+  }
+};
+
+$c['startLocoDaemons()'] = function(SymfonyStyle $io, Taskr $taskr, InputInterface $input): AutoCleanup {
   $io->section("\nSetup daemons");
   if (!$input->getOption('keep')) {
     $taskr->passthru('loco clean');
