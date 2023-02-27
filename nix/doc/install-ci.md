@@ -28,8 +28,8 @@ sh <(curl https://nixos.org/nix/install) --daemon
 
 ## Get the config file
 sudo -i bash
-git clone https://github.com/civicrm/civicrm-buildkit /root/buildkit
-cd /root/buildkit
+git clone https://github.com/civicrm/civicrm-buildkit /opt/buildkit
+cd /opt/buildkit
 
 ## Optional: If you want to change the ramdisk config, then create files like:
 mkdir /etc/bknix-ci
@@ -62,7 +62,7 @@ For the lighter update:
 
 ```bash
 sudo -i bash
-cd /root/buildkit/
+cd /opt/buildkit/
 ./nix/bin/update-ci-buildkit.sh
 ```
 
@@ -70,7 +70,7 @@ For a the thorough update:
 
 ```bash
 sudo -i bash
-cd /root/buildkit/
+cd /opt/buildkit/
 ./nix/bin/reset-ci.sh
 ```
 

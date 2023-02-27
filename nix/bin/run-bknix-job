@@ -25,7 +25,10 @@ function run_bknix_mock() {
 
 function run_bknix_main() {
   if [ -z "$BKNIX_JOBS" ]; then
-    BKNIX_JOBS="/opt/bknix-ci/jobs"
+    BKNIX_JOBS="/opt/buildkit/src/jobs"
+  fi
+  if [ ! -r "$BKNIX_JOBS/common.sh" ]; then
+    run_bknix_fatal "File $BKNIX_JOBS/common.sh is not readable."
   fi
 
   if [ "$1" = "--mock" ]; then
