@@ -163,9 +163,14 @@ function build_one_to_throw_away() {
 function runner_trial() {
   export EXECUTOR_NUMBER=0
   eval $( use-bknix min -e -N )
+  BLDNAME="build-$EXECUTOR_NUMBER"
+
   cd ~/bknix
+  if [ -d "build/$BLDNAME" ]; then
+    rm -rf "build/$BLDNAME" "build/$BLDNAME.sh"
+  fi
   loco start
-  loco-mysql-wait 600 && (civibuild create dempty)
+  loco-mysql-wait 600 && (civibuild create "$BLDNAME" --type drupal-empty)
   loco clean
 }
 
