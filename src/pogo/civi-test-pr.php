@@ -112,10 +112,12 @@ $c['buildDir'] = function (string $buildName): string {
 // Ex: "drupal-clean" or "wp-demo"
 $c['buildType'] = function (SymfonyStyle $io, InputInterface $input) use ($c) {
   $default = $input->getOption('type');
-  if (empty($default) && preg_match(';/civicrm/(civicrm-[-\w]+)/pull;', $c['patchUrl'], $m)) {
+  if (empty($default) && $input->hasOption('patch') && preg_match(';/civicrm/(civicrm-[-\w]+)/pull;', $c['patchUrl'], $m)) {
     $default = $c['defaultBuildTypes'][$m[1]] ?? NULL;
   }
-  $default = empty($default) ? $c['defaultBuildTypes']['*'] : $default;
+  if (empty($default)) {
+    $default = $c['defaultBuildTypes']['*'];
+  }
   return $io->ask('Build Type', $default);
 };
 

@@ -98,9 +98,25 @@ $c['buildDir'] = function (string $buildName): string {
 };
 
 // Ex: "drupal-clean" or "wp-demo"
-$c['buildType'] = function (SymfonyStyle $io, InputInterface $input) {
-  $default = $input->getOption('type') ? $input->getOption('type') : 'drupal-clean';
+$c['buildType'] = function (SymfonyStyle $io, InputInterface $input) use ($c) {
+  $default = $input->getOption('type');
+  if (empty($default) && $input->hasOption('patch') && preg_match(';/civicrm/(civicrm-[-\w]+)/pull;', $c['patchUrl'], $m)) {
+    $default = $c['defaultBuildTypes'][$m[1]] ?? NULL;
+  }
+  if (empty($default)) {
+    $default = $c['defaultBuildTypes']['*'];
+  }
   return $io->ask('Build Type', $default);
+};
+
+$c['defaultBuildTypes'] = function() {
+  // If testing a PR on civicrm-* repo, we may use the repo-name to decide on the build-type.
+  return [
+    'civicrm-backdrop' => 'backdrop-clean',
+    'civicrm-drupal-8' => 'drupal9-clean',
+    'civicrm-wordpress' => 'wp-demo',
+    '*' => 'drupal-clean',
+  ];
 };
 
 // Ex: "5.55" or "master"
