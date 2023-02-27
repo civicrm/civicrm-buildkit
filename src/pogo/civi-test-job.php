@@ -38,11 +38,6 @@ $c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--civi-ver=] [--l
   // First, resolve key parameters before we start composing commands. See "Key Parameters" for full details.
   [$c['buildType'], $c['buildName'], $c['buildDir'], $c['civiVer'], $c['junitDir'], $c['timeFunc'], $c['phpunitArgs']];
 
-  if (!preg_match(';^(5\.|master);', $c['civiVer'])) {
-    $io->writeln(sprintf('Test script does not support version <comment>%s</comment>.', $c['civiVer']));
-    return 1;
-  }
-
   $io->section("\nReport on environment");
   $taskr->passthru('civibuild env-info');
 
@@ -80,7 +75,6 @@ $c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--civi-ver=] [--l
 ###############################################################################
 ## Key parameters
 
-
 // Ex: "build-0"
 $c['buildName'] = function (SymfonyStyle $io): string {
   $default = is_numeric(getenv('EXECUTOR_NUMBER')) ? ('build-' . getenv('EXECUTOR_NUMBER')) : 'build-x';
@@ -111,8 +105,25 @@ $c['buildType'] = function (SymfonyStyle $io, InputInterface $input) {
 
 // Ex: "5.55" or "master"
 $c['civiVer'] = function (SymfonyStyle $io, InputInterface $input): string {
-  $default = $input->getOption('civi-ver') ? $input->getOption('civi-ver') : 'master';
-  return $io->ask('CiviCRM Version', $default);
+  if ($input->hasOption('civi-ver') && $input->getOption('civi-ver')) {
+    $default = $input->getOption('civi-ver');
+  }
+  elseif (!empty(getenv('ghprbTargetBranch'))) {
+    $default = getenv('ghprbTargetBranch');
+    // TODO: Consider removing this and passing `--civi-ver=$ghprbTargetBranch`
+  }
+  else {
+    $default = 'master';
+  }
+
+  // Repos like "civicrm-drupal" and "civicrm-backdrop" have extra "1.x-" or "7.x-".
+  $default = preg_replace(';^\d.x-;', '', $default);
+
+  $result = $io->ask('CiviCRM Version', $default);
+  if (!preg_match(';^(5\.|master);', $result)) {
+    throw new \Exception(sprintf('Test script does not support version "%s".', $result));
+  }
+  return $result;
 };
 
 // Ex: ['--exclude-group', 'ornery']
