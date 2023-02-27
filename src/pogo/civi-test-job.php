@@ -30,6 +30,9 @@ $c = clippy()->register(plugins());
 $phpunitSynopsis = '[--group=] [--exclude-group=] [--filter=]';
 $phpunitValues = ['group', 'exclude-group', 'filter'];
 $phpunitFlags = [];
+// $phpunitSynopsis .= ' [--stop-on-defect] [--stop-on-error] [--stop-on-failure] [--stop-on-warning] [--stop-on-risky] [--stop-on-skipped] [--stop-on-incomplete] [--fail-on-warning] [--fail-on-risky]';
+// $phpunitFlags = ['stop-on-defect', 'stop-on-error', 'stop-on-failure', 'stop-on-warning', 'stop-on-risky', 'stop-on-skipped', 'stop-on-incomplete', 'fail-on-warning', 'fail-on-risky'];
+
 
 ###############################################################################
 ## Main
