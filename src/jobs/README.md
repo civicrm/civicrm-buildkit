@@ -61,7 +61,7 @@ Suppose you have a job `CiviCRM-Foo-Bar` in Jenkins and want to migrate the scri
 
 * From https://test.civicrm.org/job/CiviCRM-Foo-Bar/configure, copy the existing shell script
 * Create a file `src/jobs/CiviCRM-Foo-Bar.job`. Paste the script.
-* At the top, add docblocks and assertions for any special environment variables. Common ones might be `CIVIVER`, `ghprbTargetBranch, or `ghprbPullId`.
+* At the top, add docblocks and assertions for any special environment variables. Common ones might be `CIVIVER`, `ghprbTargetBranch`, or `ghprbPullId`.
 * Decide where/how to start the bknix environment. Add one of these near the top:
     * `use_bknix` (*load requested bknix profile*)
     * `use_bknix_tmp` (*as above; additionally, if required, it will transactionally start services in the background*)
@@ -76,6 +76,7 @@ Suppose you have a job `CiviCRM-Foo-Bar` in Jenkins and want to migrate the scri
     * The bash script should look like this:
         ```
         #!/bin/bash
+        ## See https://github.com/civicrm/civicrm-buildkit/tree/master/src/jobs
         set -e
         if [ -e $HOME/.profile ]; then . $HOME/.profile; fi
         run-bknix-job "$BKPROF" "CiviCRM-Foo-Bar"
