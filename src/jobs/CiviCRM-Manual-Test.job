@@ -45,7 +45,7 @@ set -x
 civibuild env-info
 
 ## Reset (cleanup after previous tests)
-clean_legacy_workspace "$WORKSPACE/junit" "$WORKSPACE/civibuild-html""$WORKSPACE/last-scan.json" "$WORKSPACE/new-scan.json"
+clean_legacy_workspace "$WORKSPACE/junit" "$WORKSPACE/civibuild-html" "$WORKSPACE/last-scan.json" "$WORKSPACE/new-scan.json"
 init_std_workspace
 if [ -d "$BKITBLD/$BLDNAME" ]; then
   echo y | civibuild destroy "$BLDNAME"
