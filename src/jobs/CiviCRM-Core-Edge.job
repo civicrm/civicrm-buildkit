@@ -1,8 +1,9 @@
 #!/bin/bash
 set -e
 
-BKPROF="edge"
-SUITES="all"
+## Example usage:
+##
+## $ env CIVIVER=master SUITES=phpunit-e2e run-bknix-job --mock edge CiviCRM-Core-Edge
 
 #################################################
 ## Environment variables
@@ -11,6 +12,7 @@ SUITES="all"
 ## WORKSPACE: The path where Jenkins stores data for this job
 ## CIVIVER: The version of CiviCRM to install, expressed as a branch or tag (e.g. `master`, `5.59`, `5.57.0`)
 ## SUITES: Space-limited list of test-suites (e.g. `phpunit-e2e phpunit-civi`)
+SUITES=${SUITES:-all}
 assert_common EXECUTOR_NUMBER WORKSPACE CIVIVER SUITES
 
 #################################################
@@ -21,13 +23,11 @@ use_bknix_tmp
 BLDNAME="build-$EXECUTOR_NUMBER"
 
 ## Reset (cleanup after previous tests)
-[ -d "$WORKSPACE/junit" ] && rm -rf "$WORKSPACE/junit"
-[ -d "$WORKSPACE/civibuild-html" ] && rm -rf "$WORKSPACE/civibuild-html"
+clean_legacy_workspace "$WORKSPACE/junit" "$WORKSPACE/civibuild-html" "$WORKSPACE/last-scan.json" "$WORKSPACE/new-scan.json"
+init_std_workspace
 if [ -d "$BKITBLD/$BLDNAME" ]; then
   echo y | civibuild destroy "$BLDNAME"
 fi
-mkdir "$WORKSPACE/junit"
-mkdir "$WORKSPACE/civibuild-html"
 
 ## Report details about the test environment
 civibuild env-info
@@ -43,10 +43,10 @@ civibuild install "$BLDNAME" \
 
 ## Report details about this build of the application
 civibuild show "$BLDNAME" \
-  --html "$WORKSPACE/civibuild-html" \
-  --last-scan "$WORKSPACE/last-scan.json" \
-  --new-scan "$WORKSPACE/new-scan.json"
-cp "$WORKSPACE/new-scan.json" "$WORKSPACE/last-scan.json"
+  --html "$WORKSPACE_HTML/" \
+  --last-scan "$WORKSPACE_BUILD/last-scan.json" \
+  --new-scan "$WORKSPACE_BUILD/new-scan.json"
+cp "$WORKSPACE_BUILD/new-scan.json" "$WORKSPACE_BUILD/last-scan.json"
 
-civi-test-run -b "$BLDNAME" -j "$WORKSPACE/junit" $SUITES
+civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" $SUITES
 exit $?
