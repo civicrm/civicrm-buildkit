@@ -79,16 +79,26 @@ function use_bknix_tmp() {
 ## Setup the standard build folders within the workspace.
 ## Output variables: WORKSPACE_BUILD WORKSPACE_HTML WORKSPACE_JUNIT WORKSPACE_LOG WORKSPACE_DIST
 function init_std_workspace() {
-  if [ -d "$WORKSPACE/build" ]; then
-    rm -rf "$WORKSPACE/build"
-  fi
   WORKSPACE_BUILD="$WORKSPACE/build"
   WORKSPACE_HTML="$WORKSPACE_BUILD/html"
   WORKSPACE_JUNIT="$WORKSPACE_BUILD/junit"
   WORKSPACE_LOG="$WORKSPACE_BUILD/log"
   WORKSPACE_DIST="$WORKSPACE_BUILD/dist"
   WORKSPACE_CHECKSTYLE="$WORKSPACE_BUILD/checkstyle"
-  mkdir "$WORKSPACE_BUILD" "$WORKSPACE_JUNIT" "$WORKSPACE_HTML" "$WORKSPACE_LOG" "$WORKSPACE_DIST" "$WORKSPACE_CHECKSTYLE"
+
+  ## WORKSPACE and all the other Jenkins vars are exported. We might as well export these...
+  export WORKSPACE_BUILD WORKSPACE_HTML WORKSPACE_JUNIT WORKSPACE_LOG WORKSPACE_DIST WORKSPACE_CHECKSTYLE
+
+  if [ ! -d "$WORKSPACE_BUILD" ]; then
+    mkdir "$WORKSPACE_BUILD"
+  fi
+
+  for dir in "$WORKSPACE_JUNIT" "$WORKSPACE_HTML" "$WORKSPACE_LOG" "$WORKSPACE_DIST" "$WORKSPACE_CHECKSTYLE" ; do
+    if [ -d "$dir" ]; then
+      rm -rf "$dir"
+    fi
+    mkdir "$dir"
+  done
 }
 
 ## Remove old files
