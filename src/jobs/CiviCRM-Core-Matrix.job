@@ -2,6 +2,10 @@
 set -e
 assert_jenkins
 
+## Example usage:
+##
+## $ env CIVIVER=master SUITES=phpunit-e2e run-bknix-job --mock max CiviCRM-Core-Matrix
+
 #################################################
 ## Environment variables
 
@@ -17,18 +21,15 @@ assert_regex '^[ 0-9a-z\.-]\+$' "$SUITES"
 use_bknix_tmp
 
 BLDNAME="build-$EXECUTOR_NUMBER"
-EXITCODE=0
 
 export TIME_FUNC="linear:500"
 
 ## Reset (cleanup after previous tests)
-[ -d "$WORKSPACE/junit" ] && rm -rf "$WORKSPACE/junit"
-[ -d "$WORKSPACE/civibuild-html" ] && rm -rf "$WORKSPACE/civibuild-html"
+clean_legacy_workspace "$WORKSPACE/junit" "$WORKSPACE/civibuild-html"
+init_std_workspace
 if [ -d "$BKITBLD/$BLDNAME" ]; then
   echo y | civibuild destroy "$BLDNAME"
 fi
-mkdir "$WORKSPACE/junit"
-mkdir "$WORKSPACE/civibuild-html"
 
 ## Report details about the test environment
 civibuild env-info
@@ -42,5 +43,5 @@ civibuild download "$BLDNAME" \
 civibuild install "$BLDNAME" \
   --admin-pass "n0ts3cr3t"
 
-civi-test-run -b "$BLDNAME" -j "$WORKSPACE/junit" $SUITES
+civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" $SUITES
 exit $?
