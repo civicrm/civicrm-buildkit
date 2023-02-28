@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-assert_jenkins
+assert_common EXECUTOR_NUMBER WORKSPACE
 use_bknix_tmp
 
 echo "Hello world! Did you know that HTTPD_PORT=$HTTPD_PORT?"

@@ -34,8 +34,9 @@ For details about extra variables, see the start of the `*.job` file.
 
 ## Guidelines
 
-* Jobs _should_ begin with assertions about any special variables.
+* Jobs _should_ begin with assertions about any required variables.
     * For example:
+        * `assert_common WORKSPACE EXECUTOR_NUMBER CIVIVER`
         * `assert_regex '^[0-9a-z\.-]\+$' "$CIVIVER"`
         * `assert_regex '^\(\|https://github.com/civicrm/civicrm-[a-z]*/pull/[0-9]\+/*\)$' "$PATCH"`
     * If you are going to run a job locally, then skim the top for a list of expected variables.

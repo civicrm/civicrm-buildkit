@@ -22,13 +22,35 @@ function assert_regex() {
   fi
 }
 
-
-## Check that common Jenkins variables are set
-function assert_jenkins() {
-  assert_regex '^[0-9]\+$' "$EXECUTOR_NUMBER" "EXECUTOR_NUMBER must be a number. (If you are running manually, consider using --mock.)"
-  if [ -z "$WORKSPACE" -o ! -d "$WORKSPACE" ]; then
-    fatal "WORKSPACE must be a valid path. (If you are running manually, consider using --mock.)"
-  fi
+## Assert that a list of common variables are well defined.
+##
+## usage: assert_common <var1 var2 var3...>
+## example: assert_common CIVIVER BLDTYPE
+function assert_common() {
+  for VAR in "$@" ; do
+    case "$VAR" in
+      BLDTYPE)
+        assert_regex '^[0-9a-z\.-]\+$' "$BLDTYPE" "Missing or invalid BLDTYPE"
+        ;;
+      CIVIVER)
+        assert_regex '^[0-9a-z\.-]\+$' "$CIVIVER" "Missing or invalid CIVIVER"
+        ;;
+      EXECUTOR_NUMBER)
+        assert_regex '^[0-9]\+$' "$EXECUTOR_NUMBER" "EXECUTOR_NUMBER must be a number. (If you are running manually, consider using --mock.)"
+        ;;
+      SUITES)
+        assert_regex '^[ 0-9a-z\.-]\+$' "$SUITES" "Missing or invalid SUITES"
+        ;;
+      WORKSPACE)
+        if [ -z "$WORKSPACE" -o ! -d "$WORKSPACE" ]; then
+          fatal "WORKSPACE must be a valid path. (If you are running manually, consider using --mock.)"
+        fi
+        ;;
+      *)
+        fatal "Cannot validate unrecognized variable $VAR"
+        ;;
+    esac
+  done
 }
 
 ## Load the BKPROF into the current shell
