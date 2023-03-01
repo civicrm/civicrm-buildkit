@@ -23,7 +23,7 @@ case "$1" in
     PRFDIR=$(find_profile)
 
     if [ -e "$TZDIR" ]; then
-      echo "export TZDIR='$TZDIR'"
+      echo "export TZDIR='$TZDIR' ;"
     fi
     if [ -e "$PRFDIR/lib/locale/locale-archive" ]; then
       echo "export LOCALE_ARCHIVE='$PRFDIR/lib/locale/locale-archive' ;"
