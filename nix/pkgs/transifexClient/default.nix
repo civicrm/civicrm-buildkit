@@ -6,12 +6,12 @@ buildGoModule rec {
 
   src = fetchFromGitHub {
     owner = "transifex";
-    repo = "transifex-cli";
-    rev = "${version}";
-    sha256 = "FIXME";
+    repo = "cli";
+    rev = "v${version}";
+    sha256 = "76mGMf70MD3aLgMCNqVyjrx8Rx5aIT+vYQGsPYjEM28=";
   };
 
-  modSha256 = "FIXME";
+  vendorSha256 = "rcimaHr3fFeHSjZXw1w23cKISCT+9t8SgtPnY/uYGAU=";
 
   ## subPackages = [ "cmd" ]; ## random copy-paste, no idea what this is for
 
