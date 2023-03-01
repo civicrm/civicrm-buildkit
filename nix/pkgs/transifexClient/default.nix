@@ -1,9 +1,22 @@
-# with import <nixpkgs> {};
-with (import ../../pins).default;
-with python37.pkgs;
+{ goPackages, lib, fetchFromGitHub, six, requests }:
+buildGoModule rec {
+  pname = "transifex-cli";
+  version = "1.6.5";
 
-let
+  src = fetchFromGitHub {
+    owner = "transifex";
+    repo = "transifex-cli";
+    rev = "${version}";
+    sha256 = "FIXME"; // ?
+  };
 
-  transifexClient = python37.pkgs.callPackage ./transifexClient.nix { };
+  modSha256 = "FIXME"; // ?
 
-in transifexClient
+  subPackages = [ "cmd" ]; // random copy-paste, no idea what this is for
+
+  meta = with stdenv.lib; {
+    description = "Transifex CLI";
+    homepage = "https://github.com/transifex/transifex-cli";
+    license = licenses.asl20;
+  };
+}
