@@ -1,4 +1,4 @@
-{ goPackages, lib, fetchFromGitHub, six, requests }:
+{ goPackages, lib, fetchFromGitHub }:
 buildGoModule rec {
   pname = "transifex-cli";
   version = "1.6.5";
