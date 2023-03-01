@@ -1,40 +1,42 @@
 #!/bin/bash
-set -ex
+set -e
 
-if [ -e $HOME/.profile ]; then . $HOME/.profile; fi
-[ -z `which await-bknix` ] || await-bknix "$USER" "edge"
-eval $(use-bknix edge)
+## Example usage:
+##
+## $ env CIVIVER=master BLDTYPE=drupal-clean run-bknix-job --mock edge CiviCRM-E2E-Edge
 
-## Job Name: CiviCRM-Core-Matrix
-## Job Description: Periodically run the unit tests on all major
-##   major branches of civicrm-core.git
-## Job GitHub Project URL: https://github.com/civicrm/civicrm-core
-## Job Source Code Management: None
-## Job Triggers: Scheduled
-## Job xUnit Files: WORKSPACE/junit/*.xml
-## Useful vars: $CIVIVER (e.g. "4.5", "4.6", "master")
-## Pre-requisite: Install civicrm-buildkit; configure amp
-## Pre-requisite: Configure /etc/hosts and Apache with "build-1.l", "build-2.l", ..., "build-6.l"
+#################################################
+## Environment variables
+
+## EXECUTOR_NUMBER: The number of this concurrent process
+## WORKSPACE: The path where Jenkins stores data for this job
+## BLDTYPE: The type of civibuild site to create (e.g. `drupal-clean` or `wp-demo`)
+## CIVIVER: The version of CiviCRM to install, expressed as a branch or tag (e.g. `master`, `5.59`, `5.57.0`)
+## SUITES: Space-limited list of test-suites (e.g. `phpunit-e2e phpunit-civi`)
+SUITES="${SUITES:-phpunit-e2e phpunit-authx}"
+assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE CIVIVER SUITES
+
+#################################################
+## Main
+
+use_bknix_tmp
 
 BLDNAME="build-$EXECUTOR_NUMBER"
-EXITCODE=0
 
 ## Reset (cleanup after previous tests)
-[ -d "$WORKSPACE/junit" ] && rm -rf "$WORKSPACE/junit"
-[ -d "$WORKSPACE/civibuild-html" ] && rm -rf "$WORKSPACE/civibuild-html"
+clean_legacy_workspace "$WORKSPACE/junit" "$WORKSPACE/civibuild-html" "$WORKSPACE/last-scan.json" "$WORKSPACE/new-scan.json"
+init_std_workspace
 if [ -d "$BKITBLD/$BLDNAME" ]; then
   echo y | civibuild destroy "$BLDNAME"
 fi
-mkdir "$WORKSPACE/junit"
-mkdir "$WORKSPACE/civibuild-html"
 
 ## Report details about the test environment
 civibuild env-info
 
 ## Download application (with civibuild)
-  civibuild download "$BLDNAME" \
-    --civi-ver "$CIVIVER" \
-    --type "$BLDTYPE"
+civibuild download "$BLDNAME" \
+  --civi-ver "$CIVIVER" \
+  --type "$BLDTYPE"
 
 ## Install application (with civibuild)
 civibuild install "$BLDNAME" \
@@ -42,12 +44,11 @@ civibuild install "$BLDNAME" \
 
 ## Report details about this build of the application
 civibuild show "$BLDNAME" \
-  --html "$WORKSPACE/civibuild-html" \
-  --last-scan "$WORKSPACE/last-scan.json" \
-  --new-scan "$WORKSPACE/new-scan.json"
-cp "$WORKSPACE/new-scan.json" "$WORKSPACE/last-scan.json"
+  --html "$WORKSPACE_HTML" \
+  --last-scan "$WORKSPACE_BUILD/last-scan.json" \
+  --new-scan "$WORKSPACE_BUILD/new-scan.json"
+cp "$WORKSPACE_BUILD/new-scan.json" "$WORKSPACE_BUILD/last-scan.json"
 
 ## Execute tests
-SUITES="phpunit-e2e phpunit-authx"
-civi-test-run -b "$BLDNAME" -j "$WORKSPACE/junit" $SUITES
+civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" $SUITES
 exit $?
