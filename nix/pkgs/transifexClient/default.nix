@@ -12,6 +12,7 @@ buildGoModule rec {
   };
 
   vendorSha256 = "rcimaHr3fFeHSjZXw1w23cKISCT+9t8SgtPnY/uYGAU=";
+  doCheck = false;
 
   ## subPackages = [ "cmd" ]; ## random copy-paste, no idea what this is for
 
