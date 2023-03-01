@@ -1,4 +1,5 @@
-{ goPackages, lib, fetchFromGitHub }:
+with (import ../../pins).default;
+
 buildGoModule rec {
   pname = "transifex-cli";
   version = "1.6.5";
@@ -14,7 +15,7 @@ buildGoModule rec {
 
   ## subPackages = [ "cmd" ]; ## random copy-paste, no idea what this is for
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Transifex CLI";
     homepage = "https://github.com/transifex/transifex-cli";
     license = licenses.asl20;
