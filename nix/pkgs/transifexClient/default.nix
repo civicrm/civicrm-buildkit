@@ -7,12 +7,12 @@ buildGoModule rec {
     owner = "transifex";
     repo = "transifex-cli";
     rev = "${version}";
-    sha256 = "FIXME"; // ?
+    sha256 = "FIXME";
   };
 
-  modSha256 = "FIXME"; // ?
+  modSha256 = "FIXME";
 
-  subPackages = [ "cmd" ]; // random copy-paste, no idea what this is for
+  ## subPackages = [ "cmd" ]; ## random copy-paste, no idea what this is for
 
   meta = with stdenv.lib; {
     description = "Transifex CLI";
