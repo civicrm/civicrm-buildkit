@@ -12,6 +12,9 @@ buildGoModule rec {
   };
 
   vendorSha256 = "rcimaHr3fFeHSjZXw1w23cKISCT+9t8SgtPnY/uYGAU=";
+  postBuild = ''
+    mv $GOPATH/bin/cli $GOPATH/bin/tx
+  '';
   doCheck = false;
 
   ## subPackages = [ "cmd" ]; ## random copy-paste, no idea what this is for
