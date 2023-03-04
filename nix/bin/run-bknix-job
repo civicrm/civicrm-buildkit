@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 
 function run_bknix_help() {
-  echo "usage: run-bknix-job [--mock] <PROFILE> <JOB>"
+  echo "usage: run-bknix-job [--mock] <PROFILE> [<JOB_NAME>]"
   echo
+  echo "example: run-bknix-job min CiviRM-Core-Matrix"
   echo "example: run-bknix-job --mock min CiviRM-Core-Matrix"
-  echo "example: run-bknix-job \"\$BKPROF\" \"\$JOB_NAME\""
+  echo "example: run-bknix-job min"
+  echo
+  echo "tip: If <JOB_NAME> is omitted, and if you execute within a real Jenkins"
+  echo "environment, then it will use the active \$JOB_NAME."
 }
 
 function run_bknix_fatal() {
@@ -31,10 +35,11 @@ function run_bknix_main() {
   if [ ! -r "$BKNIX_JOBS/common.sh" ]; then
     run_bknix_fatal "File $BKNIX_JOBS/common.sh is not readable."
   fi
+  export BKNIX_JOBS
 
+  IS_MOCK_JENKINS=
   if [ "$1" = "--mock" ]; then
     shift
-    run_bknix_mock
     IS_MOCK_JENKINS=1
   fi
 
@@ -43,23 +48,35 @@ function run_bknix_main() {
     *) run_bknix_fatal "Missing or invalid PROFILE" ; ;;
   esac
 
-  local job="$2"
-  if [ ! -e "$BKNIX_JOBS/$job.job" ]; then
-    run_bknix_fatal "Missing or invalid JOB"
+  ## JOB_NAME can be complicated (when using matrix jobs). We want a trimmed-down name.
+  BKNIX_JOB_NAME="$2"
+  if [ -z "$BKNIX_JOB_NAME" ]; then
+    BKNIX_JOB_NAME="$JOB_NAME"
+  fi
+  BKNIX_JOB_NAME=$(echo "$BKNIX_JOB_NAME" | cut -d '/' -f 1)
+  BKNIX_JOB_SCRIPT="$BKNIX_JOBS/$BKNIX_JOB_NAME.job"
+  export BKNIX_JOB_SCRIPT BKNIX_JOB_NAME
+
+  if [ ! -e "$BKNIX_JOB_SCRIPT" ]; then
+    run_bknix_fatal "Missing or invalid JOB_NAME. No such file \"$BKNIX_JOB_SCRIPT\"."
+  fi
+
+  if [ -n "$IS_MOCK_JENKINS" ]; then
+    run_bknix_mock
   fi
 
   if which mktemp >> /dev/null ; then
     ## If there's a redeploy while bash is running, then bash gets stupid. Prefer to run bash scripts in temp files.
     local tmpfile=$(mktemp -t .run-bknix-job.XXXXXXXX)
+    trap "rm -f \"$tmpfile\"" EXIT
     cat "$BKNIX_JOBS/common.sh" >> $tmpfile
     echo >> $tmpfile
-    cat "$BKNIX_JOBS/$job.job" >> $tmpfile
+    cat "$BKNIX_JOB_SCRIPT" >> $tmpfile
     source "$tmpfile"
-    rm -f "$tmpfile"
   else
     ## This system doesn't have mktemp. Too bad.
     source "$BKNIX_JOBS/common.sh"
-    source "$BKNIX_JOBS/$job.job"
+    source "$BKNIX_JOB_SCRIPT"
   fi
 }
 

@@ -79,7 +79,7 @@ Suppose you have a job `CiviCRM-Foo-Bar` in Jenkins and want to migrate the scri
         ## See https://github.com/civicrm/civicrm-buildkit/tree/master/src/jobs
         set -e
         if [ -e $HOME/.profile ]; then . $HOME/.profile; fi
-        run-bknix-job "$BKPROF" "CiviCRM-Foo-Bar"
+        run-bknix-job "$BKPROF"
         exit $?
         ```
     * If you converted to "standard" workspace layout, then update any "Post-build Actions" to read from the standard locations, e.g.
