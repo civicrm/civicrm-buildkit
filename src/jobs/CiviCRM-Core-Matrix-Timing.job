@@ -1,35 +1,34 @@
 #!/bin/bash
-set -ex
+set -e
 
-if [ -e $HOME/.profile ]; then . $HOME/.profile; fi
-[ -z `which await-bknix` ] || await-bknix "$USER" "$BKPROF"
-case "$BKPROF" in min|max|dfl) eval $(use-bknix "$BKPROF") ;; esac
-if [ -z "$BKITBLD" ]; then echo "Invalid BKPROF"; exit 1; fi
+## Example usage:
+##
+## $ env CIVIVER=master SUITES=phpunit-e2e TIME_FUNC=linear:500 run-bknix-job --mock max CiviCRM-Core-Matrix
 
-## Job Name: CiviCRM-Core-Matrix
-## Job Description: Periodically run the unit tests on all major
-##   major branches of civicrm-core.git
-## Job GitHub Project URL: https://github.com/civicrm/civicrm-core
-## Job Source Code Management: None
-## Job Triggers: Scheduled
-## Job xUnit Files: WORKSPACE/junit/*.xml
-## Useful vars: $CIVIVER (e.g. "4.5", "4.6", "master")
-## Pre-requisite: Install civicrm-buildkit; configure amp
-## Pre-requisite: Configure /etc/hosts and Apache with "build-1.l", "build-2.l", ..., "build-6.l"
+#################################################
+## Environment variables
+
+## EXECUTOR_NUMBER: The number of this concurrent process
+## WORKSPACE: The path where Jenkins stores data for this job
+## CIVIVER: The version of CiviCRM to install, expressed as a branch or tag (e.g. `master`, `5.59`, `5.57.0`)
+## SUITES: Space-limited list of test-suites (e.g. `phpunit-e2e phpunit-civi`)
+## TIME_FUNC: Describe how to manipulate time (e.g. `linear:500` or `prng:1250`)
+assert_common EXECUTOR_NUMBER WORKSPACE CIVIVER SUITES TIME_FUNC
+
+#################################################
+## Main
+
+use_bknix_tmp
 
 BLDNAME="build-$EXECUTOR_NUMBER"
-EXITCODE=0
-
 echo "TIME_FUNC=$TIME_FUNC"
 
 ## Reset (cleanup after previous tests)
-[ -d "$WORKSPACE/junit" ] && rm -rf "$WORKSPACE/junit"
-[ -d "$WORKSPACE/civibuild-html" ] && rm -rf "$WORKSPACE/civibuild-html"
+clean_legacy_workspace "$WORKSPACE/junit" "$WORKSPACE/civibuild-html"  "$WORKSPACE/new-scan.json" "$WORKSPACE/last-scan.json"
+init_std_workspace
 if [ -d "$BKITBLD/$BLDNAME" ]; then
   echo y | civibuild destroy "$BLDNAME"
 fi
-mkdir "$WORKSPACE/junit"
-mkdir "$WORKSPACE/civibuild-html"
 
 ## Report details about the test environment
 civibuild env-info
@@ -45,31 +44,10 @@ civibuild install "$BLDNAME" \
 
 ## Report details about this build of the application
 civibuild show "$BLDNAME" \
-  --html "$WORKSPACE/civibuild-html" \
-  --last-scan "$WORKSPACE/last-scan.json" \
-  --new-scan "$WORKSPACE/new-scan.json"
-cp "$WORKSPACE/new-scan.json" "$WORKSPACE/last-scan.json"
+  --html "$WORKSPACE_HTML" \
+  --last-scan "$WORKSPACE_BUILD/last-scan.json" \
+  --new-scan "$WORKSPACE_BUILD/new-scan.json"
+cp "$WORKSPACE_BUILD/new-scan.json" "$WORKSPACE_BUILD/last-scan.json"
 
-## Detect & execute tests
-#pushd "$BKITBLD/$BLDNAME/web/sites/all/modules/civicrm"
-#  SUITES="phpunit-crm phpunit-api3 phpunit-civi upgrade"
-
-#  if [ -f "tests/phpunit/api/v4/AllTests.php" ]; then
-#    SUITES="$SUITES phpunit-api4"
-#  fi
-
-#  if [ -f "tests/phpunit/E2E/AllTests.php" ]; then
-#    SUITES="$SUITES phpunit-e2e"
-#  else
-#    echo "Skip unavailable suite: phpunit-e2e"
-#  fi
-
-#  if [ -f "karma.conf.js" ]; then
-#    SUITES="$SUITES karma"
-#  else
-#    echo "Skip unavailable suite: karma"
-#  fi
-#popd
-
-civi-test-run -b "$BLDNAME" -j "$WORKSPACE/junit" $SUITES
+civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" $SUITES
 exit $?

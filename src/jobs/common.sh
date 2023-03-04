@@ -41,6 +41,9 @@ function assert_common() {
       SUITES)
         assert_regex '^[ 0-9a-z\.-]\+$' "$SUITES" "Missing or invalid SUITES"
         ;;
+      TIME_FUNC)
+        assert_regex '^[ 0-9a-z:\.-]\+$' "$TIME_FUNC" "Missing or invalid TIME_FUNC"
+        ;;
       WORKSPACE)
         if [ -z "$WORKSPACE" -o ! -d "$WORKSPACE" ]; then
           fatal "WORKSPACE must be a valid path. (If you are running manually, consider using --mock.)"
