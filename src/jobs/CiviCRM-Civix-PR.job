@@ -1,0 +1,95 @@
+#!/bin/bash
+set -ex
+
+if [ -e $HOME/.profile ]; then . $HOME/.profile; fi
+[ -z `which await-bknix` ] || await-bknix "$USER" "$BKPROF"
+case "$BKPROF" in min|max|dfl) eval $(use-bknix "$BKPROF") ;; esac
+if [ -z "$BKITBLD" ]; then echo "Invalid BKPROF"; exit 1; fi
+
+## Job Name: CiviCRM-Civix-Matrix
+## Job Description: Periodically civix test suite
+## Job GitHub Project URL: https://github.com/totten/civix
+## Job Source Code Management: None
+## Job Triggers: Scheduled
+## Job xUnit Files: WORKSPACE/junit/*.xml
+## Useful vars: $CIVIVER (e.g. "4.5", "4.6", "master")
+## Pre-requisite: Install civicrm-buildkit; configure amp
+
+################################################
+## Setup environment
+BLDNAME="build-$EXECUTOR_NUMBER"
+export TIME_FUNC="linear:500"
+export CIVIX_WORKSPACE
+case "$BLDTYPE" in
+  drupal-clean) CIVIX_WORKSPACE="$BKITBLD/$BLDNAME/web/sites/all/modules/civicrm/ext/civixtest" ; ;;
+  drupal-demo) CIVIX_WORKSPACE="$BKITBLD/$BLDNAME/web/sites/all/modules/civicrm/ext/civixtest" ; ;;
+  wp-demo) CIVIX_WORKSPACE="$BKITBLD/$BLDNAME/web/wp-content/plugins/civicrm/civicrm/ext/civixtest" ; ;;
+  *) echo "Unrecognized BLDTYPE=$BLDTYPE" ; exit 1 ; ;;
+esac
+
+#zecho "TODO: BLDNAME=$BLDNAMe BLDTYPE=$BLDTYPE"
+#z exit 0
+
+################################################
+## Reset (cleanup after previous tests)
+[ -d "$WORKSPACE/junit" ] && rm -rf "$WORKSPACE/junit"
+[ -d "$WORKSPACE/civibuild-html" ] && rm -rf "$WORKSPACE/civibuild-html"
+if [ -d "$BKITBLD/$BLDNAME" ]; then
+  echo y | civibuild destroy "$BLDNAME"
+fi
+mkdir "$WORKSPACE/junit"
+mkdir "$WORKSPACE/civibuild-html"
+
+################################################
+## Report details about the test environment
+civibuild env-info
+
+################################################
+## Work-around: Matrix constraints don't work here
+if [ "$BKPROF-$CIVIVER" = "max-5.51" ]; then
+  echo "The target version of civicrm-core ($CIVIVER) is not compatible with the environment ($BKPROF). Skipping."
+  exit 0
+fi
+
+################################################
+## Download application (with civibuild)
+case "$CIVIVER" in
+  5.51) civibuild download "$BLDNAME" --civi-ver "$CIVIVER" --type "$BLDTYPE" --patch "https://github.com/civicrm/civicrm-core/pull/23991" ; ;;
+  *) civibuild download "$BLDNAME" --civi-ver "$CIVIVER" --type "$BLDTYPE" ; ;;
+esac
+
+## Install application (with civibuild)
+civibuild install "$BLDNAME" \
+  --admin-pass "n0ts3cr3t"
+
+## Report details about this build of the application
+civibuild show "$BLDNAME" \
+  --html "$WORKSPACE/civibuild-html" \
+  --last-scan "$WORKSPACE/last-scan.json" \
+  --new-scan "$WORKSPACE/new-scan.json"
+cp "$WORKSPACE/new-scan.json" "$WORKSPACE/last-scan.json"
+
+## Setup civix and run tests
+mkdir "$BKITBLD/$BLDNAME/src"
+git clone "https://github.com/totten/civix" "$BKITBLD/$BLDNAME/src/civix"
+pushd "$BKITBLD/$BLDNAME/src/civix"
+  if [ -n "$ghprbPullId" ]; then
+    git scan am -N "https://github.com/totten/civix/pull/${ghprbPullId}"
+  fi
+
+  [ "$BKPROF" == "min" ] && CIVIX_TYPE="--src" || CIVIX_TYPE="--phar"
+  composer install
+  
+  case "$SUITE" in
+    make-snapshots)
+        ./scripts/make-snapshots.sh "$CIVIX_TYPE" --version HEAD --test
+        ;;
+    run-tests)
+      # DEBUG=2
+      ./scripts/run-tests.sh --debug --log-junit "$WORKSPACE/junit/civix-phpunit.xml"
+      ;;
+  esac
+
+popd
+
+exit $?
