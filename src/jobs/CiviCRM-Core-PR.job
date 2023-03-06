@@ -1,23 +1,24 @@
 #!/bin/bash
 set -e
 
-if [ -e $HOME/.profile ]; then . $HOME/.profile; fi
-[ -z `which await-bknix` ] || await-bknix "$USER" "dfl"
-eval $(use-bknix "dfl")
-if [ -z "$BKITBLD" ]; then echo "Invalid BKPROF"; exit 1; fi
-
-## Job Name: CiviCRM-Core-PR
-## Job Description: Monitor civicrm-core.git for proposed changes
-##    For any proposed changes, run a few "smoke tests"
-## Job GitHub Project URL: https://github.com/civicrm/civicrm-core
-## Job Source Code Management: None
-## Job Triggers: GitHub pull-requests
-## Job xUnit Files: WORKSPACE/output/*.xml
-## Useful vars: $ghprbTargetBranch, $ghprbPullId, $sha1
-## Pre-requisite: Install bknix (install-ci.sh)
-## Pre-requisite: Configure DNS and Apache vhost to support wildcards (e.g. *.test-ubu1204-5.civicrm.org)
+## Example usage:
+##
+## $ env ghprbTargetBranch=master ghprbPullId=12345 run-bknix-job --mock max CiviCRM-Core-PR
 
 #################################################
+## Environment variables
+
+GUARD=
+BLDTYPE="drupal-clean"
+
+## EXECUTOR_NUMBER: The number of this concurrent process
+## WORKSPACE: The path where Jenkins stores data for this job
+## ghprbTargetBranch: The version of CiviCRM to install, expressed as a branch or tag (e.g. `master`, `5.59`, `5.57.0`)
+## ghprbPullId: Pull request ID number
+assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE ghprbPullId ghprbTargetBranch
+
+export TIME_FUNC="linear:500"
+
 ## Pre-requisite: We only test PR's for main-line branches.
 case "$ghprbTargetBranch" in
   4.6*|4.7*|5.*|master*) echo "PR test is supported for $ghprbTargetBranch" ;;
@@ -25,25 +26,19 @@ case "$ghprbTargetBranch" in
 esac
 
 #################################################
-## Inputs; if called manually, use some defaults
-EXECUTOR_NUMBER=${EXECUTOR_NUMBER:-9}
-WORKSPACE=${WORKSPACE:-/var/lib/jenkins/workspace/Foo/Bar}
-GUARD=
+## Main
 
-## Build definition
-## Note: Suffixes are unique within a period of 180 days.
-BLDTYPE="drupal-clean"
+use_bknix
+
 BLDNAME="core-$ghprbPullId-$(php -r 'echo base_convert(time()%(180*24*60*60), 10, 36);')"
 BLDDIR="$BKITBLD/$BLDNAME"
-EXITCODES=""
 
-export TIME_FUNC="linear:500"
-
-#################################################
 ## Cleanup left-overs from previous test-runs
-[ -d "$BLDDIR" ] && $GUARD civibuild destroy "$BLDNAME"
+init_std_workspace
+if [ -d "$BKITBLD/$BLDNAME" ]; then
+  echo y | civibuild destroy "$BLDNAME"
+fi
 
-#################################################
 ## Report details about the test environment
 civibuild env-info
 
