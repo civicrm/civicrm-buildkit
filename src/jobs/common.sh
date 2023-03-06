@@ -32,6 +32,9 @@ function assert_common() {
       ghprbPullId)
         assert_regex '^[0-9]\+$' "$ghprbPullId" "ghprbPullId must be a number."
         ;;
+      ghprbTargetBranch)
+        assert_regex '^[0-9a-z\.-]\+$' "$ghprbTargetBranch" "ghprbTargetBranch should be a branch name."
+        ;;
       BKITBLD)
         if [ -z "$BKITBLD" ]; then
           fatal "Failed to find BKITBLD for $BKPROF"
