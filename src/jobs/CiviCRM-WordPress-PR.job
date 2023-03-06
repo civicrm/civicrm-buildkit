@@ -1,22 +1,23 @@
 #!/bin/bash
 set -e
 
-if [ -e $HOME/.profile ]; then . $HOME/.profile; fi
-eval $(use-bknix "dfl")
-if [ -z "$BKITBLD" ]; then echo "Invalid BKPROF"; exit 1; fi
+## Example usage:
+##
+## $ env ghprbTargetBranch=master ghprbPullId=159 run-bknix-job --mock max CiviCRM-Packages-PR
 
-## Job Name: CiviCRM-WordPress-PR
-## Job Description: Monitor civicrm-wordpress.git for proposed changes
-##    For any proposed changes, run a few "smoke tests"
-## Job GitHub Project URL: https://github.com/civicrm/civicrm-wordpress
-## Job Source Code Management: None
-## Job Triggers: GitHub pull-requests
-## Job xUnit Files: WORKSPACE/output/*.xml
-## Useful vars: $ghprbTargetBranch, $ghprbPullId, $sha1
-## Pre-requisite: Install civicrm-buildkit; configure amp
-## Pre-requisite: Configure DNS and Apache vhost to support wildcards (e.g. *.test-ubu1204-5.civicrm.org)
+#################################################
+## Environment variables
 
-## Pre-requisite: We only test PR's for main-line branches.
+GUARD=
+BLDTYPE="wp-demo"
+SUITES='upgrade phpunit-e2e karma phpunit-wordpress'
+export TIME_FUNC="linear:500"
+
+## EXECUTOR_NUMBER: The number of this concurrent process
+## WORKSPACE: The path where Jenkins stores data for this job
+## ghprbTargetBranch: The version of CiviCRM to install, expressed as a branch or tag (e.g. `master`, `5.59`, `5.57.0`)
+## ghprbPullId: Pull request ID number
+assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE SUITES ghprbPullId ghprbTargetBranch
 
 case "$ghprbTargetBranch" in
   5*|master*)
@@ -30,57 +31,46 @@ case "$ghprbTargetBranch" in
 esac
 
 #################################################
-## Inputs; if called manually, use some defaults
-EXECUTOR_NUMBER=${EXECUTOR_NUMBER:-9}
-WORKSPACE=${WORKSPACE:-/var/lib/jenkins/workspace/Foo/Bar}
+## Main
 
-## Environment
-GUARD=
+use_bknix
 
-## Build definition
-## Note: Suffixes are unique within a period of 180 days.
-BLDTYPE="wp-demo"
 BLDNAME="wp-$ghprbPullId-$(php -r 'echo base_convert(time()%(180*24*60*60), 10, 36);')"
 BLDDIR="$BKITBLD/$BLDNAME"
-JUNITDIR="$WORKSPACE/junit"
-CHECKSTYLEDIR="$WORKSPACE/checkstyle"
-EXITCODES=""
 
-#################################################
 ## Cleanup left-overs from previous test-runs
-[ -d "$CHECKSTYLEDIR" ] && $GUARD rm -rf "$CHECKSTYLEDIR"
-[ -d "$BLDDIR" ] && $GUARD civibuild destroy "$BLDNAME"
-[ ! -d "$CHECKSTYLEDIR" ] && $GUARD mkdir "$CHECKSTYLEDIR"
+clean_legacy_workspace "$WORKSPACE/junit" "$WORKSPACE/checkstyle"
+init_std_workspace
+if [ -d "$BKITBLD/$BLDNAME" ]; then
+  echo y | civibuild destroy "$BLDNAME"
+fi
 
-#################################################
+## Report details about the test environment
+# civibuild env-info
+
 ## Download dependencies, apply patches, and perform fresh DB installation
 $GUARD civibuild download "$BLDNAME" --type "$BLDTYPE" --civi-ver "$CIVIVER" \
   --patch "https://github.com/civicrm/civicrm-wordpress/pull/${ghprbPullId}"
 
-
 ## Check style first; fail quickly if we break style
- $GUARD pushd "$BLDDIR/web/wp-content/plugins/civicrm"
- case "$ghprbTargetBranch" in
+$GUARD pushd "$BLDDIR/web/wp-content/plugins/civicrm"
+  case "$ghprbTargetBranch" in
     5.30|5.31|5.32)
-     ## skip
-     ;;
-   *)
-     if git diff --name-only "origin/$ghprbTargetBranch.." | $GUARD civilint --checkstyle "$CHECKSTYLEDIR" - ; then
-       echo "Style passed"
-     else
-       echo "Style error"
-       exit 1
-     fi
- esac
+      ## skip
+      ;;
+    *)
+      if git diff --name-only "origin/$ghprbTargetBranch.." | $GUARD civilint --checkstyle "$WORKSPACE_CHECKSTYLE" - ; then
+        echo "Style passed"
+      else
+        echo "Style error"
+        exit 1
+      fi
+      ;;
+  esac
 $GUARD popd
 
 $GUARD civibuild install "$BLDNAME"
 
 ## Run the tests
-echo civi-test-run -b "$BLDNAME" -j "$JUNITDIR" upgrade phpunit-e2e karma phpunit-wordpress
-$GUARD civi-test-run -b "$BLDNAME" -j "$JUNITDIR" upgrade phpunit-e2e karma phpunit-wordpress
-
-#echo civi-test-run -b "$BLDNAME" -j "$JUNITDIR" phpunit-e2e
-#$GUARD civi-test-run -b "$BLDNAME" -j "$JUNITDIR" phpunit-e2e
-
+$GUARD civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" $SUITES --exclude-group ornery
 exit $?
