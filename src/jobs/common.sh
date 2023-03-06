@@ -40,6 +40,9 @@ function assert_common() {
           fatal "Failed to find BKITBLD for $BKPROF"
         fi
         ;;
+      BUILD_NUMBER)
+        assert_regex '^[0-9]\+$' "$BUILD_NUMBER" "Missing or invalid BUILD_NUMBER"
+        ;;
       BLDTYPE)
         assert_regex '^[0-9a-z\.-]\+$' "$BLDTYPE" "Missing or invalid BLDTYPE"
         ;;

@@ -21,6 +21,7 @@ function run_bknix_fatal() {
 function run_bknix_mock() {
   echo "Using mock Jenkins environment"
   export EXECUTOR_NUMBER=0
+  export BUILD_NUMBER=123
   export WORKSPACE="/tmp/mock-workspace-$USER"
   if [ ! -d "$WORKSPACE" ]; then
     mkdir "$WORKSPACE"
