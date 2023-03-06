@@ -29,6 +29,14 @@ function assert_regex() {
 function assert_common() {
   for VAR in "$@" ; do
     case "$VAR" in
+      ghprbPullId)
+        assert_regex '^[0-9]\+$' "$ghprbPullId" "ghprbPullId must be a number."
+        ;;
+      BKITBLD)
+        if [ -z "$BKITBLD" ]; then
+          fatal "Failed to find BKITBLD for $BKPROF"
+        fi
+        ;;
       BLDTYPE)
         assert_regex '^[0-9a-z\.-]\+$' "$BLDTYPE" "Missing or invalid BLDTYPE"
         ;;
@@ -63,10 +71,7 @@ function use_bknix() {
   fi
 
   case "$BKPROF" in old|min|max|dfl|edge) eval $(use-bknix "$BKPROF") ;; esac
-
-  if [ -z "$BKITBLD" ]; then
-    fatal "Failed to find BKITBLD for $BKPROF"
-  fi
+  assert_common BKITBLD
 }
 
 function use_bknix_tmp() {
