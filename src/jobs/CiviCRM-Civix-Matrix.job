@@ -31,7 +31,6 @@ case "$BLDTYPE" in
   *) echo "Unrecognized BLDTYPE=$BLDTYPE" ; exit 1 ; ;;
 esac
 
-################################################
 ## Reset (cleanup after previous tests)
 clean_legacy_workspace "$WORKSPACE/junit" "$WORKSPACE/civibuild-html" "$WORKSPACE/last-scan.json" "$WORKSPACE/new-scan.json"
 init_std_workspace
@@ -42,6 +41,13 @@ fi
 ## Report details about the test environment
 civibuild env-info
 
+## Work-around: These max+5.51 produces warnings due to core issues. Skip it.
+if [ "$BKPROF-$CIVIVER" = "max-5.51" ]; then
+  echo "The target version of civicrm-core ($CIVIVER) is not compatible with the environment ($BKPROF). Skipping."
+  exit 0
+fi
+
+################################################
 ## Download application (with civibuild)
 case "$CIVIVER" in
   5.51) civibuild download "$BLDNAME" --civi-ver "$CIVIVER" --type "$BLDTYPE" --patch "https://github.com/civicrm/civicrm-core/pull/23991" ; ;;
