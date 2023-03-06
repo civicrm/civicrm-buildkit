@@ -1,22 +1,23 @@
 #!/bin/bash
 set -e
 
-if [ -e $HOME/.profile ]; then . $HOME/.profile; fi
-eval $(use-bknix "dfl")
-if [ -z "$BKITBLD" ]; then echo "Invalid BKPROF"; exit 1; fi
+## Example usage:
+##
+## $ env ghprbTargetBranch=7.x-master ghprbPullId=159 run-bknix-job --mock max CiviCRM-Drupal-PR
 
-## Job Name: CiviCRM-Drupal-PR
-## Job Description: Monitor civicrm-drupal.git for proposed changes
-##    For any proposed changes, run a few "smoke tests"
-## Job GitHub Project URL: https://github.com/civicrm/civicrm-drupal
-## Job Source Code Management: None
-## Job Triggers: GitHub pull-requests
-## Job xUnit Files: WORKSPACE/output/*.xml
-## Useful vars: $ghprbTargetBranch, $ghprbPullId, $sha1
-## Pre-requisite: Install civicrm-buildkit; configure amp
-## Pre-requisite: Configure DNS and Apache vhost to support wildcards (e.g. *.test-ubu1204-5.civicrm.org)
+#################################################
+## Environment variables
 
-## Pre-requisite: We only test PR's for main-line branches.
+GUARD=
+BLDTYPE="drupal-clean"
+SUITES='upgrade karma phpunit-e2e phpunit-drupal'
+export TIME_FUNC="linear:500"
+
+## EXECUTOR_NUMBER: The number of this concurrent process
+## WORKSPACE: The path where Jenkins stores data for this job
+## ghprbTargetBranch: The version of CiviCRM to install, expressed as a branch or tag (e.g. `master`, `5.59`, `5.57.0`)
+## ghprbPullId: Pull request ID number
+assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE SUITES ghprbPullId ghprbTargetBranch
 
 case "$ghprbTargetBranch" in
   7.x-4.6*|7.x-4.7*|7.x-5*|7.x-master*)
@@ -30,29 +31,20 @@ case "$ghprbTargetBranch" in
 esac
 
 #################################################
-## Inputs; if called manually, use some defaults
-EXECUTOR_NUMBER=${EXECUTOR_NUMBER:-9}
-WORKSPACE=${WORKSPACE:-/var/lib/jenkins/workspace/Foo/Bar}
+## Main
 
-## Environment
-GUARD=
+use_bknix
 
-## Build definition
-## Note: Suffixes are unique within a period of 180 days.
-BLDTYPE="drupal-clean"
 BLDNAME="d7-$ghprbPullId-$(php -r 'echo base_convert(time()%(180*24*60*60), 10, 36);')"
 BLDDIR="$BKITBLD/$BLDNAME"
-JUNITDIR="$WORKSPACE/junit"
-CHECKSTYLEDIR="$WORKSPACE/checkstyle"
-EXITCODES=""
 
-#################################################
 ## Cleanup left-overs from previous test-runs
-[ -d "$CHECKSTYLEDIR" ] && $GUARD rm -rf "$CHECKSTYLEDIR"
-[ -d "$BLDDIR" ] && $GUARD civibuild destroy "$BLDNAME"
-[ ! -d "$CHECKSTYLEDIR" ] && $GUARD mkdir "$CHECKSTYLEDIR"
+clean_legacy_workspace "$WORKSPACE/junit" "$WORKSPACE/checkstyle"
+init_std_workspace
+if [ -d "$BKITBLD/$BLDNAME" ]; then
+  echo y | civibuild destroy "$BLDNAME"
+fi
 
-#################################################
 ## Report details about the test environment
 civibuild env-info
 
@@ -67,7 +59,7 @@ $GUARD pushd "$BLDDIR/web/sites/all/modules/civicrm/drupal"
       ## skip
       ;;
     *)
-      if git diff --name-only "origin/$ghprbTargetBranch.." | $GUARD civilint --checkstyle "$CHECKSTYLEDIR" - ; then
+      if git diff --name-only "origin/$ghprbTargetBranch.." | $GUARD civilint --checkstyle "$WORKSPACE_CHECKSTYLE" - ; then
         echo "Style passed"
       else
         echo "Style error"
@@ -79,5 +71,5 @@ $GUARD popd
 $GUARD civibuild install "$BLDNAME"
 
 ## Run the tests
-$GUARD civi-test-run -b "$BLDNAME" -j "$JUNITDIR" upgrade karma phpunit-e2e phpunit-drupal
+$GUARD civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" $SUITES
 exit $?
