@@ -1,7 +1,8 @@
 /**
- * The `dfl` list identifies the lowest recommended versions of the system requirements.
+ * The default profile (`dfl`) is used for the first round of QA on pending PRs.
+ * It should be a middle-of-the-road/typical environment.
  *
- * The `dists` var provides a list of major releases of Nix upstream (eg v19.09 <=> dists.v1909).
+ * Note The `dists` var provides a list of major releases of Nix upstream (eg v19.09 <=> dists.v1909).
  */
 let
     dists = import ../../pins;

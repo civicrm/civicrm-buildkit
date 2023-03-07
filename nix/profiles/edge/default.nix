@@ -1,7 +1,8 @@
 /**
- * The `max` list identifies the highest recommended versions of the system requirements.
+ * The bleeding-edge profile (`edge`) uses the highest software versions, even if they are
+ * not yet supported by CiviCRM.
  *
- * The `dists` var provides a list of major releases of Nix upstream (eg v19.09 <=> dists.v1909).
+ * Note: The `dists` var provides a list of major releases of Nix upstream (eg v19.09 <=> dists.v1909).
  */
 let
     dists = import ../../pins;

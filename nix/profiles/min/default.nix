@@ -1,7 +1,7 @@
 /**
- * The `min` list identifies the lowest recommended versions of the system requirements.
+ * The minimum profile (`min`) uses the lowest recommended versions of the system requirements.
  *
- * The `dists` var provides a list of major releases of Nix upstream (eg v19.09 <=> dists.v1909).
+ * Note: The `dists` var provides a list of major releases of Nix upstream (eg v19.09 <=> dists.v1909).
  */
 let
     dists = import ../../pins;
