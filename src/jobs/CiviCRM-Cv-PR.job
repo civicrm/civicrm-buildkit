@@ -74,7 +74,10 @@ mkdir "$BKITBLD/$BLDNAME/src"
 git clone -b "$ghprbTargetBranch" "https://github.com/civicrm/cv" "$BKITBLD/$BLDNAME/src/cv"
 pushd "$BKITBLD/$BLDNAME/src/cv"
   if [ -n "$ghprbPullId" -a "$ghprbPullId" -gt 0 ]; then
-    echo git scan am -N "https://github.com/civicrm/cv/pull/${ghprbPullId}"
+    echo "(cv.git) Apply patch https://github.com/civicrm/cv/pull/${ghprbPullId}"
+    git scan am -N "https://github.com/civicrm/cv/pull/${ghprbPullId}"
+  else
+    echo "(cv.git) No patch to apply"
   fi
   composer install
   case "$SUITE" in
