@@ -9,6 +9,8 @@ set -e
 #################################################
 ## Environment variables
 
+GUARD=
+
 ## EXECUTOR_NUMBER: The number of this concurrent process
 ## WORKSPACE: The path where Jenkins stores data for this job
 ## BLDTYPE: The type of civibuild site to create (e.g. `drupal-clean` or `wp-demo`)
@@ -27,6 +29,12 @@ assert_regex "^\(cv-std\|cv-installer\)$" "$SUITE"
 use_bknix_tmp
 
 ################################################
+## Skip some configurations
+
+if [ "$BKPROF:$BLDTYPE" = "max:backdrop-clean" ]; then echo "Skip incompatible combination" ; exit 0; fi
+if [ "$BKPROF:$CIVIVER" = "max:5.51"           ]; then echo "Skip incompatible combination" ; exit 0; fi
+
+################################################
 ## Setup environment
 BLDNAME="build-$EXECUTOR_NUMBER"
 
@@ -42,54 +50,45 @@ export CV_TEST_BUILD="$BKITBLD/$BLDNAME/web"
 # civibuild env-info
 
 ################################################
-## Skip some configurations
-
-case "$BKPROF-$BLDTYPE" in
-  max-backdrop-clean)
-    exit 0;
-    ;;
-esac
-
-################################################
 ## Download application (with civibuild)
 case "$CIVIVER" in
   # Patch was needed for civix. Not sure about cv.
-  5.51) civibuild download "$BLDNAME" --civi-ver "$CIVIVER" --type "$BLDTYPE" --patch "https://github.com/civicrm/civicrm-core/pull/23991" ; ;;
-  *) civibuild download "$BLDNAME" --civi-ver "$CIVIVER" --type "$BLDTYPE" ; ;;
+  5.51) $GUARD civibuild download "$BLDNAME" --civi-ver "$CIVIVER" --type "$BLDTYPE" --patch "https://github.com/civicrm/civicrm-core/pull/23991" ; ;;
+  *) $GUARD civibuild download "$BLDNAME" --civi-ver "$CIVIVER" --type "$BLDTYPE" ; ;;
 esac
 
 ## Install application (with civibuild)
-civibuild install "$BLDNAME" \
+$GUARD civibuild install "$BLDNAME" \
   --admin-pass "n0ts3cr3t"
 
 ## Report details about this build of the application
-civibuild show "$BLDNAME" \
+$GUARD civibuild show "$BLDNAME" \
   --html "$WORKSPACE_HTML" \
   --last-scan "$WORKSPACE_BUILD/last-scan.json" \
   --new-scan "$WORKSPACE_BUILD/new-scan.json"
 cp "$WORKSPACE_BUILD/new-scan.json" "$WORKSPACE_BUILD/last-scan.json"
 
 ## Setup civix and run tests
-mkdir "$BKITBLD/$BLDNAME/src"
-git clone -b "$ghprbTargetBranch" "https://github.com/civicrm/cv" "$BKITBLD/$BLDNAME/src/cv"
-pushd "$BKITBLD/$BLDNAME/src/cv"
+mkdir -p "$BKITBLD/$BLDNAME/src"
+$GUARD git clone -b "$ghprbTargetBranch" "https://github.com/civicrm/cv" "$BKITBLD/$BLDNAME/src/cv"
+$GUARD pushd "$BKITBLD/$BLDNAME/src/cv"
   if [ -n "$ghprbPullId" -a "$ghprbPullId" -gt 0 ]; then
     echo "(cv.git) Apply patch https://github.com/civicrm/cv/pull/${ghprbPullId}"
-    git scan am -N "https://github.com/civicrm/cv/pull/${ghprbPullId}"
+    $GUARD git scan am -N "https://github.com/civicrm/cv/pull/${ghprbPullId}"
   else
     echo "(cv.git) No patch to apply"
   fi
-  composer install
+  $GUARD composer install
   case "$SUITE" in
     cv-std)
-      phpunit8 --group std --log-junit "$WORKSPACE_JUNIT/cv-std.xml" --debug
+      $GUARD phpunit8 --group std --log-junit "$WORKSPACE_JUNIT/cv-std.xml" --debug
       ;;
     cv-installer)
       echo "ERROR: Not implemented. Need suitable build with code and no database."
-      #phpunit8 --group installer --junit "$WORKSPACE_JUNIT/cv-std.xml" --debug
+      #$GUARD phpunit8 --group installer --junit "$WORKSPACE_JUNIT/cv-std.xml" --debug
       exit 1
       ;;
   esac
-popd
+$GUARD popd
 
 exit $?
