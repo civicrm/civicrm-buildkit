@@ -76,8 +76,6 @@ pushd "$BKITBLD/$BLDNAME/src/cv"
   if [ -n "$ghprbPullId" -a "$ghprbPullId" -gt 0 ]; then
     echo git scan am -N "https://github.com/civicrm/cv/pull/${ghprbPullId}"
   fi
-  exit 0
-
   composer install
   case "$SUITE" in
     cv-std)
