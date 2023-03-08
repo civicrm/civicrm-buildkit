@@ -1,0 +1,94 @@
+#!/bin/bash
+set -e
+
+## Example usage:
+##
+## $ env CIVIVER=master BLDTYPE=drupal-clean SUITE=cv-std run-bknix-job --mock min CiviCRM-Cv-PR
+## $ env CIVIVER=master BLDTYPE=drupal-clean ghprbTargetBranch=master ghprbPullId=146 SUITE=cv-std run-bknix-job --mock min CiviCRM-Cv-PR
+
+#################################################
+## Environment variables
+
+## EXECUTOR_NUMBER: The number of this concurrent process
+## WORKSPACE: The path where Jenkins stores data for this job
+## BLDTYPE: The type of civibuild site to create (e.g. `drupal-clean` or `wp-demo`)
+## CIVIVER: The version of CiviCRM to install, expressed as a branch or tag (e.g. `master`, `5.59`, `5.57.0`)
+## ghprbTargetBranch: The base-branch for PR (for `cv.git`)
+## ghprbPullId: The pull-request ID (for `cv.git`)
+## SUITE: The kind of civix test to run (e.g. `cv-std`)
+ghprbTargetBranch=${ghprbTargetBranch:-master}
+ghprbPullId=${ghprbPullId:-0}
+assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE CIVIVER ghprbTargetBranch ghprbPullId
+assert_regex "^\(cv-std\|cv-installer\)$" "$SUITE"
+
+#################################################
+## Main
+
+use_bknix_tmp
+
+################################################
+## Setup environment
+BLDNAME="build-$EXECUTOR_NUMBER"
+
+## Reset (cleanup after previous tests)
+clean_legacy_workspace "$WORKSPACE/junit" "$WORKSPACE/civibuild-html" "$WORKSPACE/last-scan.json" "$WORKSPACE/new-scan.json"
+init_std_workspace
+if [ -d "$BKITBLD/$BLDNAME" ]; then
+  echo y | civibuild destroy "$BLDNAME"
+fi
+export CV_TEST_BUILD="$BKITBLD/$BLDNAME/web"
+
+## Report details about the test environment
+# civibuild env-info
+
+################################################
+## Skip some configurations
+
+case "$BKPROF-$BLDTYPE" in
+  max-backdrop-clean)
+    exit 0;
+    ;;
+esac
+
+################################################
+## Download application (with civibuild)
+case "$CIVIVER" in
+  # Patch was needed for civix. Not sure about cv.
+  5.51) civibuild download "$BLDNAME" --civi-ver "$CIVIVER" --type "$BLDTYPE" --patch "https://github.com/civicrm/civicrm-core/pull/23991" ; ;;
+  *) civibuild download "$BLDNAME" --civi-ver "$CIVIVER" --type "$BLDTYPE" ; ;;
+esac
+
+## Install application (with civibuild)
+civibuild install "$BLDNAME" \
+  --admin-pass "n0ts3cr3t"
+
+## Report details about this build of the application
+civibuild show "$BLDNAME" \
+  --html "$WORKSPACE_HTML" \
+  --last-scan "$WORKSPACE_BUILD/last-scan.json" \
+  --new-scan "$WORKSPACE_BUILD/new-scan.json"
+cp "$WORKSPACE_BUILD/new-scan.json" "$WORKSPACE_BUILD/last-scan.json"
+
+## Setup civix and run tests
+mkdir "$BKITBLD/$BLDNAME/src"
+git clone -b "$ghprbTargetBranch" "https://github.com/civicrm/cv" "$BKITBLD/$BLDNAME/src/cv"
+pushd "$BKITBLD/$BLDNAME/src/cv"
+  if [ -n "$ghprbPullId" -a "$ghprbPullId" -gt 0 ]; then
+    echo git scan am -N "https://github.com/civicrm/cv/pull/${ghprbPullId}"
+  fi
+  exit 0
+
+  composer install
+  case "$SUITE" in
+    cv-std)
+      phpunit8 --group std --log-junit "$WORKSPACE_JUNIT/cv-std.xml" --debug
+      ;;
+    cv-installer)
+      echo "ERROR: Not implemented. Need suitable build with code and no database."
+      #phpunit8 --group installer --junit "$WORKSPACE_JUNIT/cv-std.xml" --debug
+      exit 1
+      ;;
+  esac
+popd
+
+exit $?
