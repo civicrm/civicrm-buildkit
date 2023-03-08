@@ -21,7 +21,7 @@ GUARD=
 ghprbTargetBranch=${ghprbTargetBranch:-master}
 ghprbPullId=${ghprbPullId:-0}
 assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE CIVIVER ghprbTargetBranch ghprbPullId
-assert_regex "^\(cv-std\|cv-installer\)$" "$SUITE"
+assert_regex "^\(cv-std\|cv-installer\|cv-null\)$" "$SUITE"
 
 #################################################
 ## Main
@@ -31,8 +31,8 @@ use_bknix_tmp
 ################################################
 ## Skip some configurations
 
-if [ "$BKPROF:$BLDTYPE" = "max:backdrop-clean" ]; then echo "Skip incompatible combination" ; exit 0; fi
-if [ "$BKPROF:$CIVIVER" = "max:5.51"           ]; then echo "Skip incompatible combination" ; exit 0; fi
+if [ "$BKPROF:$BLDTYPE" = "max:backdrop-clean" ]; then echo "Skip incompatible combination (max<=>backdrop)" ; exit 0; fi
+if [ "$BKPROF:$CIVIVER" = "max:5.51"           ]; then echo "Skip incompatible combination (max<=>5.51)" ; exit 0; fi
 
 ################################################
 ## Setup environment
@@ -68,7 +68,8 @@ $GUARD civibuild show "$BLDNAME" \
   --new-scan "$WORKSPACE_BUILD/new-scan.json"
 cp "$WORKSPACE_BUILD/new-scan.json" "$WORKSPACE_BUILD/last-scan.json"
 
-## Setup civix and run tests
+## Setup cv and run tests
+## TODO: Try dowlnoading cv before building the site. Figure a way to override the live cv.phar.
 mkdir -p "$BKITBLD/$BLDNAME/src"
 $GUARD git clone -b "$ghprbTargetBranch" "https://github.com/civicrm/cv" "$BKITBLD/$BLDNAME/src/cv"
 $GUARD pushd "$BKITBLD/$BLDNAME/src/cv"
@@ -87,6 +88,9 @@ $GUARD pushd "$BKITBLD/$BLDNAME/src/cv"
       echo "ERROR: Not implemented. Need suitable build with code and no database."
       #$GUARD phpunit8 --group installer --junit "$WORKSPACE_JUNIT/cv-std.xml" --debug
       exit 1
+      ;;
+    cv-null)
+      echo "Nothing to do"
       ;;
   esac
 $GUARD popd
