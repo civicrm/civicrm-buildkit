@@ -51,6 +51,7 @@ environment:
  - MYSQL_HOME=$LOCO_VAR/mysql/conf
  - NODE_PATH=$BKIT/node_modules:$NODE_PATH
  - PATH=$BKIT/bin:$BKIT/node_modules/.bin:$LOCO_PRJ/.loco/bin:$PATH
+ - CIVICRM_COMPOSER_ASSET=symdir
 
 volume:
   ramdisk: $RAMDISK_SIZE
