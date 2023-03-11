@@ -21,6 +21,8 @@ GENCODE_CONFIG_TEMPLATE="${CMS_ROOT}/civicrm.config.php.standalone"
 
 civicrm_install_cv
 
+composer civicrm:publish
+
 ###############################################################################
 ## Extra configuration
 # @todo Setup demo user
