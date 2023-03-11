@@ -1,19 +1,37 @@
 #!/bin/bash
 set -e
 
-## bkrun is a multi-user task-runner. Example usage:
+## bkrun is a multi-user task-runner.
 ##
-## $ bkrun install
+## -- Install as root --
+## $ sudo cp ./path/to/bkrun /usr/local/bin/bkrun
+## $ sudo bkrun install
+##
+## -- Dispatch a job --
+## $ ssh dispatcher@localhost
 ## $ echo -e "FOO=123\nBAR=456" > /tmp/env.txt
-## $ bkrun exec -n 1 -e /tmp/env.txt -c /my/task.sh -o /tmp/output
+## $ sudo bkrun exec -n 99 -e /tmp/env.txt -c /my/task.sh -o /tmp/output
 ##
-## The script "task.sh" will be called in different phases, e.g.
+## The script "task.sh" will be executed user "runner-99". It is called in a phases:
 ##
 ## $ task.sh setup    ## Perform pre-init. Output should be safe for re-use. Use this to warm-up caches.
 ## $ task.sh exec     ## Execute the task.
 ## $ task.sh output   ## Print list of output files/folders (relative to home dir)
 ##
 ## The script is currently only tested for Debian-style environments.
+
+###########################################################################
+## General Organization
+##
+## Users:
+## - User "dispatcher" can start jobs
+## - Users "runner-1", "runner-2", etc can run jobs
+##
+## Paths:
+## - /srv/runner/dispatcher/home	Home directory of the dispatcher
+## - /srv/runner/NNN/home		Home directory of the user. This is the resulting of merging "base" and "temp".
+## - /srv/runner/NNN/base		Base-layer. Reused across multiple executions.
+## - /srv/runner/NNN/temp		Temp-layer. Only used for the duration of one execution.
 
 ###########################################################################
 ## Global Environment
@@ -26,6 +44,8 @@ set -e
 ## runner_base: Persistent layer for task-running (ex: /srv/runner/base-1)
 ## runner_temp: Temp layer for task-running (ex: /srv/runner/temp-1)
 
+DISPATCH_USER="dispatcher"
+DISPATCH_HOME="/srv/runner/dispatcher/home"
 RUNNER_TEMP_SIZE=2500m
 RUNNER_HOME_TPL=/srv/runner/NUM/home
 RUNNER_TEMP_TPL=/srv/runner/NUM/temp
@@ -38,35 +58,111 @@ GUARD=
 ## Task: Show usage
 function usage {
   local prog=$(basename "$0")
-  echo "Usage: $prog <install|exec|setup|mount-base|mount-temp|unmount|clean> [-n NUMBER] [-e ENVFILE] [-c CTLSCRIPT]"
+  echo "Usage: $prog ACTION [OPTIONS...]"
+  echo
+  echo "System configuration actions:"
+  echo
+  echo "       $prog install"
+  echo "       $prog uninstall"
+  echo
+  echo "Ordinary actions:"
+  echo
+  echo "       $prog submit [-n NUMBER] [-c CTLSCRIPT]"
+  echo
+  echo "Advanced actions"
+  echo
+  echo "       $prog exec [-n NUMBER] [-c CTLSCRIPT] [-e ENVFILE]"
+  echo "       $prog setup [-n NUMBER] [-c CTLSCRIPT] [-e ENVFILE]"
+  echo "       $prog mount-base [-n NUMBER]"
+  echo "       $prog mount-temp [-n NUMBER]"
+  echo "       $prog kill [-n NUMBER]"
+  echo "       $prog unmount [-n NUMBER]"
+  echo "       $prog clean [-n NUMBER]"
   exit 1
 }
 
 ###########################################################################
 function task_install {
   print_h1 "Install"
-  assert_cmd seq sudo adduser addgroup getent
+  assert_cmd seq sudo adduser addgroup getent readlink pgrep killall mktemp
 
   if ! getent group "$RUNNER_GROUP" >/dev/null ; then
+    print_h2 "Add group \"$RUNNER_GROUP\""
     $GUARD addgroup "$RUNNER_GROUP"
   fi
+
+  if ! getent passwd "$DISPATCH_USER" >/dev/null ; then
+    print_h2 "Add user \"$DISPATCH_USER\""
+    $GUARD adduser "$DISPATCH_USER" --gecos "Bkrun Dispatcher" --home "$DISPATCH_HOME" --ingroup "$RUNNER_GROUP" --disabled-password
+  fi
+
+  print_h2 "Update /etc/sudoers.d/bkrun"
+  echo "${DISPATCH_USER} ALL = (root) NOPASSWD: NOSETENV: /usr/local/bin/bkrun" > /etc/sudoers.d/bkrun
+
   for n in `seq 1 $RUNNER_LIMIT` ; do
     number=$n
     compute_defaults
     if ! getent passwd "$runner_user" >/dev/null ; then
+      print_h2 "Add user \"$runner_user\""
       $GUARD mkdir -p $(dirname "$runner_home") $(dirname "$runner_base") $(dirname "$runner_temp")
-      $GUARD adduser "$runner_user" --gecos "Runner $number" --home "$runner_home" --ingroup "$RUNNER_GROUP" --disabled-password
+      $GUARD adduser "$runner_user" --gecos "Bkrun Runner $number" --home "$runner_home" --ingroup "$RUNNER_GROUP" --disabled-password
       $GUARD mv "$runner_home" "$runner_base"
       $GUARD mkdir "$runner_home"
       $GUARD chown "$runner_user:$RUNNER_GROUP" "$runner_home"
     fi
   done
+
+
   exit ## We just polluted the environment with compute_defaults!
 }
 
+function task_uninstall {
+  print_h1 "Uninstall"
+  assert_cmd seq sudo deluser delgroup getent
+
+  if [ -f /etc/sudoers.d/bkrun ]; then
+    $GUARD rm -f /etc/sudoers.d/bkrun
+  fi
+
+  $GUARD rm -rf /srv/runner
+
+  if getent passwd "$DISPATCH_USER" >/dev/null ; then
+    $GUARD deluser "$DISPATCH_USER"
+  fi
+
+  for n in `seq 1 $RUNNER_LIMIT` ; do
+    number=$n
+    compute_defaults
+    if getent passwd "$runner_user" >/dev/null ; then
+      $GUARD deluser "$runner_user"
+    fi
+  done
+
+  if getent group "$RUNNER_GROUP" >/dev/null ; then
+    $GUARD delgroup "$RUNNER_GROUP"
+  fi
+  exit
+}
+
 ###########################################################################
-## Task: Run a complete task
+## Task: Take the current environment. Submit it to a runner.
+function task_submit {
+  assert_number
+  assert_ctlscript
+  assert_not_root_user
+
+  local tmpfile=$(mktemp)
+  trap "rm $tmpfile" EXIT
+  env > "$tmpfile"
+  chgrp "$RUNNER_GROUP" "$tmpfile"
+  chmod g+r "$tmpfile"
+  sudo bkrun exec -n "$number" -c "$ctlscript" -e "$tmpfile"
+}
+
+###########################################################################
+## Task: Execute a task. This includes setup, execution, and teardown.
 function task_exec {
+  assert_root_user
   assert_ctlscript
   assert_envfile
 
@@ -83,6 +179,7 @@ function task_exec {
 ###########################################################################
 ## Task: Setup worker environment
 function task_setup {
+  assert_root_user
   print_h1 "Setup"
 
   task_mount_base
@@ -93,6 +190,7 @@ function task_setup {
 ###########################################################################
 ## Task: Cleanup
 function task_clean {
+  assert_root_user
   print_h1 "Cleanup"
   task_kill
   task_unmount
@@ -101,17 +199,21 @@ function task_clean {
 ###########################################################################
 ## Task: Kill processes
 function task_kill {
+  assert_root_user
   print_h2 "Kill $runner_user"
-  $GUARD killall --user "$runner_user"
-  $GUARD sleep 4
-  if [ -N $(ps --user "$runner_user") ]; then
-    $GUARD killall -9 --user "$runner_user"
+  if [ -n "$(pgrep -U "$runner_user")" ]; then
+    $GUARD killall --user "$runner_user"
+    $GUARD sleep 4
+    if [ -n "$(pgrep -U "$runner_user")" ]; then
+      $GUARD killall -9 --wait --user "$runner_user"
+    fi
   fi
 }
 
 ###########################################################################
 ## Task: Mount base
 function task_mount_base {
+  assert_root_user
   print_h2 "Mount home ($runner_home) with base ($runner_base)"
   $GUARD mount --bind "$runner_base" "$runner_home"
 }
@@ -119,6 +221,7 @@ function task_mount_base {
 ###########################################################################
 ## Task: Mount temp
 function task_mount_temp {
+  assert_root_user
   print_h2 "Mount home ($runner_home) with temp ($runner_temp)"
   $GUARD mkdir -p "$runner_temp"
   $GUARD mount -t tmpfs -o "size=${RUNNER_TEMP_SIZE}" tmpfs "$runner_temp"
@@ -131,6 +234,7 @@ function task_mount_temp {
 ###########################################################################
 ## Task: Unmount
 function task_unmount {
+  assert_root_user
   print_h2 "Unmount home ($runner_home)"
   if grep -q "$runner_home" /proc/mounts; then
     $GUARD umount "$runner_home"
@@ -142,10 +246,12 @@ function task_unmount {
 
 ###########################################################################
 ## Send a job to the runner
+## usage: dispatch <hook-name>
 function dispatch {
+  assert_root_user
   assert_ctlscript
   assert_envfile
-  local cmd=$( printf 'cd ~ && source %q && %q %q' "$envfile" "$ctlscript" "$1" )
+  local cmd=$( printf '%q %q %q' "$ctlscript" "$1" "$envfile" )
   $GUARD su - "runner-$number" -c "$cmd"
 }
 
@@ -155,7 +261,7 @@ function print_h1 {
 }
 
 function print_h2 {
-  echo [33m" -" "$@" [0m
+  echo [33m"$@"[0m
 }
 
 function fatal {
@@ -201,6 +307,20 @@ function assert_cmd {
   done
 }
 
+function assert_root_user() {
+  if [ "$USER" != "root" ]; then
+    echo "This command must run as a super user - not a regular user!" 1>&2
+    exit 1
+  fi
+}
+
+function assert_not_root_user() {
+  if [ "$USER" == "root" ]; then
+    echo "This command must run as a regular user - not as root!" 1>&2
+    exit 1
+  fi
+}
+
 ###########################################################################
 ## Fill in some computed variables
 function compute_defaults {
@@ -222,14 +342,14 @@ cmd=$1
 shift
 
 case $cmd in
-  install|exec|setup|mount-base|mount-temp|unmount|kill|clean)
+  install|uninstall|submit|exec|setup|mount-base|mount-temp|unmount|kill|clean)
     ;;
   *)
     usage
     ;;
 esac
 
-while getopts ":n:e:c:" opt; do
+while getopts ":n:e:c:h" opt; do
   case $opt in
     n)
       number=$OPTARG
@@ -239,6 +359,9 @@ while getopts ":n:e:c:" opt; do
       ;;
     c)
       ctlscript=$OPTARG
+      ;;
+    h)
+      usage
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -253,6 +376,8 @@ done
 
 case $cmd in
   install)      task_install     ; ;;
+  uninstall)    task_uninstall   ; ;;
+  submit)       task_submit      ; ;;
   exec)         compute_defaults ; task_exec    ; ;;
   setup)        compute_defaults ; task_setup   ; ;;
   mount-base)   compute_defaults ; task_unmount ; task_mount_base ; ;;
