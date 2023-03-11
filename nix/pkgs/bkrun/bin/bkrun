@@ -1,0 +1,263 @@
+#!/bin/bash
+set -e
+
+## bkrun is a multi-user task-runner. Example usage:
+##
+## $ bkrun install
+## $ echo -e "FOO=123\nBAR=456" > /tmp/env.txt
+## $ bkrun exec -n 1 -e /tmp/env.txt -c /my/task.sh -o /tmp/output
+##
+## The script "task.sh" will be called in different phases, e.g.
+##
+## $ task.sh setup    ## Perform pre-init. Output should be safe for re-use. Use this to warm-up caches.
+## $ task.sh exec     ## Execute the task.
+## $ task.sh output   ## Print list of output files/folders (relative to home dir)
+##
+## The script is currently only tested for Debian-style environments.
+
+###########################################################################
+## Global Environment
+##
+## number: The active worker number (1, 2, 3, ...)
+## envfile: The file containing env-vars for this task
+## ctlscript: The script to run as the user
+## runner_user: Name of the user (ex: "runner-1")
+## runner_home: Effective home (ex: /srv/runner/home-1)
+## runner_base: Persistent layer for task-running (ex: /srv/runner/base-1)
+## runner_temp: Temp layer for task-running (ex: /srv/runner/temp-1)
+
+RUNNER_TEMP_SIZE=2500m
+RUNNER_HOME_TPL=/srv/runner/NUM/home
+RUNNER_TEMP_TPL=/srv/runner/NUM/temp
+RUNNER_BASE_TPL=/srv/runner/NUM/base
+RUNNER_LIMIT=2
+RUNNER_GROUP='runners'
+GUARD=
+
+###########################################################################
+## Task: Show usage
+function usage {
+  local prog=$(basename "$0")
+  echo "Usage: $prog <install|exec|setup|mount-base|mount-temp|unmount|clean> [-n NUMBER] [-e ENVFILE] [-c CTLSCRIPT]"
+  exit 1
+}
+
+###########################################################################
+function task_install {
+  print_h1 "Install"
+  assert_cmd seq sudo adduser addgroup getent
+
+  if ! getent group "$RUNNER_GROUP" >/dev/null ; then
+    $GUARD addgroup "$RUNNER_GROUP"
+  fi
+  for n in `seq 1 $RUNNER_LIMIT` ; do
+    number=$n
+    compute_defaults
+    if ! getent passwd "$runner_user" >/dev/null ; then
+      $GUARD mkdir -p $(dirname "$runner_home") $(dirname "$runner_base") $(dirname "$runner_temp")
+      $GUARD adduser "$runner_user" --gecos "Runner $number" --home "$runner_home" --ingroup "$RUNNER_GROUP" --disabled-password
+      $GUARD mv "$runner_home" "$runner_base"
+      $GUARD mkdir "$runner_home"
+      $GUARD chown "$runner_user:$RUNNER_GROUP" "$runner_home"
+    fi
+  done
+  exit ## We just polluted the environment with compute_defaults!
+}
+
+###########################################################################
+## Task: Run a complete task
+function task_exec {
+  assert_ctlscript
+  assert_envfile
+
+  task_clean              # Clean on start
+  trap task_clean EXIT
+
+  task_setup
+  task_mount_temp
+
+  print_h1 "Execute task"
+  dispatch exec
+}
+
+###########################################################################
+## Task: Setup worker environment
+function task_setup {
+  print_h1 "Setup"
+
+  task_mount_base
+  dispatch setup
+  task_unmount
+}
+
+###########################################################################
+## Task: Cleanup
+function task_clean {
+  print_h1 "Cleanup"
+  task_kill
+  task_unmount
+}
+
+###########################################################################
+## Task: Kill processes
+function task_kill {
+  print_h2 "Kill $runner_user"
+  $GUARD killall --user "$runner_user"
+  $GUARD sleep 4
+  if [ -N $(ps --user "$runner_user") ]; then
+    $GUARD killall -9 --user "$runner_user"
+  fi
+}
+
+###########################################################################
+## Task: Mount base
+function task_mount_base {
+  print_h2 "Mount home ($runner_home) with base ($runner_base)"
+  $GUARD mount --bind "$runner_base" "$runner_home"
+}
+
+###########################################################################
+## Task: Mount temp
+function task_mount_temp {
+  print_h2 "Mount home ($runner_home) with temp ($runner_temp)"
+  $GUARD mkdir -p "$runner_temp"
+  $GUARD mount -t tmpfs -o "size=${RUNNER_TEMP_SIZE}" tmpfs "$runner_temp"
+  $GUARD mkdir "$runner_temp/up" "$runner_temp/work"
+  $GUARD chown "$runner_user:$RUNNER_GROUP" "$runner_temp/up" "$runner_temp/work"
+  $GUARD mount -t overlay overlay -o lowerdir="$runner_base",upperdir="$runner_temp/up",workdir="$runner_temp/work" "$runner_home"
+  $GUARD chown "$runner_user:$RUNNER_GROUP" "$runner_base"
+}
+
+###########################################################################
+## Task: Unmount
+function task_unmount {
+  print_h2 "Unmount home ($runner_home)"
+  if grep -q "$runner_home" /proc/mounts; then
+    $GUARD umount "$runner_home"
+  fi
+  if grep -q "$runner_temp" /proc/mounts; then
+    $GUARD umount "$runner_temp"
+  fi
+}
+
+###########################################################################
+## Send a job to the runner
+function dispatch {
+  assert_ctlscript
+  assert_envfile
+  local cmd=$( printf 'cd ~ && source %q && %q %q' "$envfile" "$ctlscript" "$1" )
+  $GUARD su - "runner-$number" -c "$cmd"
+}
+
+###########################################################################
+function print_h1 {
+  echo [33m"##" "$@" [0m
+}
+
+function print_h2 {
+  echo [33m" -" "$@" [0m
+}
+
+function fatal {
+  echo "$@" >&2
+  exit 2
+}
+
+###########################################################################
+## Assertions
+
+function assert_number() {
+  if [ -z "$number" ]; then
+    fatal "Missing option: -n NUMBER"
+  fi
+  if [ "$number" -gt "$RUNNER_LIMIT" ]; then
+    fatal "Number $number exceeds limit $RUNNER_LIMIT"
+  fi
+}
+
+function assert_ctlscript {
+  if [ -z "$ctlscript" ]; then
+    fatal "Missing option: [-c CTLSCRIPT]"
+  fi
+  if [ ! -e "$ctlscript" ]; then
+    fatal "CTLSCRIPT ($ctlscript) not found"
+  fi
+}
+
+function assert_envfile {
+  if [ -z "$envfile" ]; then
+    fatal "Missing option: [-e ENVFILE]"
+  fi
+  if [ ! -e "$envfile" ]; then
+    fatal "ENVFILE ($envfile) not found"
+  fi
+}
+
+function assert_cmd {
+  for cmd in "$@" ; do
+    if ! command -v "$cmd" &> /dev/null ; then
+      fatal "Missing command: $cmd"
+    fi
+  done
+}
+
+###########################################################################
+## Fill in some computed variables
+function compute_defaults {
+  assert_number
+  runner_user="runner-${number}"
+  runner_home=$( echo "${RUNNER_HOME_TPL}" | sed "s;NUM;${number};" )
+  runner_base=$( echo "${RUNNER_BASE_TPL}" | sed "s;NUM;${number};" )
+  runner_temp=$( echo "${RUNNER_TEMP_TPL}" | sed "s;NUM;${number};" )
+}
+
+###########################################################################
+## Main
+
+if [ $# -lt 1 ]; then
+  usage
+fi
+
+cmd=$1
+shift
+
+case $cmd in
+  install|exec|setup|mount-base|mount-temp|unmount|kill|clean)
+    ;;
+  *)
+    usage
+    ;;
+esac
+
+while getopts ":n:e:c:" opt; do
+  case $opt in
+    n)
+      number=$OPTARG
+      ;;
+    e)
+      envfile=$OPTARG
+      ;;
+    c)
+      ctlscript=$OPTARG
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      usage >&2
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      usage >&2
+      ;;
+  esac
+done
+
+case $cmd in
+  install)      task_install     ; ;;
+  exec)         compute_defaults ; task_exec    ; ;;
+  setup)        compute_defaults ; task_setup   ; ;;
+  mount-base)   compute_defaults ; task_unmount ; task_mount_base ; ;;
+  mount-temp)   compute_defaults ; task_unmount ; task_mount_temp ; ;;
+  unmount)      compute_defaults ; task_unmount ; ;;
+  kill)         compute_defaults ; task_kill    ; ;;
+  clean)        compute_defaults ; task_clean   ; ;;
+esac
