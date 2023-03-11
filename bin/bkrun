@@ -42,6 +42,7 @@ set -e
 ##
 ## number: The active worker number (1, 2, 3, ...)
 ## reqfile: The file containing env-vars for this task
+## outdir: The folder where artifacts should be deposited
 ## ctlscript: The script to run as the user
 ## runner_user: Name of the user (ex: "runner-1")
 ## runner_home: Effective home (ex: /srv/runner/home-1)
@@ -69,13 +70,13 @@ function usage {
   echo "       $prog install"
   echo "       $prog uninstall"
   echo
-  echo "Ordinary actions:"
+  echo "Public actions:"
   echo
-  echo "       $prog submit [-n NUMBER] [-c CTLSCRIPT]"
+  echo "       $prog submit [-n NUMBER] [-c CTLSCRIPT] [-o OUTDIR]"
   echo
-  echo "Advanced actions"
+  echo "Private actions:"
   echo
-  echo "       $prog exec [-n NUMBER] [-c CTLSCRIPT] [-r REQFILE]"
+  echo "       $prog exec [-n NUMBER] [-c CTLSCRIPT] [-r REQFILE] [-o OUTDIR]"
   echo "       $prog setup [-n NUMBER] [-c CTLSCRIPT] [-r REQFILE]"
   echo "       $prog mount-base [-n NUMBER]"
   echo "       $prog mount-temp [-n NUMBER]"
@@ -157,13 +158,22 @@ function task_submit {
   assert_number
   assert_ctlscript
   assert_not_root_user
+  assert_outdir 1
 
-  local tmpfile=$(mktemp)
-  trap "rm $tmpfile" EXIT
-  dispatch_me request > "$tmpfile"
-  chgrp "$RUNNER_GROUP" "$tmpfile"
-  chmod 640 "$tmpfile"
-  sudo bkrun exec -n "$number" -c "$ctlscript" -r "$tmpfile"
+  trap "_task_submit_exit" EXIT
+
+  reqfile=$(mktemp)
+  dispatch_me request > "$reqfile"
+  chgrp "$RUNNER_GROUP" "$reqfile"
+  chmod 640 "$reqfile"
+
+  sudo bkrun exec -n "$number" -c "$ctlscript" -r "$reqfile" -o "$outdir"
+}
+
+function _task_submit_exit {
+  if [ -f "$reqfile" ]; then
+    rm "$reqfile"
+  fi
 }
 
 ###########################################################################
@@ -172,16 +182,32 @@ function task_exec {
   assert_root_user
   assert_ctlscript
   assert_reqfile
+  assert_outdir
 
-  task_clean              # Clean on start
-  trap task_clean EXIT
-
+  task_clean
+  trap "_task_exec_exit" EXIT
   task_setup
   task_mount_temp
 
   print_h1 "Execute task"
-  assert_reqfile
   dispatch_runner exec "$reqfile"
+}
+
+function _task_exec_exit {
+  task_artifacts
+  task_clean
+}
+
+###########################################################################
+## Task: Sync outbound artifacts
+function task_artifacts {
+  assert_root_user
+  assert_reqfile
+  print_h1 "Return artifacts"
+
+  dispatch_runner artifacts "$reqfile" | grep -v '^#' | while read LINE ; do
+    echo "Inspect LINE [$LINE] and sync it"
+  done
 }
 
 ###########################################################################
@@ -316,6 +342,19 @@ function assert_reqfile {
   fi
 }
 
+## usage: assert_outdir <allow-auto-create>
+function assert_outdir {
+  if [ -z "$outdir" ]; then
+    fatal "Missing option: [-o OUTDIR]"
+  fi
+  if [ ! -e "$outdir" -a -n "$1" ]; then
+    mkdir -p "$outdir"
+  fi
+  if [ ! -e "$outdir" ]; then
+    fatal "OUTDIR ($outdir) not found"
+  fi
+}
+
 function assert_cmd {
   for cmd in "$@" ; do
     if ! command -v "$cmd" &> /dev/null ; then
@@ -366,7 +405,7 @@ case $cmd in
     ;;
 esac
 
-while getopts ":n:r:c:h" opt; do
+while getopts ":n:r:c:o:h" opt; do
   case $opt in
     n)
       number=$OPTARG
@@ -376,6 +415,9 @@ while getopts ":n:r:c:h" opt; do
       ;;
     c)
       ctlscript=$OPTARG
+      ;;
+    o)
+      outdir=$OPTARG
       ;;
     h)
       usage
