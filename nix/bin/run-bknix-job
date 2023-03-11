@@ -9,6 +9,10 @@ function run_bknix_help() {
   echo
   echo "tip: If <JOB_NAME> is omitted, and if you execute within a real Jenkins"
   echo "environment, then it will use the active \$JOB_NAME."
+  echo ""
+  echo "tip: If <JOB_NAME> is an HTTPS URL, then it will fetch and run the"
+  echo "script. This is useful if you want to configure Jenkins to temporarily"
+  echo "use a WIP script."
 }
 
 function run_bknix_fatal() {
@@ -49,21 +53,32 @@ function run_bknix_main() {
     *) run_bknix_fatal "Missing or invalid PROFILE" ; ;;
   esac
 
+  if [ -n "$IS_MOCK_JENKINS" ]; then
+    run_bknix_mock
+  fi
+
   ## JOB_NAME can be complicated (when using matrix jobs). We want a trimmed-down name.
   BKNIX_JOB_NAME="$2"
   if [ -z "$BKNIX_JOB_NAME" ]; then
     BKNIX_JOB_NAME="$JOB_NAME"
   fi
-  BKNIX_JOB_NAME=$(echo "$BKNIX_JOB_NAME" | cut -d '/' -f 1)
-  BKNIX_JOB_SCRIPT="$BKNIX_JOBS/$BKNIX_JOB_NAME.job"
+  case "$BKNIX_JOB_NAME" in
+    https:*)
+      BKNIX_JOB_URL="$BKNIX_JOB_NAME"
+      BKNIX_JOB_NAME=$(basename "$BKNIX_JOB_URL")
+      BKNIX_JOB_SCRIPT="/tmp/run-$USER-$EXECUTOR_NUMBER-"$(echo "$BKNIX_JOB_URL" | md5sum - | cut -f1 -d\  )
+      run_bknix_download "$BKNIX_JOB_URL" "$BKNIX_JOB_SCRIPT"
+      trap 'rm -f "$BKNIX_JOB_SCRIPT"' EXIT
+      ;;
+    *)
+      BKNIX_JOB_NAME=$(echo "$BKNIX_JOB_NAME" | cut -d '/' -f 1)
+      BKNIX_JOB_SCRIPT="$BKNIX_JOBS/$BKNIX_JOB_NAME.job"
+      ;;
+  esac
   export BKNIX_JOB_SCRIPT BKNIX_JOB_NAME
 
   if [ ! -e "$BKNIX_JOB_SCRIPT" ]; then
     run_bknix_fatal "Missing or invalid JOB_NAME. No such file \"$BKNIX_JOB_SCRIPT\"."
-  fi
-
-  if [ -n "$IS_MOCK_JENKINS" ]; then
-    run_bknix_mock
   fi
 
   if which mktemp >> /dev/null ; then
@@ -80,5 +95,17 @@ function run_bknix_main() {
     source "$BKNIX_JOB_SCRIPT"
   fi
 }
+
+## usage: run_bknix_download <url> <out-file>
+function run_bknix_download() {
+  if which wget >> /dev/null ; then
+    wget -O "$2" "$1"
+  elif which curl >> /dev/null ; then
+    curl -L -o "$2" "$1"
+  else
+    echo "error: failed to locate curl or wget"
+  fi
+}
+
 
 run_bknix_main "$@"
