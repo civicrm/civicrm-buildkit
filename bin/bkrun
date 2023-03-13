@@ -44,6 +44,7 @@ set -e
 ## reqfile: The file containing env-vars for this task
 ## outdir: The folder where artifacts should be deposited
 ## ctlscript: The script to run as the user
+## forward_agent: Boolean, whether to forward SSH agent to runner-N
 ## runner_user: Name of the user (ex: "runner-1")
 ## runner_home: Effective home (ex: /srv/runner/home-1)
 ## runner_base: Persistent layer for task-running (ex: /srv/runner/base-1)
@@ -56,6 +57,7 @@ RUNNER_HOME_TPL=/srv/runner/NUM/home
 RUNNER_TEMP_TPL=/srv/runner/NUM/temp
 RUNNER_BASE_TPL=/srv/runner/NUM/base
 RUNNER_LIMIT=2
+RUNNER_META=/srv/runner/meta
 RUNNER_GROUP='runners'
 GUARD=
 
@@ -72,12 +74,12 @@ function usage {
   echo
   echo "Public actions:"
   echo
-  echo "       $prog submit [-n NUMBER] [-c CTLSCRIPT] [-o OUTDIR]"
+  echo "       $prog submit [-A] [-n NUMBER] [-c CTLSCRIPT] [-o OUTDIR]"
   echo
   echo "Private actions:"
   echo
-  echo "       $prog exec [-n NUMBER] [-c CTLSCRIPT] [-r REQFILE] [-o OUTDIR]"
-  echo "       $prog setup [-n NUMBER] [-c CTLSCRIPT] [-r REQFILE]"
+  echo "       $prog exec [-A] [-n NUMBER] [-c CTLSCRIPT] [-r REQFILE] [-o OUTDIR]"
+  echo "       $prog setup [-A] [-n NUMBER] [-c CTLSCRIPT] [-r REQFILE]"
   echo "       $prog mount-base [-n NUMBER]"
   echo "       $prog mount-temp [-n NUMBER]"
   echo "       $prog kill [-n NUMBER]"
@@ -91,7 +93,12 @@ function usage {
 function task_install {
   print_h1 "Install"
   assert_root_user
-  assert_cmd seq sudo adduser addgroup getent readlink pgrep killall mktemp tar
+  assert_cmd seq sudo adduser addgroup getent readlink pgrep killall mktemp tar ssh sshd
+
+  if [ ! -d "$RUNNER_META" ]; then mkdir -p "$RUNNER_META" ; fi
+  if [ ! -f "$RUNNER_META/id_dispatch" -o ! -f "$RUNNER_META/id_dispatch.pub" ]; then
+    ssh-keygen -t ed25519 -f "$RUNNER_META/id_dispatch" -q -N "" -C "dispatch"
+  fi
 
   if ! getent group "$RUNNER_GROUP" >/dev/null ; then
     print_h2 "Add group \"$RUNNER_GROUP\""
@@ -104,7 +111,10 @@ function task_install {
   fi
 
   print_h2 "Update /etc/sudoers.d/bkrun"
-  echo "${DISPATCH_USER} ALL = (root) NOPASSWD: NOSETENV: /usr/local/bin/bkrun" > /etc/sudoers.d/bkrun
+  echo -n > /etc/sudoers.d/bkrun
+  echo "Defaults:dispatcher env_keep+=SSH_AUTH_SOCK" >> /etc/sudoers.d/bkrun
+  ## Jenkins may confer ssh rights for specific tasks, and those should pass-through.
+  echo "${DISPATCH_USER} ALL = (root) NOPASSWD: NOSETENV: /usr/local/bin/bkrun" >> /etc/sudoers.d/bkrun
 
   for n in `seq 1 $RUNNER_LIMIT` ; do
     number=$n
@@ -113,12 +123,12 @@ function task_install {
       print_h2 "Add user \"$runner_user\""
       $GUARD mkdir -p $(dirname "$runner_home") $(dirname "$runner_base") $(dirname "$runner_temp")
       $GUARD adduser "$runner_user" --gecos "Bkrun Runner $number" --home "$runner_home" --ingroup "$RUNNER_GROUP" --disabled-password
+      $GUARD mkdir -p "$runner_home/.ssh"
       $GUARD mv "$runner_home" "$runner_base"
       $GUARD mkdir "$runner_home"
       $GUARD chown "$runner_user:$RUNNER_GROUP" "$runner_home"
     fi
   done
-
 
   exit ## We just polluted the environment with compute_defaults!
 }
@@ -171,7 +181,7 @@ function task_submit {
 
   local real_outdir=$( readlink -f "$outdir" )
 
-  sudo bkrun exec -n "$number" -c "$ctlscript" -r "$reqfile" -o "$real_outdir"
+  sudo bkrun exec -n "$number" -c "$ctlscript" -r "$reqfile" -o "$real_outdir" $forward_agent
 }
 
 function _task_submit_exit {
@@ -211,7 +221,7 @@ function task_artifacts {
   assert_outdir
 
   local extract_cmd=$(printf "cd %q && tar x" "$outdir"  )
-  dispatch_runner artifacts "$reqfile" | su - dispatcher -c "$extract_cmd"
+  dispatch_runner artifacts "$reqfile" | tee /tmp/transfer.tar | su - dispatcher -c "$extract_cmd"
 }
 
 ###########################################################################
@@ -223,9 +233,21 @@ function task_setup {
 
   task_mount_base
   pushd "$runner_home" >> /dev/null
+    _task_setup_generic
     dispatch_runner setup "$reqfile"
   popd >> /dev/null
+  task_kill
   task_unmount
+}
+
+## Apply some generic steps to the base setup
+function _task_setup_generic() {
+  if [ ! -d .ssh ]; then
+    mkdir -p ".ssh"
+    chown "$runner_user" .ssh
+    cat "$RUNNER_META/id_dispatch.pub" > .ssh/authorized_keys
+    ssh-keyscan localhost > .ssh/known_hosts
+  fi
 }
 
 ###########################################################################
@@ -241,15 +263,28 @@ function task_clean {
 ## Task: Kill processes
 function task_kill {
   assert_root_user
-  if [ -n "$(pgrep -U "$runner_user")" ]; then
-    print_h2 "Kill $runner_user"
-    $GUARD killall --user "$runner_user"
-    $GUARD sleep 4
-    if [ -n "$(pgrep -U "$runner_user")" ]; then
-    print_h2 "Kill $runner_user (-9)"
-      $GUARD killall -9 --wait --user "$runner_user"
+  local count=0
+
+  while true; do
+    if [ -z "$(pgrep -U "$runner_user")" ]; then
+      return
     fi
-  fi
+
+    case "$count" in
+      0)
+        print_h2 "Kill $runner_user"
+        $GUARD killall --user "$runner_user"
+        ;;
+      10)
+        print_h2 "Kill $runner_user (-9)"
+        $GUARD killall -9 --wait --user "$runner_user"
+        ;;
+    esac
+
+    print_h2 "Waiting... ($count)"
+    $GUARD sleep 1
+    count=$((count+1))
+  done
 }
 
 ###########################################################################
@@ -303,7 +338,15 @@ function dispatch_me {
 function dispatch_runner {
   assert_ctlscript
   assert_root_user
-  $GUARD sudo -iu "runner-$number" "$ctlscript" "$@"
+
+  ## sudo is faster/simpler, but "ssh -A" can relay job-specific credentials from Jenkins.
+  if [ -z "$forward_agent" ]; then
+    print_h2 >&2 "Dispatch $2 without SSH ($forward_agent)"
+    $GUARD sudo -iu "runner-$number" "$ctlscript" "$@"
+  else
+    print_h2 >&2 "Dispatch $2 with SSH ($forward_agent)"
+    $GUARD ssh -A -i "$RUNNER_META/id_dispatch"  "runner-$number@localhost" "$ctlscript" "$@"
+  fi
 }
 
 ###########################################################################
@@ -327,6 +370,9 @@ function assert_number() {
   if [ -z "$number" ]; then
     fatal "Missing option: -n NUMBER"
   fi
+  case "$number" in
+    ''|*[!0-9]*) fatal "Number parameter (-n) does not specify a number" ;;
+  esac
   if [ "$number" -gt "$RUNNER_LIMIT" ]; then
     fatal "Number $number exceeds limit $RUNNER_LIMIT"
   fi
@@ -413,7 +459,8 @@ case $cmd in
     ;;
 esac
 
-while getopts ":n:r:c:o:h" opt; do
+forward_agent=
+while getopts ":n:r:c:o:hA" opt; do
   case $opt in
     n)
       number=$OPTARG
@@ -430,6 +477,9 @@ while getopts ":n:r:c:o:h" opt; do
     h)
       usage
       ;;
+    A)
+      forward_agent="-A"
+      ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       usage >&2
@@ -440,6 +490,10 @@ while getopts ":n:r:c:o:h" opt; do
       ;;
   esac
 done
+
+if [ -z "$forward_agent" ]; then
+  unset SSH_AUTH_SOCK
+fi
 
 case $cmd in
   install)      task_install     ; ;;
