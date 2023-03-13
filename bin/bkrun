@@ -90,7 +90,8 @@ function usage {
 ## Task: Install POSIX users, groups, data folders
 function task_install {
   print_h1 "Install"
-  assert_cmd seq sudo adduser addgroup getent readlink pgrep killall mktemp
+  assert_root_user
+  assert_cmd seq sudo adduser addgroup getent readlink pgrep killall mktemp tar
 
   if ! getent group "$RUNNER_GROUP" >/dev/null ; then
     print_h2 "Add group \"$RUNNER_GROUP\""
@@ -126,6 +127,7 @@ function task_install {
 ## Task: Uninstall POSIX users, groups, data folders
 function task_uninstall {
   print_h1 "Uninstall"
+  assert_root_user
   assert_cmd seq sudo deluser delgroup getent
 
   if [ -f /etc/sudoers.d/bkrun ]; then
@@ -167,7 +169,9 @@ function task_submit {
   chgrp "$RUNNER_GROUP" "$reqfile"
   chmod 640 "$reqfile"
 
-  sudo bkrun exec -n "$number" -c "$ctlscript" -r "$reqfile" -o "$outdir"
+  local real_outdir=$( readlink -f "$outdir" )
+
+  sudo bkrun exec -n "$number" -c "$ctlscript" -r "$reqfile" -o "$real_outdir"
 }
 
 function _task_submit_exit {
@@ -201,32 +205,34 @@ function _task_exec_exit {
 ###########################################################################
 ## Task: Sync outbound artifacts
 function task_artifacts {
+  print_h1 "Return artifacts"
   assert_root_user
   assert_reqfile
-  print_h1 "Return artifacts"
+  assert_outdir
 
-  dispatch_runner artifacts "$reqfile" | grep -v '^#' | while read LINE ; do
-    echo "Inspect LINE [$LINE] and sync it"
-  done
+  local extract_cmd=$(printf "cd %q && tar x" "$outdir"  )
+  dispatch_runner artifacts "$reqfile" | su - dispatcher -c "$extract_cmd"
 }
 
 ###########################################################################
 ## Task: Setup worker environment
 function task_setup {
-  assert_root_user
   print_h1 "Setup"
+  assert_root_user
+  assert_reqfile
 
   task_mount_base
-  assert_reqfile
-  dispatch_runner setup "$reqfile"
+  pushd "$runner_home" >> /dev/null
+    dispatch_runner setup "$reqfile"
+  popd >> /dev/null
   task_unmount
 }
 
 ###########################################################################
 ## Task: Cleanup
 function task_clean {
-  assert_root_user
   print_h1 "Cleanup"
+  assert_root_user
   task_kill
   task_unmount
 }
@@ -249,16 +255,18 @@ function task_kill {
 ###########################################################################
 ## Task: Mount base
 function task_mount_base {
-  assert_root_user
   print_h2 "Mount home ($runner_home) with base ($runner_base)"
+  assert_root_user
+
   $GUARD mount --bind "$runner_base" "$runner_home"
 }
 
 ###########################################################################
 ## Task: Mount temp
 function task_mount_temp {
-  assert_root_user
   print_h2 "Mount home ($runner_home) with temp ($runner_temp)"
+  assert_root_user
+
   $GUARD mkdir -p "$runner_temp"
   $GUARD mount -t tmpfs -o "size=${RUNNER_TEMP_SIZE}" tmpfs "$runner_temp"
   $GUARD mkdir "$runner_temp/up" "$runner_temp/work"
@@ -291,7 +299,7 @@ function dispatch_me {
 }
 
 ## Run a subtask (as runner-$N)
-## usage: dispatch <hook-name> [...options...]
+## usage: dispatch_runner <hook-name> [...options...]
 function dispatch_runner {
   assert_ctlscript
   assert_root_user
@@ -414,7 +422,7 @@ while getopts ":n:r:c:o:h" opt; do
       reqfile=$OPTARG
       ;;
     c)
-      ctlscript=$OPTARG
+      ctlscript=$( readlink -f "$OPTARG" )
       ;;
     o)
       outdir=$OPTARG
@@ -439,6 +447,7 @@ case $cmd in
   submit)       task_submit      ; ;;
   exec)         compute_defaults ; task_exec    ; ;;
   setup)        compute_defaults ; task_setup   ; ;;
+  artifact)     compute_defaults ; task_artifact ; ;;
   mount-base)   compute_defaults ; task_unmount ; task_mount_base ; ;;
   mount-temp)   compute_defaults ; task_unmount ; task_mount_temp ; ;;
   unmount)      compute_defaults ; task_unmount ; ;;
