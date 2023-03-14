@@ -1,7 +1,7 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 function run_bknix_help() {
-  echo "usage: run-bknix-job [--mock] <PROFILE> [<JOB_NAME>]"
+  echo "usage: run-bknix-job [--mock] [--loaded] <PROFILE> [<JOB_NAME>]"
   echo
   echo "example: run-bknix-job min CiviRM-Core-Matrix"
   echo "example: run-bknix-job --mock min CiviRM-Core-Matrix"
@@ -13,6 +13,9 @@ function run_bknix_help() {
   echo "tip: If <JOB_NAME> is an HTTPS URL, then it will fetch and run the"
   echo "script. This is useful if you want to configure Jenkins to temporarily"
   echo "use a WIP script."
+  echo
+  echo "tip: If you have already loaded the required bknix profile, then pass"
+  echo "option --loaded to prevent double-loading."
 }
 
 function run_bknix_fatal() {
@@ -26,9 +29,9 @@ function run_bknix_mock() {
   echo "Using mock Jenkins environment"
   export EXECUTOR_NUMBER=0
   export BUILD_NUMBER=123
-  export WORKSPACE="/tmp/mock-workspace-$USER"
+  export WORKSPACE="$HOME/tmp/mock-workspace"
   if [ ! -d "$WORKSPACE" ]; then
-    mkdir "$WORKSPACE"
+    mkdir -p "$WORKSPACE"
   fi
   cd "$WORKSPACE"
 }
@@ -43,18 +46,52 @@ function run_bknix_main() {
   export BKNIX_JOBS
 
   IS_MOCK_JENKINS=
-  if [ "$1" = "--mock" ]; then
-    shift
-    IS_MOCK_JENKINS=1
+  LOADED_BKPROF=
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+
+    case $key in
+      --mock)
+        IS_MOCK_JENKINS=1
+        shift
+        ;;
+      --loaded)
+        LOADED_BKPROF=1
+        shift
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+
+  if [ $# -lt 1 ]; then
+    run_bknix_help
+    exit 1
   fi
 
   case "$1" in
     old|min|dfl|max|edge) BKPROF="$1" ; ;;
     *) run_bknix_fatal "Missing or invalid PROFILE" ; ;;
   esac
+  export BKPROF
+
+  if [ -n "$LOADED_BKPROF" ]; then
+    LOADED_BKPROF="$BKPROF"
+  fi
 
   if [ -n "$IS_MOCK_JENKINS" ]; then
     run_bknix_mock
+  fi
+
+  if [ "$USER" == "dispatcher" ]; then
+    if [ -z "$WORKSPACE" -o ! -d "$WORKSPACE" ]; then
+      echo >&2 "WORKSPACE must be a valid path. (If you are running manually, consider using --mock.)"
+      exit 1
+    fi
+    ## Defer execution to one of the "runner-N" users.
+    bkrun submit -n "$EXECUTOR_NUMBER" -c "$BKNIX_JOBS/bkrun-task.sh" -o "$WORKSPACE"
+    return
   fi
 
   ## JOB_NAME can be complicated (when using matrix jobs). We want a trimmed-down name.

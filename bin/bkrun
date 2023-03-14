@@ -127,7 +127,7 @@ function task_install {
   ## Jenkins may confer ssh rights for specific tasks, and those should pass-through.
   echo "${DISPATCH_USER} ALL = (root) NOPASSWD: NOSETENV: /usr/local/bin/bkrun" >> /etc/sudoers.d/bkrun
 
-  for n in `seq 1 $RUNNER_LIMIT` ; do
+  for n in `seq 0 $RUNNER_LIMIT` ; do
     number=$n
     compute_defaults
     if ! getent passwd "$runner_user" >/dev/null ; then
