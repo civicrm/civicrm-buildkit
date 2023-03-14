@@ -354,10 +354,10 @@ function dispatch_runner {
 
   ## sudo is faster/simpler, but "ssh -A" can relay job-specific credentials from Jenkins.
   if [ -z "$forward_agent" ]; then
-    print_h2 >&2 "Dispatch $2 without SSH ($forward_agent)"
+    print_h2 >&2 "Dispatch $2 without SSH"
     $GUARD sudo -iu "runner-$number" "$ctlscript" "$@"
   else
-    print_h2 >&2 "Dispatch $2 with SSH ($forward_agent)"
+    print_h2 >&2 "Dispatch $2 with SSH"
     $GUARD ssh -A -i "$RUNNER_META/id_dispatch"  "runner-$number@localhost" "$ctlscript" "$@"
   fi
 }
