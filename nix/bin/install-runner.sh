@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # This installs each of the bknix profiles in a way that's useful for the CI runners.
-# Specifically, for each profile:
-#   - Install the binaries in /nix/var/nix/profiles/bknix-$PROFILE
-#   - Initialize a data folder in /home/$OWNER/bknix-$PROFILE
+# Specifically:
+#   - Create users "dispatcher" and "runner-N"
 #   - Do not register systemd services for php/mysql/etc
+#   - Install utilites (
 #
 # Pre-requisites:
 #   Use a Debian-like main OS
@@ -50,12 +50,13 @@ fi
 
 install_cachix
 init_folder "$BKNIXSRC/examples/$BKNIX_CI_TEMPLATE" /etc/bknix-ci
-touch /etc/bknix-ci/worker-n
-install_bin "$BINDIR"/use-bknix /usr/local/bin/use-bknix
+touch /etc/bknix-ci/is_runnner
+install_bin "$BINDIR"/bkrun                 /usr/local/bin/bkrun
+#install_bin "$BINDIR"/use-bknix             /usr/local/bin/use-bknix
 install_bin "$BINDIR"/await-bknix.flag-file /usr/local/bin/await-bknix
-install_bin "$BINDIR"/run-bknix-job /usr/local/bin/run-bknix-job
-install_all_jenkins
-install_all_publisher
-build_one_to_throw_away
+install_bin "$BINDIR"/run-bknix-job         /usr/local/bin/run-bknix-job
 
+bkrun install
+
+warmup_binaries
 touch /var/local/bknix-ready
