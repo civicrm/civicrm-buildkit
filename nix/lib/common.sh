@@ -476,6 +476,26 @@ function template_render() {
     | sed "s/%%PROFILE%%/$PROFILE/g"
 }
 
+## This step will download the binaries for our profiles, but
+## it doesn't install them in any particular place. I suppose
+## it could be done, but they're not supposed to be used.
+## Never-the-less, we should warmup the nix caches.
+function warmup_binaries() {
+  pushd "$BKNIXSRC" >>/dev/null
+    set +e
+      ## replace old ones
+      rm -f ./result*
+    set -e
+
+    nix-build -E 'let p=import ./profiles; in builtins.attrValues p' | sort -u
+    nix-instantiate default.nix | sort -u
+    nix-store -r $( ( for PRF in old min dfl max edge; do nix-instantiate -A profiles.$PRF default.nix ; done ) | sort -u )
+
+    ## the extra "./result*" files are messy, but we'll leave them to prevent GC
+    ## from hitting frequently-used packages
+  popd >> /dev/null
+}
+
 ###########################################################
 ## Scanners
 
