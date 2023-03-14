@@ -51,11 +51,11 @@ set -e
 ## runner_temp: Temp layer for task-running (ex: /srv/runner/temp-1)
 
 DISPATCH_USER="dispatcher"
-DISPATCH_HOME="/srv/runner/dispatcher/home"
+DISPATCH_HOME="/srv/runner/home/dispatcher"
 RUNNER_TEMP_SIZE=2500m
-RUNNER_HOME_TPL=/srv/runner/NUM/home
-RUNNER_TEMP_TPL=/srv/runner/NUM/temp
-RUNNER_BASE_TPL=/srv/runner/NUM/base
+RUNNER_HOME_TPL=/srv/runner/home/runner-NUM
+RUNNER_TEMP_TPL=/srv/runner/temp/runner-NUM
+RUNNER_BASE_TPL=/srv/runner/base/runner-NUM
 RUNNER_LIMIT=2
 RUNNER_META=/srv/runner/meta
 RUNNER_GROUP='runners'
@@ -95,6 +95,9 @@ function task_install {
   assert_root_user
   assert_cmd seq sudo adduser addgroup getent readlink pgrep killall mktemp tar ssh sshd
 
+  mkdir -p "/srv/runner/home" "/srv/runner/base" "/srv/runner/temp"
+  chmod 700 /srv/runner/base /srv/runner/temp ## Not visible to regular users
+
   if [ ! -d "$RUNNER_META" ]; then mkdir -p "$RUNNER_META" ; fi
   if [ ! -f "$RUNNER_META/id_dispatch" -o ! -f "$RUNNER_META/id_dispatch.pub" ]; then
     ssh-keygen -t ed25519 -f "$RUNNER_META/id_dispatch" -q -N "" -C "dispatch"
@@ -121,7 +124,6 @@ function task_install {
     compute_defaults
     if ! getent passwd "$runner_user" >/dev/null ; then
       print_h2 "Add user \"$runner_user\""
-      $GUARD mkdir -p $(dirname "$runner_home") $(dirname "$runner_base") $(dirname "$runner_temp")
       $GUARD adduser "$runner_user" --gecos "Bkrun Runner $number" --home "$runner_home" --ingroup "$RUNNER_GROUP" --disabled-password
       $GUARD mkdir -p "$runner_home/.ssh"
       $GUARD mv "$runner_home" "$runner_base"
@@ -244,10 +246,12 @@ function task_setup {
 function _task_setup_generic() {
   if [ ! -d .ssh ]; then
     mkdir -p ".ssh"
-    chown "$runner_user" .ssh
-    cat "$RUNNER_META/id_dispatch.pub" > .ssh/authorized_keys
-    ssh-keyscan localhost > .ssh/known_hosts
   fi
+  chown "root:$RUNNER_GROUP" ".ssh"
+  chmod 750 ".ssh"
+  cat "$RUNNER_META/id_dispatch.pub" > .ssh/authorized_keys
+  ssh-keyscan localhost > .ssh/known_hosts
+  chown "$runner_user" .ssh/known_hosts
 }
 
 ###########################################################################
