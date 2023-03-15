@@ -1,4 +1,5 @@
 #!/bin/bash
+{ # https://stackoverflow.com/a/21100710
 set -e
 
 ## bkrun is a multi-user task-runner.
@@ -546,3 +547,6 @@ case $cmd in
   kill)         compute_defaults ; task_kill    ; ;;
   clean)        compute_defaults ; task_clean   ; ;;
 esac
+
+exit
+} # https://stackoverflow.com/a/21100710
