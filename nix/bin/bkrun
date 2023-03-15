@@ -15,10 +15,12 @@ set -e
 ## - Group "runners" includes the dispatcher and all runners.
 ##
 ## Paths:
-## - /srv/runner/dispatcher/home	Home directory of the dispatcher
-## - /srv/runner/NNN/home		Home directory of the Nth runner. This is an overlay, combining "base"+"temp".
-## - /srv/runner/NNN/base		Base-layer. Reused across multiple executions.
-## - /srv/runner/NNN/temp		Temp-layer. Only used for the duration of one execution.
+## - /srv/runner/meta			Extra config data
+## - /srv/runner/spool			Pending requests
+## - /srv/runner/home/dispatcher	Home directory of the dispatcher
+## - /srv/runner/home/runner-NNN	Home directory of the Nth runner. This is an overlay, combining "base"+"temp".
+## - /srv/runner/base/runner-NNN	Base-layer. Reused across multiple executions.
+## - /srv/runner/temp/runner-NNN	Temp-layer. Only used for the duration of one execution.
 
 ###########################################################################
 ## Usage
@@ -29,6 +31,9 @@ set -e
 ##
 ## -- Submit a job (as "dispatcher")
 ## $ sudo bkrun submit -n 99 -c /my/task.sh -o /tmp/output
+##
+## -- Submit a job via run-bknix job (as "dispatcher")
+## $ JOB_NAME=Hello run-bknix-job --mock min
 ##
 ## The script "task.sh" will be executed by user "runner-99". It is called in a phases:
 ##
@@ -60,6 +65,7 @@ RUNNER_TEMP_TPL=/srv/runner/temp/runner-NUM
 RUNNER_BASE_TPL=/srv/runner/base/runner-NUM
 RUNNER_LIMIT=2
 RUNNER_META=/srv/runner/meta
+RUNNER_SPOOL=/srv/runner/spool
 RUNNER_GROUP='runners'
 GUARD=
 
@@ -140,6 +146,10 @@ function task_install {
     fi
   done
 
+  if [ ! -d "$RUNNER_SPOOL" ]; then mkdir -p "$RUNNER_SPOOL" ; fi
+  chown "$DISPATCH_USER:$RUNNER_GROUP" "$RUNNER_SPOOL"
+  chmod 750 "$RUNNER_SPOOL"
+
   exit ## We just polluted the environment with compute_defaults!
 }
 
@@ -184,7 +194,7 @@ function task_submit {
 
   trap "_task_submit_exit" EXIT
 
-  reqfile=$(mktemp)
+  reqfile="$RUNNER_SPOOL"/$(date '+%Y-%m-%d-%H-%M'-$RANDOM$RANDOM)
   dispatch_me request > "$reqfile"
   chgrp "$RUNNER_GROUP" "$reqfile"
   chmod 640 "$reqfile"
