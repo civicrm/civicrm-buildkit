@@ -94,10 +94,14 @@ function use_bknix_tmp() {
     runner-*)
       (cd "$LOCO_PRJ" && loco clean)
       (cd "$LOCO_PRJ" && loco start)
-      trap "cd \"$LOCO_PRJ\" && loco stop" EXIT
+      RUN_BKNIX_CLEANUP_FUNCS+=('_stop_loco')
       ;;
     ## else: This must be a traditional system that runs with system-services.
   esac
+}
+
+function _stop_loco() {
+  (cd "$LOCO_PRJ" && loco stop)
 }
 
 ## Setup the standard build folders within the workspace.

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+RUN_BKNIX_CLEANUP_FILES=()
+RUN_BKNIX_CLEANUP_FUNCS=()
+trap run_bknix_cleanup EXIT
+
 function run_bknix_help() {
   echo "usage: run-bknix-job [--mock] [--loaded] <PROFILE> [<JOB_NAME>]"
   echo
@@ -23,6 +27,26 @@ function run_bknix_fatal() {
   echo 1>&2
   run_bknix_help 1>&2
   exit 1
+}
+
+function run_bknix_mktemp() {
+  local tmpfile="/tmp/run-bknix-$USER-"$(date '+%Y-%m-%d-%H-%M'-$RANDOM$RANDOM)
+  touch "$tmpfile"
+  chmod 600 "$tmpfile"
+  return "$tmpfile"
+}
+
+function run_bknix_cleanup() {
+  for func in "${RUN_BKNIX_CLEANUP_FUNCS[@]}" ; do
+    #echo >&2 "[run-bknix-job: cleanup] $func"
+    $func
+  done
+  for file in "${RUN_BKNIX_CLEANUP_FILES[@]}" ; do
+    #echo >&2 "[run-bknix-job: cleanup] $file"
+    if [ -e "$file" ]; then
+      rm -f "$file"
+    fi
+  done
 }
 
 function run_bknix_mock() {
@@ -103,9 +127,9 @@ function run_bknix_main() {
     https:*)
       BKNIX_JOB_URL="$BKNIX_JOB_NAME"
       BKNIX_JOB_NAME=$(basename "$BKNIX_JOB_URL")
-      BKNIX_JOB_SCRIPT="/tmp/run-$USER-$EXECUTOR_NUMBER-"$(echo "$BKNIX_JOB_URL" | md5sum - | cut -f1 -d\  )
+      BKNIX_JOB_SCRIPT=$(run_bknix_mktemp)
+      RUN_BKNIX_CLEANUP_FILES+=("$BKNIX_JOB_SCRIPT")
       run_bknix_download "$BKNIX_JOB_URL" "$BKNIX_JOB_SCRIPT"
-      trap 'rm -f "$BKNIX_JOB_SCRIPT"' EXIT
       ;;
     *)
       BKNIX_JOB_NAME=$(echo "$BKNIX_JOB_NAME" | cut -d '/' -f 1)
@@ -118,19 +142,14 @@ function run_bknix_main() {
     run_bknix_fatal "Missing or invalid JOB_NAME. No such file \"$BKNIX_JOB_SCRIPT\"."
   fi
 
-  if which mktemp >> /dev/null ; then
-    ## If there's a redeploy while bash is running, then bash gets stupid. Prefer to run bash scripts in temp files.
-    local tmpfile=$(mktemp -t .run-bknix-job.XXXXXXXX)
-    trap "rm -f \"$tmpfile\"" EXIT
-    cat "$BKNIX_JOBS/common.sh" >> $tmpfile
-    echo >> $tmpfile
-    cat "$BKNIX_JOB_SCRIPT" >> $tmpfile
-    source "$tmpfile"
-  else
-    ## This system doesn't have mktemp. Too bad.
-    source "$BKNIX_JOBS/common.sh"
-    source "$BKNIX_JOB_SCRIPT"
-  fi
+  ## If there's a redeploy while bash is running, then bash gets stupid. Prefer to run bash scripts in temp files.
+  local tmpfile="/tmp/run-bknix-job-"$(date '+%Y-%m-%d-%H-%M'-$RANDOM$RANDOM)
+  touch "$tmpfile"
+  RUN_BKNIX_CLEANUP_FILES+=("$tmpfile")
+  cat "$BKNIX_JOBS/common.sh" >> $tmpfile
+  echo >> $tmpfile
+  cat "$BKNIX_JOB_SCRIPT" >> $tmpfile
+  source "$tmpfile"
 }
 
 ## usage: run_bknix_download <url> <out-file>
@@ -143,6 +162,5 @@ function run_bknix_download() {
     echo "error: failed to locate curl or wget"
   fi
 }
-
 
 run_bknix_main "$@"
