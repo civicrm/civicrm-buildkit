@@ -3,6 +3,23 @@ set -e
 TIMER=vtime
 
 function getPhpunitVer() {
+  if [ -n "$PHPUNIT" ]; then
+    case "$PHPUNIT" in
+      phpunit5)
+        echo "$PHPUNIT --tap"
+        return
+        ;;
+      phpunit6|phpunit7|phpunit8)
+        echo "$PHPUNIT --printer \Civi\Test\TAP"
+        return
+        ;;
+      phpunit9)
+        echo "$PHPUNIT --debug"
+        return
+        ;;
+    esac
+  fi
+
   CIVIVER=$(getCiviVer)
   if [ $(php -r "echo version_compare('$CIVIVER', '5.39', '>=');") ]; then
     echo "phpunit8 --printer \Civi\Test\TAP"
@@ -99,7 +116,7 @@ function task_phpunit() {
 ## usage: task_phpunit_expr <logical-suite-name> <pwd> [...phpunit file/filter options...]
 ## example: task_phpunit_expr Foo.xml "$CIVI_CORE" tests/phpunit/Foo/
 function task_phpunit_expr() {
-  local PHPUNIT=$(getPhpunitVer)
+  local PHPUNIT_BASE=$(getPhpunitVer)
   local SUITE_NAME="$1"
   local WORK_DIR="$2"
   shift 2
@@ -107,7 +124,7 @@ function task_phpunit_expr() {
   [ ! -d "$JUNITDIR" ] && mkdir -p "$JUNITDIR"
 
   pushd "$WORK_DIR"
-    if ! $GUARD $TIMER $PHPUNIT ${PHPUNIT_ARGS[@]} --log-junit "$JUNITDIR/$SUITE_NAME.xml" "$@" ; then
+    if ! $GUARD $TIMER $PHPUNIT_BASE ${PHPUNIT_ARGS[@]} --log-junit "$JUNITDIR/$SUITE_NAME.xml" "$@" ; then
       EXITCODES="$EXITCODES phpunit"
     fi
     echo "Found EXITCODES=\"$EXITCODES\""
@@ -123,7 +140,7 @@ function task_phpunit_core_extension() {
 
   pushd "$CIVI_CORE/ext/$EXTENSION"
     for GROUP in headless e2e ; do
-      if ! $GUARD $TIMER $(getPhpunitVer) --printer='Civi\Test\TAP' --log-junit="$JUNITDIR/junit-${JUNIT_NAME}-${GROUP}.xml" --group "$GROUP" ; then
+      if ! $GUARD $TIMER $(getPhpunitVer) --log-junit="$JUNITDIR/junit-${JUNIT_NAME}-${GROUP}.xml" --group "$GROUP" ; then
        EXITCODES="$EXITCODES $EXTENSION-$GROUP"
      fi
      echo "Found EXITCODES=\"$EXITCODES\""
