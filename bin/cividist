@@ -1,4 +1,5 @@
 #!/bin/bash
+{ #https://stackoverflow.com/a/21100710
 set -e
 
 function absdirname() {
@@ -347,3 +348,5 @@ pushd $SRC >> /dev/null
       ;;
   esac
 popd >> /dev/null
+exit
+}

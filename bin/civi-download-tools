@@ -5,6 +5,8 @@
 ##
 ## Maybe, when drush or composer is more mature, we can eliminate this.
 
+{ # https://stackoverflow.com/a/21100710
+
 ## Determine the absolute path of the directory with the file
 ## absdirname <file-path>
 function absdirname() {
@@ -841,3 +843,6 @@ check_command npm recommended "WARNING: Failed to locate command \"npm\". NodeJS
 ##################################################
 ## Cleanup
 rm -f "$LOCKFILE"
+
+exit
+}
