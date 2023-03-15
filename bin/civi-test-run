@@ -99,7 +99,7 @@ function task_phpunit() {
 ## usage: task_phpunit_expr <logical-suite-name> <pwd> [...phpunit file/filter options...]
 ## example: task_phpunit_expr Foo.xml "$CIVI_CORE" tests/phpunit/Foo/
 function task_phpunit_expr() {
-  local PHPUNIT=$(getPhpunitVer)
+  local PHPUNIT_BASE=$(getPhpunitVer)
   local SUITE_NAME="$1"
   local WORK_DIR="$2"
   shift 2
@@ -107,7 +107,7 @@ function task_phpunit_expr() {
   [ ! -d "$JUNITDIR" ] && mkdir -p "$JUNITDIR"
 
   pushd "$WORK_DIR"
-    if ! $GUARD $TIMER $PHPUNIT ${PHPUNIT_ARGS[@]} --log-junit "$JUNITDIR/$SUITE_NAME.xml" "$@" ; then
+    if ! $GUARD $TIMER $PHPUNIT_BASE ${PHPUNIT_ARGS[@]} --log-junit "$JUNITDIR/$SUITE_NAME.xml" "$@" ; then
       EXITCODES="$EXITCODES phpunit"
     fi
     echo "Found EXITCODES=\"$EXITCODES\""
