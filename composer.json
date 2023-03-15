@@ -59,7 +59,7 @@
       "phpunit6": {"version": "6.x", "url": "https://phar.phpunit.de/phpunit-6.phar", "path": "extern/phpunit6/phpunit6.phar", "type": "phar"},
       "phpunit7": {"version": "7.5.15", "url": "https://phar.phpunit.de/phpunit-7.5.15.phar", "path": "extern/phpunit7/phpunit7.phar", "type": "phar"},
       "phpunit8": {"version": "8.5.27", "url": "https://phar.phpunit.de/phpunit-{$version}.phar", "path": "extern/phpunit8/phpunit8.phar", "type": "phar"},
-      "phpunit9": {"version": "9.5.21", "url": "https://phar.phpunit.de/phpunit-{$version}.phar", "path": "extern/phpunit9/phpunit9.phar", "type": "phar"},
+      "phpunit9": {"version": "9.6.5", "url": "https://phar.phpunit.de/phpunit-{$version}.phar", "path": "extern/phpunit9/phpunit9.phar", "type": "phar"},
       "phpunit-xml-cleanup": {"version": "0.2", "url": "https://raw.githubusercontent.com/civicrm/phpunit-xml-cleanup/v{$version}/bin/phpunit-xml-cleanup", "path": "extern/phpunit-xml-cleanup.php", "type": "file"},
       "pogo": {"version": "0.5.0", "url": "https://github.com/totten/pogo/releases/download/v{$version}/pogo-{$version}.phar", "path": "bin/pogo", "type": "phar"},
       "wp": {"version": "2.6.0", "url": "https://github.com/wp-cli/wp-cli/releases/download/v{$version}/wp-cli-{$version}.phar", "path": "bin/wp", "type": "phar"}
