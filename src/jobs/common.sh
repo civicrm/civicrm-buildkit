@@ -52,6 +52,9 @@ function assert_common() {
       EXECUTOR_NUMBER)
         assert_regex '^[0-9]\+$' "$EXECUTOR_NUMBER" "EXECUTOR_NUMBER must be a number. (If you are running manually, consider using --mock.)"
         ;;
+      PHPUNIT)
+        assert_regex '^phpunit[0-9]*$' "$PHPUNIT" "PHPUNIT ($PHPUNIT) should identify a general version (such as phpunit8 or phpunit9)"
+        ;;
       SUITES)
         assert_regex '^[ 0-9a-z\.-]\+$' "$SUITES" "Missing or invalid SUITES"
         ;;
@@ -123,4 +126,34 @@ function clean_legacy_workspace() {
       rm -rf "$FILE"
     fi
   done
+}
+
+## Thin wrapper for calling PHPUnit. Makes it easier to swap between versions. Adaptations:
+##
+## - Determine preferred version from env var $PHPUNIT.
+## - If "--tap" is used on newer versions, then swap for a similar --printer.
+function xphpunit() {
+  assert_common PHPUNIT
+  local args=()
+
+  ## Scan "$@" for non-portable options. Translate them.
+  while [ $# -gt 0 ]; do
+    arg="$1"
+    shift
+    case "$arg" in
+     --tap)
+       case "$PHPUNIT" in
+         phpunit7|phpunit8) args+=("--printer=Civi\Test\TAP") ; ;;
+         phpunit9) args+=("--debug") ; ;; ## FIXME Real TAP is better
+         *) args+=("$arg") ; ;;
+       esac
+       ;;
+
+     *)
+       args+=("$arg")
+       ;;
+    esac
+  done
+
+  $PHPUNIT "${args[@]}"
 }

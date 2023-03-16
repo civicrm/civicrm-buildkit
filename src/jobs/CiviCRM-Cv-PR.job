@@ -18,9 +18,10 @@ GUARD=
 ## ghprbTargetBranch: The base-branch for PR (for `cv.git`)
 ## ghprbPullId: The pull-request ID (for `cv.git`)
 ## SUITE: The kind of civix test to run (e.g. `cv-std`)
+PHPUNIT=${PHPUNIT:-phpunit8}
 ghprbTargetBranch=${ghprbTargetBranch:-master}
 ghprbPullId=${ghprbPullId:-0}
-assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE CIVIVER ghprbTargetBranch ghprbPullId
+assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE CIVIVER PHPUNIT ghprbTargetBranch ghprbPullId
 assert_regex "^\(cv-std\|cv-installer\|cv-null\)$" "$SUITE"
 
 #################################################
@@ -82,11 +83,11 @@ $GUARD pushd "$BKITBLD/$BLDNAME/src/cv"
   $GUARD composer install
   case "$SUITE" in
     cv-std)
-      $GUARD phpunit8 --group std --log-junit "$WORKSPACE_JUNIT/cv-std.xml" --debug
+      $GUARD xphpunit --group std --log-junit "$WORKSPACE_JUNIT/cv-std.xml" --debug
       ;;
     cv-installer)
       echo "ERROR: Not implemented. Need suitable build with code and no database."
-      #$GUARD phpunit8 --group installer --junit "$WORKSPACE_JUNIT/cv-std.xml" --debug
+      #$GUARD xphpunit --group installer --junit "$WORKSPACE_JUNIT/cv-std.xml" --debug
       exit 1
       ;;
     cv-null)

@@ -8,7 +8,8 @@ set -e
 #################################################
 ## Environment variables
 
-assert_common EXECUTOR_NUMBER WORKSPACE CIVIVER
+PHPUNIT=${PHPUNIT:-phpunit8}
+assert_common EXECUTOR_NUMBER WORKSPACE CIVIVER PHPUNIT
 
 ## EXTKEY: The name of the extension to test. Ex: uk.co.vedaconsulting.mosaico
 assert_regex '^[0-9a-z\.-]\+$' "$EXTKEY" "Missing or invalid EXTKEY"
@@ -160,24 +161,24 @@ pushd "$EXTBASE"
       if [ "$EXTKEY" != "uk.co.vedaconsulting.mosaico" ]; then
         true
       else
-         phpunit8 --printer='Civi\Test\TAP' --group e2e --log-junit="$WORKSPACE_JUNIT/junit-e2e.xml"
+         xphpunit --tap --group e2e --log-junit="$WORKSPACE_JUNIT/junit-e2e.xml"
        fi
-      phpunit8 --printer='Civi\Test\TAP' --group headless --log-junit="$WORKSPACE_JUNIT/junit-headless.xml"
+      xphpunit --tap --group headless --log-junit="$WORKSPACE_JUNIT/junit-headless.xml"
     else
       if [ "$EXTKEY" == "uk.co.vedaconsulting.mosaico" ]; then
         true
       else
-        phpunit8 --printer='Civi\Test\TAP' --group e2e --log-junit="$WORKSPACE_JUNIT/junit-e2e.xml"
+        xphpunit --tap --group e2e --log-junit="$WORKSPACE_JUNIT/junit-e2e.xml"
       fi
-      phpunit8 --printer='Civi\Test\TAP' --group headless --log-junit="$WORKSPACE_JUNIT/junit-headless.xml"
+      xphpunit --tap --group headless --log-junit="$WORKSPACE_JUNIT/junit-headless.xml"
     fi
  else
    if [ "$EXTKEY" != "uk.co.vedaconsulting.mosaico" ]; then
      true
    else
-     phpunit8 --printer='Civi\Test\TAP' --group e2e --log-junit="$WORKSPACE_JUNIT/junit-e2e.xml"
+     xphpunit --tap --group e2e --log-junit="$WORKSPACE_JUNIT/junit-e2e.xml"
    fi
-   phpunit8 --printer='Civi\Test\TAP' --group headless --log-junit="$WORKSPACE_JUNIT/junit-headless.xml"
+   xphpunit --tap --group headless --log-junit="$WORKSPACE_JUNIT/junit-headless.xml"
   fi
     EXITCODE=$(($? || $EXITCODE))
   popd
