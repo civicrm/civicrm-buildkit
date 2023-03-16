@@ -17,8 +17,8 @@
 ## Internal Environment
 ##
 ## BKNIX_JOBS:   This folder (containing the *.job scripts)
-## request:      File with the serialized request
-## bkit:         Path for the active buildkit instance
+## REQUEST:      File with the serialized request
+## BKIT:         Path for the active buildkit instance
 
 TTL_TOOLS=60     ## During setup, refresh 'civi-download-tools' (if >1 hour old)
 TTL_BLDTYPE=180  ## During setup, warmup 'bldtype' (if >3 hours since last)
@@ -28,9 +28,9 @@ TTL_BLDTYPE=180  ## During setup, warmup 'bldtype' (if >3 hours since last)
 function main() {
   case "$1" in
     request)   do_request ; ;;
-    setup)     request="$2" ; load_request "$request" ; do_setup ; ;;
-    exec)      request="$2" ; load_request "$request" ; do_exec ; ;;
-    artifacts) request="$2" ; load_request "$request" ; do_artifacts ; ;;
+    setup)     REQUEST="$2" ; load_request "$REQUEST" ; do_setup ; ;;
+    exec)      REQUEST="$2" ; load_request "$REQUEST" ; do_exec ; ;;
+    artifacts) REQUEST="$2" ; load_request "$REQUEST" ; do_artifacts ; ;;
   esac
 }
 
@@ -38,9 +38,10 @@ function main() {
 ## TASK: New Request
 ## USER: "dispatcher"
 ## EXAMPLE: `bkrun-task.sh request > /tmp/request-1234.txt`
-
+##
 ## Generate a request message. This will be relayed to other subtasks.
 ## Execute as "dispatcher".
+
 function do_request() {
   echo >&2 "[$USER] Generate request (with CIVIVER=$CIVIVER WORKSPACE=$WORKSPACE)"
   env | known_variables
@@ -51,40 +52,40 @@ function do_request() {
 ## USER: "runner-N"
 ## HOME FILE MODE: "Base"
 ## EXAMPLE: `bkrun-task.sh setup /tmp/request-1234.txt > /tmp/my-log.txt`
-
+##
 ## Use this to download common tools or warm-up common caches. Anything you
 ## do during "setup" will may be re-used in future calls.
-
+##
 ## Do not use this for the heavy-lifting of job execution. You probably
 ## should NOT retrieve any unapproved/PR content.
 
 function do_setup() {
-  echo >&2 "[$USER] Run setup for request $request"
+  echo >&2 "[$USER] Run setup for request $REQUEST"
 
   git config --global user.email "$USER@example.com"
   git config --global user.name "$USER"
   mkdir -p "$HOME/.cache-flags"
 
-  if [ ! -d "$bkit" ]; then
-    git clone https://github.com/civicrm/civicrm-buildkit "$bkit"
+  if [ ! -d "$BKIT" ]; then
+    git clone https://github.com/civicrm/civicrm-buildkit "$BKIT"
   fi
 
-  if is_stale "$bkit/.ttl-tools" "$TTL_TOOLS" ; then
-    (cd "$bkit" && git pull)
-    # (cd "$bkit" && nix-shell -A "$BKPROF" --run './bin/civi-download-tools')
-    (cd "$bkit" && nix-shell -A "$BKPROF" --run './bin/civi-download-tools && civibuild cache-warmup')
-    touch "$bkit/.ttl-tools"
+  if is_stale "$BKIT/.ttl-tools" "$TTL_TOOLS" ; then
+    (cd "$BKIT" && git pull)
+    # (cd "$BKIT" && nix-shell -A "$BKPROF" --run './bin/civi-download-tools')
+    (cd "$BKIT" && nix-shell -A "$BKPROF" --run './bin/civi-download-tools && civibuild cache-warmup')
+    touch "$BKIT/.ttl-tools"
   fi
 
   ## Every few hours, the "setup" does a trial run to re-warm caches.
   ## (It might preferrable to get composer+npm to use a general HTTP cache, but this will work for now.)
-  safe_delete "$bkit/build/warmup" "$bkit/build/warmup.sh"
-  if [[ -d "$bkit/app/config/$BLDTYPE" && "$BLDTYPE" =~ ^(drupal|drupal8|drupal9|backdrop|wp|standalone)-(empty|clean|demo)$ ]]; then
-    local flag_file="$bkit/.ttl-$BLDTYPE"
+  safe_delete "$BKIT/build/warmup" "$BKIT/build/warmup.sh"
+  if [[ -d "$BKIT/app/config/$BLDTYPE" && "$BLDTYPE" =~ ^(drupal|drupal8|drupal9|backdrop|wp|standalone)-(empty|clean|demo)$ ]]; then
+    local flag_file="$BKIT/.ttl-$BLDTYPE"
     if is_stale "$flag_file" "$TTL_BLDTYPE" ; then
-      safe_delete "$bkit/build/warmup" "$bkit/build/warmup.sh"
-      (cd "$bkit" && nix-shell -A "$BKPROF" --run "civibuild download warmup --type $BLDTYPE")
-      safe_delete "$bkit/build/warmup" "$bkit/build/warmup.sh"
+      safe_delete "$BKIT/build/warmup" "$BKIT/build/warmup.sh"
+      (cd "$BKIT" && nix-shell -A "$BKPROF" --run "civibuild download warmup --type $BLDTYPE")
+      safe_delete "$BKIT/build/warmup" "$BKIT/build/warmup.sh"
       touch "$flag_file"
     fi
   fi
@@ -97,25 +98,25 @@ function do_setup() {
 ## USER: "runner-N"
 ## HOME FILE MODE: "Temp"
 ## EXAMPLE: `bkrun-task.sh exec /tmp/request-1234.txt > /tmp/my-log.txt`
-
+##
 ## Use this to do the heavy-lifting of job execution. You might create
 ## new sites, run PHPUnit, etc.
-
+##
 ## You will be allowed to write files anywhere in "$HOME", but they will be
 ## reset when the job finishes.
 
 function do_exec() {
-  echo >&2 "[$USER] Run exec for request $request"
+  echo >&2 "[$USER] Run exec for request $REQUEST"
 
   # echo "EXEC: Start pre-run shell. Press Ctrl-D to finish pre-run shell." && bash
 
   use_workspace
   mkdir build
   cd build
-  cat "$request" > env-requested.txt
-  cat "$request" | well_formed_variables | known_variables | switch_home > env-effective.txt
+  cat "$REQUEST" > env-requested.txt
+  cat "$REQUEST" | well_formed_variables | known_variables | switch_home > env-effective.txt
 
-  cd "$bkit"
+  cd "$BKIT"
   cat ".loco/worker-n.yml" | grep -v CIVI_TEST_MODE > ".loco/loco.yml"
   local cmd=$(printf "run-bknix-job --loaded %q" "$BKPROF")
   nix-shell -A "$BKPROF" --run "$cmd"
@@ -128,7 +129,7 @@ function do_exec() {
 ## USER: "runner-N"
 ## HOME FILE MODE: "Temp"
 ## EXAMPLE: `bkrun-task.sh artifacts /tmp/request-1234.txt > /tmp/results.tar`
-
+##
 ## After executing the job, find any interesting artifacts and return them.
 ## These files will be placed in the "dispatcher"s workspace. This task is
 ## called even if the overall job fails. (For example, when testing
@@ -138,7 +139,7 @@ function do_exec() {
 ## Take care the STDOUT should be a "tar" file. Send any messages to STDERR.
 
 function do_artifacts() {
-  echo >&2 "[$USER] Send artifacts for $request"
+  echo >&2 "[$USER] Send artifacts for $REQUEST"
 
   ## To align with Jenkins convention, anything that we generated in
   ## "$WORKSPACE" will be exported.
@@ -170,7 +171,7 @@ function load_request() {
 
   case "$BKPROF" in
     old|min|dfl|max|edge)
-      bkit="$HOME/buildkit-$BKPROF"
+      BKIT="$HOME/buildkit-$BKPROF"
       ;;
     *)
       echo >&2 "Unrecognized BKPROF=[$BKPROF]"
