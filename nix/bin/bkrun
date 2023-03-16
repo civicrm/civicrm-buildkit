@@ -127,6 +127,7 @@ function task_install {
     print_h2 "Add user \"$DISPATCH_USER\""
     $GUARD adduser "$DISPATCH_USER" --gecos "Bkrun Dispatcher" --home "$DISPATCH_HOME" --ingroup "$RUNNER_GROUP" --disabled-password
   fi
+  _install_ssh "$DISPATCH_USER" "$DISPATCH_HOME/.ssh" "$( [ -e /etc/bknix-ci/dispatcher-keys ] && cat /etc/bknix-ci/dispatcher-keys )"
 
   print_h2 "Update /etc/sudoers.d/bkrun"
   echo -n > /etc/sudoers.d/bkrun
@@ -140,11 +141,11 @@ function task_install {
     if ! getent passwd "$runner_user" >/dev/null ; then
       print_h2 "Add user \"$runner_user\""
       $GUARD adduser "$runner_user" --gecos "Bkrun Runner $number" --home "$runner_home" --ingroup "$RUNNER_GROUP" --disabled-password
-      $GUARD mkdir -p "$runner_home/.ssh"
       $GUARD mv "$runner_home" "$runner_base"
       $GUARD mkdir "$runner_home"
       $GUARD chown "$runner_user:$RUNNER_GROUP" "$runner_home"
     fi
+    _install_ssh "$runner_user" "$runner_base/.ssh" "$(cat $RUNNER_META/id_dispatch.pub)"
   done
 
   if [ ! -d "$RUNNER_SPOOL" ]; then mkdir -p "$RUNNER_SPOOL" ; fi
@@ -152,6 +153,30 @@ function task_install {
   chmod 750 "$RUNNER_SPOOL"
 
   exit ## We just polluted the environment with compute_defaults!
+}
+
+## Apply some generic steps to the base setup
+## _install_ssh <user> <ssh_dir> <authorized_keys>
+function _install_ssh() {
+  local tgt_user="$1"
+  local ssh_dir="$2"
+  local authorized_keys="$3"
+
+  print_h2 "Setup SSH for \"$tgt_user\""
+
+  if [ ! -d "$ssh_dir" ]; then
+    mkdir -p "$ssh_dir"
+  fi
+  chown "root:$RUNNER_GROUP" "$ssh_dir"
+  chmod 750 "$ssh_dir"
+
+  echo "$authorized_keys" > "$ssh_dir/authorized_keys"
+  chown "root:$RUNNER_GROUP" "$ssh_dir/authorized_keys"
+  chmod 640 "$ssh_dir/authorized_keys"
+
+  ssh-keyscan localhost > "$ssh_dir/known_hosts"
+  chown "$tgt_user:$RUNNER_GROUP" "$ssh_dir/known_hosts"
+  chmod 640 "$ssh_dir/known_hosts"
 }
 
 ###########################################################################
@@ -255,23 +280,10 @@ function task_setup {
 
   task_mount_base
   pushd "$runner_home" >> /dev/null
-    _task_setup_generic
     dispatch_runner setup "$reqfile"
   popd >> /dev/null
   task_kill
   task_unmount
-}
-
-## Apply some generic steps to the base setup
-function _task_setup_generic() {
-  if [ ! -d .ssh ]; then
-    mkdir -p ".ssh"
-  fi
-  chown "root:$RUNNER_GROUP" ".ssh"
-  chmod 750 ".ssh"
-  cat "$RUNNER_META/id_dispatch.pub" > .ssh/authorized_keys
-  ssh-keyscan localhost > .ssh/known_hosts
-  chown "$runner_user" .ssh/known_hosts
 }
 
 ###########################################################################
