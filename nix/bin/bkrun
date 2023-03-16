@@ -171,7 +171,7 @@ function task_uninstall {
     $GUARD deluser "$DISPATCH_USER"
   fi
 
-  for n in `seq 1 $RUNNER_LIMIT` ; do
+  for n in `seq 0 $RUNNER_LIMIT` ; do
     number=$n
     compute_defaults
     if getent passwd "$runner_user" >/dev/null ; then
