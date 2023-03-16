@@ -33,7 +33,7 @@ function run_bknix_mktemp() {
   local tmpfile="/tmp/run-bknix-$USER-"$(date '+%Y-%m-%d-%H-%M'-$RANDOM$RANDOM)
   touch "$tmpfile"
   chmod 600 "$tmpfile"
-  return "$tmpfile"
+  echo "$tmpfile"
 }
 
 function run_bknix_cleanup() {
@@ -146,7 +146,7 @@ function run_bknix_main() {
   fi
 
   ## If there's a redeploy while bash is running, then bash gets stupid. Prefer to run bash scripts in temp files.
-  local tmpfile="/tmp/run-bknix-job-"$(date '+%Y-%m-%d-%H-%M'-$RANDOM$RANDOM)
+  local tmpfile=$(run_bknix_mktemp)
   touch "$tmpfile"
   RUN_BKNIX_CLEANUP_FILES+=("$tmpfile")
   cat "$BKNIX_JOBS/common.sh" >> $tmpfile
