@@ -18,15 +18,19 @@
 ##
 ## BKNIX_JOBS:   This folder (containing the *.job scripts)
 ## request:      File with the serialized request
+## bkit:         Path for the active buildkit instance
+
+TTL_TOOLS=60     ## During setup, refresh 'civi-download-tools' (if >1 hour old)
+TTL_BLDTYPE=180  ## During setup, warmup 'bldtype' (if >3 hours since last)
 
 #####################################################################
 ## Main
 function main() {
   case "$1" in
     request)   do_request ; ;;
-    setup)     request="$2" ; do_setup ; ;;
-    exec)      request="$2" ; do_exec ; ;;
-    artifacts) request="$2" ; do_artifacts ; ;;
+    setup)     request="$2" ; load_request "$request" ; do_setup ; ;;
+    exec)      request="$2" ; load_request "$request" ; do_exec ; ;;
+    artifacts) request="$2" ; load_request "$request" ; do_artifacts ; ;;
   esac
 }
 
@@ -55,21 +59,35 @@ function do_request() {
 ## should NOT retrieve any unapproved/PR content.
 
 function do_setup() {
-  load_request "$request"
-  echo >&2 "[$USER] Run setup for request $request (with CIVIVER=$CIVIVER WORKSPACE=$WORKSPACE)"
+  echo >&2 "[$USER] Run setup for request $request"
 
   git config --global user.email "$USER@example.com"
   git config --global user.name "$USER"
+  mkdir -p "$HOME/.cache-flags"
 
-  if [ ! -d "$HOME/buildkit" ]; then
-    git clone https://github.com/civicrm/civicrm-buildkit/ "$HOME/buildkit"
-  else
-    (cd "$HOME/buildkit" && git pull)
+  if [ ! -d "$bkit" ]; then
+    git clone https://github.com/civicrm/civicrm-buildkit "$bkit"
   fi
 
-  # (cd "$HOME/buildkit" && nix-shell -A min --run './bin/civi-download-tools')
-  (cd "$HOME/buildkit" && nix-shell -A min --run './bin/civi-download-tools && civibuild cache-warmup')
-  ## Note: this means that we download the toolchain in 'min' and re-use it for min/dfl/max/whatever.
+  if is_stale "$bkit/.ttl-tools" "$TTL_TOOLS" ; then
+    (cd "$bkit" && git pull)
+    # (cd "$bkit" && nix-shell -A "$BKPROF" --run './bin/civi-download-tools')
+    (cd "$bkit" && nix-shell -A "$BKPROF" --run './bin/civi-download-tools && civibuild cache-warmup')
+    touch "$bkit/.ttl-tools"
+  fi
+
+  ## Every few hours, the "setup" does a trial run to re-warm caches.
+  ## (It might preferrable to get composer+npm to use a general HTTP cache, but this will work for now.)
+  safe_delete "$bkit/build/warmup" "$bkit/build/warmup.sh"
+  if [[ -d "$bkit/app/config/$BLDTYPE" && "$BLDTYPE" =~ ^(drupal|drupal8|drupal9|backdrop|wp|standalone)-(empty|clean|demo)$ ]]; then
+    local flag_file="$bkit/.ttl-$BLDTYPE"
+    if is_stale "$flag_file" "$TTL_BLDTYPE" ; then
+      safe_delete "$bkit/build/warmup" "$bkit/build/warmup.sh"
+      (cd "$bkit" && nix-shell -A "$BKPROF" --run "civibuild download warmup --type $BLDTYPE")
+      safe_delete "$bkit/build/warmup" "$bkit/build/warmup.sh"
+      touch "$flag_file"
+    fi
+  fi
 
   # echo "EXEC: Start pre-setup shell. Press Ctrl-D to finish pre-run shell." && bash
 }
@@ -87,8 +105,7 @@ function do_setup() {
 ## reset when the job finishes.
 
 function do_exec() {
-  load_request "$request"
-  echo >&2 "[$USER] Run exec for request $request (with CIVIVER=$CIVIVER WORKSPACE=$WORKSPACE)"
+  echo >&2 "[$USER] Run exec for request $request"
 
   # echo "EXEC: Start pre-run shell. Press Ctrl-D to finish pre-run shell." && bash
 
@@ -98,7 +115,7 @@ function do_exec() {
   cat "$request" > env-requested.txt
   cat "$request" | well_formed_variables | known_variables | switch_home > env-effective.txt
 
-  cd "$HOME/buildkit"
+  cd "$bkit"
   cat ".loco/worker-n.yml" | grep -v CIVI_TEST_MODE > ".loco/loco.yml"
   local cmd=$(printf "run-bknix-job --loaded %q" "$BKPROF")
   nix-shell -A "$BKPROF" --run "$cmd"
@@ -121,7 +138,6 @@ function do_exec() {
 ## Take care the STDOUT should be a "tar" file. Send any messages to STDERR.
 
 function do_artifacts() {
-  load_request "$request"
   echo >&2 "[$USER] Send artifacts for $request"
 
   ## To align with Jenkins convention, anything that we generated in
@@ -151,6 +167,16 @@ function use_workspace() {
 function load_request() {
   #eval $( cat "$1" | well_formed_variables | new_variables | escape_variables )
   eval $( cat "$1" | well_formed_variables | known_variables | switch_home | escape_variables )
+
+  case "$BKPROF" in
+    old|min|dfl|max|edge)
+      bkit="$HOME/buildkit-$BKPROF"
+      ;;
+    *)
+      echo >&2 "Unrecognized BKPROF=[$BKPROF]"
+      exit 3
+      ;;
+  esac
 }
 
 function well_formed_variables() {
@@ -210,6 +236,39 @@ function escape_variables() {
   if [ ${#my_exports[@]} -gt 0 ]; then
     echo "export ${my_exports[@]}"
   fi
+}
+
+## Check if it's time for an update
+## usage: is_stale <MARKER> <MINUTES>
+function is_stale () {
+  local file_path="$1"
+  local max_age_minutes="$2"
+
+  if [[ ! -f "$file_path" ]]; then
+    # File does not exist, so it's expired
+    return 0
+  fi
+
+  local file_age_seconds=$(( $(date +%s) - $(stat -c %Y "$file_path") ))
+  local max_age_seconds=$(( max_age_minutes * 60 ))
+
+  if [[ $file_age_seconds -gt $max_age_seconds ]]; then
+    # File is older than the specified max age
+    return 0
+  else
+    # File is not older than the specified max age
+    return 1
+  fi
+}
+
+function safe_delete() {
+  for FILE in "$@" ; do
+    if [[ -f "$FILE" ]]; then
+      rm "$FILE"
+    elif [[ -d "$FILE" ]]; then
+      rm -rf "$FILE"
+    fi
+  done
 }
 
 function absdirname() {
