@@ -293,6 +293,9 @@ function task_clean {
   assert_root_user
   task_kill
   task_unmount
+  if [ -n "$runner_user" ]; then
+    find -P /tmp /var/tmp /var/crash -user "$runner_user" -delete
+  fi
 }
 
 ###########################################################################
