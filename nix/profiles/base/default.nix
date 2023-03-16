@@ -6,6 +6,7 @@ let
     pkgs = dists.default;
 
 in [
+    pkgs.ansi2html
     pkgs.bzip2
     dists.bkit.bknixProfile
     pkgs.curl
