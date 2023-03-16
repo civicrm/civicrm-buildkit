@@ -43,7 +43,7 @@ function main() {
 ## Execute as "dispatcher".
 
 function do_request() {
-  echo >&2 "[$USER] Generate request (with CIVIVER=$CIVIVER WORKSPACE=$WORKSPACE)"
+  echo >&2 "[$USER] Generate request"
   env | known_variables
 }
 

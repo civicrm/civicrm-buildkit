@@ -304,6 +304,7 @@ function task_kill {
   assert_root_user
   local count=0
 
+  print_h2 "Kill processes for $runner_user"
   while true; do
     if [ -z "$(pgrep -U "$runner_user")" ]; then
       return
@@ -353,6 +354,7 @@ function task_mount_temp {
 ## Task: Unmount
 function task_unmount {
   assert_root_user
+  print_h2 "Check mounts for $runner_user"
   if grep -q "$runner_home" /proc/mounts; then
     print_h2 "Unmount home ($runner_home)"
     $GUARD umount "$runner_home"
