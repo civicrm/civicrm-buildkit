@@ -6,6 +6,8 @@ set -e
 ##
 ## The script is currently only tested for Debian-style environments,
 ## although other POSIX environments may have suitable functionality.
+##
+## It may be possible to adapt to other environments, e.g. https://krypted.com/mac-security/shadow-mounting-with-hdiutil/
 
 ###########################################################################
 ## General Organization
@@ -14,6 +16,11 @@ set -e
 ## - User "dispatcher" can submit jobs.
 ## - Users "runner-1", "runner-2", etc can run jobs.
 ## - Group "runners" includes the dispatcher and all runners.
+##
+## Privilege model:
+## - "dispatcher" is allowed to dictate the substance of any/all work
+## - "runner-NNN" has a "setup" mode, where its home directory has full write access.
+## - "runner-NNN" has an "exec" mode, where its home directory has limited write access (with tmpfs overlay).
 ##
 ## Paths:
 ## - /srv/runner/meta			Extra config data
