@@ -301,7 +301,7 @@ function absdirname() {
 
 BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
-[ -z "$CIVIBUILD_HOME" ] && TMPDIR="$PRJDIR/app/tmp" || TMPDIR="$CIVIBUILD_HOME/.civibuild/tmp"
+## Note: Don't override TMPDIR. It's not actually needed by `civi-test-run`, and it can sometimes interfere with tests.
 [ -z "$CIVIBUILD_HOME" ] && BLDDIR="$PRJDIR/build" || BLDDIR="$CIVIBUILD_HOME"
 EXITCODES=
 SUITES=
