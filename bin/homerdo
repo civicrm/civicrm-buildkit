@@ -13,6 +13,7 @@
   HOMER_LOCK_TPL="$HOMER_VAR/HOMER_ID/lock"
   HOMER_NS_TPL="$HOMER_VAR/HOMER_ID/ns"
   HOMER_TEMP_TPL="$HOMER_VAR/HOMER_ID/temp"
+  GUARD=
 
   img=
   action=
@@ -57,6 +58,55 @@
     #echo "  --share REL_PATH     Mount a shared folder"
     echo "  -t|--temp            Use temporary overlay."
     echo
+  }
+
+  ###########################################################################
+  ## Task: Install POSIX users, groups, data folders
+
+  function task_install {
+    print_h1 "Install"
+    assert_root_user
+    assert_cmd sudo adduser addgroup getent realpath ps pgrep killall unshare
+
+    mkdir -p "$HOMER_VAR"
+    chmod 700 "$HOMER_VAR"
+
+    if ! getent group "$HOMER_GROUP" >/dev/null ; then
+      print_h2 "Add group \"$HOMER_GROUP\""
+      $GUARD addgroup "$HOMER_GROUP"
+    fi
+
+    if ! getent passwd "$HOMER_USER" >/dev/null ; then
+      print_h2 "Add user \"$HOMER_USER\""
+      $GUARD adduser "$HOMER_USER" --gecos "Homer" --home "/home/homer" --ingroup "$HOMER_GROUP" --disabled-password
+    fi
+
+    print_h2 "Grant all users access to homerdo (/etc/sudoers.d/homerdo)"
+    echo -n > /etc/sudoers.d/homerdo
+    echo "ALL ALL = (root) NOPASSWD: NOSETENV: /usr/local/bin/homerdo" >> /etc/sudoers.d/homerdo
+  }
+
+  ###########################################################################
+  ## Task: Uninstall POSIX users, groups, data folders
+  function task_uninstall {
+    print_h1 "Uninstall"
+    assert_root_user
+    assert_cmd seq sudo deluser delgroup getent
+
+    if [ -f /etc/sudoers.d/homerdo ]; then
+      $GUARD rm -f /etc/sudoers.d/homerdo
+    fi
+
+    $GUARD rm -rf "$HOMER_VAR"
+
+    if getent passwd "$HOMER_USER" >/dev/null ; then
+      $GUARD deluser "$HOMER_USER"
+    fi
+
+    if getent group "$HOMER_GROUP" >/dev/null ; then
+      $GUARD delgroup "$HOMER_GROUP"
+    fi
+    exit
   }
 
   ###########################################################################
@@ -189,7 +239,6 @@
     _task_exec_script > "$script"
 
     print_h2 "Create namespaces ($homer_ns)"
-    set -xe
     mkdir -p "$homer_ns"
     mount --bind "$homer_ns" "$homer_ns"
     mount --make-private "$homer_ns"
@@ -437,7 +486,7 @@
       --owner-pid)  owner_pid="$2"    ; shift 2 ; ;;
       -t|--temp)    use_temp="--temp" ; shift 1 ; ;;
       -h|--help|help) action="usage"  ; shift 1 ; ;;
-      run|status|mount|unmount|exec) action="$1" ; shift ; ;;
+      install|uninstall|run|status|mount|unmount|exec) action="$1" ; shift ; ;;
       -*)           fatal "Unrecognized option $1" ; ;;
       *)            parsing=          ; ;;
     esac
