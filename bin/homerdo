@@ -1,0 +1,367 @@
+#!/usr/bin/env bash
+{ # https://stackoverflow.com/a/21100710
+  set -e
+
+  #########################################################
+  ## Environment
+  SELF="$(realpath "$0")"
+  HOMER_VAR=/var/local/homer
+  HOMER_BASE_TPL="$HOMER_VAR/HOMER_ID/base"
+  HOMER_HOME_TPL="$HOMER_VAR/HOMER_ID/home"
+  HOMER_LOCK_TPL="$HOMER_VAR/HOMER_ID/lock"
+  HOMER_TEMP_TPL="$HOMER_VAR/HOMER_ID/temp"
+
+  img=
+  action=
+  use_temp=
+  envfiles=()
+  shares=()
+  cmd=()
+  size=2g
+
+  cleanup_files=()
+  cleanup_mounts=
+
+  homer_id=
+  homer_base=
+  homer_home=
+  homer_lock=
+  homer_temp=
+  homer_user=homer
+  homer_group=homer
+
+  #########################################################
+  ## Tasks
+
+  function task_usage() {
+    prog=$(basename "$0")
+    echo "Public actions:"
+    echo "  $prog run [OPTIONS] [--] [CMD]"
+    echo "  $prog status [OPTIONS]"
+    echo
+    echo "Private actions:"
+    echo "  $prog create [OPTIONS]"
+    echo "  $prog mount [OPTIONS]"
+    echo "  $prog unmount [OPTIONS]"
+    echo "  $prog exec [OPTIONS] [--] [CMD]"
+    echo
+    echo "Options:"
+    echo "  -i|--img IMG         Path to image file"
+#    echo "  --env ENV_FILE       File with environment variables"
+#    echo "  --share REL_PATH     Mount a shared folder"
+    echo "  -t|--temp            Use temporary overlay."
+    echo
+  }
+
+  function task_run() {
+    print_h1 "Run [${cmd[@]}]"
+    assert_not_root_user
+
+    if [ -z "$img" ]; then
+      fatal "No IMG specified"
+    fi
+
+    assert_valid_envfiles; realize_envfiles
+    assert_valid_shares; realize_shares
+
+    if [ ! -e "$img" ]; then
+      task_create
+    fi
+    assert_valid_img; realize_img
+
+    cleanup_mounts=1
+    as_root mount
+    as_root exec -- "${cmd[@]}"
+  }
+
+  function task_create() {
+    print_h2 "Create image ($img, $size)"
+    assert_not_root_user
+
+    qemu-img create "$img" "$size"
+    mkfs -t ext4 "$img"
+  }
+
+  function task_mount() {
+    print_h2 "Mount"
+    assert_root_user
+
+    assert_valid_envfiles; realize_envfiles
+    assert_valid_shares; realize_shares
+    assert_valid_img; realize_img
+
+    assert_ownership
+
+    $GUARD mkdir -p "$homer_base" "$homer_temp" "$homer_home"
+    $GUARD mount -o loop "$img" "$homer_base"
+    $GUARD chown "$homer_user:$homer_group" "$homer_base"
+    if [ -n "$use_temp" ]; then
+      $GUARD mount -t tmpfs -o "size=${size}" tmpfs "$homer_temp"
+      $GUARD mkdir "$homer_temp/up" "$homer_temp/work"
+      $GUARD chown "$homer_user:$homer_group" "$homer_temp/up" "$homer_temp/work"
+      $GUARD mount -t overlay overlay -o lowerdir="$homer_base",upperdir="$homer_temp/up",workdir="$homer_temp/work" "$homer_home"
+      $GUARD chown "$homer_user:$homer_group" "$homer_home"
+    else
+      $GUARD mount --bind "$homer_base" "$homer_home"
+    fi
+  }
+
+  function task_unmount() {
+    print_h2 "Unmount"
+    assert_root_user
+
+    assert_valid_envfiles; realize_envfiles
+    assert_valid_shares; realize_shares
+    assert_valid_img; realize_img
+
+    assert_ownership
+
+    for mpt in "$homer_home" "$homer_temp" "$homer_base" ; do
+      if grep -q "$mpt" /proc/mounts; then
+        print_h2 "Unmount home ($mpt)"
+        $GUARD umount "$mpt"
+      fi
+    done
+  }
+
+  function task_exec() {
+    print_h2 "Exec"
+    assert_root_user
+
+    assert_valid_envfiles; realize_envfiles
+    assert_valid_shares; realize_shares
+    assert_valid_img; realize_img
+
+    assert_ownership
+
+    local script=$(new_tmp_file)
+    cleanup_files+=("$script")
+    _task_exec_script > "$script"
+    
+    (cd /tmp && unshare --mount bash "$script")
+  }
+  
+  function _task_exec_script() {
+    printf "#!/usr/bin/env bash\n"
+    printf "function cleanup() {\n"
+    printf "  umount %q\n" ~homer
+    printf "}\n"
+    printf "mount --bind %q %q\n" "$homer_home" ~homer
+    printf "trap cleanup EXIT\n"
+    echo "sudo -iu "$homer_user" ${cmd[@]}"
+  }
+
+  function task_status() {
+    print_h2 "Check ($img)"
+  }
+
+  function task_cleanup() {
+    set +e
+    print_h2 "Cleanup"
+    if [ -n "$cleanup_mounts" ]; then
+      as_root unmount
+    fi
+    for file in "${cleanup_files[@]}" ; do
+      echo >&2 "clean $file"
+      if [ -f "$file" ]; then rm -f "$file" ; fi
+    done
+  }
+
+  #########################################################
+  ## Functions / Utilities
+
+  function print_h1 {
+    echo [32m"##" "$@" [0m >&2
+  }
+
+  function print_h2 {
+    echo [33m"$@"[0m >&2
+  }
+
+  function fatal {
+    echo "$@" >&2
+    task_usage >&2
+    exit 1
+  }
+
+  function lock_image() {
+    local real_image=$(realpath "$1")
+    local image_id=$(echo "$real_image" |md5sum - | cut -f1 -d\  )
+    local lock_dir="$var/locks"
+    local lock_file="$lock_dir/$image_id"
+
+    if [ -e "$lock_file" ]; then
+      local lock_pid=$(cat "$lock_file")
+      if ps -p "$lock_pid" > /dev/null; then
+        echo "Error: lockfile already exists and lock holder is still running"
+        exit 2
+      else
+        rm -f "$lock_file"
+      fi
+    fi
+
+    cleanup_files+=("$lock_file")
+    echo "$$" > "$lock_file"
+  }
+  
+  function new_tmp_file() {
+    local tmpdir=${TMPDIR:-/tmp}
+    local tmpfile="$tmpdir/homerdo-tmp-$RANDOM$RANDOM"
+    touch "$tmpfile"
+    chmod 600 "$tmpfile"
+    echo "$tmpfile"
+  }
+
+  function as_root() {
+    #local tmpfile=$(new_tmp_file)
+    #cleanup_files+=("$tmpfile")
+    #declare -x > "$tmpfile"
+
+    local sudocmd=("$SELF")
+    if [ -n "$use_temp" ]; then
+      sudocmd+=("$use_temp")
+    fi
+    #sudocmd+=("--env" "$tmpfile")
+    sudocmd+=("-i" "$img")
+    for envfile in "${envfiles[@]}" ; do sudocmd+=("--env" "$envfile") ; done
+    for share in "${shares[@]}" ; do sudocmd+=("--share" "$share") ; done
+    for arg in "$@" ; do sudocmd+=("$arg") ; done
+
+    local result
+    set +e
+    echo >&2 "[[ RUN: sudo -i ${sudocmd[@]} ]]"
+    sudo -i "${sudocmd[@]}"
+    result=$?
+    set -e
+    return $result
+  }
+
+  function assert_cmd {
+    for cmd in "$@" ; do
+      if ! command -v "$cmd" &> /dev/null ; then
+        fatal "Missing command: $cmd"
+      fi
+    done
+  }
+
+  function assert_root_user() {
+    if [ $EUID -ne 0 ]; then
+      fatal "This command ($SELF $action) must run as a super user - not a regular user!"
+    fi
+  }
+
+  function assert_not_root_user() {
+    if [ $EUID -eq 0 ]; then
+      fatal "This command ($SELF $action) must run as a regular user - not as root!"
+    fi
+  }
+
+  function assert_valid_img() {
+    if [ -z "$img" -o ! -f "$img" ]; then
+      fatal "Invalid IMG ($img)"
+    fi
+  }
+
+  function assert_valid_envfiles() {
+    for envfile in "${envfiles[@]}" ; do
+      if [ -n "$envfile" -a ! -e "$envfile" ]; then
+        fatal "Invalid ENVFILE ($envfile)"
+      fi
+    done
+  }
+
+  function assert_valid_shares() {
+    for share in "${shares[@]}" ; do
+      local lhs=$(echo "$share" | cut -f1 -d:)
+      local rhs=$(echo "$share" | cut -f2 -d:)
+      if [ ! -e "$lhs" ]; then
+        fatal "Invalid --share ($share)"
+      fi
+      if [ "${rhs::1}" == "/" ]; then
+        fatal "Invalid --share ($share): RHS must be relative"
+      fi
+      case "$rhs" in
+        /*) fatal "Invalid --share ($share): RHS must be relative" ; ;;
+        *..*) fatal "Invalid --share ($share): RHS must be relative" ; ;;
+      esac
+    done
+  }
+
+  function assert_ownership() {
+    echo >&2 "FIXME: Assert \"$img\" owned by caller \"$SUDO_USER\" ($SUDO_UID)"
+    for share in "${shares[@]}"; do
+      local lhs=$(echo "$share" | cut -f1 -d:)
+      local rhs=$(echo "$share" | cut -f2 -d:)
+      echo >&2 "FIXME: Assert \"$lhs\" owned by caller \"$SUDO_USER\" ($SUDO_UID)"
+    done
+  }
+
+  function realize_shares() {
+    local orig=("${shares[@]}")
+    shares=()
+    for orig in "${orig[@]}" ; do
+      local lhs=$(echo "$orig" | cut -f1 -d:)
+      local rhs=$(echo "$orig" | cut -f2 -d:)
+      lhs=$(realpath "$lhs")
+      shares+=("$lhs:$rhs")
+    done
+  }
+
+  function realize_envfiles() {
+    local orig=("${envfiles[@]}")
+    envfiles=()
+    for orig in "${orig[@]}" ; do
+      orig=$(realpath "$orig")
+      envfiles+=("$orig")
+    done
+  }
+
+  function realize_img() {
+    img=$(realpath "$img")
+    homer_id=$(echo "$real_img" |md5sum - | cut -f1 -d\  )
+    homer_lock=$( echo "${HOMER_LOCK_TPL}" | sed "s;HOMER_ID;${homer_id};" )
+    homer_base=$( echo "${HOMER_BASE_TPL}" | sed "s;HOMER_ID;${homer_id};" )
+    homer_temp=$( echo "${HOMER_TEMP_TPL}" | sed "s;HOMER_ID;${homer_id};" )
+    homer_home=$( echo "${HOMER_HOME_TPL}" | sed "s;HOMER_ID;${homer_id};" )
+  }
+
+  #########################################################
+  ## Initialization
+  trap task_cleanup EXIT
+
+  parsing=1
+  while [[ $# -gt 0 && -n "$parsing" ]]; do
+    case "$1" in
+      --)           parsing=          ; shift 1 ; ;;
+      #--env)        envfiles+=("$2")  ; shift 2 ; ;;
+      #--share)
+      #  case "$2" in
+      #    *:*) shares+=("$2") ;;
+      #    *) shares+=("$2:$2") ;;
+      #  esac
+      #  shift 2
+      #  ;;
+      -i|--img)     img="$2"          ; shift 2 ; ;;
+      -t|--temp)    use_temp="--temp" ; shift 1 ; ;;
+      -h|--help|help) action="usage"  ; shift 1 ; ;;
+      run|status|mount|unmount|exec) action="$1" ; shift ; ;;
+      -*)           fatal "Unrecognized option $1" ; ;;
+      *)            parsing=          ; ;;
+    esac
+  done
+  action=${action:-run}
+
+  while [[ $# -gt 0 ]]; do
+    cmd+=("$1")
+    shift
+  done
+
+  #echo "action=[$action] img=[$img] use_temp=[$use_temp] shares=[${shares[@]}] envfiles=[${envfiles[@]}]"
+  #echo "cmd: [${cmd[@]}]"
+  #exit
+
+  f="task_${action}"
+  $f
+  exit $?
+}
+
