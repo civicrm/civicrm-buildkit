@@ -19,6 +19,7 @@
   shares=()
   cmd=()
   size=2g
+  verbose=0
 
   cleanup_files=()
   cleanup_mounts=
@@ -84,7 +85,7 @@
   }
 
   function task_mount() {
-    print_h2 "Mount"
+    print_h2 "Mounting image file ($img)"
     assert_root_user
 
     assert_valid_envfiles; realize_envfiles
@@ -107,21 +108,26 @@
     fi
     echo "$owner_pid" > "$homer_lock"
 
+    print_h2 "Mount ($homer_base)"
     $GUARD mount -o loop "$img" "$homer_base"
     $GUARD chown "$homer_user:$homer_group" "$homer_base"
     if [ -n "$use_temp" ]; then
+      print_h2 "Mount ($homer_temp)"
       $GUARD mount -t tmpfs -o "size=${size}" tmpfs "$homer_temp"
       $GUARD mkdir "$homer_temp/up" "$homer_temp/work"
       $GUARD chown "$homer_user:$homer_group" "$homer_temp/up" "$homer_temp/work"
+
+      print_h2 "Mount ($homer_home)"
       $GUARD mount -t overlay overlay -o lowerdir="$homer_base",upperdir="$homer_temp/up",workdir="$homer_temp/work" "$homer_home"
       $GUARD chown "$homer_user:$homer_group" "$homer_home"
     else
+      print_h2 "Mount ($homer_home)"
       $GUARD mount --bind "$homer_base" "$homer_home"
     fi
   }
 
   function task_unmount() {
-    print_h2 "Unmount"
+    print_h2 "Unmounting image file ($img)"
     assert_root_user
 
     assert_valid_envfiles; realize_envfiles
@@ -135,14 +141,14 @@
   function _task_unmount() {
     for mpt in "$homer_home" "$homer_temp" "$homer_base" ; do
       if grep -q "$mpt" /proc/mounts; then
-        print_h2 "Unmount home ($mpt)"
+        print_h2 "Unmount ($mpt)"
         $GUARD umount "$mpt"
       fi
     done
   }
 
   function task_exec() {
-    print_h2 "Exec"
+    print_h2 "Exec (${cmd[@]})"
     assert_root_user
 
     assert_valid_envfiles; realize_envfiles
@@ -208,11 +214,21 @@
   ## Functions / Utilities
 
   function print_h1 {
-    echo [32m"##" "$@" [0m >&2
+    if [ $verbose -ge 1 ]; then
+      echo [32m"##" "$@" [0m >&2
+    fi
   }
 
   function print_h2 {
-    echo [33m"$@"[0m >&2
+    if [ $verbose -ge 1 ]; then
+      echo [33m"$@"[0m >&2
+    fi
+  }
+
+  function print_note {
+    if [ $verbose -ge 2 ]; then
+      echo "[[ $@ ]]" >&2
+    fi
   }
 
   function fatal {
@@ -241,13 +257,18 @@
     #sudocmd+=("--env" "$tmpfile")
     sudocmd+=("-i" "$img")
     sudocmd+=("--owner-pid" "$owner_pid")
+    local vs=0
+    while [[ $vs -lt $verbose ]]; do
+      sudocmd+=("-v")
+      vs=$((1 + $vs))
+    done
     for envfile in "${envfiles[@]}" ; do sudocmd+=("--env" "$envfile") ; done
     for share in "${shares[@]}" ; do sudocmd+=("--share" "$share") ; done
     for arg in "$@" ; do sudocmd+=("$arg") ; done
 
     local result
     set +e
-    echo >&2 "[[ RUN: sudo -i ${sudocmd[@]} ]]"
+    print_note "sudo -i ${sudocmd[@]}"
     sudo -i "${sudocmd[@]}"
     result=$?
     set -e
@@ -306,11 +327,24 @@
   }
 
   function assert_ownership() {
-    echo >&2 "FIXME: Assert \"$img\" owned by caller \"$SUDO_USER\" ($SUDO_UID)"
+    _assert_owner "$SUDO_UID" "$img"
     for share in "${shares[@]}"; do
       local lhs=$(echo "$share" | cut -f1 -d:)
       local rhs=$(echo "$share" | cut -f2 -d:)
-      echo >&2 "FIXME: Assert \"$lhs\" owned by caller \"$SUDO_USER\" ($SUDO_UID)"
+      _assert_owner "$SUDO_UID" "$lhs"
+    done
+  }
+
+  ## usage:_assert_owner UID FILES...
+  function _assert_owner() {
+    local uid="$1"
+    local file_uid
+    shift
+    for file in "$@" ; do
+      file_uid=$( stat -c %u "$file" )
+      if [ "$uid" -ne "$file_uid" ]; then
+        fatal "File $file not owned by $uid"
+      fi
     done
   }
 
@@ -359,6 +393,7 @@
       #  esac
       #  shift 2
       #  ;;
+      -v)           verbose=$((1 + $verbose)) ; shift 1 ; ;;
       -i|--img)     img="$2"          ; shift 2 ; ;;
       --owner-pid)  owner_pid="$2"    ; shift 2 ; ;;
       -t|--temp)    use_temp="--temp" ; shift 1 ; ;;
