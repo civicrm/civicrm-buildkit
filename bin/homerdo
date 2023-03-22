@@ -6,9 +6,12 @@
   ## Environment
   SELF="$(realpath "$0")"
   HOMER_VAR=/var/local/homer
+  HOMER_USER=homer
+  HOMER_GROUP=homer
   HOMER_BASE_TPL="$HOMER_VAR/HOMER_ID/base"
   HOMER_HOME_TPL="$HOMER_VAR/HOMER_ID/home"
   HOMER_LOCK_TPL="$HOMER_VAR/HOMER_ID/lock"
+  HOMER_NS_TPL="$HOMER_VAR/HOMER_ID/ns"
   HOMER_TEMP_TPL="$HOMER_VAR/HOMER_ID/temp"
 
   img=
@@ -18,7 +21,7 @@
   envfiles=()
   shares=()
   cmd=()
-  size=2g
+  size=2500m
   verbose=0
 
   cleanup_files=()
@@ -28,18 +31,19 @@
   homer_base=		## see realize_img
   homer_home=		## see realize_img
   homer_lock=		## see realize_img
+  homer_ns=		## see realize_img
   homer_temp=		## see realize_img
-  homer_user=homer
-  homer_group=homer
 
   #########################################################
-  ## Tasks
+  ## Usage
 
   function task_usage() {
     prog=$(basename "$0")
     echo "Public actions:"
+    echo "  $prog install"
     echo "  $prog run [OPTIONS] [--] [CMD]"
     echo "  $prog status [OPTIONS]"
+    echo "  $prog uninstall"
     echo
     echo "Private actions:"
     echo "  $prog create [OPTIONS]"
@@ -54,6 +58,9 @@
     echo "  -t|--temp            Use temporary overlay."
     echo
   }
+
+  ###########################################################################
+  ## Task: Setup folders, run a command, and tear down
 
   function task_run() {
     print_h1 "Run [${cmd[@]}]"
@@ -76,6 +83,9 @@
     as_root exec -- "${cmd[@]}"
   }
 
+  ###########################################################################
+  ## Create an image for storing data
+
   function task_create() {
     print_h2 "Create image ($img, $size)"
     assert_not_root_user
@@ -83,6 +93,9 @@
     qemu-img create "$img" "$size"
     mkfs -t ext4 "$img"
   }
+
+  ###########################################################################
+  ## Setup folders. Mount image.
 
   function task_mount() {
     print_h2 "Mounting image file ($img)"
@@ -110,21 +123,24 @@
 
     print_h2 "Mount ($homer_base)"
     $GUARD mount -o loop "$img" "$homer_base"
-    $GUARD chown "$homer_user:$homer_group" "$homer_base"
+    $GUARD chown "$HOMER_USER:$HOMER_GROUP" "$homer_base"
     if [ -n "$use_temp" ]; then
       print_h2 "Mount ($homer_temp)"
       $GUARD mount -t tmpfs -o "size=${size}" tmpfs "$homer_temp"
       $GUARD mkdir "$homer_temp/up" "$homer_temp/work"
-      $GUARD chown "$homer_user:$homer_group" "$homer_temp/up" "$homer_temp/work"
+      $GUARD chown "$HOMER_USER:$HOMER_GROUP" "$homer_temp/up" "$homer_temp/work"
 
       print_h2 "Mount ($homer_home)"
       $GUARD mount -t overlay overlay -o lowerdir="$homer_base",upperdir="$homer_temp/up",workdir="$homer_temp/work" "$homer_home"
-      $GUARD chown "$homer_user:$homer_group" "$homer_home"
+      $GUARD chown "$HOMER_USER:$HOMER_GROUP" "$homer_home"
     else
       print_h2 "Mount ($homer_home)"
       $GUARD mount --bind "$homer_base" "$homer_home"
     fi
   }
+
+  ###########################################################################
+  ## Unmount image and its related assets
 
   function task_unmount() {
     print_h2 "Unmounting image file ($img)"
@@ -139,13 +155,24 @@
   }
 
   function _task_unmount() {
-    for mpt in "$homer_home" "$homer_temp" "$homer_base" ; do
+    for nsmt in "$homer_ns/pid" "$homer_ns/mount"; do
+      if [ -e "$nsmt" ]; then
+        print_h2 "Unmount ($nsmt)"
+        $GUARD umount "$nsmt"
+        $GUARD rm "$nsmt"
+      fi
+    done
+
+    for mpt in "$homer_ns" "$homer_home" "$homer_temp" "$homer_base" ; do
       if grep -q "$mpt" /proc/mounts; then
         print_h2 "Unmount ($mpt)"
         $GUARD umount "$mpt"
       fi
     done
   }
+
+  ###########################################################################
+  ## Execute a task within the designated space
 
   function task_exec() {
     print_h2 "Exec (${cmd[@]})"
@@ -161,7 +188,13 @@
     cleanup_files+=("$script")
     _task_exec_script > "$script"
 
-    (cd /tmp && unshare --mount bash "$script")
+    print_h2 "Create namespaces ($homer_ns)"
+    set -xe
+    mkdir -p "$homer_ns"
+    mount --bind "$homer_ns" "$homer_ns"
+    mount --make-private "$homer_ns"
+    touch "$homer_ns"/{pid,mount}
+    unshare --wd=/tmp --kill-child --pid="$homer_ns/pid" --mount="$homer_ns/mount" --mount-proc bash "$script"
   }
 
   function _task_exec_script() {
@@ -171,8 +204,11 @@
     printf "}\n"
     printf "mount --bind %q %q\n" "$homer_home" ~homer
     printf "trap cleanup EXIT\n"
-    echo "sudo -iu "$homer_user" ${cmd[@]}"
+    echo "sudo -iu "$HOMER_USER" ${cmd[@]}"
   }
+
+  ###########################################################################
+  ## Check if image is in use
 
   function task_status() {
     assert_valid_envfiles; realize_envfiles
@@ -198,6 +234,9 @@
     exit 10
   }
 
+  ###########################################################################
+  ## Cleanup any temporary resources owned by this instance
+
   function task_cleanup() {
     set +e
     #print_h2 "Cleanup"
@@ -205,7 +244,6 @@
       as_root unmount
     fi
     for file in "${cleanup_files[@]}" ; do
-      echo >&2 "clean $file"
       if [ -f "$file" ]; then rm -f "$file" ; fi
     done
   }
@@ -375,6 +413,7 @@
     homer_base=$( echo "${HOMER_BASE_TPL}" | sed "s;HOMER_ID;${homer_id};" )
     homer_temp=$( echo "${HOMER_TEMP_TPL}" | sed "s;HOMER_ID;${homer_id};" )
     homer_home=$( echo "${HOMER_HOME_TPL}" | sed "s;HOMER_ID;${homer_id};" )
+    homer_ns=$( echo "${HOMER_NS_TPL}" | sed "s;HOMER_ID;${homer_id};" )
   }
 
   #########################################################
