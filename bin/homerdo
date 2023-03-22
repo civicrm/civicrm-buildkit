@@ -14,6 +14,7 @@
   img=
   action=
   use_temp=
+  owner_pid=$$
   envfiles=()
   shares=()
   cmd=()
@@ -22,11 +23,11 @@
   cleanup_files=()
   cleanup_mounts=
 
-  homer_id=
-  homer_base=
-  homer_home=
-  homer_lock=
-  homer_temp=
+  homer_id=		## see realize_img
+  homer_base=		## see realize_img
+  homer_home=		## see realize_img
+  homer_lock=		## see realize_img
+  homer_temp=		## see realize_img
   homer_user=homer
   homer_group=homer
 
@@ -47,8 +48,8 @@
     echo
     echo "Options:"
     echo "  -i|--img IMG         Path to image file"
-#    echo "  --env ENV_FILE       File with environment variables"
-#    echo "  --share REL_PATH     Mount a shared folder"
+    #echo "  --env ENV_FILE       File with environment variables"
+    #echo "  --share REL_PATH     Mount a shared folder"
     echo "  -t|--temp            Use temporary overlay."
     echo
   }
@@ -92,7 +93,20 @@
 
     assert_ownership
 
-    $GUARD mkdir -p "$homer_base" "$homer_temp" "$homer_home"
+    $GUARD mkdir -p "$homer_base" "$homer_temp" "$homer_home" $(dirname "$homer_lock")
+
+    if [ -f "$homer_lock" ]; then
+      local lock_pid=$(cat "$homer_lock")
+      if ps -p "$lock_pid" > /dev/null; then
+        echo "Image $img already in use by PID $lock_pid"
+        exit 2
+      else
+        rm -f "$homer_lock"
+        _task_unmount
+      fi
+    fi
+    echo "$owner_pid" > "$homer_lock"
+
     $GUARD mount -o loop "$img" "$homer_base"
     $GUARD chown "$homer_user:$homer_group" "$homer_base"
     if [ -n "$use_temp" ]; then
@@ -115,7 +129,10 @@
     assert_valid_img; realize_img
 
     assert_ownership
+    _task_unmount
+  }
 
+  function _task_unmount() {
     for mpt in "$homer_home" "$homer_temp" "$homer_base" ; do
       if grep -q "$mpt" /proc/mounts; then
         print_h2 "Unmount home ($mpt)"
@@ -137,10 +154,10 @@
     local script=$(new_tmp_file)
     cleanup_files+=("$script")
     _task_exec_script > "$script"
-    
+
     (cd /tmp && unshare --mount bash "$script")
   }
-  
+
   function _task_exec_script() {
     printf "#!/usr/bin/env bash\n"
     printf "function cleanup() {\n"
@@ -152,12 +169,32 @@
   }
 
   function task_status() {
-    print_h2 "Check ($img)"
+    assert_valid_envfiles; realize_envfiles
+    assert_valid_shares; realize_shares
+    assert_valid_img; realize_img
+    assert_ownership
+
+    if [ $EUID -ne 0 ]; then
+      as_root status
+      exit $?
+    fi
+    assert_root_user
+
+    local lock_pid=$(cat "$homer_lock")
+    if ps -p "$lock_pid" > /dev/null; then
+      echo "active"
+      exit 11
+    else
+      echo "avail"
+      exit 10
+    fi
+    echo "avail"
+    exit 10
   }
 
   function task_cleanup() {
     set +e
-    print_h2 "Cleanup"
+    #print_h2 "Cleanup"
     if [ -n "$cleanup_mounts" ]; then
       as_root unmount
     fi
@@ -184,26 +221,6 @@
     exit 1
   }
 
-  function lock_image() {
-    local real_image=$(realpath "$1")
-    local image_id=$(echo "$real_image" |md5sum - | cut -f1 -d\  )
-    local lock_dir="$var/locks"
-    local lock_file="$lock_dir/$image_id"
-
-    if [ -e "$lock_file" ]; then
-      local lock_pid=$(cat "$lock_file")
-      if ps -p "$lock_pid" > /dev/null; then
-        echo "Error: lockfile already exists and lock holder is still running"
-        exit 2
-      else
-        rm -f "$lock_file"
-      fi
-    fi
-
-    cleanup_files+=("$lock_file")
-    echo "$$" > "$lock_file"
-  }
-  
   function new_tmp_file() {
     local tmpdir=${TMPDIR:-/tmp}
     local tmpfile="$tmpdir/homerdo-tmp-$RANDOM$RANDOM"
@@ -223,6 +240,7 @@
     fi
     #sudocmd+=("--env" "$tmpfile")
     sudocmd+=("-i" "$img")
+    sudocmd+=("--owner-pid" "$owner_pid")
     for envfile in "${envfiles[@]}" ; do sudocmd+=("--env" "$envfile") ; done
     for share in "${shares[@]}" ; do sudocmd+=("--share" "$share") ; done
     for arg in "$@" ; do sudocmd+=("$arg") ; done
@@ -342,6 +360,7 @@
       #  shift 2
       #  ;;
       -i|--img)     img="$2"          ; shift 2 ; ;;
+      --owner-pid)  owner_pid="$2"    ; shift 2 ; ;;
       -t|--temp)    use_temp="--temp" ; shift 1 ; ;;
       -h|--help|help) action="usage"  ; shift 1 ; ;;
       run|status|mount|unmount|exec) action="$1" ; shift ; ;;
