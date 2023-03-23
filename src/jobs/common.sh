@@ -91,7 +91,7 @@ function use_bknix() {
 function use_bknix_tmp() {
   use_bknix
   case "$USER" in
-    runner-*)
+    homer|runner-*)
       (cd "$LOCO_PRJ" && loco clean)
       (cd "$LOCO_PRJ" && loco start)
       RUN_BKNIX_CLEANUP_FUNCS+=('_stop_loco')
