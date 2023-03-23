@@ -102,7 +102,7 @@
   owner_pid=$$
   shares=()
   cmd=()
-  size=2500m
+  size=3000m
   verbose=0
 
   cleanup_files=()
