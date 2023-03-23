@@ -146,7 +146,7 @@
   function task_install {
     print_h1 "Install"
     assert_root_user
-    assert_cmd sudo adduser addgroup getent realpath ps pgrep killall unshare flock setfacl
+    assert_cmd sudo adduser addgroup getent realpath ps pgrep killall unshare flock setfacl qemu-img mkfs.ext4
 
     mkdir -p "$HOMER_VAR"
     chmod 700 "$HOMER_VAR"
