@@ -57,6 +57,6 @@ install_bin "$BINDIR"/await-bknix.flag-file /usr/local/bin/await-bknix
 install_bin "$BINDIR"/run-bknix-job         /usr/local/bin/run-bknix-job
 
 homerdo install
-
+install_dispatcher
 warmup_binaries
 touch /var/local/bknix-ready

@@ -7,6 +7,8 @@
 NIX_INSTALLER_URL="https://nixos.org/releases/nix/nix-2.0.4/install"
 # NIX_INSTALLER_URL="https://nixos.org/releases/nix/nix-2.2.1/install"
 
+DISPATCH_USER=dispatcher
+
 ###########################################################
 ## Primary install routines
 
@@ -347,6 +349,35 @@ function install_user() {
   else
     adduser --disabled-password "$OWNER"
   fi
+}
+
+function install_dispatcher() {
+  if ! getent group "${DISPATCH_USER}" >/dev/null ; then
+    echo "Create group ${DISPATCH_USER}"
+    addgroup "${DISPATCH_USER}"
+  fi
+
+  if ! getent passwd "${DISPATCH_USER}" >/dev/null ; then
+    echo "Create user ${DISPATCH_USER}"
+    adduser "${DISPATCH_USER}" --gecos "Bkrun Dispatcher" --ingroup "${DISPATCH_USER}" --disabled-password
+  fi
+
+  local ssh_dir="/home/${DISPATCH_USER}/.ssh"
+  local authorized_keys="$(cat /etc/bknix-ci/dispatcher-keys)"
+
+  if [ ! -d "$ssh_dir" ]; then
+    mkdir -p "$ssh_dir"
+  fi
+  chown "root:${DISPATCH_USER}" "$ssh_dir"
+  chmod 750 "$ssh_dir"
+
+  echo "$authorized_keys" > "$ssh_dir/authorized_keys"
+  chown "root:${DISPATCH_USER}" "$ssh_dir/authorized_keys"
+  chmod 640 "$ssh_dir/authorized_keys"
+
+  echo -n > /etc/sudoers.d/dispatcher
+  #echo "Defaults:${DISPATCH_USER} env_keep+=SSH_AUTH_SOCK" >> /etc/sudoers.d/dispatcher
+  echo "${DISPATCH_USER} ALL = (root) NOPASSWD: NOSETENV: /usr/local/bin/homerdo" >> /etc/sudoers.d/dispatcher
 }
 
 ## Initialize a copy of buildkit.

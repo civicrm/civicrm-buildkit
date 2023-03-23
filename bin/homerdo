@@ -161,9 +161,9 @@
       $GUARD adduser "$HOMER_USER" --gecos "Homer" --home "/home/homer" --ingroup "$HOMER_GROUP" --disabled-password
     fi
 
-    print_h2 "Grant all users access to homerdo (/etc/sudoers.d/homerdo)"
-    echo -n > /etc/sudoers.d/homerdo
-    echo "ALL ALL = (root) NOPASSWD: NOSETENV: /usr/local/bin/homerdo" >> /etc/sudoers.d/homerdo
+    #print_h2 "Grant all users access to homerdo (/etc/sudoers.d/homerdo)"
+    #echo -n > /etc/sudoers.d/homerdo
+    #echo "ALL ALL = (root) NOPASSWD: NOSETENV: /usr/local/bin/homerdo" >> /etc/sudoers.d/homerdo
   }
 
   ###########################################################################
@@ -173,9 +173,9 @@
     assert_root_user
     assert_cmd seq sudo deluser delgroup getent
 
-    if [ -f /etc/sudoers.d/homerdo ]; then
-      $GUARD rm -f /etc/sudoers.d/homerdo
-    fi
+    #if [ -f /etc/sudoers.d/homerdo ]; then
+    #  $GUARD rm -f /etc/sudoers.d/homerdo
+    #fi
 
     $GUARD rm -rf "$HOMER_VAR"
 
@@ -479,8 +479,8 @@
 
     local result
     set +e
-    print_note "sudo -i ${sudocmd[@]}"
-    sudo -i "${sudocmd[@]}"
+    print_note "sudo ${sudocmd[@]}"
+    sudo "${sudocmd[@]}"
     result=$?
     set -e
     return $result
