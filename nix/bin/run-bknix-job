@@ -117,21 +117,6 @@ function run_bknix_main() {
     return
   fi
 
-  ## TODO: REMOVE:
-  if [ "$USER" == "dispatcher" ]; then
-    if [ -z "$WORKSPACE" -o ! -d "$WORKSPACE" ]; then
-      echo >&2 "WORKSPACE must be a valid path. (If you are running manually, consider using --mock.)"
-      exit 1
-    fi
-    if [ -z "$JOB_NAME" ]; then
-      export JOB_NAME="$2"
-    fi
-    ## Defer execution to one of the "runner-N" users.
-    bkrun submit -n "$EXECUTOR_NUMBER" -c "$BKNIX_JOBS/bkrun-task.sh" -o "$WORKSPACE"
-    return
-  fi
-
-  ## TODO: REMOVE ^^^
   ## JOB_NAME can be complicated (when using matrix jobs). We want a trimmed-down name.
   BKNIX_JOB_NAME="$2"
   if [ -z "$BKNIX_JOB_NAME" ]; then
