@@ -1,4 +1,85 @@
 #!/usr/bin/env bash
+
+## homerdo is the opposite of sudo:
+##
+##   - The Super-User (`sudo`) is someone you trust to do anything. His actions
+##     are permanent and global.
+##   - Homer (`homerdo`) is someone who messes up constantly. You don't trust him.
+##     The only reason we haven't all died in 10x nuclear accidents is that Homer's
+##     world resets every 20 minutes.
+##
+## homerdo isolates tasks, but it's the opposite of Docker:
+##
+##   - Docker isolation is expansive. It creates the impression of a full Unix host,
+##     with its own user-accounts and libc and networking (and so on).
+##   - Homerdo isolation is limited. It restricts one user and his home directory.
+##     Everything else is shared with the host.
+##
+## The script is currently only tested for Debian-style environments.
+##
+## It may be possible to adapt a degraded version of the workflow in other
+## environments (e.g. https://krypted.com/mac-security/shadow-mounting-with-hdiutil/).
+
+###########################################################################
+## General Organization
+##
+## - Any user can send jobs to "homer" via "homerdo".
+## - Homer has a home (`/home/homer`). That's his main thing.
+## - Homer can passively access other system resources (`/usr`, `/nix`, local daemons, etc).
+## - Homer's shenanigans are contained by way of Linux namespaces (`unshare`) and filesystem magic.
+## - You can have an army of 10 Homers working at the same time. They all have their own homes.
+
+###########################################################################
+## Usage
+##
+## Install (as root)
+##
+##  me@local$ sudo cp ./path/to/homerdo /usr/local/bin/homerdo
+##  me@local$ sudo homerdo install
+##
+## Run some tasks as homer:
+##
+##  me@local:~$ homerdo -i s1e1-roasting-on-an-open-fire.img bash
+##  homer@local:~$ echo tatoo > bart.txt
+##  homer@local:~$ echo dog > santas-helper.txt
+##  homer@local:~$ exit
+##
+## Note that homer's home directory is stored in an image-file. (Thus,
+## `bart.txt` is physically part of `s1e1-roasting-on-an-open-fire.img`.)
+##
+## You can resume working in this by repeating the same command.
+## Or you can start a new home:
+##
+##  me@local:~$ homerdo -i s1e2-bart-the-genius.img bash
+##  homer@local:~$ mkdir martin bart
+##  homer@local:~$ echo $RANDOM > martin/tests.txt
+##  homer@local:~$ mv martin/tests.txt bart/tests.txt
+##  homer@local:~$ exit
+##
+## Finally, you can run tasks with "temporary" (--temp) mode:
+##
+##  me@local:~$ homerdo -i s1e1-roasting-on-an-open-fire.img --temp bash
+##  homer@local:~$ echo porcupine > santas-helper.txt
+##  homer@local:~$ exit
+##
+## Here, we resume working on "s1e1", but any changes are temporary.
+## We see what it's like if Santa's Helper is a porcupine, but it
+## won't change the persistent data in `s1e1-roasting-on-an-open-fire.img`.
+
+###########################################################################
+## Use Case
+##
+## You have several development tools (such as `composer`, `npm`, `drush`,
+## `wp-cli`, `nix`, etc). These tools work fine with limited privileges, and
+## each has fairly robust functionality (for mixing-matching versions, for
+## caching downloads, etc).
+##
+## The expected usage for CI is to split a test-run into two phases, e.g.
+##   $ homerdo -i myenv.img        -- warmup-caches.sh
+##     (EX: You might do a dress-rehearsal of `composer install` with a stable release.)
+##   $ homerdo -i myenv.img --temp -- patch-and-test.sh
+##     (EX: You might apply a patch then run the build/test scripts.)
+
 { # https://stackoverflow.com/a/21100710
   set -e
 
