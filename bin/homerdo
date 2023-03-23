@@ -19,7 +19,6 @@
   action=
   use_temp=
   owner_pid=$$
-  envfiles=()
   shares=()
   cmd=()
   size=2500m
@@ -120,7 +119,6 @@
       fatal "No IMG specified"
     fi
 
-    assert_valid_envfiles; realize_envfiles
     assert_valid_shares; realize_shares
 
     if [ ! -e "$img" ]; then
@@ -151,7 +149,6 @@
     print_h2 "Mounting image file ($img)"
     assert_root_user
 
-    assert_valid_envfiles; realize_envfiles
     assert_valid_shares; realize_shares
     assert_valid_img; realize_img
 
@@ -196,7 +193,6 @@
     print_h2 "Unmounting image file ($img)"
     assert_root_user
 
-    assert_valid_envfiles; realize_envfiles
     assert_valid_shares; realize_shares
     assert_valid_img; realize_img
 
@@ -228,7 +224,6 @@
     print_h2 "Exec (${cmd[@]})"
     assert_root_user
 
-    assert_valid_envfiles; realize_envfiles
     assert_valid_shares; realize_shares
     assert_valid_img; realize_img
 
@@ -260,7 +255,6 @@
   ## Check if image is in use
 
   function task_status() {
-    assert_valid_envfiles; realize_envfiles
     assert_valid_shares; realize_shares
     assert_valid_img; realize_img
 
@@ -349,7 +343,6 @@
       sudocmd+=("-v")
       vs=$((1 + $vs))
     done
-    for envfile in "${envfiles[@]}" ; do sudocmd+=("--env" "$envfile") ; done
     for share in "${shares[@]}" ; do sudocmd+=("--share" "$share") ; done
     for arg in "$@" ; do sudocmd+=("$arg") ; done
 
@@ -386,14 +379,6 @@
     if [ -z "$img" -o ! -f "$img" ]; then
       fatal "Invalid IMG ($img)"
     fi
-  }
-
-  function assert_valid_envfiles() {
-    for envfile in "${envfiles[@]}" ; do
-      if [ -n "$envfile" -a ! -e "$envfile" ]; then
-        fatal "Invalid ENVFILE ($envfile)"
-      fi
-    done
   }
 
   function assert_valid_shares() {
@@ -450,15 +435,6 @@
     done
   }
 
-  function realize_envfiles() {
-    local orig=("${envfiles[@]}")
-    envfiles=()
-    for orig in "${orig[@]}" ; do
-      orig=$(realpath "$orig")
-      envfiles+=("$orig")
-    done
-  }
-
   function realize_img() {
     img=$(realpath "$img")
     homer_id=$(echo "$img" |md5sum - | cut -f1 -d\  )
@@ -477,7 +453,6 @@
   while [[ $# -gt 0 && -n "$parsing" ]]; do
     case "$1" in
       --)           parsing=          ; shift 1 ; ;;
-      #--env)        envfiles+=("$2")  ; shift 2 ; ;;
       #--share)
       #  case "$2" in
       #    *:*) shares+=("$2") ;;
@@ -502,7 +477,7 @@
     shift
   done
 
-  #echo "action=[$action] img=[$img] use_temp=[$use_temp] shares=[${shares[@]}] envfiles=[${envfiles[@]}]"
+  #echo "action=[$action] img=[$img] use_temp=[$use_temp] shares=[${shares[@]}]"
   #echo "cmd: [${cmd[@]}]"
   #exit
 
