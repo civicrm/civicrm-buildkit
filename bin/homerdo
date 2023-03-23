@@ -209,7 +209,15 @@
       fi
     done
 
-    for mpt in "$homer_ns" "$homer_home" "$homer_temp" "$homer_base" ; do
+    local mpts=()
+    for share in "${shares[@]}" ; do
+      local lhs=$(echo "$share" | cut -f1 -d:)
+      local rhs=$(echo "$share" | cut -f2 -d:)
+      mpts+=("$homer_home/$rhs")
+    done
+    mpts+=("$homer_ns" "$homer_home" "$homer_temp" "$homer_base")
+
+    for mpt in "${mpts[@]}" ; do
       if grep -q "$mpt" /proc/mounts; then
         print_h2 "Unmount ($mpt)"
         $GUARD umount "$mpt"
@@ -232,6 +240,7 @@
     local script=$(new_tmp_file)
     cleanup_files+=("$script")
     _task_exec_script > "$script"
+    #(echo ; cat $script; echo ) >&2
 
     print_h2 "Create namespaces ($homer_ns)"
     mkdir -p "$homer_ns"
@@ -244,11 +253,25 @@
   function _task_exec_script() {
     printf "#!/usr/bin/env bash\n"
     printf "function cleanup() {\n"
+
+    for share in "${shares[@]}" ; do
+      local rhs=$(echo "$share" | cut -f2 -d:)
+      printf "  umount %q/%q\n" ~homer "$rhs"
+    done
     printf "  umount %q\n" ~homer
+
     printf "}\n"
-    printf "mount --bind %q %q\n" "$homer_home" ~homer
     printf "trap cleanup EXIT\n"
-    echo "sudo -iu "$HOMER_USER" ${cmd[@]}"
+
+    printf "mount --bind %q %q\n" "$homer_home" ~homer
+    for share in "${shares[@]}" ; do
+      local lhs=$(echo "$share" | cut -f1 -d:)
+      local rhs=$(echo "$share" | cut -f2 -d:)
+      printf "sudo -u \"$HOMER_USER\" mkdir -p %q/%q\n" ~homer "$rhs"
+      printf "mount --bind %q ~homer/%q\n" "$lhs" "$rhs"
+    done
+
+    echo "sudo -iu \"$HOMER_USER\" ${cmd[@]}"
   }
 
   ###########################################################################
@@ -326,6 +349,33 @@
     echo "$tmpfile"
   }
 
+  ## Make a folder and its parents. Set ownership on each.
+  ## mkdir_chown USER[:GROUP] PATHS...
+  function mkdir_chown() {
+    local owner="$1"
+    shift
+
+    for dir in "$@" ; do
+      if [ -d "$dir" ]; then
+        continue
+      fi
+      parent_dirs "$1" | while read dir ; do
+        if [ ! -d "$dir" ]; then
+          mkdir "$dir"
+          chown "$owner" "$dir"
+        fi
+      done
+    done
+  }
+
+  function parent_dirs() {
+    local p="$1"
+    while [ "$p" != "/" ]; do
+      echo "$p"
+      p=$(dirname "$p")
+    done | tac
+  }
+
   function as_root() {
     #local tmpfile=$(new_tmp_file)
     #cleanup_files+=("$tmpfile")
@@ -387,9 +437,6 @@
       local rhs=$(echo "$share" | cut -f2 -d:)
       if [ ! -e "$lhs" ]; then
         fatal "Invalid --share ($share)"
-      fi
-      if [ "${rhs::1}" == "/" ]; then
-        fatal "Invalid --share ($share): RHS must be relative"
       fi
       case "$rhs" in
         /*) fatal "Invalid --share ($share): RHS must be relative" ; ;;
@@ -453,6 +500,7 @@
   while [[ $# -gt 0 && -n "$parsing" ]]; do
     case "$1" in
       --)           parsing=          ; shift 1 ; ;;
+      # EXPERIMENTAL:
       #--share)
       #  case "$2" in
       #    *:*) shares+=("$2") ;;
