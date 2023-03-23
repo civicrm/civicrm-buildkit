@@ -21,23 +21,34 @@
 SELF="$0"
 TTL_TOOLS=60     ## During setup, refresh 'civi-download-tools' (if >1 hour old)
 TTL_BLDTYPE=180  ## During setup, warmup 'bldtype' (if >3 hours since last)
-CLEANUP_FILES=()
+CLEANUP_FILES=() ## List of files/directories to delete
+RESPONSE=        ## Tar-formatted fifo
 MAX_IMAGES=5     ## If there are more than X copies of an image, then refuse to make more
 
 #####################################################################
 ## Main
 function main() {
-  trap do_cleanup EXIT
+  trap on_shutdown EXIT
   case "$1" in
     all)         do_all ; ;;
     request)     do_request ; ;;
     pick-image)  REQUEST="$2" ; load_request "$REQUEST" ; do_pick_image "$3" ; ;;
     setup)       REQUEST="$2" ; load_request "$REQUEST" ; do_setup ; ;;
-    exec)        REQUEST="$2" ; load_request "$REQUEST" ; do_exec ; ;;
+    exec)        REQUEST="$2" ; load_request "$REQUEST" ; RESPONSE="$3" ; do_exec ; ;;
   esac
 }
 
-function do_cleanup() {
+function on_shutdown() {
+  if [ -n "$RESPONSE" ]; then
+    if [ -d "$WORKSPACE" ]; then
+      echo >&2 "Send results"
+      (cd "$WORKSPACE" && tar cvf "$RESPONSE" .)
+    else
+      echo >&2 "Cannot send results. No workspace ($WORKSPACE)."
+      tar cf "$RESPONSE" -T /dev/null
+    fi
+  fi
+
   safe_delete "${CLEANUP_FILES[@]}"
 }
 
@@ -52,19 +63,35 @@ function do_all() {
     mkdir -p "$imageDir"
   fi
 
-  local request=$(make_temp)
-  CLEANUP_FILES+=("$request")
+  local workdir=$(make_temp .d)
+  mkdir "$workdir" && chmod 700 "$workdir" && setfacl -m u:homer:--x "$workdir"
+  CLEANUP_FILES+=("$workdir")
+
+  local request="$workdir/request-$RANDOM$RANDOM.env"
+  local response="$workdir/response-$RANDOM$RANDOM.tar"
+  touch "$request"   && setfacl -m u:homer:r-- "$request"
+  mkfifo "$response" && setfacl -m u:homer:rw- "$response"
+
   "$SELF" request > "$request"
-  setfacl -m u:homer:r-- "$request"
 
   local img=$(cd "$imageDir" && flock . "$SELF" pick-image "$request" $$ )
   if [ ! -e "$img" ]; then
     echo >&2 "Failed to pick image from $imageDir for $request"
     exit 1
   fi
-  echo >&2 "[$USER] Picked home-image $img"
-  homerdo -i "$img"        -- "$SELF" setup "$request"
-  homerdo -i "$img" --temp -- "$SELF" exec "$request"
+  echo >&2 "[$USER] Found home-image $img"
+  # echo >&2 "[$USER] Prepared job (img=$img, request=$request, response=$response)"
+
+  set -e
+  homerdo -i "$img" -- "$SELF" setup "$request"
+  set +e
+
+  (cd "$WORKSPACE" && tar xf "$response") &
+  local tarpid=$!
+  homerdo -i "$img" --temp -- "$SELF" exec "$request" "$response"
+  local result=$?
+  wait $tarpid
+  exit $result
 }
 
 #####################################################################
@@ -89,7 +116,7 @@ function do_request() {
 ## NOTE: For concurrent invocations, run this with `flock`.
 
 function do_pick_image() {
-  echo >&2 "[$USER] Pick home-image from $PWD"
+  echo >&2 "[$USER] Finding home-image in $PWD..."
   local OWNER_PID="$1"
 
   if [ -z "$OWNER_PID" ]; then
@@ -355,9 +382,8 @@ function safe_delete() {
 }
 
 function make_temp() {
-  local tmpfile="/tmp/run-bknix-$USER-"$(date '+%Y-%m-%d-%H-%M'-$RANDOM$RANDOM)
-  touch "$tmpfile"
-  chmod 600 "$tmpfile"
+  local suffix="$1"
+  local tmpfile="/tmp/run-bknix-$USER-"$(date '+%Y-%m-%d-%H-%M'-$RANDOM$RANDOM)"$suffix"
   echo "$tmpfile"
 }
 
