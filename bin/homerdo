@@ -66,7 +66,7 @@
   function task_install {
     print_h1 "Install"
     assert_root_user
-    assert_cmd sudo adduser addgroup getent realpath ps pgrep killall unshare
+    assert_cmd sudo adduser addgroup getent realpath ps pgrep killall unshare flock setfacl
 
     mkdir -p "$HOMER_VAR"
     chmod 700 "$HOMER_VAR"
@@ -263,13 +263,13 @@
     assert_valid_envfiles; realize_envfiles
     assert_valid_shares; realize_shares
     assert_valid_img; realize_img
-    assert_ownership
 
     if [ $EUID -ne 0 ]; then
       as_root status
       exit $?
     fi
     assert_root_user
+    assert_ownership
 
     local lock_pid=$(cat "$homer_lock")
     if ps -p "$lock_pid" > /dev/null; then
@@ -428,6 +428,10 @@
     local file_uid
     shift
     for file in "$@" ; do
+      local tgt="$file"
+      while [ ! -e "$file" ]; do
+        file=$(dirname "$file")
+      done
       file_uid=$( stat -c %u "$file" )
       if [ "$uid" -ne "$file_uid" ]; then
         fatal "File $file not owned by $uid"
@@ -486,7 +490,7 @@
       --owner-pid)  owner_pid="$2"    ; shift 2 ; ;;
       -t|--temp)    use_temp="--temp" ; shift 1 ; ;;
       -h|--help|help) action="usage"  ; shift 1 ; ;;
-      install|uninstall|run|status|mount|unmount|exec) action="$1" ; shift ; ;;
+      install|uninstall|run|status|create|mount|unmount|exec) action="$1" ; shift ; ;;
       -*)           fatal "Unrecognized option $1" ; ;;
       *)            parsing=          ; ;;
     esac
