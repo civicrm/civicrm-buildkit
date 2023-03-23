@@ -461,7 +461,7 @@
 
   function realize_img() {
     img=$(realpath "$img")
-    homer_id=$(echo "$real_img" |md5sum - | cut -f1 -d\  )
+    homer_id=$(echo "$img" |md5sum - | cut -f1 -d\  )
     homer_lock=$( echo "${HOMER_LOCK_TPL}" | sed "s;HOMER_ID;${homer_id};" )
     homer_base=$( echo "${HOMER_BASE_TPL}" | sed "s;HOMER_ID;${homer_id};" )
     homer_temp=$( echo "${HOMER_TEMP_TPL}" | sed "s;HOMER_ID;${homer_id};" )

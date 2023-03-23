@@ -18,19 +18,53 @@
 ## REQUEST:      File with the serialized request
 ## BKIT:         Path for the active buildkit instance
 
+SELF="$0"
 TTL_TOOLS=60     ## During setup, refresh 'civi-download-tools' (if >1 hour old)
 TTL_BLDTYPE=180  ## During setup, warmup 'bldtype' (if >3 hours since last)
+CLEANUP_FILES=()
+MAX_IMAGES=5     ## If there are more than X copies of an image, then refuse to make more
 
 #####################################################################
 ## Main
 function main() {
+  trap do_cleanup EXIT
   case "$1" in
+    all)         do_all ; ;;
     request)     do_request ; ;;
-    pick-image)  REQUEST="$2" ; load_request "$REQUEST" ; do_image ; ;;
+    pick-image)  REQUEST="$2" ; load_request "$REQUEST" ; do_pick_image "$3" ; ;;
     setup)       REQUEST="$2" ; load_request "$REQUEST" ; do_setup ; ;;
     exec)        REQUEST="$2" ; load_request "$REQUEST" ; do_exec ; ;;
-    run)         REQUEST="$2" ; load_request "$REQUEST" ; do_setup ; do_exec ; ;;
   esac
+}
+
+function do_cleanup() {
+  safe_delete "${CLEANUP_FILES[@]}"
+}
+
+#####################################################################
+## TASK: Do the entire process!
+## USER: (anyone)
+## EXAMPLE: `JOB_NAME=FooBar BKPROF=min homer-do-task.sh`
+function do_all() {
+  local imageDir="$HOME/images"
+
+  if [ ! -d "$imageDir" ]; then
+    mkdir -p "$imageDir"
+  fi
+
+  local request=$(make_temp)
+  CLEANUP_FILES+=("$request")
+  "$SELF" request > "$request"
+  setfacl -m u:homer:r-- "$request"
+
+  local img=$(cd "$imageDir" && flock . "$SELF" pick-image "$request" $$ )
+  if [ ! -e "$img" ]; then
+    echo >&2 "Failed to pick image from $imageDir for $request"
+    exit 1
+  fi
+  echo >&2 "[$USER] Picked home-image $img"
+  homerdo -i "$img"        -- "$SELF" setup "$request"
+  homerdo -i "$img" --temp -- "$SELF" exec "$request"
 }
 
 #####################################################################
@@ -48,37 +82,71 @@ function do_request() {
 #####################################################################
 ## TASK: Pick image
 ## USER: (anyone)
-## EXAMPLE: `cd $IMGDIR && flock . homerdo-task.sh pick-image /tmp/request-1234.txt`
+## USAGE: `homerdo-task.sh pick-image <REQUEST> <PID>`
+## EXAMPLE: `cd $IMGDIR && flock . homerdo-task.sh pick-image /tmp/request-1234.txt $$`
 ##
 ## Choose which image-file to use as homer's $HOME.
 ## NOTE: For concurrent invocations, run this with `flock`.
 
-function do_image() {
-  echo >&2 "[$USER] Pick image"
-  
-  local n=0
-  local img="bknix-$BKPROF-$n.img"
+function do_pick_image() {
+  echo >&2 "[$USER] Pick home-image from $PWD"
+  local OWNER_PID="$1"
+
+  if [ -z "$OWNER_PID" ]; then
+    echo >&2 "ERROR: Missing OWNER_PID"
+    exit 3
+  fi
+
+  local n=-1
+  local img
   local is_new
   local status
+  local img_lock
+
   while true; do
-    #echo >&2 "check $n: $img"
-    if [ ! -e "$img" ]; then
-      is_new=1
-      break
-    fi
-    #echo >&2 "CALL: homerdo status -i \"$img\""
-    status=$(homerdo status -i "$img")
-    if [ "$status" == "avail" ]; then
-      is_new=
-      break
-    fi
     n=$((1 + $n))
     img="bknix-$BKPROF-$n.img"
+    img_lock="$img.lock"
+    # echo >&2 "check $n: $img"
+
+    if [[ $n -ge $MAX_IMAGES ]]; then
+      echo >&2 "Too many images already exist. (BKPROF=$BKPROF, n=$n, MAX_IMAGES=$MAX_IMAGES)"
+      exit 1
+    fi
+
+    if [ ! -e "$img" -a ! -e "$img_lock" ]; then
+      # echo >&2 "claim $n: $img (new)"
+      is_new=1
+      break ## OK
+    fi
+
+    if [ -f "$img_lock" ]; then
+      #echo >&2 "consider lock $img_lock"
+      local their_pid=$(cat "$img_lock")
+      if ps -p "$their_pid" > /dev/null; then
+        #echo >&2 "not $img ($img_lock)"
+        continue ## Nope, someone else still using it
+      fi
+    fi
+
+    #echo >&2 "consider status of $img"
+    status=$(homerdo status -i "$img")
+    if [ "$status" != "avail" ]; then
+      #echo >&2 "not $img ($status)"
+      continue ## Nope, someone else still  using it
+    fi
+
+    ## OK. Someone else had it, but we can take it
+    #echo >&2 "claim $n: $img (reuse)"
+    is_new=
+    break
   done
-  
-  if [[ -n $is_new ]]; then
-    homerdo create -i "$img"
+
+  echo "$OWNER_PID" > "$img_lock"
+  if [ ! -e "$img" ]; then
+    homerdo create -i "$img" >&2
   fi
+
   realpath "$img"
 }
 
@@ -216,7 +284,7 @@ function new_variables() {
 ## STDIN: List of KEY=VALUE pairs (unescaped values)
 ## STDOUT: List of KEY=VALUE pairs (unescaped values)
 function known_variables() {
-  env_list=" "$(echo $( cat "$BKNIX_JOBS/env.txt" | grep '^[a-zA-Z0-9_]\+$' ; echo ))" "
+  env_list=" "$( echo $( cat "$BKNIX_JOBS/env.txt" | grep '^[a-zA-Z0-9_]\+$' ; echo ))" "
   #echo >&2 "$JOBDIR/env.txt: $env_list"
   while IFS= read -r line; do
     var=$(echo "$line" | cut -d= -f1)
@@ -284,6 +352,13 @@ function safe_delete() {
       rm -rf "$FILE"
     fi
   done
+}
+
+function make_temp() {
+  local tmpfile="/tmp/run-bknix-$USER-"$(date '+%Y-%m-%d-%H-%M'-$RANDOM$RANDOM)
+  touch "$tmpfile"
+  chmod 600 "$tmpfile"
+  echo "$tmpfile"
 }
 
 function absdirname() {

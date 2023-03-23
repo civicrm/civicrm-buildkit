@@ -113,7 +113,7 @@ function run_bknix_main() {
     if [ -z "$JOB_NAME" ]; then
       export JOB_NAME="$2"
     fi
-    run_bknix_homer
+    "$BKNIX_JOBS/homerdo-task.sh" all
     return
   fi
 
@@ -164,24 +164,6 @@ function run_bknix_main() {
   echo >> $tmpfile
   cat "$BKNIX_JOB_SCRIPT" >> $tmpfile
   source "$tmpfile"
-}
-
-## about: Store job info in a request file. Forward it to `homer`.
-## usage: run_bknix_homer
-function run_bknix_homer() {
-  if [ ! -d "$RUN_BKNIX_HOMER_IMAGES" ]; then
-    mkdir -p "$RUN_BKNIX_HOMER_IMAGES"
-  fi
-
-  local request=$(run_bknix_mktemp)
-  RUN_BKNIX_CLEANUP_FILES+=("$request")
-  local hdtask="$BKNIX_JOBS/homerdo-task.sh"
-  $hdtask request > "$request"
-  setfacl -m u:homer:r-- "$request"
-
-  local img=$(cd "$RUN_BKNIX_HOMER_IMAGES" && flock . "$hdtask" pick-image "$request" )
-  homerdo -i "$img" --owner-pid "$$"        -- "$hdtask" setup "$request"
-  homerdo -i "$img" --owner-pid "$$" --temp -- "$hdtask" exec "$request"
 }
 
 ## usage: run_bknix_download <url> <out-file>
