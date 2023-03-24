@@ -2,18 +2,17 @@
 
 ## Monitor a local socket for ssh-agent requests. Forward to another socket.
 ##
-## For example, Alice grants Bob access to her ssh-agent as follows:
+## For example, suppose Alice wants to grant Bob access to her ssh-agent. They run:
 ##
-##   [alice]$ NEW_SOCK=/tmp/ssh-fwd.NNNNN
-##   [alice]$ ssh-socket-forward "$SSH_AUTH_SOCK" "$NEW_SOCK" &
-##   [alice]$ setfacl -m u:bob:rw- "$NEW_SOCK"
+##   [alice]$ ssh-socket-forward "$SSH_AUTH_SOCK" "/tmp/ssh-fwd.NNNNN" &
+##   [alice]$ setfacl -m u:bob:rw- "/tmp/ssh-fwd.NNNNN"
 ##   [bob]$ export SSH_AUTH_SOCK=/tmp/ssh-fwd.NNNNN
 ##
 ## Note that the default permissions on the new socket are very limited (0700).
-## You must explicitly grant "bob" access. Use whatever permission system is
+## "alice" must explicitly grant "bob" access. Use whatever permission system is
 ## supported by your OS (eg `setfacl` or `chmod +a`).
 ##
-## SSH agents use a request-response protocol with binary encoding.
+## Note: SSH agents use a request-response protocol with binary encoding.
 ## See: https://datatracker.ietf.org/doc/html/draft-miller-ssh-agent-04#section-3
 
 use strict;

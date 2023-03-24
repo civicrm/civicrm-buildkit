@@ -1,26 +1,22 @@
 #!/usr/bin/env bash
 {
-## This is an adapter which forwards the active Jenkins job to `homerdo`.
+## This adapter allows `run-bknix-jobs` to isolate Jenkins jobs with `homerdo`.
+## General flow:
 ##
-## This script has a few major steps:
-##
-## 1. REQUEST: The dispatch-user receives a Jenkins job. It captures the job
-##    and stores it in a file.
-## 2. PICK IMAGE: You may have a few different baseline images (e.g. for `min` vs `max`).
-##    Decide which one to use.
-## 3. SETUP: Add persistent resources to the image. This might download common/default tools
-##    and update caches.
-## 4. EXEC: Run the actual job. Here, you can use tools+caches from the image. But changes
-##    will not be retained.
-##
-## Each step is described below with examples.
+## - Jenkins connects via SSH. It passes a bunch of variables and calls `run-bknix-job`.
+## - `run-bknix-job` detects `homerdo` and asks `homerdo-task.sh all` to forward the job.
+## - `homerdo-task.sh request` captures the request-environment and stores it as a file.
+## - `homerdo-task.sh pick-image` loads or creates a home-image (eg `bknix-max-0.img`).
+## - `homerdo-task.sh setup` performs basic maintenance on `bknix-max-0.img` (eg `civi-download-tools`)
+## - `homerdo-task.sh exec` loads `bknix-max-0.img`, executes the test-job, and transfers
+##   any new artifacts from `~homer/$WORKSPACE` to `~mainuser/$WORKSPACE`.
 
 #####################################################################
 ## Internal Environment
 ##
-## BKNIX_JOBS:   This folder (containing the *.job scripts)
-## REQUEST:      File with the serialized request
-## BKIT:         Path for the active buildkit instance
+## BKNIX_JOBS=   ## This folder (containing the *.job scripts)
+## REQUEST=      ## File with the serialized request
+## BKIT=         ## Path for the active buildkit instance
 
 SELF="$0"
 TTL_TOOLS=60     ## During setup, refresh 'civi-download-tools' (if >1 hour old)

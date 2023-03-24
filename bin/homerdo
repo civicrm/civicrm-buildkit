@@ -106,6 +106,8 @@
 ## - Replace /tmp and /var/tmp. (Issue: Sharing ssh socket and tar fifo)
 ## - Consider adding a network namespace. Maybe make it optional (`homerdo -n`).
 ## - Use qcow2 instead of raw. (Issue: When learning/playing with qemu-nbd, it felt crashy.)
+## - Allow multi-entry for the same image (*given acceptable layering*). Keep a list of
+##   open shell PIDs. Support auto-mount/auto-unmount. Enhance "status" command.
 
 { # https://stackoverflow.com/a/21100710
   set -e
