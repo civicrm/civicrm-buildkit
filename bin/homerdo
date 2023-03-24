@@ -83,9 +83,9 @@
 ###########################################################################
 ## Wishlist
 ##
-## - Allow forwarding SSH (`-A`)
 ## - Allow loading zero images (`homerdo --temp` starts with empty tmpfs)
 ## - Allow loading multiple images (`homerdo -i base.img -i extra.img --temp`)
+## - Replace /tmp and /var/tmp. (Issue: Sharing ssh socket and tar fifo)
 
 { # https://stackoverflow.com/a/21100710
   set -e
@@ -110,11 +110,13 @@
   owner_pid=$$
   shares=()
   cmd=()
+  ssh_agent=
   size=${HOMER_SIZE}
   verbose=0
 
   cleanup_files=()
   cleanup_mounts=
+  cleanup_pids=()
 
   homer_id=		## see realize_img
   homer_base=		## see realize_img
@@ -128,23 +130,27 @@
 
   function task_usage() {
     prog=$(basename "$0")
-    echo "Public actions:"
+    echo "Day-to-day actions:"
+    echo "  $prog [OPTIONS] [run] [--] [CMD]"
+    echo "  $prog [OPTIONS] status"
+    echo
+    echo "Sysadmin actions:"
     echo "  $prog install"
-    echo "  $prog run [OPTIONS] [--] [CMD]"
-    echo "  $prog status [OPTIONS]"
     echo "  $prog uninstall"
     echo
-    echo "Private actions:"
-    echo "  $prog create [OPTIONS]"
-    echo "  $prog mount [OPTIONS]"
-    echo "  $prog unmount [OPTIONS]"
-    echo "  $prog exec [OPTIONS] [--] [CMD]"
+    echo "Internal actions:"
+    echo "  $prog [OPTIONS] create"
+    echo "  $prog [OPTIONS] mount"
+    echo "  $prog [OPTIONS] unmount"
+    echo "  $prog [OPTIONS] exec [--] [CMD]"
     echo
     echo "Options:"
+    echo "  -A                   Forward SSH agent (See also: \"ssh -A\")"
     echo "  -i|--img IMG         Path to image file"
     #echo "  --share REL_PATH     Mount a shared folder"
     echo "  -s|--size SIZE       Size for any new filesystems (Default: HOMER_SIZE=$HOMER_SIZE)"
-    echo "  -t|--temp            Use temporary overlay."
+    echo "  -t|--temp            Enable temporary file mode"
+    echo "  -v                   Enable verbose output"
     echo
   }
 
@@ -216,9 +222,27 @@
     fi
     assert_valid_img; realize_img
 
+    local ssh_agent_pid=
+    local prefix_cmd=()
+    if [ -n "$ssh_agent" ]; then
+      assert_cmd ssh-socket-forward
+      if [ -z "$SSH_AUTH_SOCK" ]; then
+        echo >&2 "WARNING: Cannot forward SSH agent. No agent detected."
+      else
+        local socket="/tmp/ssh.$RANDOM$RANDOM/agent.$RANDOM$RANDOM"
+        mkdir -m 711 $(dirname "$socket")
+        ssh-socket-forward "$SSH_AUTH_SOCK" "$socket" &
+        cleanup_pids+=($!)
+        cleanup_files+=( $(dirname "$socket") )
+        sleep 1 ## ssh-socket-forward takes a moment to create socket
+        setfacl -m "u:$HOMER_USER:rw-" "$socket"
+        prefix_cmd+=(env "SSH_AUTH_SOCK=$socket")
+      fi
+    fi
+
     cleanup_mounts=1
     as_root mount
-    as_root exec -- "${cmd[@]}"
+    as_root exec -- "${prefix_cmd[@]}" "${cmd[@]}"
   }
 
   ###########################################################################
@@ -397,13 +421,19 @@
 
   function task_cleanup() {
     set +e
-    #print_h2 "Cleanup"
+    # print_h2 "Cleanup (${cleanup_pids[@]}) (${cleanup_files[@]})"
+
+    for pid in "${cleanup_pids[@]}" ; do
+      if ps -p "$pid" > /dev/null; then
+        kill $pid
+      fi
+    done
+
     if [ -n "$cleanup_mounts" ]; then
       as_root unmount
     fi
-    for file in "${cleanup_files[@]}" ; do
-      if [ -f "$file" ]; then rm -f "$file" ; fi
-    done
+
+    safe_delete "${cleanup_files[@]}"
   }
 
   #########################################################
@@ -431,6 +461,16 @@
     echo "$@" >&2
     task_usage >&2
     exit 1
+  }
+
+  function safe_delete() {
+    for FILE in "$@" ; do
+      if [[ -d "$FILE" ]]; then
+        rm -rf "$FILE"
+      elif [[ -e "$FILE" ]]; then
+        rm -f "$FILE"
+      fi
+    done
   }
 
   function new_tmp_file() {
@@ -497,9 +537,10 @@
   }
 
   function assert_cmd {
-    for cmd in "$@" ; do
-      if ! command -v "$cmd" &> /dev/null ; then
-        fatal "Missing command: $cmd"
+    local name
+    for name in "$@" ; do
+      if ! command -v "$name" &> /dev/null ; then
+        fatal "Missing command: $name"
       fi
     done
   }
@@ -618,6 +659,7 @@
       #  shift 2
       #  ;;
       -v)           verbose=$((1 + $verbose)) ; shift 1 ; ;;
+      -A)           ssh_agent='-A'    ; shift 1 ; ;;
       -i|--img)     img="$2"          ; shift 2 ; ;;
       --owner-pid)  owner_pid="$2"    ; shift 2 ; ;;
       -s|--size)    size="$2"         ; shift 2 ; ;;
@@ -634,6 +676,9 @@
     cmd+=("$1")
     shift
   done
+  if [ ${#cmd[@]} -eq 0 ]; then
+    cmd+=("${SHELL:-bash}")
+  fi
 
   #echo "action=[$action] img=[$img] use_temp=[$use_temp] shares=[${shares[@]}] size=[$size]"
   #echo "cmd: [${cmd[@]}]"

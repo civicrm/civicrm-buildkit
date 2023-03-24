@@ -52,6 +52,7 @@ install_cachix
 init_folder "$BKNIXSRC/examples/$BKNIX_CI_TEMPLATE" /etc/bknix-ci
 touch /etc/bknix-ci/is-runner
 install_bin "$BKNIXSRC/../bin/homerdo"      /usr/local/bin/homerdo
+install_bin "$BKNIXSRC/../bin/ssh-socket-forward" /usr/local/bin/ssh-socket-forward
 #install_bin "$BINDIR"/use-bknix             /usr/local/bin/use-bknix
 install_bin "$BINDIR"/await-bknix.flag-file /usr/local/bin/await-bknix
 install_bin "$BINDIR"/run-bknix-job         /usr/local/bin/run-bknix-job
