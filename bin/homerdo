@@ -80,6 +80,13 @@
 ##   $ homerdo -i myenv.img --temp -- patch-and-test.sh
 ##     (EX: You might apply a patch then run the build/test scripts.)
 
+###########################################################################
+## Wishlist
+##
+## - Allow forwarding SSH (`-A`)
+## - Allow loading zero images (`homerdo --temp` starts with empty tmpfs)
+## - Allow loading multiple images (`homerdo -i base.img -i extra.img --temp`)
+
 { # https://stackoverflow.com/a/21100710
   set -e
 
@@ -89,6 +96,7 @@
   HOMER_VAR=/var/local/homer
   HOMER_USER=homer
   HOMER_GROUP=homer
+  HOMER_SIZE=${HOMER_SIZE:-3000m}
   HOMER_BASE_TPL="$HOMER_VAR/HOMER_ID/base"
   HOMER_HOME_TPL="$HOMER_VAR/HOMER_ID/home"
   HOMER_LOCK_TPL="$HOMER_VAR/HOMER_ID/lock"
@@ -102,7 +110,7 @@
   owner_pid=$$
   shares=()
   cmd=()
-  size=3000m
+  size=${HOMER_SIZE}
   verbose=0
 
   cleanup_files=()
@@ -134,8 +142,8 @@
     echo
     echo "Options:"
     echo "  -i|--img IMG         Path to image file"
-    #echo "  --env ENV_FILE       File with environment variables"
     #echo "  --share REL_PATH     Mount a shared folder"
+    echo "  -s|--size SIZE       Size for any new filesystems (Default: HOMER_SIZE=$HOMER_SIZE)"
     echo "  -t|--temp            Use temporary overlay."
     echo
   }
@@ -200,6 +208,7 @@
       fatal "No IMG specified"
     fi
 
+    assert_valid_size
     assert_valid_shares; realize_shares
 
     if [ ! -e "$img" ]; then
@@ -218,6 +227,7 @@
   function task_create() {
     print_h2 "Create image ($img, $size)"
     assert_not_root_user
+    assert_valid_size
 
     qemu-img create "$img" "$size"
     mkfs -t ext4 "$img"
@@ -230,6 +240,7 @@
     print_h2 "Mounting image file ($img)"
     assert_root_user
 
+    assert_valid_size
     assert_valid_shares; realize_shares
     assert_valid_img; realize_img
 
@@ -466,7 +477,6 @@
     if [ -n "$use_temp" ]; then
       sudocmd+=("$use_temp")
     fi
-    #sudocmd+=("--env" "$tmpfile")
     sudocmd+=("-i" "$img")
     sudocmd+=("--owner-pid" "$owner_pid")
     local vs=0
@@ -509,6 +519,24 @@
   function assert_valid_img() {
     if [ -z "$img" -o ! -f "$img" ]; then
       fatal "Invalid IMG ($img)"
+    fi
+  }
+
+  function assert_valid_size() {
+    assert_regex '^[0-9]\+[mg]$' "$size" "Missing or invalid image size ($size)"
+  }
+
+  ## usage: assert_regex <grep-style-regex> <value> [<error-message>]
+  function assert_regex() {
+    local regex="$1"
+    local value="$2"
+    local error="$3"
+    if ! echo "$value" | grep -q "$regex" > /dev/null ; then
+      if [ -z "$error" ]; then
+        fatal "Error: Value ($value) does not match regex ($regex)"
+      else
+        fatal "$error"
+      fi
     fi
   }
 
@@ -592,6 +620,7 @@
       -v)           verbose=$((1 + $verbose)) ; shift 1 ; ;;
       -i|--img)     img="$2"          ; shift 2 ; ;;
       --owner-pid)  owner_pid="$2"    ; shift 2 ; ;;
+      -s|--size)    size="$2"         ; shift 2 ; ;;
       -t|--temp)    use_temp="--temp" ; shift 1 ; ;;
       -h|--help|help) action="usage"  ; shift 1 ; ;;
       install|uninstall|run|status|create|mount|unmount|exec) action="$1" ; shift ; ;;
@@ -606,7 +635,7 @@
     shift
   done
 
-  #echo "action=[$action] img=[$img] use_temp=[$use_temp] shares=[${shares[@]}]"
+  #echo "action=[$action] img=[$img] use_temp=[$use_temp] shares=[${shares[@]}] size=[$size]"
   #echo "cmd: [${cmd[@]}]"
   #exit
 
