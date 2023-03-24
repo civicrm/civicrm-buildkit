@@ -2,18 +2,19 @@
 
 ## Monitor a local socket for ssh-agent requests. Forward to another socket.
 ##
-## For example, Alice grant Bob access to the ssh-agent as follows:
+## For example, Alice grants Bob access to her ssh-agent as follows:
 ##
-##   NEW_SOCK=/tmp/ssh-$RANDOM/agent-$RANDOM
-##   mkdir -m 711 $(dirname "$NEW_SOCK")
-##   ssh-socket-forward "$SSH_AUTH_SOCK" "$NEW_SOCK" &
-##   setfacl -m u:bob:rw- "$NEW_SOCK"
-##   echo "Alice should set SSH_AUTH_SOCK=$NEW_SOCK"
+##   [alice]$ NEW_SOCK=/tmp/ssh-fwd.NNNNN
+##   [alice]$ ssh-socket-forward "$SSH_AUTH_SOCK" "$NEW_SOCK" &
+##   [alice]$ setfacl -m u:bob:rw- "$NEW_SOCK"
+##   [bob]$ export SSH_AUTH_SOCK=/tmp/ssh-fwd.NNNNN
 ##
-## Note that the default permissions on the new socket are very limited (0700). You will need
-## to relax them to give "bob" access.
+## Note that the default permissions on the new socket are very limited (0700).
+## You must explicitly grant "bob" access. Use whatever permission system is
+## supported by your OS (eg `setfacl` or `chmod +a`).
 ##
-## Protocol spec: https://datatracker.ietf.org/doc/html/draft-miller-ssh-agent-04#section-3
+## SSH agents use a request-response protocol with binary encoding.
+## See: https://datatracker.ietf.org/doc/html/draft-miller-ssh-agent-04#section-3
 
 use strict;
 use warnings;
@@ -46,8 +47,7 @@ while (my $downstream = $server->accept()) {
     #print "Accepted connection %d on $downstream_socket\n", $connections;
     # my ($pid, $uid, $gid) = unpack 'i*', getsockopt $downstream, SOL_SOCKET, SO_PEERCRED;
 
-    # Connect to old socket
-    # printf("Connect to $upstream_socket\n");
+    # Connect to upstream
     my $upstream = IO::Socket::UNIX->new(
         Type => SOCK_STREAM,
         Peer => $upstream_socket,
@@ -70,7 +70,7 @@ while (my $downstream = $server->accept()) {
 
       # printf "Request:\n  %s\n  %s\n", toHex($request_bytes), toHex($request);
 
-      # Send request to upstream
+      # Forward request to upstream
       $upstream->send($request_bytes);
       $upstream->send($request);
 
@@ -81,7 +81,7 @@ while (my $downstream = $server->accept()) {
       read $upstream, $response, $response_len;
       last unless defined $response;
 
-      # Send response to downstream
+      # Forward response to downstream
       $downstream->send($response_bytes);
       $downstream->send($response);
     } while (!$downstream->eof());
@@ -92,3 +92,5 @@ while (my $downstream = $server->accept()) {
 
 close($server);
 unlink($downstream_socket);
+# ^^ This should probably happen on SIGTERM as well.
+## But it's been 30 million years since I wrote any Perl.
