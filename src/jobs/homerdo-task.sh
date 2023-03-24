@@ -92,7 +92,7 @@ function do_all() {
 
   (cd "$WORKSPACE" && tar xf "$response") &
   local tarpid=$!
-  homerdo -i "$img" --temp -- "$SELF" exec "$request" "$response"
+  homerdo -A -i "$img" --temp -- "$SELF" exec "$request" "$response"
   local result=$?
   wait $tarpid
   exit $result
