@@ -1,24 +1,76 @@
 #!/usr/bin/env bash
 
-## homerdo is the opposite of sudo:
+###########################################################################
+## Gist
 ##
-##   - The Super-User (`sudo`) is someone you trust to do anything. His actions
-##     are permanent and global.
-##   - Homer (`homerdo`) is someone who messes up constantly. You don't trust him.
-##     The only reason we haven't all died in 10x nuclear accidents is that Homer's
-##     world resets every 20 minutes.
+##   [me]$ homerdo -i s1e1-roasting-on-an-open-fire.img
+##   [homer]$ echo tatoo > bart.txt
+##   [homer]$ echo dog > santas-helper.txt
+##   [homer]$ exit
+##   [me]$ ls -l s1e1-roasting-on-an-open-fire.img
+
+###########################################################################
+## Prologue
 ##
-## homerdo isolates tasks, but it's the opposite of Docker:
+## `homerdo` switches user-accounts, but it's the opposite of `sudo`:
 ##
-##   - Docker isolation is expansive. It creates the impression of a full Unix host,
-##     with its own user-accounts and libc and networking (and so on).
-##   - Homerdo isolation is limited. It restricts one user and his home directory.
-##     Everything else is shared with the host.
+##   - (`sudo`): The Super-User is someone you trust to do anything. His actions
+##     are permanent and global. He fights alien invasions and saves the planet.
+##   - (`homerdo`): Homer is someone who messes up constantly.  He causes nuclear
+##     accidents.  You shouldn't trust him.  But it's OK, because Homer's world
+##     resets at the end of every 20 minute episode.
 ##
-## The script is currently only tested for Debian-style environments.
+## `homerdo` isolates tasks, but it's the opposite of `docker`:
 ##
-## It may be possible to adapt a degraded version of the workflow in other
-## environments (e.g. https://krypted.com/mac-security/shadow-mounting-with-hdiutil/).
+##   - (`docker`) Docker isolation is expansive.  It creates the impression of a
+##     full Unix host, with its own user-accounts and libc and networking (et al).
+##   - (`homerdo`) Homerdo isolation is limited.  It restricts one user and his
+##     home directory.  Everything else is shared with the host.
+
+###########################################################################
+## Installation
+##
+## Deploy the single executable:
+##
+##   sudo cp ./path/to/homerdo /usr/local/bin/homerdo
+##
+## Run `install` to check depedencies, generate the user `homer`, and setup
+## a work folder (`/var/local/homer`).
+##
+##   sudo homerdo install
+##
+## You may wish to also add a rule to sudoers:
+##
+##   me ALL = (root) NOPASSWD: NOSETENV: /usr/local/bin/homerdo
+
+###########################################################################
+## Usage
+##
+## Run some tasks as homer:
+##
+##   [me]$ homerdo -i s1e1-roasting-on-an-open-fire.img
+##   [homer]$ echo tatoo > bart.txt
+##   [homer]$ echo dog > santas-helper.txt
+##   [homer]$ exit
+##
+## Note that homer's home directory is stored in an image-file. (Thus,
+## `bart.txt` is physically part of `s1e1-roasting-on-an-open-fire.img`.)
+##
+## You can resume working in this by repeating the same command.
+## If you add the `--temp` flag, then all changes will be ephemeral:
+##
+##   [me]$ homerdo -i s1e1-roasting-on-an-open-fire.img --temp
+##   [homer]$ echo porcupine > santas-helper.txt
+##   [homer]$ exit
+##
+## If you want to tell an entirely different story, then you can make
+## another image:
+##
+##   [me]$ homerdo -i s1e2-bart-the-genius.img
+##   [homer]$ mkdir martin bart
+##   [homer]$ echo $RANDOM > martin/tests.txt
+##   [homer]$ mv martin/tests.txt bart/tests.txt
+##   [homer]$ exit
 
 ###########################################################################
 ## General Organization
@@ -28,43 +80,9 @@
 ## - Homer can passively access other system resources (`/usr`, `/nix`, local daemons, etc).
 ## - Homer's shenanigans are contained by way of Linux namespaces (`unshare`) and filesystem magic.
 ## - You can have an army of 10 Homers working at the same time. They all have their own homes.
-
-###########################################################################
-## Usage
-##
-## Install (as root)
-##
-##  me@local$ sudo cp ./path/to/homerdo /usr/local/bin/homerdo
-##  me@local$ sudo homerdo install
-##
-## Run some tasks as homer:
-##
-##  me@local:~$ homerdo -i s1e1-roasting-on-an-open-fire.img bash
-##  homer@local:~$ echo tatoo > bart.txt
-##  homer@local:~$ echo dog > santas-helper.txt
-##  homer@local:~$ exit
-##
-## Note that homer's home directory is stored in an image-file. (Thus,
-## `bart.txt` is physically part of `s1e1-roasting-on-an-open-fire.img`.)
-##
-## You can resume working in this by repeating the same command.
-## Or you can start a new home:
-##
-##  me@local:~$ homerdo -i s1e2-bart-the-genius.img bash
-##  homer@local:~$ mkdir martin bart
-##  homer@local:~$ echo $RANDOM > martin/tests.txt
-##  homer@local:~$ mv martin/tests.txt bart/tests.txt
-##  homer@local:~$ exit
-##
-## Finally, you can run tasks with "temporary" (--temp) mode:
-##
-##  me@local:~$ homerdo -i s1e1-roasting-on-an-open-fire.img --temp bash
-##  homer@local:~$ echo porcupine > santas-helper.txt
-##  homer@local:~$ exit
-##
-## Here, we resume working on "s1e1", but any changes are temporary.
-## We see what it's like if Santa's Helper is a porcupine, but it
-## won't change the persistent data in `s1e1-roasting-on-an-open-fire.img`.
+## - The script is currently only tested for Debian-style environments.
+##    It may or may not be possible to adapt a degraded version of the workflow in other
+##    environments (e.g. https://krypted.com/mac-security/shadow-mounting-with-hdiutil/).
 
 ###########################################################################
 ## Use Case
@@ -74,7 +92,7 @@
 ## each has fairly robust functionality (for mixing-matching versions, for
 ## caching downloads, etc).
 ##
-## The expected usage for CI is to split a test-run into two phases, e.g.
+## The expected usage for CI is to split a job into two phases, e.g.
 ##   $ homerdo -i myenv.img        -- warmup-caches.sh
 ##     (EX: You might do a dress-rehearsal of `composer install` with a stable release.)
 ##   $ homerdo -i myenv.img --temp -- patch-and-test.sh
@@ -83,9 +101,11 @@
 ###########################################################################
 ## Wishlist
 ##
-## - Allow loading zero images (`homerdo --temp` starts with empty tmpfs)
-## - Allow loading multiple images (`homerdo -i base.img -i extra.img --temp`)
+## - Allow running without any persistent images (`homerdo --temp` starts with empty tmpfs)
+## - Allow layering multiple images (`homerdo -i base.img -i extra.img --temp`)
 ## - Replace /tmp and /var/tmp. (Issue: Sharing ssh socket and tar fifo)
+## - Consider adding a network namespace. Maybe make it optional (`homerdo -n`).
+## - Use qcow2 instead of raw. (Issue: When learning/playing with qemu-nbd, it felt crashy.)
 
 { # https://stackoverflow.com/a/21100710
   set -e

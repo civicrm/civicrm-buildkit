@@ -1,32 +1,40 @@
 #!/bin/bash
 
-# This installs each of the bknix profiles in a way that's useful for the CI runners.
-# Specifically:
-#   - Create users "dispatcher" and "runner-N"
-#   - Do not register systemd services for php/mysql/etc
-#   - Install utilites (
+# `install-runner.sh` prepares a system to perform transactional test-runs for test.civicrm.org.
+# The script may be used for new installs and post-boot self-updates.
 #
 # Pre-requisites:
-#   Use a Debian-like main OS
-#   Install the "nix" package manager.
-#   Only tested with multiuser mode.
-#   Login as proper root (e.g. `sudo -i bash`)
 #
-# Tip: The default list of active profiles for CI is "dfl min max" (jenkins).
-# To enable "old" or "edge" profiles (or "publisher" user), customize:
-#  - /etc/bknix-ci/install_all_jenkins.sh
-#  - /etc/bknix-ci/install_all_publisher.sh
+#   - Install Debian or Ubuntu
+#   - Install the "nix" package manager in multiuser mode
+#   - Login as proper root (e.g. `sudo -i bash`)
+#   - Checkout `civicrm-buildkit.git` as `/opt/buildkit`
+#
+# What this script does:
+#
+#   - Create user `dispatcher`. Authorize `test.civicrm.org` to login as `dispatcher`.
+#   - Install "homerdo". Authorize `dispatcher` to run `homerdo`.
+#   - Install a few other utilities/dependencies (`qemu-img`, `run-bknix-job`, `await-bknix`, `ssh-socket-forward`).
+#   - Warm-up `/nix/store` with packages referenced by `/opt/buildkit/nix/profiles/*`
+#
+# After installation, the "dispatcher" can run commands like this:
+#
+#   $ homerdo -i example.img nix-shell -p php81
+#
+#   (Create a new home directory for `homer` stored in `example.img`, then
+#   open a nix shell with PHP 8.1 CLI.)
+#
+# What it doesn't do:
+#
+#   - Register systemd services for php/mysql/etc. (These run transactionally.)
+#   - Build specific homer images. (This are created as-needed by `run-bknix-job`.)
 #
 # Example: Install (or upgrade) all the profiles
 #   ./bin/install-runner.sh
 #
 # Example: Install (or upgrade) all the profiles, overwriting any local config files
 #   FORCE_INIT=-f ./bin/install-runner.sh
-#
-# After installation, an automated script can use a statement like:
-#    eval $(use-bknix min)
-#    eval $(use-bknix max)
-#    eval $(use-bknix dfl)
+
 
 ###########################################################
 ## Bootstrap
