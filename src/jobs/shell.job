@@ -1,0 +1,33 @@
+#!/bin/bash
+set -e
+
+## This is a dummy job which is not really used by Jenkins. You can use it to open a
+## shell with the environment configured similar to a Jenkins job.
+##
+## Example usage:
+##
+## $ run-bknix-job --mock dfl shell
+
+#################################################
+## Environment variables
+
+## EXECUTOR_NUMBER: The number of this concurrent process
+## WORKSPACE: The path where Jenkins stores data for this job
+assert_common EXECUTOR_NUMBER WORKSPACE
+
+#################################################
+## Bootstrap
+
+use_bknix_tmp
+
+#################################################
+## Report details about the test environment
+set -x
+
+## Reset (cleanup after previous tests)
+clean_legacy_workspace "$WORKSPACE/junit" "$WORKSPACE/civibuild-html" "$WORKSPACE/last-scan.json" "$WORKSPACE/new-scan.json"
+init_std_workspace
+
+echo "Trying bash..."
+bash
+
