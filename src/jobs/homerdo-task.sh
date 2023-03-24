@@ -2,12 +2,16 @@
 {
 ## This is an adapter which forwards the active Jenkins job to `homerdo`.
 ##
-## This script is part of a 3-step lifecycle:
+## This script has a few major steps:
 ##
-## 1. REQUEST: The dispatch-user receives a Jenkins job. It records the current request.
-## 2. SETUP: The user `runner-N` should have a re-usable/baseline environment with
-##    common tools and caches. Initialize these.
-## 3. EXEC:  The user `runner-N` should fetch and execute the specific code-under-test.
+## 1. REQUEST: The dispatch-user receives a Jenkins job. It captures the job
+##    and stores it in a file.
+## 2. PICK IMAGE: You may have a few different baseline images (e.g. for `min` vs `max`).
+##    Decide which one to use.
+## 3. SETUP: Add persistent resources to the image. This might download common/default tools
+##    and update caches.
+## 4. EXEC: Run the actual job. Here, you can use tools+caches from the image. But changes
+##    will not be retained.
 ##
 ## Each step is described below with examples.
 
