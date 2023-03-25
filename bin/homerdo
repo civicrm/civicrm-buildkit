@@ -124,6 +124,8 @@
   HOMER_LOCK_TPL="$HOMER_VAR/HOMER_ID/lock"
   HOMER_NS_TPL="$HOMER_VAR/HOMER_ID/ns"
   HOMER_TEMP_TPL="$HOMER_VAR/HOMER_ID/temp"
+  HOMER_LOCK_TTL_1=1  ## Quiet wait period
+  HOMER_LOCK_TTL_2=30 ## Noisy wait period
   GUARD=
 
   img=
@@ -177,7 +179,7 @@
   }
 
   ###########################################################################
-  ## Task: Install POSIX users, groups, data folders
+  ## Task: Install POSIX users, groups, data folders. Check required commands.
 
   function task_install {
     print_h1 "Install"
@@ -204,6 +206,7 @@
 
   ###########################################################################
   ## Task: Uninstall POSIX users, groups, data folders
+
   function task_uninstall {
     print_h1 "Uninstall"
     assert_root_user
@@ -226,7 +229,9 @@
   }
 
   ###########################################################################
-  ## Task: Setup folders, run a command, and tear down
+  ## Task: Run a command as `homer`. This does everything - mount image,
+  ## create namespace, execute the target command, and cleanup. It builds
+  ## on top of all the other commands.
 
   function task_run() {
     print_h1 "Run [${cmd[@]}]"
@@ -294,17 +299,30 @@
 
     $GUARD mkdir -p "$homer_base" "$homer_temp" "$homer_home" $(dirname "$homer_lock")
 
-    if [ -f "$homer_lock" ]; then
-      local lock_pid=$(cat "$homer_lock")
-      if ps -p "$lock_pid" > /dev/null; then
-        echo "Image $img already in use by PID $lock_pid"
+    ## We need short-lock on the tracking file. Then we need to store pid in tracking file.
+    exec {homer_lock_fd}>"${homer_lock}.flock" || exit 2
+    if ! flock --timeout "$HOMER_LOCK_TTL_1" "$homer_lock_fd" ; then
+      echo >&2 "Waiting to acquire $homer_lock..."
+      if ! flock --timeout "$HOMER_LOCK_TTL_2" "$homer_lock_fd" ; then
+        echo >&2 "Failed to acquire $homer_lock"
         exit 2
-      else
-        rm -f "$homer_lock"
-        _task_unmount
       fi
     fi
+    if [ -f "$homer_lock" ]; then
+      local lock_pid=$(cat "$homer_lock")
+      if [ -n "$lock_pid" ]; then
+        if ps -p "$lock_pid" > /dev/null; then
+          echo >&2 "Image $img already in use by PID $lock_pid"
+          exit 2
+        else
+          rm -f "$homer_lock"
+          _task_unmount ## Consider moving out of critical section
+        fi
+      fi
+    fi
+    # echo >&2 "Claim $homer_lock for $owner_pid"
     echo "$owner_pid" > "$homer_lock"
+    flock -u "$homer_lock_fd"
 
     print_h2 "Mount ($homer_base)"
     $GUARD mount -o loop "$img" "$homer_base"
