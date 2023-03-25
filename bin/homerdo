@@ -118,7 +118,7 @@
   HOMER_VAR=/var/local/homer
   HOMER_USER=homer
   HOMER_GROUP=homer
-  HOMER_SIZE=${HOMER_SIZE:-3000m}
+  HOMER_SIZE=${HOMER_SIZE:-2048m}
   HOMER_BASE_TPL="$HOMER_VAR/HOMER_ID/base"
   HOMER_HOME_TPL="$HOMER_VAR/HOMER_ID/home"
   HOMER_LOCK_TPL="$HOMER_VAR/HOMER_ID/lock"
@@ -127,6 +127,10 @@
   HOMER_LOCK_TTL_1=1  ## Quiet wait period
   HOMER_LOCK_TTL_2=30 ## Noisy wait period
   GUARD=
+
+  if [ -e /etc/bknix-ci/homerdo.conf.sh ]; then
+    source /etc/bknix-ci/homerdo.conf.sh
+  fi
 
   img=
   action=
