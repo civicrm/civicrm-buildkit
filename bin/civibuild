@@ -1,4 +1,5 @@
 #!/bin/bash
+{ # https://stackoverflow.com/a/21100710
 set -e
 
 ###############################################################################
@@ -42,3 +43,6 @@ else
   echo "Unrecognized action: $ACTION"
   civibuild_app_usage
 fi
+
+exit
+}

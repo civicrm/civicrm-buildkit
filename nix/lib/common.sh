@@ -7,6 +7,8 @@
 NIX_INSTALLER_URL="https://nixos.org/releases/nix/nix-2.0.4/install"
 # NIX_INSTALLER_URL="https://nixos.org/releases/nix/nix-2.2.1/install"
 
+DISPATCH_USER=dispatcher
+
 ###########################################################
 ## Primary install routines
 
@@ -148,32 +150,8 @@ function install_all_publisher() {
   unset OWNER RAMDISK RAMDISKSVC RAMDISKSIZE PROFILES PROFILE HTTPD_DOMAIN
 }
 
-## There seems to be a quirk wherein the first instance of mysqld quickly
-## flakes out. Perhaps we can provoke it
-function build_one_to_throw_away() {
-  OWNER=jenkins
-
-  echo "Perform trial run"
-  do_as_owner "$(declare -f runner_trial)" runner_trial 0
-  do_as_owner "$(declare -f runner_trial)" runner_trial 1
-}
-
 ###########################################################
 ## Install helpers
-
-function runner_trial() {
-  export EXECUTOR_NUMBER="$1"
-  eval $( use-bknix min -e -N )
-  BLDNAME="build-$EXECUTOR_NUMBER"
-
-  cd ~/bknix
-  if [ -d "build/$BLDNAME" ]; then
-    rm -rf "build/$BLDNAME" "build/$BLDNAME.sh"
-  fi
-  loco start
-  loco-mysql-wait 600 && (civibuild create "$BLDNAME" --type drupal-empty)
-  loco clean
-}
 
 function assert_root_user() {
   if [ "$USER" != "root" ]; then
@@ -349,6 +327,35 @@ function install_user() {
   fi
 }
 
+function install_dispatcher() {
+  if ! getent group "${DISPATCH_USER}" >/dev/null ; then
+    echo "Create group ${DISPATCH_USER}"
+    addgroup "${DISPATCH_USER}"
+  fi
+
+  if ! getent passwd "${DISPATCH_USER}" >/dev/null ; then
+    echo "Create user ${DISPATCH_USER}"
+    adduser "${DISPATCH_USER}" --gecos "Bkrun Dispatcher" --ingroup "${DISPATCH_USER}" --disabled-password
+  fi
+
+  local ssh_dir="/home/${DISPATCH_USER}/.ssh"
+  local authorized_keys="$(cat /etc/bknix-ci/dispatcher-keys)"
+
+  if [ ! -d "$ssh_dir" ]; then
+    mkdir -p "$ssh_dir"
+  fi
+  chown "root:${DISPATCH_USER}" "$ssh_dir"
+  chmod 750 "$ssh_dir"
+
+  echo "$authorized_keys" > "$ssh_dir/authorized_keys"
+  chown "root:${DISPATCH_USER}" "$ssh_dir/authorized_keys"
+  chmod 640 "$ssh_dir/authorized_keys"
+
+  echo -n > /etc/sudoers.d/dispatcher
+  #echo "Defaults:${DISPATCH_USER} env_keep+=SSH_AUTH_SOCK" >> /etc/sudoers.d/dispatcher
+  echo "${DISPATCH_USER} ALL = (root) NOPASSWD: NOSETENV: /usr/local/bin/homerdo" >> /etc/sudoers.d/dispatcher
+}
+
 ## Initialize a copy of buildkit.
 ## NOTE: This runs as $OWNER by way of do_as_owner(). Do not rely on any sibling functions.
 function download_buildkit() {
@@ -474,6 +481,26 @@ function template_render() {
     | sed "s;%%RAMDISKSIZE%%;$RAMDISKSIZE;g" \
     | sed "s/%%OWNER%%/$OWNER/g" \
     | sed "s/%%PROFILE%%/$PROFILE/g"
+}
+
+## This step will download the binaries for our profiles, but
+## it doesn't install them in any particular place. I suppose
+## it could be done, but they're not supposed to be used.
+## Never-the-less, we should warmup the nix caches.
+function warmup_binaries() {
+  pushd "$BKNIXSRC" >>/dev/null
+    set +e
+      ## replace old ones
+      rm -f ./result*
+    set -e
+
+    nix-build -E 'let p=import ./profiles; in builtins.attrValues p' | sort -u
+    nix-instantiate default.nix | sort -u
+    nix-store -r $( ( for PRF in old min dfl max edge; do nix-instantiate -A profiles.$PRF default.nix ; done ) | sort -u )
+
+    ## the extra "./result*" files are messy, but we'll leave them to prevent GC
+    ## from hitting frequently-used packages
+  popd >> /dev/null
 }
 
 ###########################################################

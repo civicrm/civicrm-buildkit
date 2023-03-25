@@ -221,13 +221,13 @@ fi
 
 ## Finish up
 if [ "$PHPCS_EXIT" -gt 0 -o "$PHPL_EXIT" -gt 0 ]; then
-  echo "Found PHP errors" >> /dev/stderr
+  echo >&2 "Found PHP errors"
 fi
 if [ "$PHPCS_CSS_EXIT" -gt 0 ]; then
-  echo "Found CSS errors" >> /dev/stderr
+  echo >&2 "Found CSS errors"
 fi
 if [ "$JSHINT_EXIT" -gt 0 ]; then
-  echo "Found JS errors" >> /dev/stderr
+  echo >&2 "Found JS errors"
 fi
 if [ "$PHPCS_EXIT" -gt 0 -o "$PHPL_EXIT" -gt 0 -o "$PHPCS_CSS_EXIT" -gt 0 -o "$JSHINT_EXIT" -gt 0 ]; then
   exit 1

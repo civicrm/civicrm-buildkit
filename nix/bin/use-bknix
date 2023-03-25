@@ -71,10 +71,10 @@ while [ -n "$1" ]; do
   fi
 done
 
-if [ -e "/etc/bknix-ci/worker-n" ]; then
+if [ -e "/etc/bknix-ci/is-runner" ]; then
   USE_LOCO_FILE=".loco/worker-n.yml"
   if [ "x$EXECUTOR_NUMBER" = "x" ]; then
-    echo "Error: The \"/etc/bknix-ci/worker-n\" option requires EXECUTOR_NUMBER" 1>&2
+    echo "Error: The \"/etc/bknix-ci/is-runner\" option requires EXECUTOR_NUMBER" 1>&2
     exit 1
   fi
 fi

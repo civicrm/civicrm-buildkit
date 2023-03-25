@@ -1,0 +1,95 @@
+#!/usr/bin/env perl
+
+## Monitor a local socket for ssh-agent requests. Forward to another socket.
+##
+## For example, suppose Alice wants to grant Bob access to her ssh-agent. They run:
+##
+##   [alice]$ ssh-socket-forward "$SSH_AUTH_SOCK" "/tmp/ssh-fwd.NNNNN" &
+##   [alice]$ setfacl -m u:bob:rw- "/tmp/ssh-fwd.NNNNN"
+##   [bob]$ export SSH_AUTH_SOCK=/tmp/ssh-fwd.NNNNN
+##
+## Note that the default permissions on the new socket are very limited (0700).
+## "alice" must explicitly grant "bob" access. Use whatever permission system is
+## supported by your OS (eg `setfacl` or `chmod +a`).
+##
+## Note: SSH agents use a request-response protocol with binary encoding.
+## See: https://datatracker.ietf.org/doc/html/draft-miller-ssh-agent-04#section-3
+
+use strict;
+use warnings;
+use IO::Socket::UNIX;
+use MIME::Base64;
+use Socket qw(:DEFAULT :crlf);
+
+sub toHex {
+  my $s = $_[0];
+  $s=~ s/(.)/sprintf '%04x', ord $1/seg;
+  return $s;
+}
+
+die "Usage: $0 <existing-socket> <new-socket>\nExample: $0 \$SSH_AUTH_SOCK /tmp/ssh.\$RANDOM\n\n" unless @ARGV == 2;
+
+my ($upstream_socket,  $downstream_socket, ) = @ARGV;
+
+unlink $downstream_socket;
+
+umask(077); ## It's better to start tight and let the user relax permissions.
+my $server = IO::Socket::UNIX->new(
+    Local => $downstream_socket,
+    Type  => SOCK_STREAM,
+    Listen => 1,
+) or die "Can't create socket: $!";
+
+my $connections = 0;
+while (my $downstream = $server->accept()) {
+    $connections++;
+    #print "Accepted connection %d on $downstream_socket\n", $connections;
+    # my ($pid, $uid, $gid) = unpack 'i*', getsockopt $downstream, SOL_SOCKET, SO_PEERCRED;
+
+    # Connect to upstream
+    my $upstream = IO::Socket::UNIX->new(
+        Type => SOCK_STREAM,
+        Peer => $upstream_socket,
+    ) or die "Can't connect to old socket: $!";
+    $upstream->autoflush(1);
+
+    my $messages = 0;
+    do {
+      $messages++;
+
+      my ($request, $request_bytes, $request_len);
+      my ($response, $response_bytes, $response_len);
+
+      # Read the request from downstream
+      read $downstream, $request_bytes, 4;
+      last unless defined $request_bytes;
+      $request_len = unpack('N', $request_bytes);
+      read $downstream, $request, $request_len;
+      last unless defined $request;
+
+      # printf "Request:\n  %s\n  %s\n", toHex($request_bytes), toHex($request);
+
+      # Forward request to upstream
+      $upstream->send($request_bytes);
+      $upstream->send($request);
+
+      # Read response from upstream
+      read $upstream, $response_bytes, 4;
+      last unless defined $response_bytes;
+      $response_len = unpack('N', $response_bytes);
+      read $upstream, $response, $response_len;
+      last unless defined $response;
+
+      # Forward response to downstream
+      $downstream->send($response_bytes);
+      $downstream->send($response);
+    } while (!$downstream->eof());
+
+    close($upstream);
+    close($downstream);
+}
+
+close($server);
+unlink($downstream_socket);
+# ^^ This should probably happen on SIGTERM as well.
+## But it's been 30 million years since I wrote any Perl.

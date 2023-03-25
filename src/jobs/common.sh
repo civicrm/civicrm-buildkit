@@ -75,6 +75,11 @@ function assert_common() {
 
 ## Load the BKPROF into the current shell
 function use_bknix() {
+  if [ -n "$LOADED_BKPROF" ]; then
+    assert_common BKITBLD
+    return
+  fi
+
   if [ ! -z `which await-bknix` ]; then
     await-bknix "$USER" "$BKPROF"
   fi
@@ -85,12 +90,18 @@ function use_bknix() {
 
 function use_bknix_tmp() {
   use_bknix
-  if [ -f /etc/bknix-ci/worker-n ]; then
-    (cd "$LOCO_PRJ" && loco clean)
-    (cd "$LOCO_PRJ" && loco start)
-    trap "cd \"$LOCO_PRJ\" && loco stop" EXIT
-  fi
-  ## else: This must be a traditional system that runs with system-services.
+  case "$USER" in
+    homer|runner-*)
+      (cd "$LOCO_PRJ" && loco clean)
+      (cd "$LOCO_PRJ" && loco start)
+      RUN_BKNIX_CLEANUP_FUNCS+=('_stop_loco')
+      ;;
+    ## else: This must be a traditional system that runs with system-services.
+  esac
+}
+
+function _stop_loco() {
+  (cd "$LOCO_PRJ" && loco stop)
 }
 
 ## Setup the standard build folders within the workspace.

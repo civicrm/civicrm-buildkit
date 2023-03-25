@@ -1,0 +1,731 @@
+#!/usr/bin/env bash
+
+###########################################################################
+## Gist
+##
+##   [me]$ homerdo -i s1e1-roasting-on-an-open-fire.img
+##   [homer]$ echo tatoo > bart.txt
+##   [homer]$ echo dog > santas-helper.txt
+##   [homer]$ exit
+##   [me]$ ls -l s1e1-roasting-on-an-open-fire.img
+
+###########################################################################
+## Prologue
+##
+## `homerdo` switches user-accounts, but it's the opposite of `sudo`:
+##
+##   - (`sudo`): The Super-User is someone you trust to do anything. His actions
+##     are permanent and global. He fights alien invasions and saves the planet.
+##   - (`homerdo`): Homer is someone who messes up constantly.  He causes nuclear
+##     accidents.  You shouldn't trust him.  But it's OK, because Homer's world
+##     resets at the end of every 20 minute episode.
+##
+## `homerdo` isolates tasks, but it's the opposite of `docker`:
+##
+##   - (`docker`) Docker isolation is expansive.  It creates the impression of a
+##     full Unix host, with its own user-accounts and libc and networking (et al).
+##   - (`homerdo`) Homerdo isolation is limited.  It restricts one user and his
+##     home directory.  Everything else is shared with the host.
+
+###########################################################################
+## Installation
+##
+## Deploy the single executable:
+##
+##   sudo cp ./path/to/homerdo /usr/local/bin/homerdo
+##
+## Run `install` to check depedencies, generate the user `homer`, and setup
+## a work folder (`/var/local/homer`).
+##
+##   sudo homerdo install
+##
+## You may wish to also add a rule to sudoers:
+##
+##   me ALL = (root) NOPASSWD: NOSETENV: /usr/local/bin/homerdo
+
+###########################################################################
+## Usage
+##
+## Run some tasks as homer:
+##
+##   [me]$ homerdo -i s1e1-roasting-on-an-open-fire.img
+##   [homer]$ echo tatoo > bart.txt
+##   [homer]$ echo dog > santas-helper.txt
+##   [homer]$ exit
+##
+## Note that homer's home directory is stored in an image-file. (Thus,
+## `bart.txt` is physically part of `s1e1-roasting-on-an-open-fire.img`.)
+##
+## You can resume working in this by repeating the same command.
+## If you add the `--temp` flag, then all changes will be ephemeral:
+##
+##   [me]$ homerdo -i s1e1-roasting-on-an-open-fire.img --temp
+##   [homer]$ echo porcupine > santas-helper.txt
+##   [homer]$ exit
+##
+## If you want to tell an entirely different story, then you can make
+## another image:
+##
+##   [me]$ homerdo -i s1e2-bart-the-genius.img
+##   [homer]$ mkdir martin bart
+##   [homer]$ echo $RANDOM > martin/tests.txt
+##   [homer]$ mv martin/tests.txt bart/tests.txt
+##   [homer]$ exit
+
+###########################################################################
+## General Organization
+##
+## - Any user can send jobs to "homer" via "homerdo".
+## - Homer has a home (`/home/homer`). That's his main thing.
+## - Homer can passively access other system resources (`/usr`, `/nix`, local daemons, etc).
+## - Homer's shenanigans are contained by way of Linux namespaces (`unshare`) and filesystem magic.
+## - You can have an army of 10 Homers working at the same time. They all have their own homes.
+## - The script is currently only tested for Debian-style environments.
+##    It may or may not be possible to adapt a degraded version of the workflow in other
+##    environments (e.g. https://krypted.com/mac-security/shadow-mounting-with-hdiutil/).
+
+###########################################################################
+## Use Case
+##
+## You have several development tools (such as `composer`, `npm`, `drush`,
+## `wp-cli`, `nix`, etc). These tools work fine with limited privileges, and
+## each has fairly robust functionality (for mixing-matching versions, for
+## caching downloads, etc).
+##
+## The expected usage for CI is to split a job into two phases, e.g.
+##   $ homerdo -i myenv.img        -- warmup-caches.sh
+##     (EX: You might do a dress-rehearsal of `composer install` with a stable release.)
+##   $ homerdo -i myenv.img --temp -- patch-and-test.sh
+##     (EX: You might apply a patch then run the build/test scripts.)
+
+###########################################################################
+## Wishlist
+##
+## - Allow running without any persistent images (`homerdo --temp` starts with empty tmpfs)
+## - Allow layering multiple images (`homerdo -i base.img -i extra.img --temp`)
+## - Replace /tmp and /var/tmp. (Issue: Sharing ssh socket and tar fifo)
+## - Consider adding a network namespace. Maybe make it optional (`homerdo -n`).
+## - Use qcow2 instead of raw. (Issue: When learning/playing with qemu-nbd, it felt crashy.)
+## - Allow multi-entry for the same image (*given acceptable layering*). Keep a list of
+##   open shell PIDs. Support auto-mount/auto-unmount. Enhance "status" command.
+
+{ # https://stackoverflow.com/a/21100710
+  set -e
+
+  #########################################################
+  ## Environment
+  SELF="$(realpath "$0")"
+  HOMER_VAR=/var/local/homer
+  HOMER_USER=homer
+  HOMER_GROUP=homer
+  HOMER_SIZE=${HOMER_SIZE:-3000m}
+  HOMER_BASE_TPL="$HOMER_VAR/HOMER_ID/base"
+  HOMER_HOME_TPL="$HOMER_VAR/HOMER_ID/home"
+  HOMER_LOCK_TPL="$HOMER_VAR/HOMER_ID/lock"
+  HOMER_NS_TPL="$HOMER_VAR/HOMER_ID/ns"
+  HOMER_TEMP_TPL="$HOMER_VAR/HOMER_ID/temp"
+  HOMER_LOCK_TTL_1=1  ## Quiet wait period
+  HOMER_LOCK_TTL_2=30 ## Noisy wait period
+  GUARD=
+
+  img=
+  action=
+  use_temp=
+  owner_pid=$$
+  shares=()
+  cmd=()
+  ssh_agent=
+  size=${HOMER_SIZE}
+  verbose=0
+
+  cleanup_files=()
+  cleanup_mounts=
+  cleanup_pids=()
+
+  homer_id=		## see realize_img
+  homer_base=		## see realize_img
+  homer_home=		## see realize_img
+  homer_lock=		## see realize_img
+  homer_ns=		## see realize_img
+  homer_temp=		## see realize_img
+
+  #########################################################
+  ## Usage
+
+  function task_usage() {
+    prog=$(basename "$0")
+    echo "Day-to-day actions:"
+    echo "  $prog [OPTIONS] [run] [--] [CMD]"
+    echo "  $prog [OPTIONS] status"
+    echo
+    echo "Sysadmin actions:"
+    echo "  $prog install"
+    echo "  $prog uninstall"
+    echo
+    echo "Internal actions:"
+    echo "  $prog [OPTIONS] create"
+    echo "  $prog [OPTIONS] mount"
+    echo "  $prog [OPTIONS] unmount"
+    echo "  $prog [OPTIONS] exec [--] [CMD]"
+    echo
+    echo "Options:"
+    echo "  -A                   Forward SSH agent (See also: \"ssh -A\")"
+    echo "  -i|--img IMG         Path to image file"
+    #echo "  --share REL_PATH     Mount a shared folder"
+    echo "  -s|--size SIZE       Size for any new filesystems (Default: HOMER_SIZE=$HOMER_SIZE)"
+    echo "  -t|--temp            Enable temporary file mode"
+    echo "  -v                   Enable verbose output"
+    echo
+  }
+
+  ###########################################################################
+  ## Task: Install POSIX users, groups, data folders. Check required commands.
+
+  function task_install {
+    print_h1 "Install"
+    assert_root_user
+    assert_cmd sudo adduser addgroup getent realpath ps pgrep killall unshare flock setfacl qemu-img mkfs.ext4
+
+    mkdir -p "$HOMER_VAR"
+    chmod 700 "$HOMER_VAR"
+
+    if ! getent group "$HOMER_GROUP" >/dev/null ; then
+      print_h2 "Add group \"$HOMER_GROUP\""
+      $GUARD addgroup "$HOMER_GROUP"
+    fi
+
+    if ! getent passwd "$HOMER_USER" >/dev/null ; then
+      print_h2 "Add user \"$HOMER_USER\""
+      $GUARD adduser "$HOMER_USER" --gecos "Homer" --home "/home/homer" --ingroup "$HOMER_GROUP" --disabled-password
+    fi
+
+    #print_h2 "Grant all users access to homerdo (/etc/sudoers.d/homerdo)"
+    #echo -n > /etc/sudoers.d/homerdo
+    #echo "ALL ALL = (root) NOPASSWD: NOSETENV: /usr/local/bin/homerdo" >> /etc/sudoers.d/homerdo
+  }
+
+  ###########################################################################
+  ## Task: Uninstall POSIX users, groups, data folders
+
+  function task_uninstall {
+    print_h1 "Uninstall"
+    assert_root_user
+    assert_cmd seq sudo deluser delgroup getent
+
+    #if [ -f /etc/sudoers.d/homerdo ]; then
+    #  $GUARD rm -f /etc/sudoers.d/homerdo
+    #fi
+
+    $GUARD rm -rf "$HOMER_VAR"
+
+    if getent passwd "$HOMER_USER" >/dev/null ; then
+      $GUARD deluser "$HOMER_USER"
+    fi
+
+    if getent group "$HOMER_GROUP" >/dev/null ; then
+      $GUARD delgroup "$HOMER_GROUP"
+    fi
+    exit
+  }
+
+  ###########################################################################
+  ## Task: Run a command as `homer`. This does everything - mount image,
+  ## create namespace, execute the target command, and cleanup. It builds
+  ## on top of all the other commands.
+
+  function task_run() {
+    print_h1 "Run [${cmd[@]}]"
+    assert_not_root_user
+
+    if [ -z "$img" ]; then
+      fatal "No IMG specified"
+    fi
+
+    assert_valid_size
+    assert_valid_shares; realize_shares
+
+    if [ ! -e "$img" ]; then
+      task_create
+    fi
+    assert_valid_img; realize_img
+
+    local ssh_agent_pid=
+    local prefix_cmd=()
+    if [ -n "$ssh_agent" ]; then
+      assert_cmd ssh-socket-forward
+      if [ -z "$SSH_AUTH_SOCK" ]; then
+        echo >&2 "WARNING: Cannot forward SSH agent. No agent detected."
+      else
+        local socket="/tmp/ssh.$RANDOM$RANDOM/agent.$RANDOM$RANDOM"
+        mkdir -m 711 $(dirname "$socket")
+        ssh-socket-forward "$SSH_AUTH_SOCK" "$socket" &
+        cleanup_pids+=($!)
+        cleanup_files+=( $(dirname "$socket") )
+        sleep 1 ## ssh-socket-forward takes a moment to create socket
+        setfacl -m "u:$HOMER_USER:rw-" "$socket"
+        prefix_cmd+=(env "SSH_AUTH_SOCK=$socket")
+      fi
+    fi
+
+    cleanup_mounts=1
+    as_root mount
+    as_root exec -- "${prefix_cmd[@]}" "${cmd[@]}"
+  }
+
+  ###########################################################################
+  ## Create an image for storing data
+
+  function task_create() {
+    print_h2 "Create image ($img, $size)"
+    assert_not_root_user
+    assert_valid_size
+
+    qemu-img create "$img" "$size"
+    mkfs -t ext4 "$img"
+  }
+
+  ###########################################################################
+  ## Setup folders. Mount image.
+
+  function task_mount() {
+    print_h2 "Mounting image file ($img)"
+    assert_root_user
+
+    assert_valid_size
+    assert_valid_shares; realize_shares
+    assert_valid_img; realize_img
+
+    assert_ownership
+
+    $GUARD mkdir -p "$homer_base" "$homer_temp" "$homer_home" $(dirname "$homer_lock")
+
+    ## We need short-lock on the tracking file. Then we need to store pid in tracking file.
+    exec {homer_lock_fd}>"${homer_lock}.flock" || exit 2
+    if ! flock --timeout "$HOMER_LOCK_TTL_1" "$homer_lock_fd" ; then
+      echo >&2 "Waiting to acquire $homer_lock..."
+      if ! flock --timeout "$HOMER_LOCK_TTL_2" "$homer_lock_fd" ; then
+        echo >&2 "Failed to acquire $homer_lock"
+        exit 2
+      fi
+    fi
+    if [ -f "$homer_lock" ]; then
+      local lock_pid=$(cat "$homer_lock")
+      if [ -n "$lock_pid" ]; then
+        if ps -p "$lock_pid" > /dev/null; then
+          echo >&2 "Image $img already in use by PID $lock_pid"
+          exit 2
+        else
+          rm -f "$homer_lock"
+          _task_unmount ## Consider moving out of critical section
+        fi
+      fi
+    fi
+    # echo >&2 "Claim $homer_lock for $owner_pid"
+    echo "$owner_pid" > "$homer_lock"
+    flock -u "$homer_lock_fd"
+
+    print_h2 "Mount ($homer_base)"
+    $GUARD mount -o loop "$img" "$homer_base"
+    $GUARD chown "$HOMER_USER:$HOMER_GROUP" "$homer_base"
+    if [ -n "$use_temp" ]; then
+      print_h2 "Mount ($homer_temp)"
+      $GUARD mount -t tmpfs -o "size=${size}" tmpfs "$homer_temp"
+      $GUARD mkdir "$homer_temp/up" "$homer_temp/work"
+      $GUARD chown "$HOMER_USER:$HOMER_GROUP" "$homer_temp/up" "$homer_temp/work"
+
+      print_h2 "Mount ($homer_home)"
+      $GUARD mount -t overlay overlay -o lowerdir="$homer_base",upperdir="$homer_temp/up",workdir="$homer_temp/work" "$homer_home"
+      $GUARD chown "$HOMER_USER:$HOMER_GROUP" "$homer_home"
+    else
+      print_h2 "Mount ($homer_home)"
+      $GUARD mount --bind "$homer_base" "$homer_home"
+    fi
+  }
+
+  ###########################################################################
+  ## Unmount image and its related assets
+
+  function task_unmount() {
+    print_h2 "Unmounting image file ($img)"
+    assert_root_user
+
+    assert_valid_shares; realize_shares
+    assert_valid_img; realize_img
+
+    assert_ownership
+    _task_unmount
+  }
+
+  function _task_unmount() {
+    for nsmt in "$homer_ns/pid" "$homer_ns/mount"; do
+      if [ -e "$nsmt" ]; then
+        print_h2 "Unmount ($nsmt)"
+        $GUARD umount "$nsmt"
+        $GUARD rm "$nsmt"
+      fi
+    done
+
+    local mpts=()
+    for share in "${shares[@]}" ; do
+      local lhs=$(echo "$share" | cut -f1 -d:)
+      local rhs=$(echo "$share" | cut -f2 -d:)
+      mpts+=("$homer_home/$rhs")
+    done
+    mpts+=("$homer_ns" "$homer_home" "$homer_temp" "$homer_base")
+
+    for mpt in "${mpts[@]}" ; do
+      if grep -q "$mpt" /proc/mounts; then
+        print_h2 "Unmount ($mpt)"
+        $GUARD umount "$mpt"
+      fi
+    done
+  }
+
+  ###########################################################################
+  ## Execute a task within the designated space
+
+  function task_exec() {
+    print_h2 "Exec (${cmd[@]})"
+    assert_root_user
+
+    assert_valid_shares; realize_shares
+    assert_valid_img; realize_img
+
+    assert_ownership
+
+    local script=$(new_tmp_file)
+    cleanup_files+=("$script")
+    _task_exec_script > "$script"
+    #(echo ; cat $script; echo ) >&2
+
+    print_h2 "Create namespaces ($homer_ns)"
+    mkdir -p "$homer_ns"
+    mount --bind "$homer_ns" "$homer_ns"
+    mount --make-private "$homer_ns"
+    touch "$homer_ns"/{pid,mount}
+    unshare --wd=/tmp --kill-child --pid="$homer_ns/pid" --mount="$homer_ns/mount" --mount-proc bash "$script"
+  }
+
+  function _task_exec_script() {
+    printf "#!/usr/bin/env bash\n"
+    printf "function cleanup() {\n"
+
+    for share in "${shares[@]}" ; do
+      local rhs=$(echo "$share" | cut -f2 -d:)
+      printf "  umount %q/%q\n" ~homer "$rhs"
+    done
+    printf "  umount %q\n" ~homer
+
+    printf "}\n"
+    printf "trap cleanup EXIT\n"
+
+    printf "mount --bind %q %q\n" "$homer_home" ~homer
+    for share in "${shares[@]}" ; do
+      local lhs=$(echo "$share" | cut -f1 -d:)
+      local rhs=$(echo "$share" | cut -f2 -d:)
+      printf "sudo -u \"$HOMER_USER\" mkdir -p %q/%q\n" ~homer "$rhs"
+      printf "mount --bind %q ~homer/%q\n" "$lhs" "$rhs"
+    done
+
+    echo "sudo -iu \"$HOMER_USER\" ${cmd[@]}"
+  }
+
+  ###########################################################################
+  ## Check if image is in use
+
+  function task_status() {
+    assert_valid_shares; realize_shares
+    assert_valid_img; realize_img
+
+    if [ $EUID -ne 0 ]; then
+      as_root status
+      exit $?
+    fi
+    assert_root_user
+    assert_ownership
+
+    local lock_pid=$(cat "$homer_lock")
+    if ps -p "$lock_pid" > /dev/null; then
+      echo "active"
+      exit 11
+    else
+      echo "avail"
+      exit 10
+    fi
+    echo "avail"
+    exit 10
+  }
+
+  ###########################################################################
+  ## Cleanup any temporary resources owned by this instance
+
+  function task_cleanup() {
+    set +e
+    # print_h2 "Cleanup (${cleanup_pids[@]}) (${cleanup_files[@]})"
+
+    for pid in "${cleanup_pids[@]}" ; do
+      if ps -p "$pid" > /dev/null; then
+        kill $pid
+      fi
+    done
+
+    if [ -n "$cleanup_mounts" ]; then
+      as_root unmount
+    fi
+
+    safe_delete "${cleanup_files[@]}"
+  }
+
+  #########################################################
+  ## Functions / Utilities
+
+  function print_h1 {
+    if [ $verbose -ge 1 ]; then
+      echo [32m"##" "$@" [0m >&2
+    fi
+  }
+
+  function print_h2 {
+    if [ $verbose -ge 1 ]; then
+      echo [33m"$@"[0m >&2
+    fi
+  }
+
+  function print_note {
+    if [ $verbose -ge 2 ]; then
+      echo "[[ $@ ]]" >&2
+    fi
+  }
+
+  function fatal {
+    echo "$@" >&2
+    task_usage >&2
+    exit 1
+  }
+
+  function safe_delete() {
+    for FILE in "$@" ; do
+      if [[ -d "$FILE" ]]; then
+        rm -rf "$FILE"
+      elif [[ -e "$FILE" ]]; then
+        rm -f "$FILE"
+      fi
+    done
+  }
+
+  function new_tmp_file() {
+    local tmpdir=${TMPDIR:-/tmp}
+    local tmpfile="$tmpdir/homerdo-tmp-$RANDOM$RANDOM"
+    touch "$tmpfile"
+    chmod 600 "$tmpfile"
+    echo "$tmpfile"
+  }
+
+  ## Make a folder and its parents. Set ownership on each.
+  ## mkdir_chown USER[:GROUP] PATHS...
+  function mkdir_chown() {
+    local owner="$1"
+    shift
+
+    for dir in "$@" ; do
+      if [ -d "$dir" ]; then
+        continue
+      fi
+      parent_dirs "$1" | while read dir ; do
+        if [ ! -d "$dir" ]; then
+          mkdir "$dir"
+          chown "$owner" "$dir"
+        fi
+      done
+    done
+  }
+
+  function parent_dirs() {
+    local p="$1"
+    while [ "$p" != "/" ]; do
+      echo "$p"
+      p=$(dirname "$p")
+    done | tac
+  }
+
+  function as_root() {
+    #local tmpfile=$(new_tmp_file)
+    #cleanup_files+=("$tmpfile")
+    #declare -x > "$tmpfile"
+
+    local sudocmd=("$SELF")
+    if [ -n "$use_temp" ]; then
+      sudocmd+=("$use_temp")
+    fi
+    sudocmd+=("-i" "$img")
+    sudocmd+=("--owner-pid" "$owner_pid")
+    local vs=0
+    while [[ $vs -lt $verbose ]]; do
+      sudocmd+=("-v")
+      vs=$((1 + $vs))
+    done
+    for share in "${shares[@]}" ; do sudocmd+=("--share" "$share") ; done
+    for arg in "$@" ; do sudocmd+=("$arg") ; done
+
+    local result
+    set +e
+    print_note "sudo ${sudocmd[@]}"
+    sudo "${sudocmd[@]}"
+    result=$?
+    set -e
+    return $result
+  }
+
+  function assert_cmd {
+    local name
+    for name in "$@" ; do
+      if ! command -v "$name" &> /dev/null ; then
+        fatal "Missing command: $name"
+      fi
+    done
+  }
+
+  function assert_root_user() {
+    if [ $EUID -ne 0 ]; then
+      fatal "This command ($SELF $action) must run as a super user - not a regular user!"
+    fi
+  }
+
+  function assert_not_root_user() {
+    if [ $EUID -eq 0 ]; then
+      fatal "This command ($SELF $action) must run as a regular user - not as root!"
+    fi
+  }
+
+  function assert_valid_img() {
+    if [ -z "$img" -o ! -f "$img" ]; then
+      fatal "Invalid IMG ($img)"
+    fi
+  }
+
+  function assert_valid_size() {
+    assert_regex '^[0-9]\+[mg]$' "$size" "Missing or invalid image size ($size)"
+  }
+
+  ## usage: assert_regex <grep-style-regex> <value> [<error-message>]
+  function assert_regex() {
+    local regex="$1"
+    local value="$2"
+    local error="$3"
+    if ! echo "$value" | grep -q "$regex" > /dev/null ; then
+      if [ -z "$error" ]; then
+        fatal "Error: Value ($value) does not match regex ($regex)"
+      else
+        fatal "$error"
+      fi
+    fi
+  }
+
+  function assert_valid_shares() {
+    for share in "${shares[@]}" ; do
+      local lhs=$(echo "$share" | cut -f1 -d:)
+      local rhs=$(echo "$share" | cut -f2 -d:)
+      if [ ! -e "$lhs" ]; then
+        fatal "Invalid --share ($share)"
+      fi
+      case "$rhs" in
+        /*) fatal "Invalid --share ($share): RHS must be relative" ; ;;
+        *..*) fatal "Invalid --share ($share): RHS must be relative" ; ;;
+      esac
+    done
+  }
+
+  function assert_ownership() {
+    _assert_owner "$SUDO_UID" "$img"
+    for share in "${shares[@]}"; do
+      local lhs=$(echo "$share" | cut -f1 -d:)
+      local rhs=$(echo "$share" | cut -f2 -d:)
+      _assert_owner "$SUDO_UID" "$lhs"
+    done
+  }
+
+  ## usage:_assert_owner UID FILES...
+  function _assert_owner() {
+    local uid="$1"
+    local file_uid
+    shift
+    for file in "$@" ; do
+      local tgt="$file"
+      while [ ! -e "$file" ]; do
+        file=$(dirname "$file")
+      done
+      file_uid=$( stat -c %u "$file" )
+      if [ "$uid" -ne "$file_uid" ]; then
+        fatal "File $file not owned by $uid"
+      fi
+    done
+  }
+
+  function realize_shares() {
+    local orig=("${shares[@]}")
+    shares=()
+    for orig in "${orig[@]}" ; do
+      local lhs=$(echo "$orig" | cut -f1 -d:)
+      local rhs=$(echo "$orig" | cut -f2 -d:)
+      lhs=$(realpath "$lhs")
+      shares+=("$lhs:$rhs")
+    done
+  }
+
+  function realize_img() {
+    img=$(realpath "$img")
+    homer_id=$(echo "$img" |md5sum - | cut -f1 -d\  )
+    homer_lock=$( echo "${HOMER_LOCK_TPL}" | sed "s;HOMER_ID;${homer_id};" )
+    homer_base=$( echo "${HOMER_BASE_TPL}" | sed "s;HOMER_ID;${homer_id};" )
+    homer_temp=$( echo "${HOMER_TEMP_TPL}" | sed "s;HOMER_ID;${homer_id};" )
+    homer_home=$( echo "${HOMER_HOME_TPL}" | sed "s;HOMER_ID;${homer_id};" )
+    homer_ns=$( echo "${HOMER_NS_TPL}" | sed "s;HOMER_ID;${homer_id};" )
+  }
+
+  #########################################################
+  ## Initialization
+  trap task_cleanup EXIT
+
+  parsing=1
+  while [[ $# -gt 0 && -n "$parsing" ]]; do
+    case "$1" in
+      --)           parsing=          ; shift 1 ; ;;
+      # EXPERIMENTAL:
+      #--share)
+      #  case "$2" in
+      #    *:*) shares+=("$2") ;;
+      #    *) shares+=("$2:$2") ;;
+      #  esac
+      #  shift 2
+      #  ;;
+      -v)           verbose=$((1 + $verbose)) ; shift 1 ; ;;
+      -A)           ssh_agent='-A'    ; shift 1 ; ;;
+      -i|--img)     img="$2"          ; shift 2 ; ;;
+      --owner-pid)  owner_pid="$2"    ; shift 2 ; ;;
+      -s|--size)    size="$2"         ; shift 2 ; ;;
+      -t|--temp)    use_temp="--temp" ; shift 1 ; ;;
+      -h|--help|help) action="usage"  ; shift 1 ; ;;
+      install|uninstall|run|status|create|mount|unmount|exec) action="$1" ; shift ; ;;
+      -*)           fatal "Unrecognized option $1" ; ;;
+      *)            parsing=          ; ;;
+    esac
+  done
+  action=${action:-run}
+
+  while [[ $# -gt 0 ]]; do
+    cmd+=("$1")
+    shift
+  done
+  if [ ${#cmd[@]} -eq 0 ]; then
+    cmd+=("${SHELL:-bash}")
+  fi
+
+  #echo "action=[$action] img=[$img] use_temp=[$use_temp] shares=[${shares[@]}] size=[$size]"
+  #echo "cmd: [${cmd[@]}]"
+  #exit
+
+  f="task_${action}"
+  $f
+  exit $?
+}
+
