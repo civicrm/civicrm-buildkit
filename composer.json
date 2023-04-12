@@ -12,9 +12,6 @@
     }
   },
   "config": {
-    "platform": {
-      "php": "7.2"
-    },
     "bin-dir": "bin",
     "allow-plugins": {
       "civicrm/composer-downloads-plugin": true,
@@ -50,7 +47,7 @@
       "codecept-php7": {"version": "2.3.6", "url": "https://codeception.com/releases/{$version}/codecept.phar", "path": "bin/_codecept-php7.phar", "type": "phar"},
       "coworker": {"version": "v0.2", "url": "https://download.civicrm.org/coworker/coworker.phar-{$version}", "path": "bin/coworker", "type": "phar"},
       "cv": {"version": "0.3.40", "url": "https://download.civicrm.org/cv/cv.phar-v{$version}", "path": "bin/cv", "type": "phar"},
-      "drush8": {"version": "8.4.12", "url": "https://download.civicrm.org/cv/drush.phar-{$version}", "path": "extern/drush8.phar", "type": "phar"},
+      "drush8": {"version": "8.4.12", "url": "https://github.com/drush-ops/drush/releases/download/{$version}/drush.phar", "path": "extern/drush8.phar", "type": "phar"},
       "drush-backdrop": {"version": "1.x-1.x", "url": "https://github.com/backdrop-contrib/backdrop-drush-extension/archive/{$version}.zip", "path": "extern/drush-lib/backdrop"},
       "drush-language": {"version": "7.x-1.5", "url": "https://ftp.drupal.org/files/projects/drush_language-{$version}.zip", "path": "extern/drush-lib/language"},
       "git-scan": {"version": "2022-07-15", "url": "https://github.com/totten/git-scan/releases/download/{$version}/git-scan-{$version}.phar", "path": "bin/git-scan", "type": "phar"},
@@ -62,7 +59,7 @@
       "phpunit9": {"version": "9.6.5", "url": "https://phar.phpunit.de/phpunit-{$version}.phar", "path": "extern/phpunit9/phpunit9.phar", "type": "phar"},
       "phpunit-xml-cleanup": {"version": "0.2", "url": "https://raw.githubusercontent.com/civicrm/phpunit-xml-cleanup/v{$version}/bin/phpunit-xml-cleanup", "path": "extern/phpunit-xml-cleanup.php", "type": "file"},
       "pogo": {"version": "0.5.0", "url": "https://github.com/totten/pogo/releases/download/v{$version}/pogo-{$version}.phar", "path": "bin/pogo", "type": "phar"},
-      "wp": {"version": "2.6.0", "url": "https://github.com/wp-cli/wp-cli/releases/download/v{$version}/wp-cli-{$version}.phar", "path": "bin/wp", "type": "phar"}
+      "wp": {"version": "2.7.1", "url": "https://github.com/wp-cli/wp-cli/releases/download/v{$version}/wp-cli-{$version}.phar", "path": "bin/wp", "type": "phar"}
     }
   }
 }
