@@ -503,6 +503,22 @@ function warmup_binaries() {
   popd >> /dev/null
 }
 
+## If the dispatcher has an work-images like `bknix-dfl-0.img`, then copy to `bknix-dfl-1.img`.
+## Repeat for {min,dfl,max,edge} and numbers {1,2}.
+function warmup_dispatcher_images() {
+  local images="/home/${DISPATCH_USER}/images"
+  for prf in min dfl max edge ; do
+    for destnum in 1 2 ; do
+      local src="$images/bknix-$prf-0.img"
+      local dest="$images/bknix-$prf-$destnum.img"
+      if [ -e "$src" -a ! -e "$dest" ]; then
+        echo "Generate $dest"
+        cp -p "$src" "$dest"
+      fi
+    done
+  done
+}
+
 ###########################################################
 ## Scanners
 

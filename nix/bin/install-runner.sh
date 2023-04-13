@@ -68,4 +68,5 @@ install_bin "$BINDIR"/run-bknix-job         /usr/local/bin/run-bknix-job
 apt-get install -y qemu-utils acl && homerdo install
 install_dispatcher
 warmup_binaries
+warmup_dispatcher_images
 touch /var/local/bknix-ready
