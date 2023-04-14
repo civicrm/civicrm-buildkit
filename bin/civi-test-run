@@ -216,7 +216,7 @@ function task_upgrade() {
   else
     if [ -z "$1" ]; then
       CIVIVER=$(getCiviVer)
-      task_upgrade_legacy 5.13.3-multilingual_af_bg_en* "@4.6.12..$CIVIVER:10"
+      task_upgrade_legacy 5.13.3-multilingual_af_bg_en* "@4.7.30..$CIVIVER:10"
     else
       task_upgrade_legacy "$@"
     fi
