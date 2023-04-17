@@ -23,7 +23,7 @@ TTL_TOOLS=60     ## During setup, refresh 'civi-download-tools' (if >1 hour old)
 TTL_BLDTYPE=180  ## During setup, warmup 'bldtype' (if >3 hours since last)
 CLEANUP_FILES=() ## List of files/directories to delete
 RESPONSE=        ## Tar-formatted fifo
-MAX_IMAGES=5     ## If there are more than X copies of an image, then refuse to make more
+MAX_IMAGES=8     ## If there are more than X copies of an image, then refuse to make more
 
 #####################################################################
 ## Main
