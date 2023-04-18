@@ -28,6 +28,8 @@ TTL_TOOLS=90            ## FIXME ## During setup, refresh 'civi-download-tools' 
 TTL_BLDTYPE=1440         ## During setup, warmup 'bldtype' (if >24 hours since last)
 CLEANUP_CALLS=()         ## List of functions to call during shutdown
 CLEANUP_FILES=()         ## List of files/directories to delete
+SSHD_PORT=9022
+SSHD_AUTHORIZED=/etc/bknix-ci/dispatcher-keys
 
 #BKIT_REPO="https://github.com/civicrm/civicrm-buildkit"
 #BKIT_BRANCH="master"
@@ -96,6 +98,8 @@ function do_setup() {
   git config --global user.name "$USER"
   mkdir -p "$HOME/.cache-flags"
 
+  sshd_setup
+
   for BKPROF in "${ALL_PROFILES[@]}" ; do
     profile_setup "$BKPROF"
     profile_warmup "$BKPROF" "${WARMUP_TYPES[@]}"
@@ -126,7 +130,8 @@ function do_exec() {
     CLEANUP_CALLS+=( "profile_stop $BKPROF" )
   done
 
-  echo "EXEC: Start post-run shell. Press Ctrl-D to finish post-run shell." && bash
+  # echo "EXEC: Start post-run shell. Press Ctrl-D to finish post-run shell." && bash
+  sshd_run
 }
 
 #####################################################################
@@ -150,9 +155,10 @@ function profile_stop() {
 function profile_setup() {
   local BKPROF="$1"
   local BKIT="$HOME/bknix-$BKPROF"
-  
+
   echo > "$HOME/.bashrc"
   echo 'if [ -d "$HOME/bin" ] ; then PATH="$HOME/bin:$PATH" ; fi' >> "$HOME/.bashrc"
+  cp -f "$HOME/.bashrc" "$HOME/.profile"
 
   if [ ! -d "$BKIT" ]; then
     git clone "$BKIT_REPO" -b "$BKIT_BRANCH" "$BKIT"
@@ -174,7 +180,7 @@ function profile_warmup() {
   local BKPROF="$1"
   shift
   local BKIT="$HOME/bknix-$BKPROF"
-  
+
   for BLDTYPE in "$@" ; do
     ## Every few hours, the "setup" does a trial run to re-warm caches.
     ## (It might preferrable to get composer+npm to use a general HTTP cache, but this will work for now.)
@@ -190,6 +196,60 @@ function profile_warmup() {
       fi
     fi
   done
+}
+
+#####################################################################
+function sshd_setup() {
+  if [ ! -d "$HOME/.sshd" ]; then
+    mkdir "$HOME/.sshd"
+  fi
+  pushd "$HOME/.sshd" >> /dev/null
+    if [ ! -e ssh_host_rsa_key ]; then
+      ssh-keygen -t rsa -b 4096 -f ssh_host_rsa_key -q -N ""
+    fi
+    if [ ! -e ssh_host_ecdsa_key ]; then
+      ssh-keygen -t ecdsa -f ssh_host_ecdsa_key -q -N ""
+    fi
+    if [ ! -e ssh_host_ed25519_key ]; then
+      ssh-keygen -t ed25519 -f ssh_host_ed25519_key -q -N ""
+    fi
+    sshd_config > sshd_config
+  popd >> /dev/null
+}
+
+function sshd_config() {
+  local dir="/home/homer/.sshd"
+
+  echo "PidFile $dir/sshd.pid"
+  echo "Port $SSHD_PORT"
+  # echo "Hostkey $dir/host_key"
+  echo "HostKey $dir/ssh_host_rsa_key"
+  echo "HostKey $dir/ssh_host_ecdsa_key"
+  echo "HostKey $dir/ssh_host_ed25519_key"
+
+  echo "AllowUsers homer"
+  echo "AuthorizedKeysFile $SSHD_AUTHORIZED"
+
+  echo "AuthenticationMethods publickey"
+  echo "ChallengeResponseAuthentication no"
+  echo "PermitRootLogin no"
+  echo "UsePAM no"
+
+  echo "AllowAgentForwarding yes"
+  echo "X11Forwarding no"
+
+  echo "UseDNS no"
+  echo "PrintMotd no"
+  echo "AcceptEnv LANG LC_*"
+
+  echo "Subsystem	sftp	/usr/lib/openssh/sftp-server"
+}
+
+function sshd_run() {
+  echo >&2 "Start SSHD (Port=$SSHD_PORT, AuthorizedKeysFile=$SSHD_AUTHORIZED)"
+  pushd "$HOME/.sshd" >> /dev/null
+  /usr/sbin/sshd -f sshd_config -D -e
+  popd >> /dev/null
 }
 
 #####################################################################
