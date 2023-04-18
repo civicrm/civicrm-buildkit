@@ -257,20 +257,11 @@
     fi
     assert_valid_img; realize_img
 
-    local ssh_agent_pid=
     local prefix_cmd=()
     if [ -n "$ssh_agent" ]; then
-      assert_cmd ssh-socket-forward
-      if [ -z "$SSH_AUTH_SOCK" ]; then
-        echo >&2 "WARNING: Cannot forward SSH agent. No agent detected."
-      else
-        local socket="/tmp/ssh.$RANDOM$RANDOM/agent.$RANDOM$RANDOM"
-        mkdir -m 711 $(dirname "$socket")
-        ssh-socket-forward "$SSH_AUTH_SOCK" "$socket" &
-        cleanup_pids+=($!)
-        cleanup_files+=( $(dirname "$socket") )
-        sleep 1 ## ssh-socket-forward takes a moment to create socket
-        setfacl -m "u:$HOMER_USER:rw-" "$socket"
+      local socket="/tmp/ssh.$RANDOM$RANDOM/agent.$RANDOM$RANDOM"
+      forward_ssh "$socket"
+      if [ -e "$socket" ]; then
         prefix_cmd+=(env "SSH_AUTH_SOCK=$socket")
       fi
     fi
@@ -688,6 +679,23 @@
     homer_temp=$( echo "${HOMER_TEMP_TPL}" | sed "s;HOMER_ID;${homer_id};" )
     homer_home=$( echo "${HOMER_HOME_TPL}" | sed "s;HOMER_ID;${homer_id};" )
     homer_ns=$( echo "${HOMER_NS_TPL}" | sed "s;HOMER_ID;${homer_id};" )
+  }
+
+  ## usage: forward_ssh /path/to/new.socket
+  ## note: after return, check whether socket is actually created. it may be skipped if unsupported.
+  function forward_ssh() {
+    local socket="$1"
+    assert_cmd ssh-socket-forward
+    if [ -z "$SSH_AUTH_SOCK" ]; then
+      echo >&2 "WARNING: Cannot forward SSH agent. No agent detected."
+    else
+      mkdir -m 711 $(dirname "$socket")
+      ssh-socket-forward "$SSH_AUTH_SOCK" "$socket" &
+      cleanup_pids+=($!)
+      cleanup_files+=( $(dirname "$socket") )
+      sleep 1 ## ssh-socket-forward takes a moment to create socket
+      setfacl -m "u:$HOMER_USER:rw-" "$socket"
+    fi
   }
 
   #########################################################
