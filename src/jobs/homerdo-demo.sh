@@ -35,7 +35,8 @@ CLEANUP_FILES=()         ## List of files/directories to delete
 BKIT_REPO="https://github.com/totten/civicrm-buildkit"
 BKIT_BRANCH="master-demo-2"
 
-export HOMER_SIZE=10g    ## FIXME
+SIZE=10g		## FIXME
+# export HOMER_SIZE=10g    ## FIXME
 
 #####################################################################
 ## Main
@@ -72,8 +73,8 @@ function do_all() {
   echo >&2 "[$USER] Chose home-image $img"
 
   set -e
-  homerdo -i "$img" -- "$SELF" setup
-#  homerdo -i "$img" --temp -- "$SELF" exec
+  homerdo --size "$SIZE" -i "$img" -- "$SELF" setup
+  homerdo --size "$SIZE" -i "$img" --temp -- "$SELF" exec
 }
 
 #####################################################################
