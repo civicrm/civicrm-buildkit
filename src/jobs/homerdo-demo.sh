@@ -20,12 +20,12 @@
 ##
 
 SELF="$0"
-ALL_PROFILES=(min)       ## List of buildkit profiles to enable
+ALL_PROFILES=(min max)   ## List of buildkit profiles to enable
 WARMUP_TYPES=()
 #WARMUP_TYPES=(drupal-demo) ## List of buildkit types to warmup
 #WARMUP_TYPES=(min dfl max edge)
 TTL_TOOLS=90            ## FIXME ## During setup, refresh 'civi-download-tools' (if >30 minutes old)
-TTL_BLDTYPE=360          ## During setup, warmup 'bldtype' (if >6 hours since last)
+TTL_BLDTYPE=1440         ## During setup, warmup 'bldtype' (if >24 hours since last)
 CLEANUP_CALLS=()         ## List of functions to call during shutdown
 CLEANUP_FILES=()         ## List of files/directories to delete
 
@@ -110,7 +110,7 @@ function do_setup() {
 ## HOME FILE MODE: "Temp"
 ## EXAMPLE: `homerdo-task.sh exec > /tmp/my-log.txt`
 ##
-## Use this to do launch the various daemons. In particular:
+## Use this to launch the various daemons. In particular:
 ##
 ## - For each active profile, call "loco start" to run in background
 ## - Start sshd in foreground
