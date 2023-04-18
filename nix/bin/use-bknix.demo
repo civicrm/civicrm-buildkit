@@ -101,12 +101,12 @@ function createScript() {
   export BKPROF="$PROFILE"
   echo "export BKPROF=\"$PROFILE\" ;"
 
-  CODE=`cd "$BKIT" && SHELL_VERBOSITY= nix-shell -A "$PROFILE" --run "loco env -c $USE_LOCO_FILE --export"`
+  CODE=`cd "$BKIT" && SHELL_VERBOSITY= nix-shell nix/bare.nix -A "$PROFILE" --run "loco env -c $USE_LOCO_FILE --export"`
   echo "$CODE"
   eval "$CODE"
   echo "export PS1=\"[${TXT_CYAN}bknix-$PROFILE${TXT_RESET}:${TXT_GREEN}\w${TXT_RESET}] \" ;"
 
-  ( cd "$BKIT" && BKPROF="$PROFILE" nix-shell -A "$PROFILE" --run 'bknix-profile env' )
+  ( cd "$BKIT" && BKPROF="$PROFILE" nix-shell nix/bare.nix -A "$PROFILE" --run 'bknix-profile env' )
   if [ -f "$BKIT/nix/etc/bashrc.local" ]; then
     echo "source \"$BKIT/nix/etc/bashrc.local\""
   fi

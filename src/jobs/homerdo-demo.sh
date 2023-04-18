@@ -136,17 +136,14 @@ function do_exec() {
 function profile_start() {
   local BKPROF="$1"
   local BKIT="$HOME/bknix-$BKPROF"
-  #local cmd=$(printf "env BKPROF=%q loco start -c .loco/demo.yml" "$BKPROF")
-  ( cd "$BKIT" && export BKPROF="$BKPROF" && nix-shell -A "$BKPROF" --run "loco start -c .loco/demo.yml" )
+  ( cd "$BKIT" && export BKPROF="$BKPROF" && nix-shell nix/bare.nix -A "$BKPROF" --run "loco start -c .loco/demo.yml" )
 }
 
 ## ex: profile_stop max
 function profile_stop() {
   local BKPROF="$1"
   local BKIT="$HOME/bknix-$BKPROF"
-  #local cmd=$(printf "env BKPROF=%q loco stop -c .loco/demo.yml " "$BKPROF")
-#  ( cd "$BKIT" && nix-shell -A "$BKPROF" --run "echo $cmd" )
-  ( cd "$BKIT" && export BKPROF="$BKPROF" && nix-shell -A "$BKPROF" --run "loco stop -c .loco/demo.yml" )
+  ( cd "$BKIT" && export BKPROF="$BKPROF" && nix-shell nix/bare.nix -A "$BKPROF" --run "loco stop -c .loco/demo.yml" )
 }
 
 ## ex: profile_setup min
@@ -165,8 +162,9 @@ function profile_setup() {
     (cd "$BKIT" && git pull)
     mkdir -p "$HOME/bin"
     cp "$BKIT/nix/bin/use-bknix.demo" "$HOME/bin/use-bknix" ## We may overwrite a couple times. Don't care.
-    #FIXME (cd "$BKIT" && nix-shell -A "$BKPROF" --run './bin/civi-download-tools && civibuild cache-warmup')
-    #touch "$BKIT/.ttl-tools"
+    (cd "$BKIT" && nix-shell nix/bare.nix -A "$BKPROF" --run './bin/civi-download-tools')
+    #FIXME (cd "$BKIT" && nix-shell nix/bare.nix -A "$BKPROF" --run './bin/civi-download-tools && civibuild cache-warmup')
+    touch "$BKIT/.ttl-tools"
   fi
 }
 
@@ -185,7 +183,7 @@ function profile_warmup() {
       local flag_file="$BKIT/.ttl-$BLDTYPE"
       if is_stale "$flag_file" "$TTL_BLDTYPE" ; then
         safe_delete "$BKIT/build/warmup" "$BKIT/build/warmup.sh"
-        (cd "$BKIT" && nix-shell -A "$BKPROF" --run "civibuild download warmup --type $BLDTYPE")
+        (cd "$BKIT" && nix-shell nix/bare.nix -A "$BKPROF" --run "civibuild download warmup --type $BLDTYPE")
         ## Note: For warmup, it's nice if it works - but doesn't matter much if it abends.
         safe_delete "$BKIT/build/warmup" "$BKIT/build/warmup.sh"
         touch "$flag_file"
