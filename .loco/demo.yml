@@ -36,6 +36,7 @@ environment:
  # CLI applications should use our stuff
  - AMPHOME=$HOME/_bknix/ramdisk/worker-$BKPROF-amp
  - CIVIBUILD_HOME=$HTTPD_VDROOT
+ - "CIVIBUILD_URL_TEMPLATE=http://%SITE_NAME%.$HTTPD_DOMAIN" ## Omit port#
  - BKIT=$LOCO_PRJ
  - BKITBLD=$HTTPD_VDROOT
  - MYSQL_HOME=$LOCO_VAR/mysql/conf
