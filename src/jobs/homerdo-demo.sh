@@ -93,6 +93,7 @@ function do_all() {
 
 function do_setup() {
   echo >&2 "[$USER] Run setup"
+  umask 022
 
   git config --global user.email "$USER@example.com"
   git config --global user.name "$USER"
@@ -122,6 +123,7 @@ function do_setup() {
 
 function do_exec() {
   echo >&2 "[$USER] Run exec"
+  umask 022
 
   # echo "EXEC: Start pre-run shell. Press Ctrl-D to finish pre-run shell." && bash
 
@@ -199,56 +201,27 @@ function profile_warmup() {
 }
 
 #####################################################################
+
 function sshd_setup() {
   if [ ! -d "$HOME/.sshd" ]; then
     mkdir "$HOME/.sshd"
   fi
   pushd "$HOME/.sshd" >> /dev/null
-    if [ ! -e ssh_host_rsa_key ]; then
-      ssh-keygen -t rsa -b 4096 -f ssh_host_rsa_key -q -N ""
-    fi
-    if [ ! -e ssh_host_ecdsa_key ]; then
-      ssh-keygen -t ecdsa -f ssh_host_ecdsa_key -q -N ""
-    fi
-    if [ ! -e ssh_host_ed25519_key ]; then
-      ssh-keygen -t ed25519 -f ssh_host_ed25519_key -q -N ""
-    fi
-    sshd_config > sshd_config
+    for keytype in rsa ecdsa ed25519 ; do
+      if [ ! -e "db_${keytype}_host_key" ]; then
+        nix-shell -p dropbear --run "dropbearkey -t "$keytype" -f db_${keytype}_host_key"
+      fi
+    done
   popd >> /dev/null
-}
-
-function sshd_config() {
-  local dir="/home/homer/.sshd"
-
-  echo "PidFile $dir/sshd.pid"
-  echo "Port $SSHD_PORT"
-  # echo "Hostkey $dir/host_key"
-  echo "HostKey $dir/ssh_host_rsa_key"
-  echo "HostKey $dir/ssh_host_ecdsa_key"
-  echo "HostKey $dir/ssh_host_ed25519_key"
-
-  echo "AllowUsers homer"
-  echo "AuthorizedKeysFile $SSHD_AUTHORIZED"
-
-  echo "AuthenticationMethods publickey"
-  echo "ChallengeResponseAuthentication no"
-  echo "PermitRootLogin no"
-  echo "UsePAM no"
-
-  echo "AllowAgentForwarding yes"
-  echo "X11Forwarding no"
-
-  echo "UseDNS no"
-  echo "PrintMotd no"
-  echo "AcceptEnv LANG LC_*"
-
-  echo "Subsystem	sftp	/usr/lib/openssh/sftp-server"
 }
 
 function sshd_run() {
   echo >&2 "Start SSHD (Port=$SSHD_PORT, AuthorizedKeysFile=$SSHD_AUTHORIZED)"
+  mkdir -p "$HOME/.ssh"
+  ln -sf "$SSHD_AUTHORIZED" "$HOME/.ssh/authorized_keys"
+
   pushd "$HOME/.sshd" >> /dev/null
-  /usr/sbin/sshd -f sshd_config -D -e
+    nix-shell -p dropbear --run "dropbear -F -E -w -p $SSHD_PORT -r db_ecdsa_host_key -r db_ed25519_host_key -r db_rsa_host_key -P dropbear.pid"
   popd >> /dev/null
 }
 
