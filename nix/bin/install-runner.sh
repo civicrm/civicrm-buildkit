@@ -65,8 +65,17 @@ install_bin "$BKNIXSRC/../bin/ssh-socket-forward" /usr/local/bin/ssh-socket-forw
 install_bin "$BINDIR"/await-bknix.flag-file /usr/local/bin/await-bknix
 install_bin "$BINDIR"/run-bknix-job         /usr/local/bin/run-bknix-job
 
+# util-linux on jammy is v2.37. there was a regression in routing POSIX signals (introduced ~v2.36; fixed ~v2.38)
+# which interferes with using `kill` or `Ctrl-C` for processes in the main 'homerdo' shell
+if [[ "$(lsb_release -cs)" == "jammy" ]]; then
+  install_bin_url https://storage.googleapis.com/civicrm/util-linux/unshare-2.38.1.bin /usr/local/lib/unshare-2.38.1.bin /usr/local/bin/unshare
+elif [ -L /usr/local/bin/unshare -a -f /usr/local/lib/unshare-2.38.1.bin ]; then
+  rm /usr/local/bin/unshare
+fi
+
 apt-get install -y qemu-utils acl psmisc && homerdo install
 install_dispatcher
 warmup_binaries
 warmup_dispatcher_images
+
 touch /var/local/bknix-ready
