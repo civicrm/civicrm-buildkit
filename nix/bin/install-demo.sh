@@ -35,6 +35,12 @@ ufw allow 8007/tcp
 ufw default allow FORWARD
 portfw set tcp 80 8003
 
+#echo "Setup systemd (demo.service)"
+#cp "$BKNIXSRC/examples/systemd-demo.service" "/etc/systemd/system/demo.service"
+#systemctl daemon-reload
+#systemctl enable demo
+#systemctl start demo
+
 
 ## Add a line to a file (unless already present)
 ## usage: enable_line /etc/ufw/sysctl.conf
