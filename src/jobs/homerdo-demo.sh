@@ -132,6 +132,9 @@ function do_exec() {
     CLEANUP_CALLS+=( "profile_stop $BKPROF" )
   done
 
+  proxy_start
+  CLEANUP_CALLS+=( proxy_stop )
+
   # echo "EXEC: Start post-run shell. Press Ctrl-D to finish post-run shell." && bash
   sshd_run
 }
@@ -223,6 +226,21 @@ function sshd_run() {
   pushd "$HOME/.sshd" >> /dev/null
     nix-shell -p dropbear --run "dropbear -F -E -w -p $SSHD_PORT -r db_ecdsa_host_key -r db_ed25519_host_key -r db_rsa_host_key -P dropbear.pid"
   popd >> /dev/null
+}
+
+
+#####################################################################
+
+function proxy_start() {
+  local BKPROF="max"
+  local BKIT="$HOME/bknix-$BKPROF"
+  ( cd "$BKIT/src/demo-proxy" && nix-shell --run "loco start" )
+}
+
+function proxy_stop() {
+  local BKPROF="max"
+  local BKIT="$HOME/bknix-$BKPROF"
+  ( cd "$BKIT/src/demo-proxy" && nix-shell --run "loco stop" )
 }
 
 #####################################################################
