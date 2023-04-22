@@ -107,7 +107,7 @@ Timeout 600
     RewriteEngine on
     # LogLevel alert rewrite:trace6
 
-    RewriteCond "%{HTTP_HOST}" "(\w+)."
+    RewriteCond "%{HTTP_HOST}" "([-\w]+)."
     RewriteRule ^ - [E=BKIT_VHOST:%1]
 
     ## The demo server has several different build folders (`~/bknix-min/build`, `~/bknix-max/build`, etc).
