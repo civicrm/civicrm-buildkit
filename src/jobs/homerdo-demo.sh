@@ -21,10 +21,10 @@
 
 SELF="$0"
 ALL_PROFILES=(min max)   ## List of buildkit profiles to enable
-WARMUP_TYPES=()
-#WARMUP_TYPES=(drupal-demo) ## List of buildkit types to warmup
+#WARMUP_TYPES=()
+WARMUP_TYPES=(drupal-demo) ## List of buildkit types to warmup
 #WARMUP_TYPES=(min dfl max edge)
-TTL_TOOLS=90            ## FIXME ## During setup, refresh 'civi-download-tools' (if >30 minutes old)
+TTL_TOOLS=60             ## During setup, refresh 'civi-download-tools' (if >60 minutes old)
 TTL_BLDTYPE=1440         ## During setup, warmup 'bldtype' (if >24 hours since last)
 CLEANUP_CALLS=()         ## List of functions to call during shutdown
 CLEANUP_FILES=()         ## List of files/directories to delete
@@ -38,7 +38,6 @@ BKIT_REPO="https://github.com/totten/civicrm-buildkit"
 BKIT_BRANCH="master-demo-2"
 
 SIZE=10g		## FIXME
-# export HOMER_SIZE=10g    ## FIXME
 
 #####################################################################
 ## Main
@@ -173,8 +172,8 @@ function profile_setup() {
     (cd "$BKIT" && git pull)
     mkdir -p "$HOME/bin"
     cp "$BKIT/nix/bin/use-bknix.demo" "$HOME/bin/use-bknix" ## We may overwrite a couple times. Don't care.
-    (cd "$BKIT" && nix-shell nix/bare.nix -A "$BKPROF" --run './bin/civi-download-tools')
-    #FIXME (cd "$BKIT" && nix-shell nix/bare.nix -A "$BKPROF" --run './bin/civi-download-tools && civibuild cache-warmup')
+    # (cd "$BKIT" && nix-shell nix/bare.nix -A "$BKPROF" --run './bin/civi-download-tools')
+    (cd "$BKIT" && nix-shell nix/bare.nix -A "$BKPROF" --run './bin/civi-download-tools && ./bin/civibuild cache-warmup')
     touch "$BKIT/.ttl-tools"
   fi
 }
@@ -194,7 +193,7 @@ function profile_warmup() {
       local flag_file="$BKIT/.ttl-$BLDTYPE"
       if is_stale "$flag_file" "$TTL_BLDTYPE" ; then
         safe_delete "$BKIT/build/warmup" "$BKIT/build/warmup.sh"
-        (cd "$BKIT" && nix-shell nix/bare.nix -A "$BKPROF" --run "civibuild download warmup --type $BLDTYPE")
+        (cd "$BKIT" && BKPROF="$BKPROF" nix-shell -A "$BKPROF" --run "./bin/civibuild download warmup --type $BLDTYPE")
         ## Note: For warmup, it's nice if it works - but doesn't matter much if it abends.
         safe_delete "$BKIT/build/warmup" "$BKIT/build/warmup.sh"
         touch "$flag_file"
