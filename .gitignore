@@ -95,3 +95,4 @@ web/
 /nix/result*
 /nix/pkgs/result
 /nix/pkgs/result-*
+/src/demo-proxy/.loco/var/
