@@ -62,17 +62,14 @@ fi
 
 ufw allow 22/tcp
 ufw allow 80/tcp
-ufw allow 8001/tcp
-ufw allow 8002/tcp
-ufw allow 8003/tcp
-ufw allow 8007/tcp
+ufw allow 8888/tcp
 ufw allow 9022/tcp
 ufw default allow FORWARD
 
 #enable_line /etc/ufw/sysctl.conf "net/ipv4/ip_forward=1"
 install_bin "$BINDIR"/portfw /usr/local/sbin/portfw
 /usr/local/sbin/portfw install
-portfw set tcp 80 8003
+portfw set tcp 80 8888
 
 echo "Setup systemd (demo.service)"
 cp "$BKNIXSRC/examples/systemd-demo.service" "/etc/systemd/system/demo.service"
