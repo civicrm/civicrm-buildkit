@@ -27,47 +27,25 @@ function install_nix_interactive() {
 
   echo "==== Installing nix ===="
   echo ""
-  echo "'nix' is a package manager for Unix-style software."
+  echo "\"nix\" is a package manager for Unix-style software."
   echo ""
   echo "It is open-source, multi-platform, multi-user, and reproducible. It allows multiple"
   echo "versions of any package to coexist, and it does not interfere with your regular package"
-  echo "manager. For more background, see https://nixos.org/nix/about.html"
+  echo "manager. For more background, see:"
   echo ""
-  echo "The nix installer will create a folder, /nix. It may run in a few modes:"
+  echo "  - https://nixos.org/nix/about.html"
+  echo "  - https://nixos.org/download.html"
   echo ""
-  echo "1. Single-user mode"
-  echo "   - Suitable for Linux and older macOS."
-  echo "   - The regular console user can directly edit files in /nix."
-  echo "2. Single-user mode with Darwin volume (APFS)"
-  echo "   - Suitable for newer macOS (Catalina 10.15+)."
-  echo "   - The /nix folder will be stored in a separate volume."
-  echo "   - The regular console user can directly edit files in /nix."
-  echo "3. Multi-user mode"
-  echo "   - Suitable for Linux and older macOS."
-  echo "   - The /nix folder is restricted. It is managed transparently/securely by nix-daemon."
-  echo "   - On Linux, it requires systemd."
+  echo "This script will run the standard installer for \"nix\". However, compatibility"
+  echo "and configuration may vary based on the version, host-environment, and use-case."
+  echo "You will have a chance to fine-tune some options."
   echo ""
-  echo "For more details and for more advanced options, see https://nixos.org/nix/manual/"
+  echo "== Nix Version"
   echo ""
-  echo "To continue, please choose 1, 2, or 3. To abort, enter a blank value."
-
-  read -p'> ' BK_NIX_INSTALL_MODE
-
-  case "$BK_NIX_INSTALL_MODE" in
-    1) BK_NIX_OPT="--no-daemon" ;;
-    2) BK_NIX_OPT="--no-daemon --darwin-use-unencrypted-nix-store-volume" ;;
-    3) BK_NIX_OPT="--daemon" ;;
-    *)
-      echo "Aborting"
-      exit 1
-      ;;
-  esac
-
+  echo "- Example: \"2.8.1\""
+  echo "- Tip: To use the latest release, leave this blank."
   echo ""
-  echo "Which version of nix would like to install?"
-  echo ""
-  echo "Examples: 2.0.4, 2.2.1, 2.3.5"
-  echo "To use the current stable, leave this blank."
+  echo "Which version of \"nix\" would you like to install?"
   read -p '> ' BK_NIX_VERSION
 
   if [ -n "$BK_NIX_VERSION" ]; then
@@ -75,6 +53,20 @@ function install_nix_interactive() {
   else
     BK_NIX_URL=https://nixos.org/nix/install
   fi
+
+  echo ""
+  echo "== Installation Flags"
+  echo
+  echo "- Tip: If you leave this blank, the installer will make its own guesses."
+  echo "- Tip: Some versions and host environments may require specific flags."
+  echo "- Example: \"--daemon\""
+  echo "- Example: \"--no-daemon\""
+  echo "- Example: \"--no-daemon --darwin-use-unencrypted-nix-store-volume\""
+  echo "- Tip: For full-time servers, \"--daemon\" is strongly preferred."
+  echo "- Docs: https://nixos.org/manual/nix/stable/installation/installation.html"
+  echo ""
+  echo "Please enter any installation-flags (or leave blank):"
+  read -p'> ' BK_NIX_OPT
 
   echo
   ## Quirky "" prevents execution...
