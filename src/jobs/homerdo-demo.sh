@@ -124,6 +124,8 @@ function do_exec() {
   echo >&2 "[$USER] Run exec"
   umask 022
 
+  echo starting > "$HOME/.demo-status"
+
   # echo "EXEC: Start pre-run shell. Press Ctrl-D to finish pre-run shell." && bash
 
   for BKPROF in "${ALL_PROFILES[@]}" ; do
@@ -133,6 +135,14 @@ function do_exec() {
 
   proxy_start
   CLEANUP_CALLS+=( proxy_stop )
+
+  use-bknix min -r civibuild create site-list
+  ## TIP: Put extra config in /etc/site-list.settings.d/post.d/demo.php. Ex:
+  ##   $GLOBALS['civibuild']['SITE_TOKEN'] = 'mYrAnDoM';
+  ##   $GLOBALS['sitelist']['bldDirs'] = glob(getenv('HOME') . '/bknix*/build');
+  ##   $GLOBALS['sitelist']['moreSites'] = ['http://site-list.remote.example.com' => 'ThEiRsEcReT']
+
+  echo started > "$HOME/.demo-status"
 
   # echo "EXEC: Start post-run shell. Press Ctrl-D to finish post-run shell." && bash
   sshd_run
