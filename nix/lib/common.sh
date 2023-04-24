@@ -44,6 +44,8 @@ function install_nix_interactive() {
   echo ""
   echo "- Example: \"2.8.1\""
   echo "- Tip: To use the latest release, leave this blank."
+  echo "- Tip: At time of writing, install-developer.sh and install-ci.sh have issues with nix 2.14+"
+  ## Specifically, "/nix/var/nix/profiles/per-user/$USER" doesn't seem to be available anymore. Needs update to support new layout.
   echo ""
   echo "Which version of \"nix\" would you like to install?"
   read -p '> ' BK_NIX_VERSION
