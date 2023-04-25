@@ -193,6 +193,24 @@ function install_bin() {
   sudo cp -f "$src" "$dest"
 }
 
+## usage: install_bin_url <url> <dest-cache-file> <dest-symlink-file>
+## example: install_bin_url https://storage.googleapis.com/civicrm/util-linux/unshare-2.38.1.bin /usr/local/lib/unshare-2.38.1.bin /usr/local/bin/unshare
+function install_bin_url() {
+  local BIN_URL="$1"
+  local BIN_PATH="$2"
+  local SYMLINK_PATH="$3"
+
+  if [ -e "$BIN_PATH" ] && [ -L "$SYMLINK_PATH" ] && [ "$(readlink "$SYMLINK_PATH")" == "$BIN_PATH" ]; then
+    true
+  else
+    echo "Downloading $BIN_URL"
+    curl -o "$BIN_PATH" "$BIN_URL"
+    chmod +x "$BIN_PATH"
+    echo "Creating symlink $SYMLINK_PATH -> $BIN_PATH"
+    ln -sf "$BIN_PATH" "$SYMLINK_PATH"
+  fi
+}
+
 ## usage: pick_buildkit_path <USER> <PROFILE>
 function pick_buildkit_path() {
   if [ "x1" = "x$SPLIT_BUILDKIT" ]; then

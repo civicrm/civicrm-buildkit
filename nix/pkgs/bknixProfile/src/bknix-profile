@@ -25,8 +25,11 @@ case "$1" in
     if [ -e "$TZDIR" ]; then
       echo "export TZDIR='$TZDIR' ;"
     fi
+
     if [ -e "$PRFDIR/lib/locale/locale-archive" ]; then
       echo "export LOCALE_ARCHIVE='$PRFDIR/lib/locale/locale-archive' ;"
+    elif [ -e "$LOCALE_ARCHIVE" ]; then
+      echo " export LOCALE_ARCHIVE='$LOCALE_ARCHIVE' ;"
     fi
 
     if [ -e "$PRFDIR/etc/bash_completion.d/git-completion.bash" ]; then

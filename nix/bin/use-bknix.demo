@@ -1,18 +1,13 @@
 #!/usr/bin/env bash
 {
 
-## For systems which use `bin/install-ci.sh` to setup multiple copies of
-## buildkit ("array of buildkits"; arrbuk), this helper script allows you to
-## configure your shell to use one of those services.
+## use-bknix.demo: This is the flavor of "use-bknix" designed for the homerdo-demo environment.
 ##
 ## Examples:
 ##   eval $(use-bknix min)
 ##   eval $(use-bknix max)
 ##   eval $(use-bknix dfl)
 ##
-## Works with nix binaries in either of:
-##    /nix/var/nix/profiles/per-user/{$USER}/bknix-{$NAME}
-##    /nix/var/nix/profiles/bknix-{$NAME}
 ## Works with buildkit data in either of:
 ##    {$HOME}/bknix-{$NAME}
 ##    {$HOME}/bknix
@@ -34,20 +29,13 @@ TXT_WHITE='\[\033[0;37m\]'
 ## Input parsing
 
 function use_worker_n() {
-  USE_LOCO_FILE=".loco/worker-n.yml"
-  if [[ "x$1" != "x" ]]; then
-    export EXECUTOR_NUMBER="$1"
-  fi
-
-  if [[ "x$EXECUTOR_NUMBER" = "x" ]]; then
-    echo "Error: The --worker-n option requires EXECUTOR_NUMBER" 1>&2
-    exit 1
-  fi
+ echo >&2 "WARNING: Ignore --worker-n"
 }
 
 MODE=env
-USE_LOCO_FILE=""
+USE_LOCO_FILE=".loco/demo.yml"
 PROFILE=
+USE_CD=
 
 if [ -z "$OWNER" ]; then
   OWNER=$USER
@@ -58,7 +46,6 @@ while [ -n "$1" ]; do
   shift
 
   while [[ "$OPT" != "" ]]; do
-
     case "$OPT" in
       old|min|dfl|max|edge) PROFILE="$OPT" ; OPT="" ;;
       --shell) MODE=shell     ; OPT="" ;;
@@ -86,32 +73,21 @@ while [ -n "$1" ]; do
   fi
 done
 
-if [ -e "/etc/bknix-ci/is-runner" ]; then
-  use_worker_n
-fi
-
-for BASEDIR in "/nix/var/nix/profiles/per-user/$OWNER" "/nix/var/nix/profiles" ; do
-  PRFDIR="$BASEDIR/bknix-$PROFILE"
-  if [ -d "$PRFDIR" ]; then
-    break
-  fi
-done
-
-#echo "PARSED: PROFILE=$PROFILE MODE=$MODE USE_LOCO_FILE=$USE_LOCO_FILE PRFDIR=$PRFDIR USE_CD=$USE_CD" > /dev/stderr
+#echo "PARSED: PROFILE=$PROFILE MODE=$MODE USE_LOCO_FILE=$USE_LOCO_FILE USE_CD=$USE_CD" > /dev/stderr
 #exit 10
 
 ###########################################################
 ## Validation/help
-if [ -z "$PROFILE" -o ! -d "$PRFDIR" ]; then
+if [ -z "$PROFILE" ]; then
   echo "The specified profile does not correspond to an actual profile"
   echo
-  echo "usage: $0 <PROFILE> [-N|--worker-n] [-c|--project-dir] [-e|--env|-s|--shell|-r|--run] [RUN_CMD]"
+  echo "usage: $0 <PROFILE> [-c|--project-dir] [-e|--env|-s|--shell|-r|--run] [RUN_CMD]"
   echo ""
   echo "options:"
   echo "  -e|--env           Display environment variables for the profile"
   echo "  -s|--shell         Open a subshell with the profile"
   echo "  -r|--run           Run a command in a subshell"
-  echo "  -N|--worker-n      Allocate ports for a temporary worker #N"
+  echo "  -N|--worker-n      (Ignored)"
   echo "  -c|--project-dir   Change working directory to project-root"
   echo ""
   echo "example: Generate environment variables for \"dfl\" profile"
@@ -129,21 +105,13 @@ fi
 ###########################################################
 ## Main
 
-export PATH="$PRFDIR/bin:$PATH"
 # PATH="$HOME/src/loco/bin:$PATH"
+# export BKPROF="$PROFILE"
 
 for CANDIDATE in "$HOME/bknix" "$HOME/bknix-$PROFILE" "$HOME/buildkit" "$HOME/buildkit-$PROFILE" ; do
   if [ -n "$USE_LOCO_FILE" -a -f "$CANDIDATE/$USE_LOCO_FILE" ]; then
     export BKIT="$CANDIDATE"
     ## Keep USE_LOCO_FILE
-    break
-  elif [ -f "$CANDIDATE/.loco/$OWNER-$PROFILE.yml" ]; then
-    export BKIT="$CANDIDATE"
-    USE_LOCO_FILE=".loco/$OWNER-$PROFILE.yml"
-    break
-  elif [ -f "$CANDIDATE/.loco/loco.yml" ]; then
-    export BKIT="$CANDIDATE"
-    USE_LOCO_FILE=".loco/loco.yml"
     break
   fi
 done
@@ -155,11 +123,15 @@ if [ -n "$USE_CD" ]; then
 fi
 
 function createScript() {
-  CODE=`cd "$BKIT" && SHELL_VERBOSITY= loco env -c "$USE_LOCO_FILE" --export`
+  export BKPROF="$PROFILE"
+  echo "export BKPROF=\"$PROFILE\" ;"
+
+  CODE=`cd "$BKIT" && SHELL_VERBOSITY= nix-shell nix/bare.nix -A "$PROFILE" --run "loco env -c $USE_LOCO_FILE --export"`
   echo "$CODE"
   eval "$CODE"
   echo "export PS1=\"[${TXT_CYAN}bknix-$PROFILE${TXT_RESET}:${TXT_GREEN}\w${TXT_RESET}] \" ;"
-  bknix-profile env
+
+  ( cd "$BKIT" && BKPROF="$PROFILE" nix-shell nix/bare.nix -A "$PROFILE" --run 'bknix-profile env' )
   if [ -f "$BKIT/nix/etc/bashrc.local" ]; then
     echo "source \"$BKIT/nix/etc/bashrc.local\""
   fi

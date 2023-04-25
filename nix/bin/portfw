@@ -1,0 +1,141 @@
+#!/bin/bash
+
+{ # https://stackoverflow.com/a/21100710
+
+## Simple script to forward local ports. This is a low-tech way to route privileged ports to unprivileged processes.
+##
+## Installation
+##   cp portfw /usr/local/sbin/portfw
+##   /usr/local/sbin/portfw install
+##
+## Usage:
+##   portfw set tcp 80 8001
+##   portfw set tcp 25 1025
+
+PORTFW_CMD=$(realpath "$0")
+PORTFW_CONF="/etc/portfw.conf"
+PORTFW_SERVICE="/etc/systemd/system/portfw.service"
+
+function configrules_add() {
+  local proto="$1"
+  local lport="$2"
+  local rport="$3"
+
+  if [ ! -e "$PORTFW_CONF" ]; then
+    touch "$PORTFW_CONF"
+  fi
+
+  grep -q "^${proto} ${lport} ${rport}\$" "$PORTFW_CONF" || echo "${proto} ${lport} ${rport}" >> "$PORTFW_CONF"
+}
+
+function configrules_remove() {
+  local proto="$1"
+  local lport="$2"
+
+  if [ ! -e "$PORTFW_CONF" ]; then
+    return
+  fi
+
+  sed -i "/^${proto} ${lport} /d" "$PORTFW_CONF"
+}
+
+function activerules_add() {
+  local proto="$1"
+  local lport="$2"
+  local rport="$3"
+
+  iptables -A PREROUTING -t nat -p "$proto" --dport "$lport" -j REDIRECT --to-port "$rport"
+  iptables -t nat -A OUTPUT -o lo -p "$proto" --dport "$lport" -j REDIRECT --to-port "$rport"
+}
+
+function activerules_remove() {
+  local proto="$1"
+  local lport="$2"
+
+  iptables -t nat -S | grep "^-A " | grep -e "-p $proto " | grep -e "--dport $lport " | sed 's;^-A;-D;' | while read RULE ; do
+    iptables -t nat $RULE
+  done
+}
+
+function activerules_apply() {
+  grep -v '^#' | while read -r line; do
+    local proto=$(echo "$line" | awk '{print $1}')
+    local lport=$(echo "$line" | awk '{print $2}')
+    local rport=$(echo "$line" | awk '{print $3}')
+    activerules_remove "$proto" "$lport"
+    activerules_add "$proto" "$lport" "$rport"
+  done < "$PORTFW_CONF"
+}
+
+function activerules_clear() {
+  iptables -t nat -F
+}
+
+function system_install() {
+  echo "[Unit]
+Description=Port Forwarding Service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c '$PORTFW_CMD apply'
+
+[Install]
+WantedBy=multi-user.target" > "$PORTFW_SERVICE"
+
+  systemctl daemon-reload
+  systemctl enable portfw.service
+}
+
+function usage() {
+  local cmd=$(basename "$0")
+  echo "Usage: $cmd {set|remove|apply|clear|install}"
+  echo
+  echo "Add a port-forwarding rule"
+  echo "  $cmd set PROTO LISTEN_PORT REAL_PORT"
+  echo "  $cmd set tcp 80 8001"
+  echo
+  echo "Remove a port-forwarding rule"
+  echo "  $cmd remove PROTO LISTEN_PORT [REAL_PORT]"
+  echo "  $cmd remove tcp 80"
+  echo
+  echo "Install the portfw service (systemd)"
+  echo "  $cmd install"
+  echo
+}
+
+function fatal() {
+  echo >&2 "$@"
+  echo >&2
+  usage >&2
+  exit 2
+}
+
+case "$1" in
+  "set")
+    if [ -z "$2" -o -z "$3" -o -z "$4" ]; then fatal "Invalid parameters for 'set'" ; fi
+    configrules_remove "$2" "$3"
+    configrules_add "$2" "$3" "$4"
+    activerules_remove "$2" "$3"
+    activerules_add "$2" "$3" "$4"
+    ;;
+  "remove")
+    if [ -z "$2" -o -z "$3" ]; then fatal "Invalid parameters for 'remove'" ; fi
+    configrules_remove "$2" "$3"
+    activerules_remove "$2" "$3"
+     ;;
+  "apply")
+    activerules_apply
+    ;;
+  "clear")
+    activerules_clear
+    ;;
+  "install")
+    system_install
+    ;;
+  *)
+    usage >&2
+    exit 1
+    ;;
+esac
+
+}

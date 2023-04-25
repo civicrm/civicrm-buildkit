@@ -1,0 +1,39 @@
+format: 'loco-0.1'
+
+## The "demo-proxy" configuration is an HTTP reverse-proxy for demo-style builds with many buildkits.
+##
+## Example:
+##   - The demo-proxy receives request for `http://FOOBAR.example.com`...
+##   - If `~/bknix/build/FOOBAR`      exists, then forward to `http://localhost:8001`.
+##   - If `~/bknix-dfl/build/FOOBAR`  exists, then forward to `http://localhost:8001`.
+##   - If `~/bknix-min/build/FOOBAR`  exists, then forward to `http://localhost:8002`.
+##   - If `~/bknix-max/build/FOOBAR`  exists, then forward to `http://localhost:8003`.
+##   - If `~/bknix-edge/build/FOOBAR` exists, then forward to `http://localhost:8007`.
+
+environment:
+
+ ## HTTPD_*: Determine how a local folder (eg "./build/dmaster") relates to a local HTTP service (eg "http://dmaster.bknix:8001").
+ - HTTPD_DOMAIN=bknix
+ - HTTPD_PORT=8888
+
+ ## LOCALHOST: Bind services to a local IP address.
+ - LOCALHOST=127.0.0.1
+
+ # CLI applications should use our stuff
+ - BKIT=$LOCO_PRJ
+ - PATH=$BKIT/bin:$LOCO_PRJ/.loco/bin:$PATH
+
+#### Functional service definitions
+services:
+
+  proxy:
+    init:
+      - cp "$LOCO_SVC_CFG"/conf/magic "$LOCO_SVC_CFG"/conf/mime.types "$LOCO_SVC_VAR/conf"
+      - mk-apache-links
+    run: 'apachectl -d "$LOCO_SVC_VAR" -DFOREGROUND'
+    pid_file: '$LOCO_SVC_VAR/httpd.pid'
+    message: 'HTTP proxy is running at "<comment>http://$LOCALHOST:$HTTPD_PORT</comment>".'
+
+## Configure the loco=>systemd export
+export:
+  include_env: '/^(PATH|NIX_SSL_.*|LOCALE_ARCHIVE|TZDIR)$/'

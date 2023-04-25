@@ -1,0 +1,24 @@
+[Unit]
+StartLimitIntervalSec=500
+StartLimitBurst=5
+Description=Buildkit Demo Sites
+RequiresMountsFor=/home/dispatcher/images /opt/buildkit
+
+[Service]
+PermissionsStartOnly=true
+TimeoutSec=300
+PrivateTmp=false
+LimitNOFILE=500000
+## Restart=on-failure
+## RestartSec=10s
+Restart=no
+Type=exec
+ExecStart=/bin/bash -c '/opt/buildkit/src/jobs/homerdo-demo.sh all'
+
+User=dispatcher
+Group=dispatcher
+WorkingDirectory=/home/dispatcher
+# Environment=BKIT=/home/dispatcher/bknix-max
+
+[Install]
+WantedBy=demo.service

@@ -106,8 +106,7 @@
 ## - Replace /tmp and /var/tmp. (Issue: Sharing ssh socket and tar fifo)
 ## - Consider adding a network namespace. Maybe make it optional (`homerdo -n`).
 ## - Use qcow2 instead of raw. (Issue: When learning/playing with qemu-nbd, it felt crashy.)
-## - Allow multi-entry for the same image (*given acceptable layering*). Keep a list of
-##   open shell PIDs. Support auto-mount/auto-unmount. Enhance "status" command.
+## - Have more flavors of "run/enter" (e.g. a start+stop flavor)
 
 { # https://stackoverflow.com/a/21100710
   set -e
@@ -164,6 +163,7 @@
     prog=$(basename "$0")
     echo "Day-to-day actions:"
     echo "  $prog [OPTIONS] [run] [--] [CMD]"
+    echo "  $prog [OPTIONS] enter [--] [CMD]"
     echo "  $prog [OPTIONS] status"
     echo
     echo "Sysadmin actions:"
@@ -175,6 +175,7 @@
     echo "  $prog [OPTIONS] mount"
     echo "  $prog [OPTIONS] unmount"
     echo "  $prog [OPTIONS] exec [--] [CMD]"
+    echo "  $prog [OPTIONS] enter-exec [--] [CMD]"
     echo
     echo "Options:"
     echo "  -A                   Forward SSH agent (See also: \"ssh -A\")"
@@ -184,6 +185,9 @@
     echo "  -t|--temp            Enable temporary file mode"
     echo "  -v                   Enable verbose output"
     echo
+    echo "Tips:"
+    echo "  - When passing a [CMD], the separator [--] is optional. Omitting is fine"
+    echo "    for quick/adhoc interaction. For scripting, it should be included."
   }
 
   ###########################################################################
@@ -257,20 +261,11 @@
     fi
     assert_valid_img; realize_img
 
-    local ssh_agent_pid=
     local prefix_cmd=()
     if [ -n "$ssh_agent" ]; then
-      assert_cmd ssh-socket-forward
-      if [ -z "$SSH_AUTH_SOCK" ]; then
-        echo >&2 "WARNING: Cannot forward SSH agent. No agent detected."
-      else
-        local socket="/tmp/ssh.$RANDOM$RANDOM/agent.$RANDOM$RANDOM"
-        mkdir -m 711 $(dirname "$socket")
-        ssh-socket-forward "$SSH_AUTH_SOCK" "$socket" &
-        cleanup_pids+=($!)
-        cleanup_files+=( $(dirname "$socket") )
-        sleep 1 ## ssh-socket-forward takes a moment to create socket
-        setfacl -m "u:$HOMER_USER:rw-" "$socket"
+      local socket="/tmp/ssh.$RANDOM$RANDOM/agent.$RANDOM$RANDOM"
+      forward_ssh "$socket"
+      if [ -e "$socket" ]; then
         prefix_cmd+=(env "SSH_AUTH_SOCK=$socket")
       fi
     fi
@@ -278,6 +273,33 @@
     cleanup_mounts=1
     as_root mount
     as_root exec -- "${prefix_cmd[@]}" "${cmd[@]}"
+  }
+
+  ###########################################################################
+  ## Task: Enter into an existing environment and run a command.
+
+  function task_enter() {
+    print_h1 "Enter and run [${cmd[@]}]"
+    assert_not_root_user
+
+    if [ -z "$img" ]; then
+      fatal "No IMG specified"
+    fi
+
+    assert_valid_size
+    assert_valid_shares; realize_shares
+    assert_valid_img; realize_img
+
+    local prefix_cmd=()
+    if [ -n "$ssh_agent" ]; then
+      local socket="/tmp/ssh.$RANDOM$RANDOM/agent.$RANDOM$RANDOM"
+      forward_ssh "$socket"
+      if [ -e "$socket" ]; then
+        prefix_cmd+=(env "SSH_AUTH_SOCK=$socket")
+      fi
+    fi
+
+    as_root enter-exec -- "${prefix_cmd[@]}" "${cmd[@]}"
   }
 
   ###########################################################################
@@ -328,6 +350,7 @@
         fi
       fi
     fi
+
     # echo >&2 "Claim $homer_lock for $owner_pid"
     echo "$owner_pid" > "$homer_lock"
     flock -u "$homer_lock_fd"
@@ -368,7 +391,7 @@
     for nsmt in "$homer_ns/pid" "$homer_ns/mount"; do
       if [ -e "$nsmt" ]; then
         print_h2 "Unmount ($nsmt)"
-        $GUARD umount "$nsmt"
+        _soft_unmount "$nsmt"
         $GUARD rm "$nsmt"
       fi
     done
@@ -382,15 +405,23 @@
     mpts+=("$homer_ns" "$homer_home" "$homer_temp" "$homer_base")
 
     for mpt in "${mpts[@]}" ; do
-      if grep -q "$mpt" /proc/mounts; then
+      if grep -qF "$mpt" /proc/mounts; then
         print_h2 "Unmount ($mpt)"
-        $GUARD umount "$mpt"
+        _soft_unmount "$mpt"
       fi
     done
   }
 
+  function _soft_unmount() {
+   if $GUARD umount "$1" ; then
+     true
+   else
+     echo >&2 "(ignore)"
+   fi
+  }
+
   ###########################################################################
-  ## Execute a task within the designated space
+  ## Setup a namespace. Execute a task within it. Tear it down at the end.
 
   function task_exec() {
     print_h2 "Exec (${cmd[@]})"
@@ -436,6 +467,22 @@
     done
 
     echo "sudo -iu \"$HOMER_USER\" ${cmd[@]}"
+  }
+
+  ###########################################################################
+  ## Execute a task within an existing namespace
+
+  function task_enter_exec() {
+    print_h2 "Enter-Exec (${cmd[@]})"
+    assert_root_user
+
+    assert_valid_shares; realize_shares
+    assert_valid_img; realize_img
+
+    assert_ownership
+
+    print_h2 "Enter namespace ($homer_ns)"
+    nsenter --pid="$homer_ns/pid" --mount="$homer_ns/mount" sudo -iu "$HOMER_USER" "${cmd[@]}"
   }
 
   ###########################################################################
@@ -690,6 +737,23 @@
     homer_ns=$( echo "${HOMER_NS_TPL}" | sed "s;HOMER_ID;${homer_id};" )
   }
 
+  ## usage: forward_ssh /path/to/new.socket
+  ## note: after return, check whether socket is actually created. it may be skipped if unsupported.
+  function forward_ssh() {
+    local socket="$1"
+    assert_cmd ssh-socket-forward
+    if [ -z "$SSH_AUTH_SOCK" ]; then
+      echo >&2 "WARNING: Cannot forward SSH agent. No agent detected."
+    else
+      mkdir -m 711 $(dirname "$socket")
+      ssh-socket-forward "$SSH_AUTH_SOCK" "$socket" &
+      cleanup_pids+=($!)
+      cleanup_files+=( $(dirname "$socket") )
+      sleep 1 ## ssh-socket-forward takes a moment to create socket
+      setfacl -m "u:$HOMER_USER:rw-" "$socket"
+    fi
+  }
+
   #########################################################
   ## Initialization
   trap task_cleanup EXIT
@@ -713,7 +777,7 @@
       -s|--size)    size="$2"         ; shift 2 ; ;;
       -t|--temp)    use_temp="--temp" ; shift 1 ; ;;
       -h|--help|help) action="usage"  ; shift 1 ; ;;
-      install|uninstall|run|status|create|mount|unmount|exec) action="$1" ; shift ; ;;
+      install|uninstall|run|enter|status|create|mount|unmount|exec|enter-exec) action="$1" ; shift ; ;;
       -*)           fatal "Unrecognized option $1" ; ;;
       *)            parsing=          ; ;;
     esac
@@ -728,11 +792,14 @@
     cmd+=("${SHELL:-bash}")
   fi
 
-  #echo "action=[$action] img=[$img] use_temp=[$use_temp] shares=[${shares[@]}] size=[$size]"
-  #echo "cmd: [${cmd[@]}]"
+  #echo >&2 "action=[$action] img=[$img] use_temp=[$use_temp] shares=[${shares[@]}] size=[$size]"
+  #echo >&2 "cmd: [${cmd[@]}]"
   #exit
 
-  f="task_${action}"
+  case "$action" in
+    enter-exec) f=task_enter_exec ; ;;
+    *) f="task_${action}" ; ;;
+  esac
   $f
   exit $?
 }
