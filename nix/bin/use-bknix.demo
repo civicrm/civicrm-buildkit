@@ -28,9 +28,14 @@ TXT_WHITE='\[\033[0;37m\]'
 ###########################################################
 ## Input parsing
 
+function use_worker_n() {
+ echo >&2 "WARNING: Ignore --worker-n"
+}
+
 MODE=env
 USE_LOCO_FILE=".loco/demo.yml"
 PROFILE=
+USE_CD=
 
 if [ -z "$OWNER" ]; then
   OWNER=$USER
@@ -40,14 +45,27 @@ while [ -n "$1" ]; do
   OPT="$1"
   shift
 
-  case "$OPT" in
-    old|min|dfl|max|edge) PROFILE="$OPT" ; ;;
-    -s|--shell) MODE=shell ; ;;
-    -e|--env) MODE=env ; ;;
-    -r|--run) MODE=run ; ;;
-    -N|--worker-n) echo >&2 "Ignore --worker-n" ; ;; ## Ignore
-    *) echo "Unrecognized option: $OPT" ; exit 1 ; ;;
-  esac
+  while [[ "$OPT" != "" ]]; do
+    case "$OPT" in
+      old|min|dfl|max|edge) PROFILE="$OPT" ; OPT="" ;;
+      --shell) MODE=shell     ; OPT="" ;;
+      --env) MODE=env         ; OPT="" ;;
+      --run) MODE=run         ; OPT="" ;;
+      --project-dir) USE_CD=1 ; OPT="" ;;
+      -s*) MODE=shell         ; OPT="-${OPT:2}" ;;
+      -e*) MODE=env           ; OPT="-${OPT:2}" ;;
+      -r*) MODE=run           ; OPT="-${OPT:2}" ;;
+      -c*) USE_CD=1           ; OPT="-${OPT:2}" ;;
+
+      -N0*|-N1*|-N2*|-N3*|-N4*|-N5*|-N6*) use_worker_n "${OPT:2:1}" ; OPT="-${OPT:3}" ;;
+      --worker-n) use_worker_n ; OPT="" ;;
+      -N*) use_worker_n ; OPT="-${OPT:2}" ;;
+
+      -) OPT="" ; ;;
+      *) echo "Unrecognized option: $OPT" ; exit 1 ; ;;
+    esac
+
+  done
 
   if [ "$MODE" = "run" -a -n "$PROFILE" ]; then
     ## The rest of the args are RUN_CMD.
@@ -55,7 +73,7 @@ while [ -n "$1" ]; do
   fi
 done
 
-#echo "PARSED: PROFILE=$PROFILE MODE=$MODE USE_LOCO_FILE=$USE_LOCO_FILE" > /dev/stderr
+#echo "PARSED: PROFILE=$PROFILE MODE=$MODE USE_LOCO_FILE=$USE_LOCO_FILE USE_CD=$USE_CD" > /dev/stderr
 #exit 10
 
 ###########################################################
@@ -63,13 +81,14 @@ done
 if [ -z "$PROFILE" ]; then
   echo "The specified profile does not correspond to an actual profile"
   echo
-  echo "usage: $0 <PROFILE> [-e|--env|-s|--shell|-r|--run] [RUN_CMD]"
+  echo "usage: $0 <PROFILE> [-c|--project-dir] [-e|--env|-s|--shell|-r|--run] [RUN_CMD]"
   echo ""
   echo "options:"
-  echo "  -e|--env       Display environment variables for the profile"
-  echo "  -s|--shell     Open a subshell with the profile"
-  echo "  -r|--run       Run a command in a subshell"
-  echo "  -N|--worker-n  (Ignored)"
+  echo "  -e|--env           Display environment variables for the profile"
+  echo "  -s|--shell         Open a subshell with the profile"
+  echo "  -r|--run           Run a command in a subshell"
+  echo "  -N|--worker-n      (Ignored)"
+  echo "  -c|--project-dir   Change working directory to project-root"
   echo ""
   echo "example: Generate environment variables for \"dfl\" profile"
   echo "  $0 dfl"
@@ -96,6 +115,9 @@ for CANDIDATE in "$HOME/bknix" "$HOME/bknix-$PROFILE" "$HOME/buildkit" "$HOME/bu
 done
 if [ ! -d "$BKIT" ]; then
   echo "WARNING: Could not find suitable BKIT in \"$HOME\" (eg \"bknix\", \"buildkit\", \"bknix-min\")" >&2
+fi
+if [ -n "$USE_CD" ]; then
+  cd "$BKIT"
 fi
 
 function createScript() {
