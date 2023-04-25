@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+{
 
 ## For systems which use `bin/install-ci.sh` to setup multiple copies of
 ## buildkit ("array of buildkits"; arrbuk), this helper script allows you to
@@ -171,3 +172,6 @@ case "$MODE" in
     "$@"
     ;;
 esac
+
+exit 0
+}
