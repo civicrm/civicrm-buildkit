@@ -44,7 +44,7 @@ function activerules_add() {
   local lport="$2"
   local rport="$3"
 
-  iptables -A PREROUTING -t nat -p "$proto" --dport "$lport" -j REDIRECT --to-port "$rport"
+  iptables -t nat -A PREROUTING -p "$proto" --dport "$lport" -j REDIRECT --to-port "$rport"
   iptables -t nat -A OUTPUT -o lo -p "$proto" --dport "$lport" -j REDIRECT --to-port "$rport"
 }
 
@@ -58,13 +58,13 @@ function activerules_remove() {
 }
 
 function activerules_apply() {
-  grep -v '^#' | while read -r line; do
+  (grep -v '^#' | while read -r line; do
     local proto=$(echo "$line" | awk '{print $1}')
     local lport=$(echo "$line" | awk '{print $2}')
     local rport=$(echo "$line" | awk '{print $3}')
     activerules_remove "$proto" "$lport"
     activerules_add "$proto" "$lport" "$rport"
-  done < "$PORTFW_CONF"
+  done) < "$PORTFW_CONF"
 }
 
 function activerules_clear() {
@@ -101,6 +101,9 @@ function usage() {
   echo "Install the portfw service (systemd)"
   echo "  $cmd install"
   echo
+  echo "Load or unload all NAT/port-forwarding rules"
+  echo "  $cmd apply"
+  echo "  $cmd clear"
 }
 
 function fatal() {
