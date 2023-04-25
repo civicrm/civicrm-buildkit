@@ -120,6 +120,8 @@ if [ -z "$PROFILE" -o ! -d "$PRFDIR" ]; then
   echo "  $0 min -s"
   echo "example: Run a command in a subshell for \"min\" profile"
   echo "  $0 min -r civibuild"
+  echo "example: Run loco services for \"max\" profile"
+  echo "  $0 min -cr loco run"
   echo ""
   exit 1
 fi
