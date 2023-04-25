@@ -7,16 +7,16 @@
 ##
 ##  - Execute `install-runner.sh`
 ##
-## What the script does:
+## What this script does:
 ##
-##  - Add systemd unit for demo services (`demo.service` <=> `homerdo-demo.sh`). Internally, this will:
+##  - Add systemd unit for demo services (`demo.service` <=> `src/jobs/homerdo-demo.sh`). Internally, this will:
 ##     - Create a semi-isolated container (via homerdo) for running all demos.
 ##     - Warmup persistent caches
 ##     - Setup tmpfs/overlay
-##     - Start Apache+PHP+MySQL for each profile (`use-bknix max -r loco start`, etc)
+##     - Start Apache+PHP+MySQL for each profile (`use-bknix max -cr loco start`, etc)
 ##     - Start an extra SSHD (for entering the container)
 ##  - Redirect HTTP (80/tcp) to the a demo service (eg 8003/tcp).
-##  - Enable access to the demo TCP ports
+##  - Add rules for ufw/iptables
 ##
 ## Key actions for managing the demos:
 ##
@@ -28,8 +28,8 @@
 ##      - `sudo -iu dispatcher -- homerdo enter -i images/demo.img
 ##      - `ssh homer@localhost -p9022` (if authorized by /etc/bknix-ci/dispatcher-keys)
 ##  - Within the demo environment, access the min/dfl/max/edge profiles.
-##      - `cd ~/bknix-min && use-bknix min`
-##      - `cd ~/bknix-max && use-bknix max`
+##      - `use-bknix min -cs`
+##      - `use-bknix max -cs`
 ##  - Manage services within min/max/etc
 ##      - `loco status`
 ##      - `loco info`
@@ -56,7 +56,7 @@ if [ ! -e /home/dispatcher ]; then
 fi
 
 if [ ! -e /etc/ufw ]; then
-  echo >&2 "Only support on hosts with ufw"
+  echo >&2 "Only supported on hosts with ufw"
   exit 1
 fi
 
