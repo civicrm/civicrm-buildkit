@@ -19,25 +19,35 @@
 ## Internal Environment
 ##
 
-SELF="$0"
-ALL_PROFILES=(min max)   ## List of buildkit profiles to enable
-#WARMUP_TYPES=()
-WARMUP_TYPES=(drupal-demo) ## List of buildkit types to warmup
-#WARMUP_TYPES=(min dfl max edge)
-TTL_TOOLS=60             ## During setup, refresh 'civi-download-tools' (if >60 minutes old)
-TTL_BLDTYPE=1440         ## During setup, warmup 'bldtype' (if >24 hours since last)
+SELF="$0"                ## Path to the current script
 CLEANUP_CALLS=()         ## List of functions to call during shutdown
 CLEANUP_FILES=()         ## List of files/directories to delete
+
+## How big should make the data-storage?
+SIZE=40g
+# SIZE=10g
+
+## List of buildkit profiles to enable
+#ALL_PROFILES=(min max)
+#ALL_PROFILES=(min dfl max)
+ALL_PROFILES=(min dfl max edge)
+
+## List of buildkit types for which we want warm caches
+WARMUP_TYPES=(drupal-demo)
+#WARMUP_TYPES=(drupal-demo wp-demo)
+
+## How frequently should we bake-in cache updates?
+TTL_TOOLS=120            ## During setup, refresh 'civi-download-tools' (if >120 minutes old)
+TTL_BLDTYPE=1440         ## During setup, warmup 'bldtype' (if >24 hours since last)
+
+## Configure sshd for the demo environment
 SSHD_PORT=9022
 SSHD_AUTHORIZED=/etc/bknix-ci/dispatcher-keys
 
-#BKIT_REPO="https://github.com/civicrm/civicrm-buildkit"
-#BKIT_BRANCH="master"
-
-BKIT_REPO="https://github.com/totten/civicrm-buildkit"
-BKIT_BRANCH="master-demo-2"
-
-SIZE=10g		## FIXME
+BKIT_REPO="https://github.com/civicrm/civicrm-buildkit"
+BKIT_BRANCH="master"
+#BKIT_REPO="https://github.com/totten/civicrm-buildkit"
+#BKIT_BRANCH="master-demo-2"
 
 #####################################################################
 ## Main
