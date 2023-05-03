@@ -37,6 +37,8 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   ## make sure drush functions are loaded
   drush8 cc drush -y
 
+  drush8 en -y civicrmtheme
+  drush8 config-import -y --partial --source="$SITE_CONFIG_DIR/config/"
   drupal8_po_import
 
   ## Setup CiviCRM -- But not in 'clean' config!
