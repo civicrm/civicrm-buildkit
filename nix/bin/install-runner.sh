@@ -65,14 +65,19 @@ install_bin "$BKNIXSRC/../bin/ssh-socket-forward" /usr/local/bin/ssh-socket-forw
 install_bin "$BINDIR"/await-bknix.flag-file /usr/local/bin/await-bknix
 install_bin "$BINDIR"/run-bknix-job         /usr/local/bin/run-bknix-job
 
-# `util-linux` on Ubuntu Jammy is v2.37. There was a regression in handling POSIX signals (introduced ~v2.36; fixed ~v2.38) which
+# `util-linux` on Ubuntu Jammy and Debian Bullseye is v2.37. There was a regression in handling POSIX signals (introduced ~v2.36; fixed ~v2.38) which
 # impacts children processes (incl homerdo). The regression interferes with using `kill`, `Ctrl-C`, `systemctl stop`, etc. To
 # fix, we download a statically-linked copy of unshare v2.38.1.
-if [[ "$(lsb_release -cs)" == "jammy" ]]; then
-  install_bin_url https://storage.googleapis.com/civicrm/util-linux/unshare-2.38.1.bin /usr/local/lib/unshare-2.38.1.bin /usr/local/bin/unshare
-elif [ -L /usr/local/bin/unshare -a -f /usr/local/lib/unshare-2.38.1.bin ]; then
-  rm /usr/local/bin/unshare
-fi
+case "$(lsb_release -cs)" in
+  jammy|bullseye)
+    install_bin_url https://storage.googleapis.com/civicrm/util-linux/unshare-2.38.1.bin /usr/local/lib/unshare-2.38.1.bin /usr/local/bin/unshare
+    ;;
+  *)
+    if [ -L /usr/local/bin/unshare -a -f /usr/local/lib/unshare-2.38.1.bin ]; then
+      rm /usr/local/bin/unshare
+    fi
+    ;;
+esac
 
 apt-get install -y qemu-utils acl psmisc && homerdo install
 install_dispatcher
