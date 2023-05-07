@@ -76,7 +76,8 @@ services:
     message: 'PHP-FPM is running on "<comment>$LOCALHOST:$PHPFPM_PORT</comment>"'
 
   mailhog:
-    run: 'MailHog -ui-bind-addr "$LOCALHOST:$MAIL_HTTP_PORT" -api-bind-addr "$LOCALHOST:$MAIL_HTTP_PORT" -smtp-bind-addr "$LOCALHOST:$MAIL_SMTP_PORT"'
+    run: 'loco-pid-file "$LOCO_SVC_VAR/mailhog.pid" -- MailHog -ui-bind-addr "$LOCALHOST:$MAIL_HTTP_PORT" -api-bind-addr "$LOCALHOST:$MAIL_HTTP_PORT" -smtp-bind-addr "$LOCALHOST:$MAIL_SMTP_PORT"'
+    pid_file: '$LOCO_SVC_VAR/mailhog.pid'
     message: 'Mailhog is running on "<comment>smtp://$LOCALHOST:$MAIL_SMTP_PORT</comment>" and "<comment>http://$LOCALHOST:$MAIL_HTTP_PORT</comment>"'
 
   ## apache-vdr uses a "virtual document root" to host a wildcard domain;

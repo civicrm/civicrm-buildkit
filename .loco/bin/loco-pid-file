@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+## This adapter helps with certain daemons (e.g. MailHog) which run in the foreground and lack the option to
+## record PID files.
+
+## usage: loco-pid-file <PID_FILE> [--] <COMMAND...>
+
+set -e
+
+PID_FILE="$1"
+shift
+if [[ "$1" == "--" ]]; then
+  shift
+fi
+
+## TODO: Guard against possibility that $PID_FILE already exists and already points to a running process.
+## Not sure of a portable command for that.
+
+echo $$ > "$PID_FILE"
+echo >&2 "[loco-pid-file] Generated \"$PID_FILE\" (`cat $PID_FILE`)  for \"$@\""
+exec "$@"
