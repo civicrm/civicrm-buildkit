@@ -70,7 +70,7 @@ $c['app']->main('[yamlFile]', function(SymfonyStyle $io, $yamlFile, $fmtNames) {
     $question = new Question('Add a name (blank to finish)');
     $question->setAutocompleterValues($labels);
     $value = $io->askQuestion($question);
-    if (preg_match(';\<#([0-9]+)\>;', $value, $m)) {
+    if ($value && preg_match(';\<#([0-9]+)\>;', $value, $m)) {
       $idFlags[$m[1]] = 1;
     }
     elseif ($value) {
