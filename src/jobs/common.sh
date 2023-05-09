@@ -122,6 +122,7 @@ function init_std_workspace() {
   fi
 
   for dir in "$WORKSPACE_JUNIT" "$WORKSPACE_HTML" "$WORKSPACE_LOG" "$WORKSPACE_DIST" "$WORKSPACE_CHECKSTYLE" ; do
+    ## This is probably a nullop now that `run-bknix-job` has a generic/pre-flight cleanup for $WORKSPACE/build.
     if [ -d "$dir" ]; then
       rm -rf "$dir"
     fi

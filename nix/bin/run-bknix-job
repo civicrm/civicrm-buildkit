@@ -109,6 +109,10 @@ function run_bknix_main() {
     run_bknix_mock
   fi
 
+  if [ -d "$WORKSPACE/build" ]; then
+    rm -rf "$WORKSPACE/build"
+  fi
+
   if [ -e /etc/bknix-ci/is-runner -a "$USER" != "homer" ]; then
     if [ -z "$JOB_NAME" ]; then
       export JOB_NAME="$2"
