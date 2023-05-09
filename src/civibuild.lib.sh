@@ -1312,6 +1312,9 @@ function drupal8_po_download() {
 function drupal8_po_import() {
   cvutil_assertvars drupal8_po_import WEB_ROOT
   local SPOOL="${WEB_ROOT}/share/translations"
+  if [[ ! -d "$SPOOL" ]]; then
+    mkdir -p "$SPOOL"
+  fi
   echo "FIXME: The function drupal8_po_import() should be updated to handle imports on Drupal 8+" > "$SPOOL/FIXME.txt"
   echo "WARNING: Skipped drupal8_po_import(). Not yet supported on Backdrop." 1>&2
   # Issue: At time of writing, our copy of drush-language doesn't seem to work on Drupal 9.
