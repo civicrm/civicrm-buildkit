@@ -1372,7 +1372,7 @@ function _drupalx_po_download() {
       ## ex: devel-7.x-1.x     ==>  https://ftp.drupal.org/files/translations/7.x/devel/devel-7.x-1.x.fr.po                      ==>  SPOOL/devel-7.x-1.x.fr.po
       ## ex: devel-5.0.x       ==>  https://ftp.drupal.org/files/translations/all/devel/devel-5.0.x.fr.po                        ==>  SPOOL/devel-5.0.x.fr.po
       ## ex: drupal-7.x        ==>  https://ftp.drupal.org/files/translations/7.x/drupal/drupal-7.x.fr.po                        ==>  SPOOL/drupal-7.x.fr.po
-      ## ex: backdropcms-1.23  ==>  https://localize.backdropcms.org/files/l10n_packager/1.23/backdropcms/backdropcms-1.23.fr.po ==>  SPOOL/backdropcms-1.23.fr.po
+      ## ex: backdropcms-1.23  ==>  https://localize.backdropcms.org/files/l10n_packager/all/backdropcms/backdropcms-1.23.fr.po  ==>  SPOOL/backdropcms-1.23.fr.po
 
       if [[ $TARGET =~ ([a-zA-Z0-9_]+)-(.*) ]]; then
         local PROJECT="${BASH_REMATCH[1]}"
@@ -1381,7 +1381,7 @@ function _drupalx_po_download() {
         local PO_SET=$( [[ "$VERSION" == *"7.x"* ]] && echo 7.x || echo all )
         local PO_URL="https://ftp.drupal.org/files/translations/${PO_SET}/${PROJECT}/${TARGET}.${NEW_LOCALE}.po"
         if [ "$PROJECT" = "backdropcms" ]; then
-          PO_URL="https://localize.backdropcms.org/files/l10n_packager/${VERSION}/backdropcms/backdropcms-${VERSION}.${NEW_LOCALE}.po"
+          PO_URL="https://localize.backdropcms.org/files/l10n_packager/all/backdropcms/backdropcms-${VERSION}.${NEW_LOCALE}.po"
         fi
 
         http_cache_setup "$PO_URL" "${CACHE_DIR}/drupal/translations/${TARGET}.${NEW_LOCALE}.po" "$TTL"
