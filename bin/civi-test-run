@@ -63,7 +63,7 @@ function show_help() {
   echo "  -j <junit-dir>      The path to a folder for storing results in JUnit XML (required)"
   echo "  --exclude-group <g> Exclude tests with a particular @group (if supported by suite)"
   echo "  --group <g>         Focus on tests with a particular @group (if supported by suite)"
-  ecoh "  --filter <regex>    Filter which test functions to run (if supported by suite)"
+  echo "  --filter <regex>    Filter which test functions to run (if supported by suite)"
   echo "  <suites>            A list of one more of the following:"
   echo "                        - all"
   echo "                        - karma"
