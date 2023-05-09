@@ -71,6 +71,7 @@ function show_help() {
   echo "                        - phpunit-api3"
   echo "                        - phpunit-api4"
   echo "                        - phpunit-civi"
+  echo "                        - phpunit-core-exts"
   echo "                        - phpunit-crm"
   echo "                        - phpunit-e2e"
   echo "                        - phpunit-drupal"
