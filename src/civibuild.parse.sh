@@ -74,8 +74,7 @@ function civibuild_detect_site_name() {
   if [ -z `compgen -G $BLDDIR/*.sh` ]; then
     return;
   fi
-  local config_paths=`grep -H CMS_ROOT $BLDDIR/*.sh | sed s#CMS_ROOT=## | tr -d '"'`;
-  ## WEB_ROOT might be better than CMS_ROOT, but it may not be stored persistently on pre-existing systems.
+  local config_paths=`grep -H WEB_ROOT $BLDDIR/*.sh | sed s#WEB_ROOT=## | tr -d '"'`;
 
   local parents=()
   local children=()
