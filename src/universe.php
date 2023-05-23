@@ -84,6 +84,22 @@ return function() {
     'https://github.com/ClickandPledge/wordpress-civicrm' => 'wp-plugin/click-and-pledge',
     'https://github.com/WPCV/cf-civicrm' => 'wp-plugin',
     'https://github.com/WPCV/wpcv-woo-civi-integration' => 'wp-plugin',
+    'https://github.com/WPCV/wpcv-civicrm-event-organiser' => 'wp-plugin',
+    'https://github.com/WPCV/wpcv-civicrm-groups-integration' => 'wp-plugin',
+    'https://github.com/WPCV/wpcv-tax-field-sync' => 'wp-plugin',
+    'https://github.com/WPCV/wpcv-eo-maps-integration' => 'wp-plugin',
+    'https://github.com/christianwach/civicrm-wp-profile-sync' => 'wp-plugin',
+    'https://github.com/christianwach/civicrm-event-organiser' => 'wp-plugin',
+    'https://github.com/christianwach/civicrm-admin-utilities' => 'wp-plugin',
+    'https://github.com/christianwach/civicrm-wp-member-sync' => 'wp-plugin',
+    'https://github.com/christianwach/bp-groups-civicrm-sync' => 'wp-plugin',
+    'https://github.com/christianwach/cli-tools-for-civicrm' => 'wp-plugin',
+    'https://github.com/christianwach/civicrm-directory' => 'wp-plugin',
+    'https://develop.tadpole.cc/plugins/civicrm-gutenberg-blocks' => 'wp-plugin',
+    'https://develop.tadpole.cc/plugins/civicrm-permissions-sync' => 'wp-plugin',
+    'https://develop.tadpole.cc/plugins/civicrm-network-groups' => 'wp-plugin',
+    'https://develop.tadpole.cc/plugins/civicrm-groups-sync' => 'wp-plugin',
+
 
      // Some random exts that don't appear in the feeds.
     'https://github.com/3sd/civicrm-pinpoint' => 'ext',
@@ -198,11 +214,7 @@ return function() {
 
   // These repos all live on 'plugins.svn.wordpress.org'. They have simple naming+branching.
   $wporgPlugins = [
-    'bp-groups-civicrm-sync',
-    'civicrm-admin-utilities',
     'civicrm-contribution-page-widget',
-    'civicrm-wp-member-sync',
-    'civicrm-wp-profile-sync',
     'civievent-widget',
   ];
   foreach ($wporgPlugins as $name) {
