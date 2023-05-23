@@ -73,7 +73,7 @@ function parse_args(array $args, array $all_feeds): array {
     }
   }
 
-  if (empty( $options['basedir'])) {
+  if (empty($options['basedir'])) {
     errprintf("Missing base directory\n");
     app_usage();
     exit(1);
@@ -104,7 +104,8 @@ function feed_extdir() {
 
   phpQuery::newDocumentHTML($raw);
   $repos = [];
-  $types = ['CiviCRM Extension' => 'ext',
+  $types = [
+    'CiviCRM Extension' => 'ext',
     'Backdrop' => 'backdrop-module',
     'Drupal7' => 'drupal-module',
     'Drupal8' => 'drupal-module',
@@ -222,7 +223,7 @@ function feed_normalize($feed, $defaults = []) {
  */
 function feed_merge($feeds) {
   $all = [];
-  $srcIds = []; // Flag git URLs/branches that have been visited already.
+  $srcIds = []; /* Flag git URLs/branches that have been visited already. */
   foreach ($feeds as $feed) {
     foreach ($feed as $key => $repo) {
       $srcId = ($repo['git_url'] ?? '') . ($repo['svn_url'] ?? '') . '#' . ($repo['git_branch'] ?? 'DEFAULT');
@@ -247,9 +248,11 @@ function feed_merge($feeds) {
 
 class TaskList {
   private $tasks = [];
+
   public function add(string $title, $callback) {
     $this->tasks[] = [$title, $callback];
   }
+
   public function runAll($dryRun = FALSE) {
     foreach ($this->tasks as $task) {
       [$title, $callback] = $task;
@@ -262,6 +265,7 @@ class TaskList {
       }
     }
   }
+
 }
 
 ########################################################################################
@@ -278,7 +282,7 @@ $basedir = $options['basedir'];
 ########################################################################################
 ## Main data loading
 
-$statuses = array(); // array(string $key => int $code)
+$statuses = array(); /* array(string $key => int $code) */
 $deprecated = array('civicrm-drupal', 'civicrm-org-site', 'api4', 'civicrm-setup', 'civicrm-org-platform');
 
 $feeds = [];
@@ -360,10 +364,10 @@ foreach ($deprecated as $key) {
 }
 
 ########################################################################################
-$ok = array_keys(array_filter($statuses, function($val){
+$ok = array_keys(array_filter($statuses, function($val) {
   return ($val == 0);
 }));
-$err = array_keys(array_filter($statuses, function($val){
+$err = array_keys(array_filter($statuses, function($val) {
   return ($val != 0);
 }));
 
