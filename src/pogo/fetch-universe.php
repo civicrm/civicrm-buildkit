@@ -311,6 +311,13 @@ foreach ($repos as $key => $ext) {
     $msgs[] = "$key does not have git_url or svn_url";
     $statuses[$key] = 1;
   }
+  elseif (!empty($ext['git_url']) && file_exists($dir) && !file_exists("$dir/.git")) {
+    $oldType = file_exists("$dir/.svn") ? 'svn' : 'unknown';
+    $taskList->add("Convert $key ($dir) from $oldType to git", function() use ($basedir, $dir, $ext, &$statuses, $key) {
+      run($basedir, sprintf("rm -rf %s", escapeshellarg($dir)));
+      $statuses[$key] = run($basedir, sprintf("git clone %s %s %s", escapeshellarg($ext['git_url']), escapeshellarg($dir), $branchExpr));
+    });
+  }
   elseif (!empty($ext['git_url']) && file_exists($dir)) {
     $taskList->add("Update $key ($dir) via git", function() use ($basedir, $dir, $ext, &$statuses, $key) {
       run($dir, sprintf("git remote set-url origin %s", escapeshellarg($ext['git_url'])));
