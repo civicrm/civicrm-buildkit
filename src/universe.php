@@ -214,11 +214,7 @@ return function() {
 
   // These repos all live on 'plugins.svn.wordpress.org'. They have simple naming+branching.
   $wporgPlugins = [
-    'bp-groups-civicrm-sync',
-    'civicrm-admin-utilities',
     'civicrm-contribution-page-widget',
-    'civicrm-wp-member-sync',
-    'civicrm-wp-profile-sync',
     'civievent-widget',
   ];
   foreach ($wporgPlugins as $name) {
