@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## Transition: Old builds don't have "web/" folder. New builds do.
 ## TODO: Simplify sometime after Dec 2019

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## install.sh -- Create config files and databases; fill the databases
 
@@ -13,7 +13,7 @@ amp_install
 cvutil_mkdir "$WEB_ROOT/out" "$WEB_ROOT/out/gen" "$WEB_ROOT/out/tmp" "$WEB_ROOT/out/tar" "$WEB_ROOT/out/config"
 
 cat > "$WEB_ROOT/src/distmaker/distmaker.conf" <<EODIST
-#!/bin/bash
+#!/usr/bin/env bash
 [ -z "\$DM_SOURCEDIR" ]   && DM_SOURCEDIR=$WEB_ROOT/src
 [ -z "\$DM_GENFILESDIR" ] && DM_GENFILESDIR=$WEB_ROOT/out/gen
 [ -z "\$DM_TMPDIR" ]      && DM_TMPDIR=$WEB_ROOT/out/tmp

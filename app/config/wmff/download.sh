@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set +x
 git_cache_setup "https://gerrit.wikimedia.org/r/wikimedia/fundraising/crm.git" "$CACHE_DIR/wikimedia/fundraising/crm.git"
 set -x

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## download.sh -- Download Backdrop and CiviCRM
 

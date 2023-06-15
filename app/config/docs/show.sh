@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 echo "[[Useful Commands ($WEB_ROOT)]]"
 echo " - List manuals:           ./bin/console docs:list"
 echo " - Publish all:            ./bin/console docs:publish"

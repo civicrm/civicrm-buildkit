@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 mkdir "$WEB_ROOT" "$WEB_ROOT/web"
 
 cat >"$WEB_ROOT/web/index.php" <<EOF
