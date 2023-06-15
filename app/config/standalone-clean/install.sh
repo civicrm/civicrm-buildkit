@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## install.sh -- Create config files and databases; fill the databases
 [ -d "$WEB_ROOT/web" ] && CMS_ROOT="$WEB_ROOT/web"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Install NixOS profile(s) for CiviCRM development. After installing, you can get access to a full
 # LAMP-style CLI tool-chain by running of these statements:

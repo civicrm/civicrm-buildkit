@@ -62,7 +62,7 @@ DocumentRoot "{{LOCO_SVC_VAR}}/htdocs"
     Require all denied
 </Files>
 
-ErrorLog "|/bin/cat"
+ErrorLog "|/usr/bin/env cat"
 
 LogLevel info
 
@@ -74,7 +74,7 @@ LogLevel info
       LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %I %O" combinedio
     </IfModule>
 
-    # CustomLog "|/bin/cat" common
+    # CustomLog "|/usr/bin/env cat" common
 
 </IfModule>
 

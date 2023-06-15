@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## This is a full reset - shutting down all systems, recreating all config files, and restarting all systems
 ##

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## These source-code repositories are commonly used, so we'll declare them once.
 ##

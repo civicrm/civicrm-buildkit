@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## Several build-types -- drupal-demo, wp-demo, etc -- are designed for use
 ## in different combinations.  It's useful to be able to create arbitrary

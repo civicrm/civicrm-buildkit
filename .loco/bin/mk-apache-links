@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 REALHTTPDIR=$(dirname $(dirname $(which httpd)))
 mkdir -p "$LOCO_SVC_VAR" "$LOCO_SVC_VAR/logs" "$LOCO_SVC_VAR/conf" "$LOCO_SVC_VAR/htdocs"

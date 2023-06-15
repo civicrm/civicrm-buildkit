@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # This installs each of the bknix profiles in a way that's useful for the CI servers.
 # Specifically, for each profile:

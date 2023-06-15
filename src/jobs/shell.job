@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
 ## This is a dummy job which is not really used by Jenkins. You can use it to open a

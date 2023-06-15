@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ###############################################################################
 ## Bootstrap variables (generated automatically based on how app is called)

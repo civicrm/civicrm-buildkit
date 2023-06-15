@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## Usage: await-bknix <profile>
 ## Purpose: Check to see if "profile" is online. Sleep+poll until it comes online.

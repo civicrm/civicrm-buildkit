@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## Take an existing, tar-based CiviCRM directory and convert it to a git working directory
 
@@ -69,7 +69,7 @@ function do_hookify() {
     echo "[[Install recommended hooks ($TGT)]]"
     for HOOK in commit-msg post-checkout post-merge pre-commit prepare-commit-msg post-commit pre-rebase post-rewrite ;do
           cat << TMPL > "$TGT/.git/hooks/$HOOK"
-#!/bin/bash
+#!/usr/bin/env bash
 PRJDIR="$PRJDIR"
 BINDIR="$BINDIR"
 if [ -d "$BINDIR" ]; then

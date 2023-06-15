@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # `install-runner.sh` prepares a system to perform transactional test-runs for test.civicrm.org.
 # The script may be used for new installs and post-boot self-updates.
