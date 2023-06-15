@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## Bash helper functions
 
@@ -98,7 +98,7 @@ function cvutil_save() {
   file="$1"
   shift
 
-  echo "#!/bin/bash" > $file
+  echo "#!/usr/bin/env bash" > $file
   for var in "$@" ; do
     eval "val=\$$var"
     echo "$var=\"$val\"" >> $file
@@ -1519,7 +1519,7 @@ function git_set_hooks() {
   echo "[[Install recommended hooks ($TGT)]]"
   for HOOK in commit-msg post-checkout post-merge pre-commit prepare-commit-msg post-commit pre-rebase post-rewrite ;do
         cat << TMPL > "$TGT/.git/hooks/$HOOK"
-#!/bin/bash
+#!/usr/bin/env bash
 if [ -f "\$GIT_DIR/${HOOK_DIR}/${HOOK}" ]; then
   ## Note: GIT_CANONICAL_REPO_NAME was not provided by early hook-stubs
   export GIT_CANONICAL_REPO_NAME="$GIT_CANONICAL_REPO_NAME"

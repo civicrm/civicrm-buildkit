@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
 assert_common EXECUTOR_NUMBER WORKSPACE

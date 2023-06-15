@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
 #### NOTE: The canonical version of this file is 'src/pogo/wrapper.sh'.

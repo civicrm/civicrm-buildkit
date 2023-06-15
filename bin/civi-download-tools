@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## Download Drupal, CiviCRM, dependencies, and useful development tools.
 ## Setup basic symlinks.

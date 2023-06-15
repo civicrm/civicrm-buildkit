@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## Execute pdepend in parallel, using small batches of Civi code. Aggregate
 ## the results.

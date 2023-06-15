@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## This is a quick-and-dirty script to clone a repository and checkout the head+base revisions.
 ##

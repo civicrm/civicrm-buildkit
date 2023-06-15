@@ -75,7 +75,7 @@ Suppose you have a job `CiviCRM-Foo-Bar` in Jenkins and want to migrate the scri
 * In https://test.civicrm.org/job/CiviCRM-Foo-Bar/configure, switch to the new script
     * The bash script should look like this:
         ```
-        #!/bin/bash
+        #!/usr/bin/env bash
         ## See https://github.com/civicrm/civicrm-buildkit/tree/master/src/jobs
         set -e
         if [ -e $HOME/.profile ]; then . $HOME/.profile; fi

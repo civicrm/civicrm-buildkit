@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## This is a wrapper script for codecept. It selects the build that is compatible with the PHP
 ## interpreter.

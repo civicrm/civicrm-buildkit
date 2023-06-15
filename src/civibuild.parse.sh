@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## Parse un-named params by position: <action> <sitename>[/<ms-id>]
 function civibuild_parse_unnamed_params() {

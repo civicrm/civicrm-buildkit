@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## Similar to time, but a bit more verbose -- eg shows start message as well.
 ## Makes it easier to interpret when watching a console in CI.
