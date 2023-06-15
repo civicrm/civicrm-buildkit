@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## `install-demo.sh` prepares the system to host demo sites (where each demo may live
 ## for a couple days).

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## Delete various caches that we don't want in the image.
 ## Note: There are some caches that we do want in the image!

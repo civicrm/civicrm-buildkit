@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## The bknix.git is being merged into buildkit.git
 ## This performs a migration, swapping the bknix.git and buildkit.git folders while preserving the main data.

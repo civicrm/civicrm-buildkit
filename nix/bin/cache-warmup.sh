@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 for OWNER in jenkins publisher ; do
   for PROF in dfl min max old edge ; do
     if [ -d "/home/$OWNER/bknix-$PROF" ]; then

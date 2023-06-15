@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -x
 
 mysql_version=$(mysql --no-defaults --version)

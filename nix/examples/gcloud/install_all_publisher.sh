@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## This is an example of how to setup /etc/bknix-ci/install_all_publisher.sh
 ## for an ephemeral/dev-oriented gcloud VM.
