@@ -598,14 +598,12 @@ function civicrm_download_composer_d8() {
     *) echo "No extra patches required" ; ;;
   esac
 
-  case "$CMS_VERSION" in 
-    9.2*) echo 'No Extra Patch required' ; ;;
-    9.1*) echo 'No Extra Patch required' ; ;;
-    9*) echo 'No Extra Patch required' ; ;;
-    ^9) echo 'No Extra Patch required' ; ;;
+  ## Older D8 version had weird conflict involving pear/pear_exception and drupal-composer/drupal-project
+  case "$CMS_VERSION" in
     8.9*) echo 'No Extra Patch required' ; ;;
-    *) EXTRA_COMPOSER+=( 'pear/pear_exception:1.0.1 as 1.0.0') ## weird conflict in drupal-composer/drupal-project
-  esac 
+    8*) EXTRA_COMPOSER+=( 'pear/pear_exception:1.0.1 as 1.0.0') ; ;; ## weird conflict in drupal-composer/drupal-project
+    *) echo 'No Extra Patch required' ; ;;
+  esac
 
   composer require "${EXTRA_COMPOSER[@]}" civicrm/civicrm-{core,packages,drupal-8}:"$CIVI_VERSION_COMP" --prefer-source
   [ -n "$EXTRA_PATCH" ] && git scan am -N "${EXTRA_PATCH[@]}"
