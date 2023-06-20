@@ -219,6 +219,16 @@ if grep -q . "$TMP/js.txt" ; then
   fi
 fi
 
+CIVISTRINGS_EXIT=0
+if grep -q . "$TMP/js.txt" "$TMP/php.txt" ; then
+  echo "============================[ civistrings ]============================="
+  cat  "$TMP/js.txt" "$TMP/php.txt" | ( xargs $BINDIR/civistrings 2>&1 ) | grep '^\[warn' > "$TMP/civistrings-check.log"
+  if grep -q . "$TMP/civistrings-check.log" ; then
+    CIVISTRINGS_EXIT=1
+    cat "$TMP/civistrings-check.log"
+  fi
+fi
+
 ## Finish up
 if [ "$PHPCS_EXIT" -gt 0 -o "$PHPL_EXIT" -gt 0 ]; then
   echo >&2 "Found PHP errors"
@@ -229,6 +239,9 @@ fi
 if [ "$JSHINT_EXIT" -gt 0 ]; then
   echo >&2 "Found JS errors"
 fi
-if [ "$PHPCS_EXIT" -gt 0 -o "$PHPL_EXIT" -gt 0 -o "$PHPCS_CSS_EXIT" -gt 0 -o "$JSHINT_EXIT" -gt 0 ]; then
+if [ "$CIVISTRINGS_EXIT" -gt 0 ]; then
+  echo >&2 "Found civistrings errors"
+fi
+if [ "$PHPCS_EXIT" -gt 0 -o "$PHPL_EXIT" -gt 0 -o "$PHPCS_CSS_EXIT" -gt 0 -o "$JSHINT_EXIT" -gt 0 -o "$CIVISTRINGS_EXIT" -gt 0 ]; then
   exit 1
 fi
