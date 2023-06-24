@@ -201,7 +201,7 @@ function do_setup() {
   fi
 
   if is_stale "$BKIT/.ttl-tools" "$TTL_TOOLS" ; then
-    (cd "$BKIT" && git pull)
+    (cd "$BKIT" && git checkout -- package-lock.json composer.lock && git pull)
     # (cd "$BKIT" && nix-shell -A "$BKPROF" --run './bin/civi-download-tools')
     (cd "$BKIT" && nix-shell -A "$BKPROF" --run './bin/civi-download-tools && civibuild cache-warmup')
     touch "$BKIT/.ttl-tools"
