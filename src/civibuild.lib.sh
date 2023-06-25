@@ -689,8 +689,16 @@ function civicrm_install_cv() {
 
   local loadGenOpt
   [ -n "$NO_SAMPLE_DATA" ] && loadGenOpt="" || loadGenOpt="-m loadGenerated=1"
+  declare -a installOpts=()
+  if [ "$CIVI_UF" == "Standalone" ]; then
+    cvutil_assertvars civicrm_install ADMIN_USER ADMIN_PASS ADMIN_EMAIL
+    installOpts+=("-m" "extras.adminUser=$ADMIN_USER" "-m" "extras.adminPass=$ADMIN_PASS" -m "extras.adminEmail=$ADMIN_EMAIL")
+  fi
+  if [ -z "$NO_SAMPLE_DATA" ]; then
+    installOpts+=("-m" "loadGenerated=1")
+  fi
 
-  cv core:install -vv -f --cms-base-url="$CMS_URL" --db="$CIVI_DB_DSN" -m "siteKey=$CIVI_SITE_KEY" $loadGenOpt
+  cv core:install -vv -f --cms-base-url="$CMS_URL" --db="$CIVI_DB_DSN" -m "siteKey=$CIVI_SITE_KEY" "${installOpts[@]}"
   local settings=$( cv ev 'echo CIVICRM_SETTINGS_PATH;' )
   cvutil_inject_settings "$settings" "civicrm.settings.d"
   civicrm_update_domain
