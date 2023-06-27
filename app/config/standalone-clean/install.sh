@@ -25,4 +25,7 @@ composer civicrm:publish
 
 ###############################################################################
 ## Extra configuration
-# @todo Setup demo user
+
+env DEMO_USER="$DEMO_USER" DEMO_PASS="$DEMO_PASS" DEMO_EMAIL="$DEMO_EMAIL" \
+  cv scr "$SITE_CONFIG_DIR/demo-user.php"
+  ## Might be nice as a dedicated command...
