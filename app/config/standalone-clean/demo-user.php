@@ -32,8 +32,9 @@ CRM_Core_Transaction::create()->run(function () {
   ];
   $userID = \CRM_Core_BAO_CMSUser::create($params, $adminEmail);
 
-  \Civi\Api4\UserRole::create(FALSE)
-    ->setValues(['role_id.name' => 'Administrator', 'user_id' => $userID])
+  \Civi\Api4\User::update(FALSE)
+    ->addWhere('id', '=', $userID)
+    ->addValue('roles', [1])
     ->execute();
 
 });
