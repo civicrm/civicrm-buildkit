@@ -19,6 +19,12 @@ CIVI_SETTINGS="${WEB_ROOT}/data/civicrm.settings.php"
 CIVI_TEMPLATEC="${WEB_ROOT}/data/templates_c"
 GENCODE_CONFIG_TEMPLATE="${CMS_ROOT}/civicrm.config.php.standalone"
 
+pushd "$CIVI_CORE"
+  ./tools/standalone/bin/scaffold "$WEB_ROOT"
+  ## This may technically be a bit redundant with 'composer install' for new builds.
+  ## But for long-lived sites that have rebuilds, it's handy.
+popd
+
 civicrm_install_cv
 
 composer civicrm:publish
