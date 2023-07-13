@@ -49,7 +49,7 @@
       "codecept-php5": {"version": "2.3.6", "url": "https://codeception.com/releases/{$version}/php54/codecept.phar", "path": "bin/_codecept-php5.phar", "type": "phar"},
       "codecept-php7": {"version": "2.3.6", "url": "https://codeception.com/releases/{$version}/codecept.phar", "path": "bin/_codecept-php7.phar", "type": "phar"},
       "coworker": {"version": "v0.2", "url": "https://download.civicrm.org/coworker/coworker.phar-{$version}", "path": "bin/coworker", "type": "phar"},
-      "cv": {"version": "0.3.44", "url": "https://download.civicrm.org/cv/cv.phar-v{$version}", "path": "bin/cv", "type": "phar"},
+      "cv": {"version": "0.3.45", "url": "https://download.civicrm.org/cv/cv.phar-v{$version}", "path": "bin/cv", "type": "phar"},
       "drush8": {"version": "8.4.12", "url": "https://download.civicrm.org/cv/drush.phar-{$version}", "path": "extern/drush8.phar", "type": "phar"},
       "drush-backdrop": {"version": "1.x-1.x", "url": "https://github.com/backdrop-contrib/backdrop-drush-extension/archive/{$version}.zip", "path": "extern/drush-lib/backdrop"},
       "drush-language": {"version": "7.x-1.5", "url": "https://ftp.drupal.org/files/projects/drush_language-{$version}.zip", "path": "extern/drush-lib/language"},
