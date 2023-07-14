@@ -26,6 +26,8 @@ export TIME_FUNC="linear:500"
 export CIVIX_WORKSPACE
 case "$BLDTYPE" in
   drupal-clean) CIVIX_WORKSPACE="$BKITBLD/$BLDNAME/web/sites/all/modules/civicrm/ext/civixtest" ; ;;
+  drupal9-clean) CIVIX_WORKSPACE="$BKITBLD/$BLDNAME/web/sites/default/files/civicrm/ext/civixtest" ; ;;
+  drupal10-clean) CIVIX_WORKSPACE="$BKITBLD/$BLDNAME/web/sites/default/files/civicrm/ext/civixtest" ; ;;
   drupal-demo) CIVIX_WORKSPACE="$BKITBLD/$BLDNAME/web/sites/all/modules/civicrm/ext/civixtest" ; ;;
   wp-demo) CIVIX_WORKSPACE="$BKITBLD/$BLDNAME/web/wp-content/plugins/civicrm/civicrm/ext/civixtest" ; ;;
   *) echo "Unrecognized BLDTYPE=$BLDTYPE" ; exit 1 ; ;;
