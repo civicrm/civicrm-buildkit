@@ -48,6 +48,7 @@ echo "DROP DATABASE IF EXISTS fredge"| amp sql -N civi -a
 echo "CREATE DATABASE IF NOT EXISTS fredge"| amp sql -N civi -a
 eval mysql $CIVI_DB_ARGS <<EOSQL
   GRANT ALL PRIVILEGES ON fredge.* TO $CMS_DB_USER@'%';
+  GRANT ALL PRIVILEGES ON fredge.* TO $CIVI_DB_USER@'%';
 EOSQL
 
 ###############################################################################
