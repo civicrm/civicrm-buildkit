@@ -326,6 +326,7 @@ DECLARED_ACTIONS="
   phpunit-info
   run
   show
+  serve
   snapshot snapshots
   restore restore-all
   upgrade-test ut

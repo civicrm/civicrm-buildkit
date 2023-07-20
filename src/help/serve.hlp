@@ -1,0 +1,11 @@
+[33mUsage:[0m
+  serve <build-name>
+
+[33mArguments:[0m
+[32m  <build-name>[0m           The name of the build to serve
+
+Run PHP built-in HTTP server
+
+[33mNB:[0m This is supported for CiviCRM standalone. It is not supported on CMSs.
+
+[0m

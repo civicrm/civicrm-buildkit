@@ -14,6 +14,7 @@ civibuild [options] command
   [32mlist[0m                  Display a list of build-names found in the build directory
   [32medit [0m                 Edit the config file for a build or snapshot
   [32mshow[0m                  Show key details about the build
+  [32mserve[0m                 Run PHP CLI server (if supported)
  [33mSnapshots[0m
   [32msnapshots[0m             List available snapshots
   [32msnapshot[0m              Create a snapshot of the CMS+CRM DBs
