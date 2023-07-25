@@ -76,6 +76,8 @@ function civibuild_alias_resolve() {
     bmaster)     SITE_TYPE=backdrop-demo    ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Backdrop"       ;;
     b-master)    SITE_TYPE=backdrop-demo    ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Backdrop"       ;;
 
+    smaster)     SITE_TYPE=standalone-clean ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Standalone Sandbox"        ;;
+
     civihr)      SITE_TYPE=civihr           ; CIVI_VERSION=5.3.1     ; CMS_TITLE="CiviHR Sandbox"                    ; NO_SAMPLE_DATA=1       ;;
 
     bempty)      SITE_TYPE=backdrop-empty   ; CIVI_VERSION=none      ; CMS_TITLE="Backdrop Sandbox"                  ;;
