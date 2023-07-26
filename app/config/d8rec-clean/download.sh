@@ -10,6 +10,6 @@
 composer create-project drupal/recommended-project:"$CMS_VERSION" "$WEB_ROOT" --no-interaction
 
 pushd "$WEB_ROOT" >> /dev/null
-  composer require drupal/{devel,libraries,userprotect}
+  composer require drupal/{libraries,userprotect}
   civicrm_download_composer_d8
 popd >> /dev/null

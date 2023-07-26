@@ -68,24 +68,10 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   drush8 -y scr "$SITE_CONFIG_DIR/install-welcome.php"
 
   # Move extensions into web accessible areas
-  if [ -d "$CIVI_CORE/tools/extensions/org.civicrm.angularprofiles" ]; then
-    mv $CIVI_CORE/tools/extensions/org.civicrm.angularprofiles files/civicrm/ext
-  fi
   if [ -d "$CIVI_CORE/tools/extensions/org.civicrm.contactlayout" ]; then
     mv $CIVI_CORE/tools/extensions/org.civicrm.contactlayout files/civicrm/ext
   fi
-  if [ -d "$CIVI_CORE/tools/extensions/civivolunteer" ]; then
-    mv $CIVI_CORE/tools/extensions/civivolunteer files/civicrm/ext
-  fi
   cv api extension.refresh
-
-  ## Setup demo extensions
-  cv en --ignore-missing $CIVI_DEMO_EXTS
-  if [[ "$CIVI_DEMO_EXTS" =~ volunteer ]]; then
-    drush8 -y rap anonymous 'register to volunteer'
-    drush8 -y rap authenticated 'register to volunteer'
-    drush8 -y rap demoadmin 'create volunteer projects,edit own volunteer projects,edit all volunteer projects,log own hours,edit volunteer project relationships,edit volunteer registration profiles,delete own volunteer projects,delete all volunteer projects'
-  fi
 
   ## Demo sites always disable email and often disable cron
   drush8 cvapi StatusPreference.create ignore_severity=critical name=checkOutboundMail

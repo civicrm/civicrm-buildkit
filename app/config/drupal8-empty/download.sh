@@ -12,5 +12,5 @@ drush8 -y dl drupal-${CMS_VERSION} --destination="$WEB_ROOT" --drupal-project-re
 mv "$WEB_ROOT/drupal" "$WEB_ROOT/web"
 
 pushd "$WEB_ROOT/web"
-  drush8 dl -y devel-1 libraries
+  drush8 dl -y libraries
 popd

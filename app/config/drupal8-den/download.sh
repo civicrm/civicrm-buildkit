@@ -13,7 +13,7 @@ drush8 -y dl drupal-${CMS_VERSION} --destination="$WEB_ROOT" --drupal-project-re
 mv "$WEB_ROOT/drupal" "$WEB_ROOT/web"
 
 pushd "$WEB_ROOT/web" >> /dev/null
-  drush8 dl -y devel-1 libraries userprotect
+  drush8 dl -y libraries userprotect
 
   #### Ideally...
   ## composer require civicrm/civicrm-asset-plugin:'~1.0.0' civicrm/civicrm-{core,packages,drupal-8}:"$CIVI_VERSION_COMP" --prefer-source

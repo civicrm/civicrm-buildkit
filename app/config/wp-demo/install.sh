@@ -156,21 +156,6 @@ wp eval '$c=[civi_wp()->users->set_wp_user_capabilities()];if (is_callable($c)) 
 ## Force basepage
 wp eval '$c=[civi_wp()->basepage->create_wp_basepage()];if (is_callable($c)) $c();'
 
-## Setup demo extensions
-cv en --ignore-missing $CIVI_DEMO_EXTS
-if [[ "$CIVI_DEMO_EXTS" =~ volunteer ]]; then
-  wp cap add civicrm_admin \
-    register_to_volunteer \
-    log_own_hours \
-    create_volunteer_projects \
-    edit_own_volunteer_projects \
-    edit_all_volunteer_projects \
-    delete_all_volunteer_projects \
-    delete_own_volunteer_projects \
-    edit_volunteer_registration_profiles \
-    edit_volunteer_project_relationships
-fi
-
 ## Demo sites always disable email and often disable cron
 wp civicrm api StatusPreference.create ignore_severity=critical name=checkOutboundMail
 wp civicrm api StatusPreference.create ignore_severity=critical name=checkLastCron

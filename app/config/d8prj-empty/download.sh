@@ -10,5 +10,5 @@
 composer create-project drupal-composer/drupal-project:"$CMS_VERSION" "$WEB_ROOT" --no-interaction
 
 pushd "$WEB_ROOT" >> /dev/null
-  composer require drupal/{devel,libraries}
+  composer require drupal/libraries
 popd >> /dev/null

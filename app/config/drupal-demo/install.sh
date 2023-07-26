@@ -135,28 +135,6 @@ EOPERM
 EOPERM
   ## Note: If you enable CiviGrant, the grant 'access CiviGrant', 'edit grants', 'delete in CiviGrant'
 
-  ## Setup demo extensions
-  cv en --ignore-missing $CIVI_DEMO_EXTS
-  if [[ "$CIVI_DEMO_EXTS" =~ volunteer ]]; then
-    drush scr "$PRJDIR/src/drush/perm.php" <<EOPERM
-      role 'anonymous user'
-      role 'authenticated user'
-      role 'civicrm_webtest_user'
-      add 'register to volunteer'
-EOPERM
-    drush scr "$PRJDIR/src/drush/perm.php" <<EOPERM
-      role 'civicrm_webtest_user'
-      add 'create volunteer projects'
-      add 'edit own volunteer projects'
-      add 'edit all volunteer projects'
-      add 'log own hours'
-      add 'edit volunteer project relationships'
-      add 'edit volunteer registration profiles'
-      add 'delete own volunteer projects'
-      add 'delete all volunteer projects'
-EOPERM
-  fi
-
   ## Demo sites always disable email and often disable cron
   drush cvapi StatusPreference.create ignore_severity=critical name=checkOutboundMail
   drush cvapi StatusPreference.create ignore_severity=critical name=checkLastCron

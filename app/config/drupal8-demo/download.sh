@@ -16,7 +16,6 @@ composer create-project drupal/recommended-project:"$CMS_VERSION" "$WEB_ROOT" --
 pushd "$WEB_ROOT" >> /dev/null
   composer_allow_common_plugins
   composer require drupal/userprotect
-  composer require drupal/devel
   ## Some D8 builds include a specific revision of phpunit, but Civi uses standalone phpunit (PHAR)
   if composer info | grep -q ^phpunit/phpunit\ ; then
     composer config "discard-changes" true ## Weird. phpcs has changes which interfere with other work.
@@ -24,8 +23,6 @@ pushd "$WEB_ROOT" >> /dev/null
     composer install --no-dev --no-interaction
   fi
   civicrm_download_composer_d8
-  git clone "${CACHE_DIR}/civicrm/civivolunteer.git"                       -b "$VOL_VERSION"       vendor/civicrm/civicrm-core/tools/extensions/civivolunteer
-  git clone "${CACHE_DIR}/ginkgostreet/org.civicrm.angularprofiles.git"    -b "$NG_PRFL_VERSION"   vendor/civicrm/civicrm-core/tools/extensions/org.civicrm.angularprofiles
   git clone "${CACHE_DIR}/civicrm/org.civicoop.civirules.git"              -b "$RULES_VERSION"     vendor/civicrm/civicrm-core/tools/extensions/org.civicoop.civirules
   git clone "${CACHE_DIR}/TechToThePeople/civisualize.git"                 -b "master"             vendor/civicrm/civicrm-core/tools/extensions/civisualize
   git clone "${CACHE_DIR}/civicrm/org.civicrm.module.cividiscount.git"     -b "$DISC_VERSION"      vendor/civicrm/civicrm-core/tools/extensions/cividiscount

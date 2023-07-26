@@ -12,7 +12,7 @@
 composer create-project drupal-composer/drupal-project:"$CMS_VERSION" "$WEB_ROOT" --no-interaction
 
 pushd "$WEB_ROOT" >> /dev/null
-  composer require drupal/{devel,libraries}
+  composer require drupal/libraries
 
   ## NOTE: No support for CIVI_VERSION
   ## NOTE: pear/log has a silly requirement for exactly 1.0.0
