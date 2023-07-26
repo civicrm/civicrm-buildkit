@@ -13,17 +13,14 @@
 drupal_download
 
 pushd "$WEB_ROOT/web"
-  drush8 dl -y libraries-1 redirect-1 webform-4 options_element-1 webform_civicrm-4 views-3 login_destination-1 userprotect-1 devel-1 civicrm_error-2.x-dev
-  drupal7_po_download "${CIVICRM_LOCALES:-de_DE}" drupal-7.x webform-7.x-4.x webform_civicrm-7.x-4.x views-7.x-3.x login_destination-7.x-1.x userprotect-7.x-1.x devel-7.x-1.x
+  drush8 dl -y libraries-1 redirect-1 webform-4 options_element-1 webform_civicrm-4 views-3 login_destination-1 userprotect-1
+  drupal7_po_download "${CIVICRM_LOCALES:-de_DE}" drupal-7.x webform-7.x-4.x webform_civicrm-7.x-4.x views-7.x-3.x login_destination-7.x-1.x userprotect-7.x-1.x
 
   pushd sites/all/modules
     git clone "${CACHE_DIR}/civicrm/civicrm-core.git"                        -b "$CIVI_VERSION"      civicrm
     git clone "${CACHE_DIR}/civicrm/civicrm-drupal.git"                      -b "7.x-$CIVI_VERSION"  civicrm/drupal
     git clone "${CACHE_DIR}/civicrm/civicrm-packages.git"                    -b "$CIVI_VERSION"      civicrm/packages
     api4_download_conditional civicrm                                                                civicrm/ext/api4
-    git clone "${CACHE_DIR}/eileenmcnaughton/civicrm_developer.git"          -b master               civicrm_developer
-    git clone "${CACHE_DIR}/civicrm/civivolunteer.git"                       -b "$VOL_VERSION"       civicrm/tools/extensions/civivolunteer
-    git clone "${CACHE_DIR}/ginkgostreet/org.civicrm.angularprofiles.git"    -b "$NG_PRFL_VERSION"   civicrm/tools/extensions/org.civicrm.angularprofiles
     git clone "${CACHE_DIR}/civicrm/org.civicoop.civirules.git"              -b "$RULES_VERSION"     civicrm/tools/extensions/org.civicoop.civirules
     git clone "${CACHE_DIR}/TechToThePeople/civisualize.git"                 -b "master"             civicrm/tools/extensions/civisualize
     git clone "${CACHE_DIR}/civicrm/org.civicrm.module.cividiscount.git"     -b "$DISC_VERSION"      civicrm/tools/extensions/cividiscount

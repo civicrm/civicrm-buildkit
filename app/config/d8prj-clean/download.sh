@@ -11,6 +11,6 @@ composer create-project drupal-composer/drupal-project:"$CMS_VERSION" "$WEB_ROOT
 
 pushd "$WEB_ROOT" >> /dev/null
   composer_allow_common_plugins
-  composer require drupal/{devel,libraries,userprotect}
+  composer require drupal/{libraries,userprotect}
   civicrm_download_composer_d8
 popd >> /dev/null

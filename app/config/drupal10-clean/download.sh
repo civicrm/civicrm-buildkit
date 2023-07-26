@@ -13,7 +13,6 @@ composer create-project drupal/recommended-project:"$CMS_VERSION" "$WEB_ROOT" --
 pushd "$WEB_ROOT" >> /dev/null
   composer_allow_common_plugins
   composer require drupal/userprotect
-  composer require drupal/devel
   composer require drush/drush
   ## Some D8 builds include a specific revision of phpunit, but Civi uses standalone phpunit (PHAR)
   if composer info | grep -q ^phpunit/phpunit\ ; then
@@ -22,6 +21,6 @@ pushd "$WEB_ROOT" >> /dev/null
     composer remove phpunit/phpunit
     composer install --no-dev --no-interaction
   fi
-  drupal8_po_download "${CIVICRM_LOCALES:-de_DE}" "drupal-$( _drupalx_version x.y ).x" devel-5.1.x
+  drupal8_po_download "${CIVICRM_LOCALES:-de_DE}" "drupal-$( _drupalx_version x.y ).x"
   civicrm_download_composer_d8
 popd >> /dev/null
