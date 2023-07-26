@@ -32,7 +32,10 @@ CRM_Core_Transaction::create()->run(function () {
   ];
   $userID = \CRM_Core_BAO_CMSUser::create($params, $adminEmail);
 
-  // @todo decide which permissions the demo user should have; create a role for those; apply the role to the user.
-  // This code can be added later once the data structures for roles etc. have settled.
+  // Provide the "Administer" role to the demo user
+  \Civi\Api4\User::update(FALSE)
+    ->addWhere('id', '=', $userID)
+    ->addValue('roles:name', ['admin'])
+    ->execute();
 
 });
