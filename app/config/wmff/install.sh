@@ -40,7 +40,8 @@ rm -f ${WEB_ROOT}/drupal/sites/default/files/civicrm/templates_c/*.php
 ## Set site key if requested in Docker environment
 [ ! -z "$FR_DOCKER_CIVI_SITE_KEY" ] && CIVI_SITE_KEY=${FR_DOCKER_CIVI_SITE_KEY}
 
-civicrm_install
+pushd $CMS_ROOT
+civicrm_install_cv
 
 ## Comment out for now
 "${WEB_ROOT}/drupal/sites/default/civicrm/extensions/rpow/bin/harvey-dent" --root "${WEB_ROOT}/drupal"
@@ -54,7 +55,7 @@ EOSQL
 
 ###############################################################################
 ## Extra configuration
-pushd "$CMS_ROOT"
+
 drush -y en civicrm
 ## Install rpow first to avoid issues around redis caching.
 ## I didn't quite work out the mechanism for cache related issues
