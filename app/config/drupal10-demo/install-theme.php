@@ -1,0 +1,3 @@
+<?php
+
+// defaults are fine
