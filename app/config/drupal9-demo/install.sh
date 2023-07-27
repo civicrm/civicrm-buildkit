@@ -39,15 +39,13 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   drush8 en -y civicrmtheme
   drush8 config-import -y --partial --source="$SITE_CONFIG_DIR/config/"
 
-  drupal8_po_import
-
   ## Setup CiviCRM
   if cv ev 'exit(version_compare(CRM_Utils_System::version(), "5.47.alpha", "<") ?0:1);' ; then
     echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign","CiviGrant"]}' \
-      | drush8 cvapi setting.create --in=json
+      | cv api --in=json setting.create
   else
     echo '{"enable_components":["CiviEvent","CiviContribute","CiviMember","CiviMail","CiviReport","CiviPledge","CiviCase","CiviCampaign"]}' \
-      | drush8 cvapi setting.create --in=json
+      | cv api --in=json setting.create
   fi
   civicrm_apply_demo_defaults
   cv ev 'return CRM_Utils_System::synchronizeUsers();'
@@ -74,8 +72,8 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   cv api extension.refresh
 
   ## Demo sites always disable email and often disable cron
-  drush8 cvapi StatusPreference.create ignore_severity=critical name=checkOutboundMail
-  drush8 cvapi StatusPreference.create ignore_severity=critical name=checkLastCron
+  cv api StatusPreference.create ignore_severity=critical name=checkOutboundMail
+  cv api StatusPreference.create ignore_severity=critical name=checkLastCron
 
   export SITE_CONFIG_DIR
   ## Install theem and blocks
