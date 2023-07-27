@@ -40,9 +40,7 @@ rm -f ${WEB_ROOT}/drupal/sites/default/files/civicrm/templates_c/*.php
 ## Set site key if requested in Docker environment
 [ ! -z "$FR_DOCKER_CIVI_SITE_KEY" ] && CIVI_SITE_KEY=${FR_DOCKER_CIVI_SITE_KEY}
 
-pushd "$CMS_ROOT"
-
-civicrm_install_cv
+civicrm_install
 
 ## Comment out for now
 "${WEB_ROOT}/drupal/sites/default/civicrm/extensions/rpow/bin/harvey-dent" --root "${WEB_ROOT}/drupal"
