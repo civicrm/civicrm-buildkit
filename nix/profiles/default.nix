@@ -43,4 +43,9 @@ rec {
     * A nice, in-between list of requirements
     */
    dfl = import ./dfl/default.nix;
+
+   /**
+    * Another in-between mix of versions
+    */
+   alt = import ./alt/default.nix;
 }
