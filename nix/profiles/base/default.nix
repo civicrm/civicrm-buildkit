@@ -12,6 +12,7 @@ in [
     pkgs.coreutils
     pkgs.curl
     pkgs.gettext
+    pkgs.gh
     pkgs.git
     pkgs.gitAndTools.hub
     pkgs.gnugrep
