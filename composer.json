@@ -42,7 +42,7 @@
   "extra": {
     "downloads": {
       "amp": {"version": "0.7.3", "url": "https://download.civicrm.org/amp/amp.phar-{$version}", "path": "bin/amp", "type": "phar"},
-      "box": {"version": "3.16.0", "url": "https://github.com/box-project/box/releases/download/{$version}/box.phar", "path": "bin/box", "type": "phar"},
+      "box": {"version": "4.3.8", "url": "https://github.com/box-project/box/releases/download/{$version}/box.phar", "path": "bin/box", "type": "phar"},
       "civici": {"version": "0.2.2", "url": "https://download.civicrm.org/civici/civici.phar-v{$version}", "path": "bin/civici", "type": "phar"},
       "civistrings": {"version": "2022-02-16-75f490ca", "url": "https://download.civicrm.org/civistrings/civistrings.phar-{$version}", "path": "bin/civistrings", "type": "phar"},
       "civix": {"version": "v23.07.1", "url": "https://download.civicrm.org/civix/civix.phar-{$version}", "path": "bin/civix", "type": "phar"},
