@@ -519,7 +519,7 @@ function warmup_binaries() {
 ## Repeat for {min,dfl,max,edge} and numbers {1,2}.
 function warmup_dispatcher_images() {
   local images="/home/${DISPATCH_USER}/images"
-  for prf in min dfl max edge ; do
+  for prf in min dfl max alt edge ; do
     for destnum in 1 2 ; do
       local src="$images/bknix-$prf-0.img"
       local dest="$images/bknix-$prf-$destnum.img"
@@ -552,7 +552,7 @@ function get_ramdisk_svcs() {
 
 function get_bkits_by_user() {
   local OWNER="$1"
-  for SUBDIR in bknix-old bknix-min bknix-dfl bknix-max bknix-edge ; do
+  for SUBDIR in bknix-old bknix-min bknix-dfl bknix-max bknix-alt bknix-edge ; do
     for DIR in "/home/$OWNER/$SUBDIR" "/Users/$OWNER/$FOLDER" ; do
       if [ -d "$DIR" ]; then
         echo $DIR
@@ -570,7 +570,7 @@ function install_xfce4_launchers() {
   echo "Symlink README.md"
   ln -sf "$share/README.md" "$desktop/README.md"
 
-  for PRF in dfl min max edge old ; do
+  for PRF in dfl min max alt edge old ; do
     if [ -e "/nix/var/nix/profiles/per-user/cividev/bknix-$PRF" -o -e "/nix/var/nix/profiles/bknix-$PRF" ]; then
       echo "Enable bknix-$PRF.desktop"
       cat "$share/bknix-$PRF.desktop" \
