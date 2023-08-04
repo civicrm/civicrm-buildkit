@@ -84,7 +84,7 @@ function use_bknix() {
     await-bknix "$USER" "$BKPROF"
   fi
 
-  case "$BKPROF" in old|min|max|dfl|edge) eval $(use-bknix "$BKPROF") ;; esac
+  case "$BKPROF" in old|min|max|alt|dfl|edge) eval $(use-bknix "$BKPROF") ;; esac
   assert_common BKITBLD
 }
 

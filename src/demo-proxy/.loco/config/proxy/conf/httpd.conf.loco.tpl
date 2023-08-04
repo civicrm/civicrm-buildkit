@@ -182,7 +182,7 @@ Timeout 600
 
     #RewriteRule   "^(.*)" "%{ENV:BKIT_DOCROOT}/$1"
 
-    #<Directory ~ "${HOME}/bknix(|-dfl|-min|-max|-edge)/build/">
+    #<Directory ~ "${HOME}/bknix(|-dfl|-min|-max|-alt|-edge)/build/">
     #    Options All
     #    AllowOverride All
     #    <IfModule mod_authz_host.c>

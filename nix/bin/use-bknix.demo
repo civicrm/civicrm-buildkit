@@ -47,7 +47,7 @@ while [ -n "$1" ]; do
 
   while [[ "$OPT" != "" ]]; do
     case "$OPT" in
-      old|min|dfl|max|edge) PROFILE="$OPT" ; OPT="" ;;
+      old|min|dfl|max|alt|edge) PROFILE="$OPT" ; OPT="" ;;
       --shell) MODE=shell     ; OPT="" ;;
       --env) MODE=env         ; OPT="" ;;
       --run) MODE=run         ; OPT="" ;;

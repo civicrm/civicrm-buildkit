@@ -278,7 +278,7 @@ function load_request() {
   eval $( cat "$1" | well_formed_variables | known_variables | escape_variables )
 
   case "$BKPROF" in
-    old|min|dfl|max|edge)
+    old|min|dfl|max|alt|edge)
       BKIT="$HOME/buildkit"
       ;;
     *)
