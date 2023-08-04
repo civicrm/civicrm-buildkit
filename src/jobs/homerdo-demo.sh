@@ -30,7 +30,7 @@ SIZE=40g
 ## List of buildkit profiles to enable
 #ALL_PROFILES=(min max)
 #ALL_PROFILES=(min dfl max)
-ALL_PROFILES=(min dfl max edge)
+ALL_PROFILES=(min dfl max alt edge)
 
 ## List of buildkit types for which we want warm caches
 WARMUP_TYPES=(drupal-demo)
