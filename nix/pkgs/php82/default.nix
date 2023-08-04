@@ -2,7 +2,7 @@
 
 let
     dists = import ../../pins;
-    pkgs = dists.v2205php82;
+    pkgs = dists.v2305;
     phpExtras = import ../phpExtras/default.nix {
       pkgs = pkgs;
       php = pkgs.php82; ## Compile PECL extensions with our preferred version of PHP
