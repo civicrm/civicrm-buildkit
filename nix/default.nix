@@ -53,4 +53,5 @@ in
       bkpkgs = pins.bkit;
       pkgs = pins.bkit;
       pins = pins;
+      funcs = import ./funcs;
     }

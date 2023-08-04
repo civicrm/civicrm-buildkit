@@ -8,7 +8,7 @@ let
 
   pkgs = (import ../pins).default;
   stdenv = pkgs.stdenv;
-  fetchPhar = pkgs.callPackage (import ./phpExtras/fetch-phar.nix) {};
+  fetchPhar = (import ../funcs).fetchPhar;
 
   callPackage = path: overrides:
     let f = import path;
