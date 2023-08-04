@@ -1,8 +1,7 @@
 let
-
-    pkgs = (import ./pins).default;
+    pins = import ./pins;
+    pkgs = pins.default;
     stdenv = pkgs.stdenv;
-    bkpkgs = import ./pkgs;
     profiles = import ./profiles;
 
     mapAttrs = (f: set: builtins.listToAttrs (builtins.map (attr: { name = attr; value = f attr set.${attr}; }) (builtins.attrNames set)));
@@ -49,4 +48,9 @@ in
      *   nix-env -f . -i -A bkpkgs.php70
      */
 
-    allClis // { inherit profiles; inherit bkpkgs; }
+    allClis // {
+      inherit profiles;
+      bkpkgs = pins.bkit;
+      pkgs = pins.bkit;
+      pins = pins;
+    }
