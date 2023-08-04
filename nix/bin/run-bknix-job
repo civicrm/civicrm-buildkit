@@ -96,7 +96,7 @@ function run_bknix_main() {
   fi
 
   case "$1" in
-    old|min|dfl|max|edge) BKPROF="$1" ; ;;
+    old|min|dfl|max|alt|edge) BKPROF="$1" ; ;;
     *) run_bknix_fatal "Missing or invalid PROFILE" ; ;;
   esac
   export BKPROF

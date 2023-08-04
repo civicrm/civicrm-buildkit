@@ -22,4 +22,4 @@ fi
 
 nix-build -E 'let p=import ./profiles; in builtins.attrValues p' | sort -u | cachix push bknix
 nix-instantiate default.nix | sort -u | cachix push bknix
-nix-store -r $( ( for PRF in old min dfl max edge; do nix-instantiate -A profiles.$PRF default.nix ; done ) | sort -u ) | cachix push bknix
+nix-store -r $( ( for PRF in old alt min dfl max edge; do nix-instantiate -A profiles.$PRF default.nix ; done ) | sort -u ) | cachix push bknix
