@@ -23,13 +23,19 @@ stdenv.mkDerivation rec {
   src = fetchurl {
     url = phar.url;
     sha256 = phar.sha256;
-    executable = true;
+
+    ## Setting `executable=true` would be better... except that `fetchurl` will
+    ## switch to nix's proprietary flavor of sha256 (ie "recursive" mode with
+    ## NAR wrapping). That would prohibit us from using standard/interoperable
+    ## checksums. See: https://nixos.wiki/wiki/Nix_Hash
+    executable = false;
   };
   buildInputs = [ ];
   buildCommand = ''
     mkdir $out $out/bin
     pushd $out/bin
-      ln -s ${src} $out/bin/${name}
+      cp ${src} $out/bin/${name}
+      chmod +x $out/bin/${name}
     popd
   '';
 }
