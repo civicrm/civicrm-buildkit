@@ -691,6 +691,10 @@ pushd $PRJDIR >> /dev/null
   [ -f "$PRJDIR/extern/codecept-php5.txt" ] && rm -f "$PRJDIR/bin/_codecept-php5.phar" "$PRJDIR/extern/codecept-php5.txt"
   [ -f "$PRJDIR/extern/codecept-php7.txt" ] && rm -f "$PRJDIR/bin/_codecept-php7.phar" "$PRJDIR/extern/codecept-php7.txt"
   [ -f "$PRJDIR/extern/drush-lib-backdrop.txt" ] && rm -rf "$PRJDIR/extern/drush-lib/backdrop" "$PRJDIR/extern/drush-lib-backdrop.txt"
+  [ -f "$PRJDIR/bin/_codecept-php5.phar" ] && rm -f "$PRJDIR/bin/_codecept-php5.phar"
+  [ -f "$PRJDIR/bin/_codecept-php7.phar" ] && rm -f "$PRJDIR/bin/_codecept-php7.phar"
+  [ -L "$PRJDIR/bin/phpunit4" ] && rm -f "$PRJDIR/bin/phpunit4"
+  [ -f "$PRJDIR/extern/phpunit4/phpunit4.phar" ] && rm -f "$PRJDIR/extern/phpunit4/phpunit4.phar"
 
   ## Cleanup misnamed files from past
   [ -f "$PRJDIR/extern/phpunit4/phpunit6.phar" ] && rm -f "$PRJDIR/extern/phpunit4/phpunit6.phar" "$PRJDIR/extern/phpunit4/phpunit6.phar"
@@ -700,13 +704,13 @@ pushd $PRJDIR >> /dev/null
   install_composer
 
   ## Download dependencies (via composer)
-  COMPOSER_MD5=$(cat composer.json composer.lock | php -r 'echo md5(file_get_contents("php://stdin"));')
+  COMPOSER_MD5=$(cat composer.json composer.lock phars.json | php -r 'echo md5(file_get_contents("php://stdin"));')
   touch "$TMPDIR/composer-data.md5"
   if [ -z "$IS_FORCE" -a "$(cat $TMPDIR/composer-data.md5)" == "$COMPOSER_MD5" ]; then
     echo_comment "[[composer dependencies already installed. Skipping.]]"
   else
     "$PRJDIR/bin/composer" install
-    cat composer.json composer.lock | php -r 'echo md5(file_get_contents("php://stdin"));' > "$TMPDIR/composer-data.md5"
+    cat composer.json composer.lock phars.json | php -r 'echo md5(file_get_contents("php://stdin"));' > "$TMPDIR/composer-data.md5"
   fi
 
   ## Download dependencies (via npm)
@@ -768,7 +772,6 @@ pushd $PRJDIR >> /dev/null
 
   ## Setup phpunit aliases for CLI usage
   make_link "$PRJDIR/bin" "drush8" "drush"
-  make_link "$PRJDIR/bin" "../extern/phpunit4/phpunit4.phar" "phpunit4"
   make_link "$PRJDIR/bin" "../extern/phpunit5/phpunit5.phar" "phpunit5"
   make_link "$PRJDIR/bin" "../extern/phpunit6/phpunit6.phar" "phpunit6"
   make_link "$PRJDIR/bin" "../extern/phpunit7/phpunit7.phar" "phpunit7"

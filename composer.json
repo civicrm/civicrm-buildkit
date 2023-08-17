@@ -8,6 +8,7 @@
   ],
   "autoload": {
     "psr-0": {
+      "Civi\\Buildkit": ["src/"],
       "Civi\\Civibuild": ["src/"]
     }
   },
@@ -27,6 +28,7 @@
     "civicrm/upgrade-test": "0.5",
     "drupal/coder": "dev-8.x-2.x-civi#5fa299b7790535b9f5098417f848a173cb6ce4d4",
     "civicrm/composer-downloads-plugin": "^3.0",
+    "civicrm/composer-compile-plugin": "~0.20",
     "squizlabs/php_codesniffer": ">=2.7 <4.0"
   },
   "repositories": [
@@ -40,29 +42,17 @@
     }
   ],
   "extra": {
+    "compile": [
+      {
+        "title": "Update PHAR-based tools (<comment>phars.json</comment>)",
+        "run": "@php-method \\Civi\\Buildkit\\Phars::downloadPhars",
+        "phar-json": "phars.json"
+      }
+    ],
     "downloads": {
-      "amp": {"version": "0.7.3", "url": "https://download.civicrm.org/amp/amp.phar-{$version}", "path": "bin/amp", "type": "phar"},
-      "box": {"version": "4.3.8", "url": "https://github.com/box-project/box/releases/download/{$version}/box.phar", "path": "bin/box", "type": "phar"},
-      "civici": {"version": "0.2.2", "url": "https://download.civicrm.org/civici/civici.phar-v{$version}", "path": "bin/civici", "type": "phar"},
-      "civistrings": {"version": "2022-02-16-75f490ca", "url": "https://download.civicrm.org/civistrings/civistrings.phar-{$version}", "path": "bin/civistrings", "type": "phar"},
-      "civix": {"version": "v23.07.1", "url": "https://download.civicrm.org/civix/civix.phar-{$version}", "path": "bin/civix", "type": "phar"},
-      "codecept-php5": {"version": "2.3.6", "url": "https://codeception.com/releases/{$version}/php54/codecept.phar", "path": "bin/_codecept-php5.phar", "type": "phar"},
-      "codecept-php7": {"version": "2.3.6", "url": "https://codeception.com/releases/{$version}/codecept.phar", "path": "bin/_codecept-php7.phar", "type": "phar"},
-      "coworker": {"version": "v0.2", "url": "https://download.civicrm.org/coworker/coworker.phar-{$version}", "path": "bin/coworker", "type": "phar"},
-      "cv": {"version": "0.3.47", "url": "https://download.civicrm.org/cv/cv-{$version}.phar", "path": "bin/cv", "type": "phar"},
-      "drush8": {"version": "8.4.12", "url": "https://download.civicrm.org/cv/drush.phar-{$version}", "path": "extern/drush8.phar", "type": "phar"},
       "drush-backdrop": {"version": "1.x-1.x", "url": "https://github.com/backdrop-contrib/backdrop-drush-extension/archive/{$version}.zip", "path": "extern/drush-lib/backdrop"},
       "drush-language": {"version": "7.x-1.5", "url": "https://ftp.drupal.org/files/projects/drush_language-{$version}.zip", "path": "extern/drush-lib/language"},
-      "git-scan": {"version": "2022-07-15", "url": "https://github.com/totten/git-scan/releases/download/{$version}/git-scan-{$version}.phar", "path": "bin/git-scan", "type": "phar"},
-      "phpunit4": {"version": "4.8.21", "url": "https://phar.phpunit.de/phpunit-{$version}.phar", "path": "extern/phpunit4/phpunit4.phar", "type": "phar"},
-      "phpunit5": {"version": "5.x", "url": "https://phar.phpunit.de/phpunit-5.phar", "path": "extern/phpunit5/phpunit5.phar", "type": "phar"},
-      "phpunit6": {"version": "6.x", "url": "https://phar.phpunit.de/phpunit-6.phar", "path": "extern/phpunit6/phpunit6.phar", "type": "phar"},
-      "phpunit7": {"version": "7.5.15", "url": "https://phar.phpunit.de/phpunit-7.5.15.phar", "path": "extern/phpunit7/phpunit7.phar", "type": "phar"},
-      "phpunit8": {"version": "8.5.27", "url": "https://phar.phpunit.de/phpunit-{$version}.phar", "path": "extern/phpunit8/phpunit8.phar", "type": "phar"},
-      "phpunit9": {"version": "9.6.5", "url": "https://phar.phpunit.de/phpunit-{$version}.phar", "path": "extern/phpunit9/phpunit9.phar", "type": "phar"},
-      "phpunit-xml-cleanup": {"version": "0.2", "url": "https://raw.githubusercontent.com/civicrm/phpunit-xml-cleanup/v{$version}/bin/phpunit-xml-cleanup", "path": "extern/phpunit-xml-cleanup.php", "type": "file"},
-      "pogo": {"version": "0.5.0", "url": "https://github.com/totten/pogo/releases/download/v{$version}/pogo-{$version}.phar", "path": "bin/pogo", "type": "phar"},
-      "wp": {"version": "2.8.1", "url": "https://github.com/wp-cli/wp-cli/releases/download/v{$version}/wp-cli-{$version}.phar", "path": "bin/wp", "type": "phar"}
+      "phpunit-xml-cleanup": {"version": "0.2", "url": "https://raw.githubusercontent.com/civicrm/phpunit-xml-cleanup/v{$version}/bin/phpunit-xml-cleanup", "path": "extern/phpunit-xml-cleanup.php", "type": "file"}
     }
   }
 }
