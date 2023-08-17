@@ -4,8 +4,57 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2e5579df00b46c522a3a480bfb831edd",
+    "content-hash": "be79555b67f38ff3ee4022d395a8b1b9",
     "packages": [
+        {
+            "name": "civicrm/composer-compile-plugin",
+            "version": "v0.20",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/civicrm/composer-compile-plugin.git",
+                "reference": "0933ff53cd720ddcb24bdc5984879673ea1e0cbe"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/civicrm/composer-compile-plugin/zipball/0933ff53cd720ddcb24bdc5984879673ea1e0cbe",
+                "reference": "0933ff53cd720ddcb24bdc5984879673ea1e0cbe",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.1 || ^2.0",
+                "php": ">=7.2",
+                "totten/lurkerlite": "^1.3"
+            },
+            "require-dev": {
+                "composer/composer": "~1.0",
+                "totten/process-helper": "^1.0.1"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "Civi\\CompilePlugin\\CompilePlugin"
+            },
+            "autoload": {
+                "psr-4": {
+                    "Civi\\CompilePlugin\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tim Otten",
+                    "email": "info@civicrm.org"
+                }
+            ],
+            "description": "Define a 'compile' event for all packages in the dependency-graph",
+            "support": {
+                "issues": "https://github.com/civicrm/composer-compile-plugin/issues",
+                "source": "https://github.com/civicrm/composer-compile-plugin/tree/v0.20"
+            },
+            "time": "2023-03-01T06:55:29+00:00"
+        },
         {
             "name": "civicrm/composer-downloads-plugin",
             "version": "v3.0.1",
@@ -406,6 +455,69 @@
                 "source": "https://github.com/TOGoS/PHPGitIgnore/tree/master"
             },
             "time": "2019-04-19T19:16:58+00:00"
+        },
+        {
+            "name": "totten/lurkerlite",
+            "version": "1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/totten/Lurker.git",
+                "reference": "a20c47142b486415b9117c76aa4c2117ff95b49a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/totten/Lurker/zipball/a20c47142b486415b9117c76aa4c2117ff95b49a",
+                "reference": "a20c47142b486415b9117c76aa4c2117ff95b49a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "replace": {
+                "henrikbjorn/lurker": "*"
+            },
+            "suggest": {
+                "ext-inotify": ">=0.1.6"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Lurker": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Konstantin Kudryashov",
+                    "email": "ever.zet@gmail.com"
+                },
+                {
+                    "name": "Yaroslav Kiliba",
+                    "email": "om.dattaya@gmail.com"
+                },
+                {
+                    "name": "Henrik Bjrnskov",
+                    "email": "henrik@bjrnskov.dk"
+                }
+            ],
+            "description": "Resource Watcher - Lightweight edition of henrikbjorn/lurker with no dependencies",
+            "keywords": [
+                "filesystem",
+                "resource",
+                "watching"
+            ],
+            "support": {
+                "source": "https://github.com/totten/Lurker/tree/1.3.0"
+            },
+            "time": "2020-09-01T10:01:01+00:00"
         },
         {
             "name": "totten/php-symbol-diff",
