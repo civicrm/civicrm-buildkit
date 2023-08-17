@@ -1,55 +1,112 @@
 {
+   "amp":  {
+     "url": "https://download.civicrm.org/amp/amp.phar-0.7.3",
+     "sha256": "190daecfba9e8ba743a7ff357729d3b1b2e82979202f11592c8d4a95af8584e3",
+     "buildkit-path": "bin/amp"
+   },
+
    "box":  {
-     "name": "box",
      "url": "https://github.com/box-project/box/releases/download/4.3.8/box.phar",
-     "sha256": "83d63ddb24ecc97538356b90c320773d1aca2712d14813bd27bee3ba65cf3b18"
+     "sha256": "83d63ddb24ecc97538356b90c320773d1aca2712d14813bd27bee3ba65cf3b18",
+     "buildkit-path": "bin/box"
+   },
+
+   "civici":  {
+     "url": "https://download.civicrm.org/civici/civici.phar-v0.2.2",
+     "sha256": "d294874370190180c2348e7cede5985c73eb67e569f49f9039799bcf0fed061b",
+     "buildkit-path": "bin/civici"
+   },
+
+   "civistrings":  {
+     "url": "https://download.civicrm.org/civistrings/civistrings.phar-2022-02-16-75f490ca",
+     "sha256": "e2258ff4302bb51d60cb7c094ca5401c6d36a8e8ca9a4921afc4e8e61687b90e",
+     "buildkit-path": "bin/civistrings"
    },
 
    "civix":  {
-     "name": "civix",
      "url": "https://download.civicrm.org/civix/civix-23.08.0.phar",
-     "sha256": "b88df9196fbdd4d349741cd8079fdc4147e25ab9289e9c442333a10a3acce02f"
+     "sha256": "b88df9196fbdd4d349741cd8079fdc4147e25ab9289e9c442333a10a3acce02f",
+     "buildkit-path": "bin/civix"
+   },
+
+   "coworker":  {
+     "url": "https://download.civicrm.org/coworker/coworker.phar-v0.2",
+     "sha256": "3ec561a8fc30f9fc5df60d8c3682c3faf3060b0e63c1c02689b437e05f62c526",
+     "buildkit-path": "bin/coworker"
    },
 
    "cv":  {
-     "name": "cv",
      "url": "https://download.civicrm.org/cv/cv-0.3.47.phar",
-     "sha256": "e9f60b251deef31ba0e2ac9a5c934f330b2b87bbe63082ce9a7745723ed70c3e"
+     "sha256": "e9f60b251deef31ba0e2ac9a5c934f330b2b87bbe63082ce9a7745723ed70c3e",
+     "buildkit-path": "bin/cv"
    },
 
    "composer":  {
-     "name": "composer",
      "url": "https://github.com/composer/composer/releases/download/2.3.10/composer.phar",
      "sha256": "d808272f284fa8e0f8b470703e1438ac8f362030bbc9d12e29530277d767aff0"
    },
 
+   "drush8":  {
+     "url": "https://download.civicrm.org/cv/drush.phar-8.4.12",
+     "sha256": "cc19dd738bfb8a6324bc89de5f801a24a758f20c659d66990b881324d29f8922",
+     "buildkit-path": "extern/drush8.phar"
+   },
+
+   "gitscan":  {
+     "url": "https://github.com/totten/git-scan/releases/download/2022-07-15/git-scan-2022-07-15.phar",
+     "sha256": "3fa0f8bb6a73c9f4d7e22043d9fb707ca39b902832f1854e047643622fb5701d",
+     "buildkit-path": "bin/git-scan"
+   },
+
    "loco":  {
-     "name": "loco",
      "url": "https://github.com/totten/loco/releases/download/v0.7.1/loco-0.7.1.phar",
      "sha256": "d97a3013cef9376850c33dd73535b574552e4f2e9ea4418f0507f776868ec039"
    },
 
    "phive":  {
-     "name": "phive",
      "url": "https://github.com/phar-io/phive/releases/download/0.15.2/phive-0.15.2.phar",
      "sha256": "2bb076753ec5d672f5e2f96a97a0fe7e8e9ec24a439eed00fd29ef942c7905f9"
    },
 
+   "phpunit5":  {
+     "url": "https://phar.phpunit.de/phpunit-5.7.27.phar",
+     "sha256": "f0300a13f2653bee10b0ce24dbc8d94e65dc9be8966d822b9e455b6b294be16e",
+     "buildkit-path": "extern/phpunit5/phpunit5.phar"
+   },
+
+   "phpunit6":  {
+     "url": "https://phar.phpunit.de/phpunit-6.5.14.phar",
+     "sha256": "3ac5d3234ed2b2dd9aaaa1b33e5c275ce5d7d8f2e07ec7fa930f5036894cc689",
+     "buildkit-path": "extern/phpunit6/phpunit6.phar"
+   },
+
+   "phpunit7":  {
+     "url": "https://phar.phpunit.de/phpunit-7.5.15.phar",
+     "sha256": "ae9c1fb46c61106c6835e905e3e0b23f565103d8bfcc311279c9599971349486",
+     "buildkit-path": "extern/phpunit7/phpunit7.phar"
+   },
+
    "phpunit8":  {
-     "name": "phpunit8",
      "url": "https://phar.phpunit.de/phpunit-8.5.27.phar",
-     "sha256": "04e65b8b2cb0465302f3d0115ad0a77411ba8d5c03be2607d58265da54f972e2"
+     "sha256": "04e65b8b2cb0465302f3d0115ad0a77411ba8d5c03be2607d58265da54f972e2",
+     "buildkit-path": "extern/phpunit8/phpunit8.phar"
    },
 
    "phpunit9":  {
-     "name": "phpunit9",
      "url": "https://phar.phpunit.de/phpunit-9.6.5.phar",
-     "sha256": "087db3a95feb50a1445e5723902b51000364a02d5a9b2f0f8e3fdfdeb282d259"
+     "sha256": "087db3a95feb50a1445e5723902b51000364a02d5a9b2f0f8e3fdfdeb282d259",
+     "buildkit-path": "extern/phpunit9/phpunit9.phar"
    },
 
    "pogo":  {
-     "name": "pogo",
      "url": "https://github.com/totten/pogo/releases/download/v0.5.0/pogo-0.5.0.phar",
-     "sha256": "c070b76c5b70debc26f79ac1e551d53c6a02b9ea514d0d7776bbd674906797d8"
+     "sha256": "c070b76c5b70debc26f79ac1e551d53c6a02b9ea514d0d7776bbd674906797d8",
+     "buildkit-path": "bin/pogo"
+   },
+
+   "wp":  {
+     "url": "https://github.com/wp-cli/wp-cli/releases/download/v2.8.1/wp-cli-2.8.1.phar",
+     "sha256": "8503cd579480d0cb237b4bef35e0c3da11c2ab872a1bc8f26d2da0ca0729b6a7",
+     "buildkit-path": "bin/wp"
    }
 }
