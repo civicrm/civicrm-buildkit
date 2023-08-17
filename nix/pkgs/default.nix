@@ -10,7 +10,7 @@ let
   stdenv = pkgs.stdenv;
 
   fetchPhar = (import ../funcs).fetchPhar;
-  jsonContent = builtins.fromJSON (builtins.readFile ./phars.json);
+  jsonContent = builtins.fromJSON (builtins.readFile ../../phars.json);
   mapAttrs = (f: set: builtins.listToAttrs (builtins.map (attr: { name = attr; value = f attr set.${attr}; }) (builtins.attrNames set)));
   jsonToPhar = name: attrs: fetchPhar {
     name = name;
