@@ -1,0 +1,141 @@
+#!/usr/bin/env bash
+set -e
+
+## Example usage:
+##
+## $ env GIT_URL=https://github.com/eileenmcnaughton/nz.co.fuzion.extendedreport GIT_BASE=master GIT_HEAD=master \
+##     CIVI_VER=master STATUS_TOKEN= SOURCE= \
+##     run-bknix-job --mock max Extension-SHA
+
+#################################################
+## Environment variables
+
+## BLDTYPE: The type of site/cms/file-layout to use
+BLDTYPE="drupal-clean"
+
+## EXECUTOR_NUMBER: The number of this concurrent process
+## WORKSPACE: The path where Jenkins stores data for this job
+assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE
+
+## GIT_URL: The URL of the extension-repo
+assert_hublab_url "$GIT_URL" "Missing or invalid GIT_URL ($GIT_URL)"
+
+## GIT_BASE: Current revision of the mainline code (base)
+assert_regex '^[0-9a-z\.-]\+$' "$GIT_BASE" "Missing or invalid GIT_BASE"
+
+## GIT_HEAD: Proposed revision of the code (head) If you're not try to test a specific proposal, then you can enter the same value as GIT_BASE.
+assert_regex '^[0-9a-z\.-]\+$' "$GIT_HEAD" "Missing or invalid GIT_HEAD"
+
+## CIVI_VER: CiviCRM branch or tag
+## Note: `CIVI_VER` doesn't match the conventional `CIVIVER` from other jobs. But, if it changes, then you probably need a parallel update to probot.
+assert_regex '^[0-9a-z\.-]\+$' "$CIVI_VER" "Missing or invalid CIVI_VER"
+
+## STATUS_TOKEN: (OPTIONAL) Callback token for reporting statuses If omitted, then statuses will not be sent back to Github/Gitlab.
+if [ -n "$STATUS_TOKEN" ]; then
+  assert_regex '^[0-9A-Za-z_\.-]\+$' "$STATUS_TOKEN" "Invalid STATUS_TOKEN"
+fi
+
+## SOURCE: (OPTIONAL) Github or Gitlab URL of the pull-request which triggered this.
+if [ -n "$SOURCE" ]; then
+  assert_hublab_url "$SOURCE"  "Missing or invalid SOURCE"
+fi
+
+## DRY_RUN: Don't actually execute things
+#DRYRUN="-N"
+DRYRUN=
+
+# BLDNAME="ext-$EXECUTOR_NUMBER"
+BLDNAME="build-$EXECUTOR_NUMBER"
+
+#export OFFLINE=1
+#export PHPUNIT_BIN=phpunit6
+
+#################################################
+## Main
+
+## TODO: rethink this env-var. for the moment, setting it duplicates the behavior of "use_bknix_tmp"
+export CIVI_TEST_MODE=
+use_bknix_tmp
+
+#################################################
+## Run a command, but hide any sensitive environmet variables
+function safedo() {
+  local backupToken="$STATUS_TOKEN"
+  local backupUrl="$STATUS_URL"
+  STATUS_TOKEN=
+  STATUS_URL=
+  "$@"
+  local retVal=$?
+  STATUS_TOKEN="$backupToken"
+  STATUS_URL="$backupUrl"
+  return $retVal
+}
+
+function report_status() {
+  h1 "Report status: $@"
+  if [ -n "$STATUS_TOKEN" ]; then
+    civici probot:status \
+      --probot-url="$STATUS_URL" \
+      --probot-token="$STATUS_TOKEN" \
+      "$@"
+  fi
+}
+
+function fakesleep() {
+  if [ -n "$DRYRUN" ]; then
+    h1 "Simulate a delay"
+    sleep "$@"
+  fi
+}
+
+function h1() {
+  echo
+  echo "================================================================================"
+  echo "== $@"
+}
+
+#################################################
+report_status --state="pending" --desc="Build test environment ($CIVI_VER, $BLDTYPE)" --url="${BUILD_URL}console"
+
+## Report details about the test environment
+if ! safedo civibuild env-info ; then
+  echo "WARNING: env-info exited with a problem"
+fi
+
+h1 "Clean workspace"
+clean_legacy_workspace "$WORKSPACE/junit"
+init_std_workspace
+if [ -d "$BKITBLD/$BLDNAME" ]; then
+  echo y | civibuild destroy "$BLDNAME"
+fi
+
+h1 "Build test site"
+if ! safedo civici ext:build -v -f $DRYRUN \
+  --git-url="$GIT_URL" \
+  --base="$GIT_BASE" \
+  --head="$GIT_HEAD" \
+  --build="$BLDNAME" \
+  --build-root="$BKITBLD" \
+  --type="$BLDTYPE"
+then
+  report_status --state="failure" --desc="Failed to build test site"
+  exit 1
+fi
+
+fakesleep 10
+
+report_status --state="pending" --desc="Execute tests" --url="${BUILD_URL}console"
+
+h1 "Execute tests"
+safedo civici ext:test -vv $DRYRUN \
+  --info="$BKITBLD/$BLDNAME/web/sites/default/files/civicrm/ext/target/info.xml" \
+  --junit-dir="$WORKSPACE_JUNIT"
+EXITCODE=$?
+
+h1 "Cleanup JUnit XML"
+phpunit-xml-cleanup "$WORKSPACE_JUNIT"/*.xml
+
+report_status --junit-dir="$WORKSPACE_JUNIT" --junit-exit=$EXITCODE \
+  --state="@JUNIT_STATE@" --desc="@JUNIT_SUMMARY@" --url="$BUILD_URL"
+
+exit $EXITCODE
