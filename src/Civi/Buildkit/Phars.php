@@ -100,11 +100,12 @@ class Phars {
       throw new \Exception(sprintf("Download for \"%s\" failed SHA-256 check (expect=%s, actual=%s)", $remoteUrl, $expectHash, $actualHash));
     }
 
-    if (file_exists($localFile)) {
+    // Civix could be a directory if checked out as a repo (unusual but possible configuration).
+    if (file_exists($localFile) && !is_dir($localFile)) {
       unlink($localFile);
     }
 
-    if (!rename($tempFile, $localFile)) {
+    if (!is_dir($localFile) && !rename($tempFile, $localFile)) {
       throw new \Exception("Failed to move temp file to destination.");
     }
   }
