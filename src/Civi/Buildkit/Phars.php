@@ -63,6 +63,12 @@ class Phars {
    * @throws \Exception
    */
   protected static function downloadFile(string $remoteUrl, string $expectHash, string $localFile, int $blockSize = 65536): void {
+    if (is_dir($localFile)) {
+      fprintf(STDERR, "Cannot overwrite folder (%s) with file (%s). Skip download.\n", $localFile, $remoteUrl);
+      // This should arguably be fatal... I'm not sure it's going to bubble-up
+      return;
+    }
+
     $parent = dirname($localFile);
     if (!is_dir($parent)) {
       if (!mkdir($parent, 0755, TRUE)) {
@@ -101,11 +107,11 @@ class Phars {
     }
 
     // Civix could be a directory if checked out as a repo (unusual but possible configuration).
-    if (file_exists($localFile) && !is_dir($localFile)) {
+    if (file_exists($localFile)) {
       unlink($localFile);
     }
 
-    if (!is_dir($localFile) && !rename($tempFile, $localFile)) {
+    if (!rename($tempFile, $localFile)) {
       throw new \Exception("Failed to move temp file to destination.");
     }
   }
