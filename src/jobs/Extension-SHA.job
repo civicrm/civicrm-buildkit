@@ -95,14 +95,18 @@ function h1() {
 }
 
 #################################################
-[ -d "$WORKSPACE/junit" ] && "$WORKSPACE/junit"
-
-#################################################
 report_status --state="pending" --desc="Build test environment ($CIVI_VER, $BLDTYPE)" --url="${BUILD_URL}console"
 
 ## Report details about the test environment
 if ! safedo civibuild env-info ; then
   echo "WARNING: env-info exited with a problem"
+fi
+
+h1 "Clean workspace"
+clean_legacy_workspace "$WORKSPACE/junit"
+init_std_workspace
+if [ -d "$BKITBLD/$BLDNAME" ]; then
+  echo y | civibuild destroy "$BLDNAME"
 fi
 
 h1 "Build test site"
@@ -125,13 +129,13 @@ report_status --state="pending" --desc="Execute tests" --url="${BUILD_URL}consol
 h1 "Execute tests"
 safedo civici ext:test -vv $DRYRUN \
   --info="$BKITBLD/$BLDNAME/web/sites/default/files/civicrm/ext/target/info.xml" \
-  --junit-dir="$WORKSPACE/junit"
+  --junit-dir="$WORKSPACE_JUNIT"
 EXITCODE=$?
 
 h1 "Cleanup JUnit XML"
-phpunit-xml-cleanup "$WORKSPACE"/junit/*.xml
+phpunit-xml-cleanup "$WORKSPACE_JUNIT"/*.xml
 
-report_status --junit-dir="$WORKSPACE"/junit --junit-exit=$EXITCODE \
+report_status --junit-dir="$WORKSPACE_JUNIT" --junit-exit=$EXITCODE \
   --state="@JUNIT_STATE@" --desc="@JUNIT_SUMMARY@" --url="$BUILD_URL"
 
 exit $EXITCODE
