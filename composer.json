@@ -49,6 +49,7 @@
         "phar-json": "phars.json"
       }
     ],
+    "compile-passthru": "always",
     "downloads": {
       "drush-backdrop": {"version": "1.x-1.x", "url": "https://github.com/backdrop-contrib/backdrop-drush-extension/archive/{$version}.zip", "path": "extern/drush-lib/backdrop"},
       "drush-language": {"version": "7.x-1.5", "url": "https://ftp.drupal.org/files/projects/drush_language-{$version}.zip", "path": "extern/drush-lib/language"},

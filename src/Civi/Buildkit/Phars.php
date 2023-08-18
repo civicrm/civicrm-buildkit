@@ -23,13 +23,21 @@ class Phars {
       ));
     }
 
-    fprintf(STDERR, "%s\n", print_r(['phars' => $phars], 1));
+    // static::printf("%s\n", print_r(['phars' => $phars], 1));
     $todos = static::findUpdates($phars);
-    fprintf(STDERR, "%s\n", print_r(['todos' => $todos], 1));
+    // static::printf("%s\n", print_r(['todos' => $todos], 1));
     foreach ($todos as $name => $todo) {
+      static::printf("  - Download %s (%s)\n", $todo['buildkit-path'], $todo['url']);
       static::downloadFile($todo['url'], $todo['sha256'], $todo['buildkit-path']);
       chmod($todo['buildkit-path'], intval($todo['file-mode'] ?? '0755', 8));
     }
+  }
+
+  /**
+   * Show a printfing. Accepts printf()-style parameters.
+   */
+  protected static function printf($expr, ...$args): void {
+    fprintf(STDERR, $expr, ...$args);
   }
 
   /**
@@ -64,7 +72,7 @@ class Phars {
    */
   protected static function downloadFile(string $remoteUrl, string $expectHash, string $localFile, int $blockSize = 65536): void {
     if (is_dir($localFile)) {
-      fprintf(STDERR, "Cannot overwrite folder (%s) with file (%s). Skip download.\n", $localFile, $remoteUrl);
+      static::printf("    WARNING: Cannot overwrite folder (%s) with file. Skip download.\n", $localFile);
       // This should arguably be fatal... I'm not sure it's going to bubble-up
       return;
     }
