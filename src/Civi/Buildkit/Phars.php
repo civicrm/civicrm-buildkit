@@ -23,13 +23,21 @@ class Phars {
       ));
     }
 
-    fprintf(STDERR, "%s\n", print_r(['phars' => $phars], 1));
+    // static::printf("%s\n", print_r(['phars' => $phars], 1));
     $todos = static::findUpdates($phars);
-    fprintf(STDERR, "%s\n", print_r(['todos' => $todos], 1));
+    // static::printf("%s\n", print_r(['todos' => $todos], 1));
     foreach ($todos as $name => $todo) {
+      static::printf("  - Download %s (%s)\n", $todo['buildkit-path'], $todo['url']);
       static::downloadFile($todo['url'], $todo['sha256'], $todo['buildkit-path']);
       chmod($todo['buildkit-path'], intval($todo['file-mode'] ?? '0755', 8));
     }
+  }
+
+  /**
+   * Show a printfing. Accepts printf()-style parameters.
+   */
+  protected static function printf($expr, ...$args): void {
+    fprintf(STDERR, $expr, ...$args);
   }
 
   /**
@@ -47,6 +55,10 @@ class Phars {
       }
       if (!file_exists($phar['buildkit-path'])) {
         $todos[$name] = $phar + ['why' => 'does not exist'];
+        continue;
+      }
+      if (is_dir($phar['buildkit-path'])) {
+        static::printf("  - WARNING: Cannot overwrite folder (%s) with file. Skip download.\n", $phar['buildkit-path']);
         continue;
       }
       $hash = hash_file('sha256', $phar['buildkit-path'], FALSE);
@@ -101,11 +113,11 @@ class Phars {
     }
 
     // Civix could be a directory if checked out as a repo (unusual but possible configuration).
-    if (file_exists($localFile) && !is_dir($localFile)) {
+    if (file_exists($localFile)) {
       unlink($localFile);
     }
 
-    if (!is_dir($localFile) && !rename($tempFile, $localFile)) {
+    if (!rename($tempFile, $localFile)) {
       throw new \Exception("Failed to move temp file to destination.");
     }
   }
