@@ -63,6 +63,13 @@ class Phars {
    * @throws \Exception
    */
   protected static function downloadFile(string $remoteUrl, string $expectHash, string $localFile, int $blockSize = 65536): void {
+    $parent = dirname($localFile);
+    if (!is_dir($parent)) {
+      if (!mkdir($parent, 0755, TRUE)) {
+        throw new \Exception("Failed to initialize folder ($parent)");
+      }
+    }
+
     $tempFile = dirname($localFile) . DIRECTORY_SEPARATOR . '.tmp-' . md5(time() . mt_rand()) . basename($localFile);
 
     $hashCtx = hash_init('sha256');
