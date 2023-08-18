@@ -57,6 +57,10 @@ class Phars {
         $todos[$name] = $phar + ['why' => 'does not exist'];
         continue;
       }
+      if (is_dir($phar['buildkit-path'])) {
+        static::printf("  - WARNING: Cannot overwrite folder (%s) with file. Skip download.\n", $phar['buildkit-path']);
+        continue;
+      }
       $hash = hash_file('sha256', $phar['buildkit-path'], FALSE);
       if (!static::validateChecksum($phar['sha256'], $hash)) {
         $todos[$name] = $phar + ['why' => 'wrong checksum'];
@@ -71,12 +75,6 @@ class Phars {
    * @throws \Exception
    */
   protected static function downloadFile(string $remoteUrl, string $expectHash, string $localFile, int $blockSize = 65536): void {
-    if (is_dir($localFile)) {
-      static::printf("    WARNING: Cannot overwrite folder (%s) with file. Skip download.\n", $localFile);
-      // This should arguably be fatal... I'm not sure it's going to bubble-up
-      return;
-    }
-
     $parent = dirname($localFile);
     if (!is_dir($parent)) {
       if (!mkdir($parent, 0755, TRUE)) {
