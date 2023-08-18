@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+set -e
+
+## Example usage:
+##
+## $ env GIT_URL=https://github.com/eileenmcnaughton/nz.co.fuzion.extendedreport GIT_BASE=master GIT_HEAD=master \
+##     CIVI_VER=master STATUS_TOKEN= SOURCE= \
+##     run-bknix-job --mock max Extension-SHA
+
+#################################################
+## Environment variables
+
+## EXECUTOR_NUMBER: The number of this concurrent process
+## WORKSPACE: The path where Jenkins stores data for this job
+assert_common EXECUTOR_NUMBER WORKSPACE
+
+## GIT_URL: The URL of the extension-repo
+assert_hublab_url "$GIT_URL" "Missing or invalid GIT_URL ($GIT_URL)"
+
+## GIT_BASE: Current revision of the mainline code (base)
+assert_regex '^[0-9a-z\.-]\+$' "$GIT_BASE" "Missing or invalid GIT_BASE"
+
+## GIT_HEAD: Proposed revision of the code (head) If you're not try to test a specific proposal, then you can enter the same value as GIT_BASE.
+assert_regex '^[0-9a-z\.-]\+$' "$GIT_HEAD" "Missing or invalid GIT_HEAD"
+
+## CIVI_VER: CiviCRM branch or tag
+assert_regex '^[0-9a-z\.-]\+$' "$CIVI_VER" "Missing or invalid CIVI_VER"
+
+## STATUS_TOKEN: (OPTIONAL) Callback token for reporting statuses If omitted, then statuses will not be sent back to Github/Gitlab.
+if [ -n "$STATUS_TOKEN" ]; then
+  assert_regex '^[0-9a-z\.-]\+$' "$STATUS_TOKEN" "Invalid STATUS_TOKEN"
+fi
+
+## SOURCE: (OPTIONAL) Github or Gitlab URL of the pull-request which triggered this.
+if [ -n "$SOURCE" ]; then
+  assert_hublab_url "$SOURCE"  "Missing or invalid SOURCE"
+fi
+
+#################################################
+## Main
+
+## TODO: rethink this env-var. for the moment, setting it duplicates the behavior of "use_bknix_tmp"
+export CIVI_TEST_MODE=
+use_bknix_tmp
+
+echo "TODO GIT_URL=$GIT_URL"
+echo "TODO GIT_BASE=$GIT_BASE"
+echo "TODO GIT_HEAD=$GIT_HEAD"
+echo "TODO CIVI_VER=$CIVI_VER"
+echo "TODO STATUS_TOKEN=$STATUS_TOKEN"
+echo "TODO SOURCE=$SOURCE"
+#exit $?

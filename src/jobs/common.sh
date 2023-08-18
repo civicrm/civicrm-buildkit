@@ -22,6 +22,11 @@ function assert_regex() {
   fi
 }
 
+## usage: assert_hublab_url <value> [<error-message>]
+function assert_hublab_url() {
+  assert_regex '^https://\(github.com\|lab.civicrm.org\)/[a-zA-Z0-9/+?%\._-]\+$' "$@"
+}
+
 ## Assert that a list of common variables are well defined.
 ##
 ## usage: assert_common <var1 var2 var3...>
