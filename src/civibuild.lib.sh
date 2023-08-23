@@ -1019,7 +1019,7 @@ function wp_install() {
         define('SECURE_AUTH_SALT', '$(cvutil_makepasswd 32)');
         define('LOGGED_IN_SALT',   '$(cvutil_makepasswd 32)');
         define('NONCE_SALT',       '$(cvutil_makepasswd 32)');
-        define( 'WP_AUTO_UPDATE_CORE', minor );
+        define('WP_AUTO_UPDATE_CORE', 'minor');
 PHP
 
     wp core install \
