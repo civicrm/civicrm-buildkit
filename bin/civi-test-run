@@ -14,14 +14,16 @@ function getPhpunitVer() {
         return
         ;;
       phpunit9)
-        echo "$PHPUNIT --debug"
+        echo "$PHPUNIT --printer \Civi\Test\TAP"
         return
         ;;
     esac
   fi
 
   CIVIVER=$(getCiviVer)
-  if [ $(php -r "echo version_compare('$CIVIVER', '5.39', '>=');") ]; then
+  if [ $(php -r "echo version_compare('$CIVIVER', '5.65', '>=');") ]; then
+    echo "phpunit9 --printer \Civi\Test\TAP"
+  elif [ $(php -r "echo version_compare('$CIVIVER', '5.39', '>=');") ]; then
     echo "phpunit8 --printer \Civi\Test\TAP"
   elif [ $(php -r "echo version_compare('$CIVIVER', '5.28', '>=');") ]; then
     echo "phpunit7 --printer \Civi\Test\TAP"
