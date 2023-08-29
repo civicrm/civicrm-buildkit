@@ -119,6 +119,7 @@ wp cap add civicrm_admin \
   edit_event_participants \
   edit_grants \
   edit_groups \
+  edit_message_templates \
   edit_memberships \
   edit_own_manual_batches \
   edit_pledges \
