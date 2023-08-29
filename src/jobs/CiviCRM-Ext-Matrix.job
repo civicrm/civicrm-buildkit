@@ -51,6 +51,10 @@ case "$EXTKEY" in
     EXTGITS="https://github.com/civicrm/org.civicrm.shoreditch https://github.com/civicrm/api4"
     EXTS="org.civicrm.shoreditch org.civicrm.api4"
     ;;
+  org.civicrm.volunteer)
+    EXTGITS="https://lab.civicrm.org/extensions/angularprofiles.git https://github.com/civicrm/org.civicrm.volunteer"
+    EXTS="org.civicrm.angularprofiles org.civicrm.volunteer"
+    ;;
   uk.co.vedaconsulting.mosaico)
     EXTGITS="https://github.com/civicrm/org.civicrm.shoreditch https://github.com/veda-consulting/uk.co.vedaconsulting.mosaico"
     EXTS="org.civicrm.shoreditch uk.co.vedaconsulting.mosaico"
