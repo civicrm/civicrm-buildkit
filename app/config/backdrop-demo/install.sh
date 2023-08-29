@@ -54,9 +54,6 @@ pushd "$CMS_ROOT" >> /dev/null
 
   backdrop_po_import
 
-  ## Setup demo extensions
-  cv en --ignore-missing $CIVI_DEMO_EXTS
-
   ## Demo sites always disable email and often disable cron
   cv api StatusPreference.create ignore_severity=critical name=checkOutboundMail
   cv api StatusPreference.create ignore_severity=critical name=checkLastCron
