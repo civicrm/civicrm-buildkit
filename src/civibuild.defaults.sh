@@ -208,7 +208,8 @@ CIVI_EXT_DIR=
 CIVI_EXT_URL=
 
 ## List of extensions to enable on `*-demo` builds
-CIVI_DEMO_EXTS='civirules civisualize cividiscount org.civicrm.search_kit org.civicrm.search org.civicrm.contactlayout org.civicrm.angularprofiles org.civicrm.volunteer civicrm_admin_ui message_admin org.civicrm.afform org.civicrm.afform_admin'
+## Note: Some of these are enabled by default on current releases. That doesn't hurt anything, and it's handy for testing older releases.
+CIVI_DEMO_EXTS='civirules civisualize cividiscount org.civicrm.search_kit org.civicrm.search org.civicrm.contactlayout civicrm_admin_ui message_admin org.civicrm.afform org.civicrm.afform_admin'
 
 ## DB credentials for Civi test DB
 ## (suggested: autogenerate via 'amp create -f --root="$WEB_ROOT" --name=civi --prefix=TEST_ --skip-url')

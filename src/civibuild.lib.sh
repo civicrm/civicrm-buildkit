@@ -768,6 +768,7 @@ EOPHP
   if cv ev 'exit(version_compare(CRM_Utils_System::version(), "5.19.alpha", "<") ?0:1);' ; then
     cv en --ignore-missing api4
   fi
+  cv en --ignore-missing $CIVI_DEMO_EXTS
 }
 
 ###############################################################################
