@@ -33,6 +33,7 @@ assert_common CIVIVER
 use_bknix_tmp
 
 BLDNAME="build-$EXECUTOR_NUMBER"
+export TIME_FUNC="linear:500"
 
 ## Reset (cleanup after previous tests)
 clean_legacy_workspace "$WORKSPACE/junit" "$WORKSPACE/civibuild-html" "$WORKSPACE/last-scan.json" "$WORKSPACE/new-scan.json"
