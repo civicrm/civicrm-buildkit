@@ -88,7 +88,7 @@ Optional environment variables:
     }
 
     if (file_exists("$targetDir/phpunit.xml.dist")) {
-      $phpunit = getenv('PHPUNIT_BIN') ? getenv('PHPUNIT_BIN') : 'phpunit8';
+      $phpunit = getenv('PHPUNIT_BIN') ? getenv('PHPUNIT_BIN') : 'phpunit9';
       $batch->add("<info>Restore database</info>", $restore);
       if ($phpunit !== 'phpunit5') {
         $e2eCmd = "$phpunit --printer '\Civi\Test\TAP'  --group e2e";
