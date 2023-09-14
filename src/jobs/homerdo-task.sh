@@ -74,6 +74,9 @@ function do_all() {
 
   "$SELF" request > "$request"
 
+  echo >&2 "[$USER] To replay this request, run:"
+  show_request_cmd "$request" "    " >&2
+
   local img=$(cd "$imageDir" && flock . "$SELF" pick-image "$request" $$ )
   if [ ! -e "$img" ]; then
     echo >&2 "Failed to pick image from $imageDir for $request"
@@ -257,6 +260,20 @@ function do_exec() {
 
 #####################################################################
 ## Utilities
+
+function show_request_cmd() {
+  local request="$1"
+  local prefix="$2"
+
+  echo
+  echo "${prefix}env \\"
+  cat "$request" | sed 's;/home/homer;\$HOME;' | while read LINE ; do
+    echo "${prefix}  $LINE \\"
+  done
+  echo -n "$prefix  "
+  printf "run-bknix-job %q %q\n" "$BKPROF" "$JOB_NAME"
+  echo
+}
 
 ## Ensure that the WORKSPACE folder is setup.
 function use_workspace() {
