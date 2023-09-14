@@ -127,10 +127,12 @@ fakesleep 10
 report_status --state="pending" --desc="Execute tests" --url="${BUILD_URL}console"
 
 h1 "Execute tests"
-safedo civici ext:test -vv $DRYRUN \
+if ! safedo civici ext:test -vv $DRYRUN \
   --info="$BKITBLD/$BLDNAME/web/sites/default/files/civicrm/ext/target/info.xml" \
   --junit-dir="$WORKSPACE_JUNIT"
-EXITCODE=$?
+then
+  EXITCODE=1
+fi
 
 h1 "Cleanup JUnit XML"
 phpunit-xml-cleanup "$WORKSPACE_JUNIT"/*.xml
