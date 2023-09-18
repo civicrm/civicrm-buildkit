@@ -91,9 +91,9 @@ in rec {
 
   xdebug32 = buildPecl {
     ## XDebug 3.2 supports php80, php81, php82 (https://xdebug.org/docs/compat)
-    version = "3.2.0";
+    version = "3.2.2";
     pname = "xdebug";
-    sha256 = "d2myDuza31++n1glEsELOU+1dbb3qMOjqC22iD4AMrc=";
+    sha256 = "9Id3Nx+Qy7MV6k6ggqHt5nZbz7NdfWNWq49x/W38wVc=";
     doCheck = true;
     checkTarget = "test";
     zendExtension = true;
