@@ -81,9 +81,9 @@ in rec {
 
   xdebug3 = buildPecl {
     ## XDebug 3.1 supports php72, php73, php74, php80, php81 (https://xdebug.org/docs/compat)
-    version = "3.1.4";
+    version = "3.1.6";
     pname = "xdebug";
-    sha256 = "QZWSb59sToAv90m7LKhaxQY2cZpy5TieNy4171I1Bfk=";
+    sha256 = "VU7KC01be5PLIlj6sLC9hMyHIedDIqIlXBThN8vK1dI=";
     doCheck = true;
     checkTarget = "test";
     zendExtension = true;
