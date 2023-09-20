@@ -1,6 +1,5 @@
 <?php
-#!require clippy/std: ~0.2.2
-#!require clippy/container: '~1.2'
+#!require clippy/std: ~0.4.6
 
 ###############################################################################
 ## Bootstrap
@@ -327,10 +326,10 @@ $c['task_sign()'] = function (array $versionSpec, $input, $io, $runner) {
     sprintf("sha256sum *.tar.gz *.tgz *.zip *.json > %s", escapeshellarg($sha256File)));
 
   $runner->exec($versionSpec['stagingDir'],
-    sprintf("gpg -b --armor -u %s --sign %s",
+    sprintf("gpg -b --armor --pinentry-mode=loopback -u %s --sign %s",
       escapeshellarg($gpgKey), escapeshellarg($md5File)));
   $runner->exec($versionSpec['stagingDir'],
-    sprintf("gpg -b --armor -u %s --sign %s",
+    sprintf("gpg -b --armor --pinentry-mode=loopback -u %s --sign %s",
       escapeshellarg($gpgKey), escapeshellarg($sha256File)));
 };
 
