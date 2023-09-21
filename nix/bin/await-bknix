@@ -37,7 +37,7 @@ function is_profile_online() {
   local tgt_user="$1"
   local tgt_profile="$2"
 
-  if [ -e "/nix/var/nix/profiles/bknix-${tgt_profile}/bin/php" -o -e "/nix/var/nix/profiles/per-user/${tgt_user}/bknix-${tgt_profile}/bin/php" ]; then
+  if [ -e "$HOME/.local/state/nix/profiles/bknix-${tgt_profile}/bin/php" -o -e "/nix/var/nix/profiles/bknix-${tgt_profile}/bin/php" -o -e "/nix/var/nix/profiles/per-user/${tgt_user}/bknix-${tgt_profile}/bin/php" ]; then
     echo "Found profile binaries"
   else
     echo "Missing profile binaries"
