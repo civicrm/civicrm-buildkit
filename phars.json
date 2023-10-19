@@ -30,8 +30,8 @@
    },
 
    "coworker":  {
-     "url": "https://download.civicrm.org/coworker/coworker.phar-v0.3",
-     "sha256": "e6907564db16822471765ccefaedbe0ad71658ca68d8daba0ce0658192ed2ab8",
+     "url": "https://download.civicrm.org/coworker/coworker.phar-v0.4",
+     "sha256": "7476493220d2a48fc0b540e2936d17e30d0ef83e54ed2d5bd489a01ff38d1f09",
      "buildkit-path": "bin/coworker"
    },
 
