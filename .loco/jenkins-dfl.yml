@@ -47,6 +47,10 @@ environment:
  - NODE_PATH=$BKIT/node_modules:$NODE_PATH
  - PATH=$BKIT/bin:$BKIT/node_modules/.bin:$LOCO_PRJ/.loco/bin:$PATH
 
+default_environment:
+ ## Gen4 cfg uses $(which chromium). This file is for gen3, which is harder to QA.
+ - CHROME_BIN=/nix/var/nix/profiles/bknix-dfl/bin/chromium
+
 #### Functional service definitions
 services:
 
