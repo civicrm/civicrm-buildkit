@@ -21,4 +21,5 @@ in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
     dists.default.redis
     dists.bkit.transifexClient
 
-]
+
+] ++ (if isAppleM1 then [] else [dists.default.chromium])

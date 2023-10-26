@@ -5,6 +5,8 @@
  */
 let
     dists = import ../../pins;
+    stdenv = dists.default.stdenv;
+    isAppleM1 = stdenv.isDarwin && stdenv.isAarch64;
 
 in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
 
@@ -17,4 +19,4 @@ in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
     dists.default.redis
     dists.bkit.transifexClient
 
-]
+] ++ (if isAppleM1 then [] else [dists.default.chromium])
