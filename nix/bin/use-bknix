@@ -10,7 +10,8 @@
 ##   eval $(use-bknix max)
 ##   eval $(use-bknix dfl)
 ##
-## Works with nix binaries in either of:
+## Works with nix binaries in any of:
+##    {$HOME}/.local/state/nix/profile/bknix-{$NAME}
 ##    /nix/var/nix/profiles/per-user/{$USER}/bknix-{$NAME}
 ##    /nix/var/nix/profiles/bknix-{$NAME}
 ## Works with buildkit data in either of:
@@ -90,7 +91,7 @@ if [ -e "/etc/bknix-ci/is-runner" ]; then
   use_worker_n
 fi
 
-for BASEDIR in "/nix/var/nix/profiles/per-user/$OWNER" "/nix/var/nix/profiles" ; do
+for BASEDIR in "$HOME/.local/state/nix/profiles" "/nix/var/nix/profiles/per-user/$OWNER" "/nix/var/nix/profiles" ; do
   PRFDIR="$BASEDIR/bknix-$PROFILE"
   if [ -d "$PRFDIR" ]; then
     break

@@ -16,7 +16,7 @@ let
 in pkgs.php80.buildEnv {
 
   ## EVALUATE: apcu_bc
-  extensions = { all, enabled}: with all; enabled++ [ xdebug redis tidy apcu yaml memcached imagick opcache phpExtras.runkit7_4 ];
+  extensions = { all, enabled}: with all; enabled++ [ phpExtras.xdebug3 redis tidy apcu yaml memcached imagick opcache phpExtras.runkit7_4 ];
   extraConfig = phpIniSnippet1 + phpIniSnippet2;
 
 }

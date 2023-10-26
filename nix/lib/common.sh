@@ -227,7 +227,7 @@ function pick_buildkit_path() {
 ##   SPLIT_BUILDKIT=1 is a boolean
 ##   Optionally, HTTPD_PORT, MEMCACHED_PORT, PHPFPM_PORT, REDIS_PORT are set
 function install_profile() {
-  PRFDIR="/nix/var/nix/profiles/bknix-$PROFILE"
+  PRFDIR=$(get_nix_profile_path "bknix-$PROFILE")
   BKIT=$(pick_buildkit_path "$OWNER" "$PROFILE")
   PREFIX="bknix-$OWNER-$PROFILE"
 
@@ -571,7 +571,7 @@ function install_xfce4_launchers() {
   ln -sf "$share/README.md" "$desktop/README.md"
 
   for PRF in dfl min max alt edge old ; do
-    if [ -e "/nix/var/nix/profiles/per-user/cividev/bknix-$PRF" -o -e "/nix/var/nix/profiles/bknix-$PRF" ]; then
+    if [ -e "$HOME/.local/state/nix/profiles/bknix-$PRF" -o -e "/nix/var/nix/profiles/per-user/cividev/bknix-$PRF" -o -e "/nix/var/nix/profiles/bknix-$PRF" ]; then
       echo "Enable bknix-$PRF.desktop"
       cat "$share/bknix-$PRF.desktop" \
         | sed "s;{{BUILDKIT}};$buildkit;g" \
@@ -602,5 +602,18 @@ function install_xfce4_launchers() {
   if [ ! -e "/etc/civicrm.settings.d/000-global.php" ]; then
     cp "$share/civicrm.settings.d/000-global.php" "/etc/civicrm.settings.d/000-global.php"
     ln -sf "/etc/civicrm.settings.d/000-global.php" "$desktop/000-global.php"
+  fi
+}
+
+## Determine the location of the profile dir
+## Ex: "get_nix_profile_path bknix-dfl" ==> "/nix/var/nix/profiles/per-user/myuser/bknix-dfl"
+function get_nix_profile_path() {
+  if [ -e "$HOME/.local/state/nix/profiles" ]; then
+    echo "$HOME/.local/state/nix/profiles/$1"
+  elif [ -e "/nix/var/nix/profiles/per-user/$USER" ]; then
+    echo "/nix/var/nix/profiles/per-user/$USER/$1"
+  else
+    echo >&2 "get_nix_profile_base(): Failed to determine base"
+    exit 2
   fi
 }
