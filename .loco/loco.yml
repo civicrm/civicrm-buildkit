@@ -41,6 +41,8 @@ default_environment:
  ## LOCALHOST: Bind services to a local IP address.
  - LOCALHOST=127.0.0.1
 
+ - CHROME_BIN=$(which "chromium")
+
 #### Mandatory environment settings
 environment:
  # CLI applications should use our stuff

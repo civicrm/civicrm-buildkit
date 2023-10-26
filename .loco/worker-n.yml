@@ -60,6 +60,9 @@ environment:
  - NODE_PATH=$BKIT/node_modules:$NODE_PATH
  - PATH=$BKIT/bin:$BKIT/node_modules/.bin:$LOCO_PRJ/.loco/bin:$PATH
 
+default_environment:
+ - CHROME_BIN=$(which "chromium")
+
 #### Functional service definitions
 services:
 
