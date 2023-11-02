@@ -64,6 +64,10 @@ case "$EXTKEY" in
     EXTGITS="https://lab.civicrm.org/extensions/civirules"
     EXTS="org.civicoop.civirules"
     ;;
+  de.systopia.eck)
+    EXTGITS="https://github.com/systopia/de.systopia.eck"
+    EXTS="de.systopia.eck:"
+    ;;
   *)
     echo "Unrecognized extension key: $EXTKEY"
     exit 1
