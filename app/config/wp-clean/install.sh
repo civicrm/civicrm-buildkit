@@ -48,6 +48,7 @@ TZ=$(php --info |grep 'Default timezone' |sed s/' => '/:/ |cut -d':' -f2)
 wp option set timezone_string $TZ
 wp rewrite structure '/%postname%/'
 wp rewrite flush --hard
+wp theme install twentythirteen --activate
 
 wp plugin activate civicrm
 wp eval '$c=[civi_wp(), "add_wpload_setting"]; if (is_callable($c)) $c();' ## Temporary workaround, init wpLoadPh
