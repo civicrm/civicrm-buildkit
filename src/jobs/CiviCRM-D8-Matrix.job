@@ -57,6 +57,7 @@ civibuild show "$BLDNAME" \
   --new-scan "$WORKSPACE_BUILD/new-scan.json"
 cp "$WORKSPACE_BUILD/new-scan.json" "$WORKSPACE_BUILD/last-scan.json"
 
+export SMARTY3_ENABLE=true
 ## Execute tests
 civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" $SUITES
 exit $?
