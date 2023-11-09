@@ -23,6 +23,6 @@ else {
   }
 }
 
-if (getenv('SMARTY3_ENABLE') && file_exists($packages_path . DIRECTORY_SEPARATOR . 'smarty3' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php') && !defined('CIVICRM_SMARTY3_AUTOLOAD_PATH')) {
+if (getenv('SMARTY3_ENABLE') === 'true' && file_exists($packages_path . DIRECTORY_SEPARATOR . 'smarty3' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php') && !defined('CIVICRM_SMARTY3_AUTOLOAD_PATH')) {
   define('CIVICRM_SMARTY3_AUTOLOAD_PATH', $packages_path . DIRECTORY_SEPARATOR . 'smarty3' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
 }
