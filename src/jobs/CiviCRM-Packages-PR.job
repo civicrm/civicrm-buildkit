@@ -55,6 +55,5 @@ $GUARD civibuild download "$BLDNAME" --type "$BLDTYPE" --civi-ver "$CIVIVER" \
 $GUARD civibuild install "$BLDNAME"
 
 ## Run the tests
-export SMARTY3_ENABLE=true
 $GUARD civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" $SUITES --exclude-group ornery
 exit $?

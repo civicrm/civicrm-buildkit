@@ -64,7 +64,6 @@ $c['app']->command("main [-N|--dry-run] [-S|--step] [--type=] [--patch=] [--keep
   $taskr->passthru('civibuild install {{0|s}}', [$c['buildName']]);
 
   $io->section("\nRun tests");
-  $taskr->passthru('export SMARTY3_ENABLE=true');
   $taskr->passthru('TIME_FUNC={{3|s}} civi-test-run -b {{0|s}} -j {{1|s}} {{2}}', [
     $c['buildName'],
     $c['junitDir'],
