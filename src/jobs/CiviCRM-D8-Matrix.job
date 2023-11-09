@@ -4,6 +4,8 @@ set -e
 ## Example usage:
 ##
 ## $ env CIVIVER=5.59 SUITES=phpunit-e2e BLDTYPE='drupal9-clean_9.4.x-dev' run-bknix-job --mock max CiviCRM-D8-Matrix
+## $ env SMARTY3_ENABLE=true CIVIVER=master SUITES=phpunit-e2e BLDTYPE='drupal9-clean_9.4.x-dev' run-bknix-job --mock max CiviCRM-D8-Matrix
+## $ env SMARTY3_ENABLE=false CIVIVER=master SUITES=phpunit-e2e BLDTYPE='drupal9-clean_9.4.x-dev' run-bknix-job --mock max CiviCRM-D8-Matrix
 
 #################################################
 ## Environment variables
@@ -13,7 +15,9 @@ set -e
 ## CIVIVER: The version of CiviCRM to install, expressed as a branch or tag (e.g. `master`, `5.59`, `5.57.0`)
 ## SUITES: Space-limited list of test-suites (e.g. `phpunit-e2e phpunit-civi`)
 ## BLDTYPE: Name of the civibuild configuration to use. Optionally append version. (e.g. `drupal9-clean_9.4.x-dev`)
+## SMARTY3_ENABLE: "true" or "false". Whether to use Smarty3. (Default: version-dependent)
 assert_common EXECUTOR_NUMBER WORKSPACE CIVIVER SUITES
+assign_smarty
 
 ## Optionally peg to a specific CMS version
 CMS_REGEX="([a-z0-9\-]+)_([a-z0-9\-\.]+)"
@@ -57,7 +61,9 @@ civibuild show "$BLDNAME" \
   --new-scan "$WORKSPACE_BUILD/new-scan.json"
 cp "$WORKSPACE_BUILD/new-scan.json" "$WORKSPACE_BUILD/last-scan.json"
 
-export SMARTY3_ENABLE=true
+## Enable this if you want a log message to confirm the content of CIVICRM_SMARTY3_AUTOLOAD_PATH
+# (cd "$BKITBLD/$BLDNAME" && cv ev 'printf("CIVICRM_SMARTY3_AUTOLOAD_PATH=[%s]\n", CRM_Utils_Constant::value("CIVICRM_SMARTY3_AUTOLOAD_PATH"));' )
+
 ## Execute tests
 civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" $SUITES
 exit $?
