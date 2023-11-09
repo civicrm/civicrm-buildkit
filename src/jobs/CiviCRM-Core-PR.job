@@ -46,6 +46,5 @@ civibuild env-info
 $GUARD civibuild download "$BLDNAME" --type "$BLDTYPE" --civi-ver "$ghprbTargetBranch" \
   --patch "https://github.com/civicrm/civicrm-core/pull/${ghprbPullId}"
 
-export SMARTY3_ENABLE=true
 ## No obvious problems blocking a build...
 $GUARD civibuild install "$BLDNAME"
