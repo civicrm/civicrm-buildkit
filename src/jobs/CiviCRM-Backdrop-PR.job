@@ -3,7 +3,7 @@ set -e
 
 ## Example usage:
 ##
-## $ env ghprbTargetBranch=1.x-master ghprbPullId=159 run-bknix-job --mock max CiviCRM-Backdrop-PR
+## $ env ghprbTargetBranch=1.x-master ghprbPullId=159 run-bknix-job --mock dfl CiviCRM-Backdrop-PR
 
 #################################################
 ## Environment variables
@@ -18,16 +18,8 @@ SUITES='upgrade phpunit-e2e phpunit-backdrop'
 ## ghprbPullId: Pull request ID number
 assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE SUITES ghprbPullId ghprbTargetBranch
 
-case "$ghprbTargetBranch" in
-  1.x-4.6*|1.x-4.7*|1.x-5*|1.x-master*)
-    CIVIVER=$(echo "$ghprbTargetBranch" | sed 's;^1.x-;;')
-    ;;
-  *)
-    ## This actually true for many branches, so we exit softly...
-    echo "PR test not allowed for $ghprbTargetBranch"
-    exit 0
-    ;;
-esac
+detect_civiver civicrm-backdrop "$ghprbTargetBranch"
+assert_testable_version "$CIVIVER"
 
 #################################################
 ## Main
@@ -53,19 +45,7 @@ $GUARD civibuild download "$BLDNAME" --type "$BLDTYPE" --civi-ver "$CIVIVER" \
 
 ## Check style first; fail quickly if we break style
 $GUARD pushd "$BLDDIR/web/modules/civicrm/backdrop"
-  case "$ghprbTargetBranch" in
-    1.x-4.3*|1.x-4.4*|1.x-4.5*|1.x-4.6*)
-      ## skip
-      ;;
-    *)
-      if git diff --name-only "origin/$ghprbTargetBranch.." | $GUARD civilint --checkstyle "$WORKSPACE_CHECKSTYLE" - ; then
-        echo "Style passed"
-      else
-        echo "Style error"
-        exit 1
-      fi
-      ;;
-  esac
+  $GUARD xcivilint "origin/$ghprbTargetBranch" "civicrm-backdrop#""${ghprbPullId}"
 $GUARD popd
 
 $GUARD civibuild install "$BLDNAME"

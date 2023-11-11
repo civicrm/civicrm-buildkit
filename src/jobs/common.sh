@@ -40,6 +40,9 @@ function assert_common() {
       ghprbTargetBranch)
         assert_regex '^[0-9a-z\.-]\+$' "$ghprbTargetBranch" "ghprbTargetBranch should be a branch name."
         ;;
+      CIVI_REPO)
+        assert_regex '^civicrm-\(backdrop\|core\|drupal\|drupal-8\|packages\|wordpress\)$' "$CIVI_REPO"
+        ;;
       BKITBLD)
         if [ -z "$BKITBLD" ]; then
           fatal "Failed to find BKITBLD for $BKPROF"
@@ -69,6 +72,16 @@ function assert_common() {
       WORKSPACE)
         if [ -z "$WORKSPACE" -o ! -d "$WORKSPACE" ]; then
           fatal "WORKSPACE must be a valid path. (If you are running manually, consider using --mock.)"
+        fi
+        ;;
+      WORKSPACE_HTML)
+        if [ -z "$WORKSPACE_HTML" -o ! -d "$WORKSPACE_HTML" ]; then
+          fatal "WORKSPACE_HTML must be a valid path. (If you are running manually, consider using --mock.)"
+        fi
+        ;;
+      WORKSPACE_CHECKSTYLE)
+        if [ -z "$WORKSPACE_CHECKSTYLE" -o ! -d "$WORKSPACE_CHECKSTYLE" ]; then
+          fatal "WORKSPACE_CHECKSTYLE must be a valid path. (If you are running manually, consider using --mock.)"
         fi
         ;;
       *)
@@ -182,4 +195,87 @@ function xphpunit() {
   done
 
   $PHPUNIT "${args[@]}"
+}
+
+## Thin wrapper for calling civilint.
+## usage: xcivilint BASE_BRANCH DESCRPTION
+## example: xcivilint "origin/$ghprbTargetBranch" "PR ${ghprbPullId}"
+function xcivilint() {
+  local baseBranch="$1"
+  local description="$2"
+  assert_common WORKSPACE_HTML WORKSPACE_CHECKSTYLE
+
+  ## Create text+html renderings
+  echo "---- Full Report ----"
+  set +e
+    git diff --name-only "$baseBranch.." | civilint - | tee "$WORKSPACE_HTML/civilint.txt"
+  set -e
+  (
+    echo "<html>"
+    echo "<h1>civilint: ${description}</h1>"
+    php -r 'echo "<p>Executed circa " . htmlentities(date("Y-m-d H:i P")) . "</p>\n";'
+    echo "<pre>"
+    php -r 'echo htmlentities(file_get_contents($argv[1]));' "$WORKSPACE_HTML/civilint.txt"
+    echo "</pre></html>"
+  ) > "$WORKSPACE_HTML/civilint.html"
+
+  ## Create CheckStyle XML rendering
+  if git diff --name-only "$baseBranch.." | civilint --checkstyle "$WORKSPACE_CHECKSTYLE" - ; then
+    echo "Style passed"
+  else
+    echo "Style error"
+    exit 1
+  fi
+}
+
+## Given that we are testing a specific repo+branch, figure out the CIVIVER.
+##
+## usage: detect_civiver REPO BASE_BRANCH
+## example: detect_civiver civicrm-backrop 1.x-5.0
+function detect_civiver() {
+  local repo="$1"
+  local baseBranch="$2"
+  local prefix=
+
+  case "$repo" in
+    civicrm-backdrop) prefix=1.x- ; ;;
+    civicrm-drupal) prefix=7.x- ; ;;
+    civicrm-core|civicrm-drupal-8|civicrm-joomla|civicrm-packages|civicrm-wordpress) prefix= ; ;;
+    *)
+      echo >&2 "Unrecognized repo name: $repo"
+      exit 1 ## Structural error in scripts
+      ;;
+  esac
+
+  if [ -z "$prefix" ]; then
+    CIVIVER="$baseBranch"
+  else
+    case "$baseBranch" in
+      ${prefix}4.6*|${prefix}4.7*|${prefix}5*|${prefix}master*)
+        CIVIVER=$(echo "$baseBranch" | sed 's;^'"$prefix"';;')
+        ;;
+      *)
+        ## This actually true for many branches, so we exit softly...
+        echo >&2 "PR test not allowed for $baseBranch"
+        exit 0 ## Misguided request by PR-author
+        ;;
+    esac
+  fi
+}
+
+## usage: assert_testable_version CIVIVER
+## example: assert_testable_version master
+## example: assert_testable_version 4.6
+function assert_testable_version() {
+  local version="$1"
+
+  if [ -z "$1" ]; then
+    fatal "assert_testable_version: The version number is blank!"
+  fi
+
+  case "$version" in
+    5.*|master*)           echo "PR test is supported for $version" ;;
+    *)                     fatal "PR test not supported for $version" ;;
+  esac
+
 }
