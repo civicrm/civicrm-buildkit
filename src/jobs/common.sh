@@ -40,6 +40,9 @@ function assert_common() {
       ghprbTargetBranch)
         assert_regex '^[0-9a-z\.-]\+$' "$ghprbTargetBranch" "ghprbTargetBranch should be a branch name."
         ;;
+      CIVI_REPO)
+        assert_regex '^civicrm-\(backdrop\|core\|drupal\|drupal-8\|packages\|wordpress\)$' "$CIVI_REPO"
+        ;;
       BKITBLD)
         if [ -z "$BKITBLD" ]; then
           fatal "Failed to find BKITBLD for $BKPROF"
