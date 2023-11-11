@@ -224,3 +224,20 @@ function xcivilint() {
     exit 1
   fi
 }
+
+## usage: assert_testable_version CIVIVER
+## example: assert_testable_version master
+## example: assert_testable_version 4.6
+function assert_testable_version() {
+  local version="$1"
+
+  if [ -z "$1" ]; then
+    fatal "assert_testable_version: The version number is blank!"
+  fi
+
+  case "$version" in
+    4.6*|4.7*|5.*|master*) echo "PR test is supported for $version" ;;
+    *)                     fatal "PR test not supported for $version" ;;
+  esac
+
+}

@@ -14,11 +14,7 @@ set -e
 ## ghprbPullId: The pull request to apply
 assert_common EXECUTOR_NUMBER WORKSPACE ghprbPullId ghprbTargetBranch
 
-## Pre-requisite: We only test PR's for main-line branches.
-case "$ghprbTargetBranch" in
-  4.6*|4.7*|5.*|master*) echo "PR test is supported for $ghprbTargetBranch" ;;
-  *)                     echo "PR test not supported for $ghprbTargetBranch" ; exit 1 ;;
-esac
+assert_testable_version "$ghprbTargetBranch"
 
 #################################################
 ## Main
