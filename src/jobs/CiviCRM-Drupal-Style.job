@@ -3,9 +3,9 @@ set -e
 
 ## Example usage:
 ##
-## $ env ghprbTargetBranch=master ghprbPullId=28104 run-bknix-job --mock dfl CiviCRM-Core-Style
+## $ env ghprbTargetBranch=7.x-master ghprbPullId=673 run-bknix-job --mock dfl CiviCRM-Drupal-Style
 
 #################################################
 
-CIVI_REPO=civicrm-core
+CIVI_REPO=civicrm-drupal
 run_bknix_include "$BKNIX_JOBS/Generic-Style.job"
