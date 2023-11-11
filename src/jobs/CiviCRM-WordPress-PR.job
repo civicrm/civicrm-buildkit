@@ -52,23 +52,6 @@ fi
 $GUARD civibuild download "$BLDNAME" --type "$BLDTYPE" --civi-ver "$CIVIVER" \
   --patch "https://github.com/civicrm/civicrm-wordpress/pull/${ghprbPullId}"
 
-## Check style first; fail quickly if we break style
-$GUARD pushd "$BLDDIR/web/wp-content/plugins/civicrm"
-  case "$ghprbTargetBranch" in
-    5.30|5.31|5.32)
-      ## skip
-      ;;
-    *)
-      if git diff --name-only "origin/$ghprbTargetBranch.." | $GUARD civilint --checkstyle "$WORKSPACE_CHECKSTYLE" - ; then
-        echo "Style passed"
-      else
-        echo "Style error"
-        exit 1
-      fi
-      ;;
-  esac
-$GUARD popd
-
 $GUARD civibuild install "$BLDNAME"
 
 ## Run the tests

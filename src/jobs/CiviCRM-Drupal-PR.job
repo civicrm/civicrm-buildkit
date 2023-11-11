@@ -44,11 +44,6 @@ civibuild env-info
 $GUARD civibuild download "$BLDNAME" --type "$BLDTYPE" --civi-ver "$CIVIVER" \
   --patch "https://github.com/civicrm/civicrm-drupal/pull/${ghprbPullId}"
 
-## Check style first; fail quickly if we break style
-$GUARD pushd "$BLDDIR/web/sites/all/modules/civicrm/drupal"
-  $GUARD xcivilint "origin/$ghprbTargetBranch" "civicrm-drupal#""${ghprbPullId}"
-$GUARD popd
-
 $GUARD civibuild install "$BLDNAME"
 
 ## Run the tests

@@ -7,5 +7,15 @@ set -e
 
 #################################################
 
+assert_common ghprbTargetBranch
+case "$ghprbTargetBranch" in
+  5.30|5.31|5.32)
+    echo "Skip style tests in civicrm-wordpress circa 5.31-5.32"
+    exit 0
+    ;;
+esac
+
+#################################################
+
 CIVI_REPO=civicrm-wordpress
 run_bknix_include "$BKNIX_JOBS/Generic-Style.job"
