@@ -28,6 +28,7 @@ use_bknix
 BLDDIR="$BKITBLD/$BLDNAME"
 
 ## Cleanup left-overs from previous test-runs
+clean_legacy_workspace "$WORKSPACE/junit" "$WORKSPACE/civibuild-html" "$WORKSPACE/checkstyle"
 init_std_workspace
 if [ -d "$BKITBLD/$BLDNAME" ]; then
   echo y | civibuild destroy "$BLDNAME"
@@ -42,3 +43,5 @@ $GUARD civibuild download "$BLDNAME" --type "$BLDTYPE" --civi-ver "$CIVIVER" \
 
 ## No obvious problems blocking a build...
 $GUARD civibuild install "$BLDNAME"
+
+exit $?
