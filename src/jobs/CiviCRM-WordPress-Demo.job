@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -e
+
+## Example usage:
+##
+## $ env ghprbTargetBranch=master ghprbPullId=307 run-bknix-job --mock dfl CiviCRM-WordPress-Demo
+
+#################################################
+## Main
+
+assert_common ghprbPullId
+
+CIVI_REPO="civicrm-wordpress"
+BLDTYPE="wp-demo"
+BLDNAME="wp-$ghprbPullId-$(php -r 'echo base_convert(time()%(180*24*60*60), 10, 36);')"
+
+run_bknix_include "$BKNIX_JOBS/Generic-Demo.job"

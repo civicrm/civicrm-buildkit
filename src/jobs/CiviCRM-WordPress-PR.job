@@ -3,7 +3,7 @@ set -e
 
 ## Example usage:
 ##
-## $ env ghprbTargetBranch=master ghprbPullId=159 run-bknix-job --mock max CiviCRM-Packages-PR
+## $ env ghprbTargetBranch=master ghprbPullId=307 run-bknix-job --mock dfl CiviCRM-WordPress-PR
 
 #################################################
 ## Environment variables

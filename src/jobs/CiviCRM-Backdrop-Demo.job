@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -e
+
+## Example usage:
+##
+## $ env ghprbTargetBranch=1.x-master ghprbPullId=159 run-bknix-job --mock dfl CiviCRM-Backdrop-Demo
+
+
+#################################################
+## Main
+
+assert_common ghprbPullId
+
+CIVI_REPO="civicrm-backdrop"
+BLDTYPE="backdrop-clean"
+BLDNAME="bd-$ghprbPullId-$(php -r 'echo base_convert(time()%(180*24*60*60), 10, 36);')"
+
+run_bknix_include "$BKNIX_JOBS/Generic-Demo.job"

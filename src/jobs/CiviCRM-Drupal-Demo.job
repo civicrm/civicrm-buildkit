@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -e
+
+## Example usage:
+##
+## $ env ghprbTargetBranch=7.x-master ghprbPullId=676 run-bknix-job --mock dfl CiviCRM-Drupal-Demo
+
+#################################################
+## Main
+
+assert_common ghprbPullId
+
+CIVI_REPO="civicrm-drupal"
+BLDTYPE="drupal-clean"
+BLDNAME="d7-$ghprbPullId-$(php -r 'echo base_convert(time()%(180*24*60*60), 10, 36);')"
+
+run_bknix_include "$BKNIX_JOBS/Generic-Demo.job"
