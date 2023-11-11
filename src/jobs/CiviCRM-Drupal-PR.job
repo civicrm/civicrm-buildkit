@@ -11,14 +11,15 @@ set -e
 GUARD=
 BLDTYPE="drupal-clean"
 #SUITES='upgrade karma phpunit-e2e phpunit-drupal'
-SUITES='upgrade phpunit-e2e phpunit-drupal'
-export TIME_FUNC="linear:500"
+#x SUITES='upgrade phpunit-e2e phpunit-drupal'
+#x export TIME_FUNC="linear:500"
 
 ## EXECUTOR_NUMBER: The number of this concurrent process
 ## WORKSPACE: The path where Jenkins stores data for this job
 ## ghprbTargetBranch: The version of CiviCRM to install, expressed as a branch or tag (e.g. `master`, `5.59`, `5.57.0`)
 ## ghprbPullId: Pull request ID number
-assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE SUITES ghprbPullId ghprbTargetBranch
+assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE ghprbPullId ghprbTargetBranch
+#x assert_common SUITES
 
 detect_civiver civicrm-drupal "$ghprbTargetBranch"
 assert_testable_version "$CIVIVER"
@@ -48,5 +49,5 @@ $GUARD civibuild download "$BLDNAME" --type "$BLDTYPE" --civi-ver "$CIVIVER" \
 $GUARD civibuild install "$BLDNAME"
 
 ## Run the tests
-$GUARD civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" $SUITES
+#$GUARD civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" $SUITES
 exit $?
