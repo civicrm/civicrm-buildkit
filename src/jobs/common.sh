@@ -225,6 +225,41 @@ function xcivilint() {
   fi
 }
 
+## Given that we are testing a specific repo+branch, figure out the CIVIVER.
+##
+## usage: detect_civiver REPO BASE_BRANCH
+## example: detect_civiver civicrm-backrop 1.x-5.0
+function detect_civiver() {
+  local repo="$1"
+  local baseBranch="$2"
+  local prefix=
+
+  case "$repo" in
+    civicrm-backdrop) prefix=1.x- ; ;;
+    civicrm-drupal) prefix=7.x- ; ;;
+    civicrm-core|civicrm-drupal-8|civicrm-joomla|civicrm-packages|civicrm-wordpress) prefix= ; ;;
+    *)
+      echo >&2 "Unrecognized repo name: $repo"
+      exit 1 ## Structural error in scripts
+      ;;
+  esac
+
+  if [ -z "$prefix" ]; then
+    CIVIVER="$baseBranch"
+  else
+    case "$baseBranch" in
+      ${prefix}4.6*|${prefix}4.7*|${prefix}5*|${prefix}master*)
+        CIVIVER=$(echo "$baseBranch" | sed 's;^'"$prefix"';;')
+        ;;
+      *)
+        ## This actually true for many branches, so we exit softly...
+        echo >&2 "PR test not allowed for $baseBranch"
+        exit 0 ## Misguided request by PR-author
+        ;;
+    esac
+  fi
+}
+
 ## usage: assert_testable_version CIVIVER
 ## example: assert_testable_version master
 ## example: assert_testable_version 4.6

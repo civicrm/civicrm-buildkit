@@ -3,7 +3,7 @@ set -e
 
 ## Example usage:
 ##
-## $ env ghprbTargetBranch=7.x-master ghprbPullId=159 run-bknix-job --mock max CiviCRM-Drupal-PR
+## $ env ghprbTargetBranch=7.x-master ghprbPullId=159 run-bknix-job --mock dfl CiviCRM-Drupal-PR
 
 #################################################
 ## Environment variables
@@ -19,16 +19,8 @@ export TIME_FUNC="linear:500"
 ## ghprbPullId: Pull request ID number
 assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE SUITES ghprbPullId ghprbTargetBranch
 
-case "$ghprbTargetBranch" in
-  7.x-4.6*|7.x-4.7*|7.x-5*|7.x-master*)
-    CIVIVER=$(echo "$ghprbTargetBranch" | sed 's;^7.x-;;')
-    ;;
-  *)
-    ## This actually true for many branches, so we exit softly...
-    echo "PR test not allowed for $ghprbTargetBranch"
-    exit 0
-    ;;
-esac
+detect_civiver civicrm-drupal "$ghprbTargetBranch"
+assert_testable_version "$CIVIVER"
 
 #################################################
 ## Main
@@ -54,18 +46,7 @@ $GUARD civibuild download "$BLDNAME" --type "$BLDTYPE" --civi-ver "$CIVIVER" \
 
 ## Check style first; fail quickly if we break style
 $GUARD pushd "$BLDDIR/web/sites/all/modules/civicrm/drupal"
-  case "$ghprbTargetBranch" in
-    7.x-4.3*|7.x-4.4*|7.x-4.5*|7.x-4.6*)
-      ## skip
-      ;;
-    *)
-      if git diff --name-only "origin/$ghprbTargetBranch.." | $GUARD civilint --checkstyle "$WORKSPACE_CHECKSTYLE" - ; then
-        echo "Style passed"
-      else
-        echo "Style error"
-        exit 1
-      fi
-  esac
+  $GUARD xcivilint "origin/$ghprbTargetBranch" "civicrm-drupal#""${ghprbPullId}"
 $GUARD popd
 
 $GUARD civibuild install "$BLDNAME"
