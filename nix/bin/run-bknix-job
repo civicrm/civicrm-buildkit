@@ -61,6 +61,22 @@ function run_bknix_mock() {
   cd "$WORKSPACE"
 }
 
+## If there's a redeploy while bash is running, then bash gets stupid.
+## Instead of loading bash scripts directly, we load through a temp file.
+## run_bknix_include <SCRIPT_1> <SCRIPT_2> ...
+function run_bknix_include() {
+  local tmpfile=$(run_bknix_mktemp)
+  touch "$tmpfile"
+  RUN_BKNIX_CLEANUP_FILES+=("$tmpfile")
+
+  for file in "$@" ; do
+    cat "$file" >> "$tmpfile"
+    echo >> "$tmpfile"
+  done
+
+  source "$tmpfile"
+}
+
 function run_bknix_main() {
   if [ -z "$BKNIX_JOBS" ]; then
     BKNIX_JOBS="/opt/buildkit/src/jobs"
@@ -145,14 +161,7 @@ function run_bknix_main() {
     run_bknix_fatal "Missing or invalid JOB_NAME. No such file \"$BKNIX_JOB_SCRIPT\"."
   fi
 
-  ## If there's a redeploy while bash is running, then bash gets stupid. Prefer to run bash scripts in temp files.
-  local tmpfile=$(run_bknix_mktemp)
-  touch "$tmpfile"
-  RUN_BKNIX_CLEANUP_FILES+=("$tmpfile")
-  cat "$BKNIX_JOBS/common.sh" >> $tmpfile
-  echo >> $tmpfile
-  cat "$BKNIX_JOB_SCRIPT" >> $tmpfile
-  source "$tmpfile"
+  run_bknix_include "$BKNIX_JOBS/common.sh" "$BKNIX_JOB_SCRIPT"
 }
 
 ## usage: run_bknix_download <url> <out-file>
