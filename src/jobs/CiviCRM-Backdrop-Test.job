@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -e
+
+## Example usage:
+##
+## $ env ghprbTargetBranch=1.x-master ghprbPullId=159 run-bknix-job --mock dfl CiviCRM-Backdrop-Test
+
+#################################################
+
+CIVI_REPO=civicrm-backdrop
+BLDTYPE=backdrop-clean
+SUITES='upgrade phpunit-e2e phpunit-backdrop'
+#SUITES='upgrade karma phpunit-e2e phpunit-backdrop'
+#SUITES='phpunit-backdrop'
+
+run_bknix_include "$BKNIX_JOBS/Generic-Test.job"

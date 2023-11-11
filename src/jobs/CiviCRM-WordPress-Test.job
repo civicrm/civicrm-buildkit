@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -e
+
+## Example usage:
+##
+## $ env ghprbTargetBranch=master ghprbPullId=307 run-bknix-job --mock dfl CiviCRM-WordPress-Test
+
+#################################################
+
+CIVI_REPO=civicrm-wordpress
+BLDTYPE=wp-clean
+SUITES='upgrade phpunit-e2e phpunit-wordpress'
+#SUITES='upgrade phpunit-e2e karma phpunit-wordpress'
+#SUITES='phpunit-wordpress'
+
+run_bknix_include "$BKNIX_JOBS/Generic-Test.job"

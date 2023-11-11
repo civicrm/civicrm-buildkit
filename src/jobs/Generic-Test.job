@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+set -e
+
+## Example usage:
+##
+## $ env CIVI_REPO=civicrm-core SUITES=phpunit-e2e BLDTYPE=drupal-clean ghprbTargetBranch=master ghprbPullId=28104 run-bknix-job --mock dfl Generic-Test
+
+#################################################
+## Environment variables
+
+GUARD=
+
+## EXECUTOR_NUMBER: The number of this concurrent process
+## WORKSPACE: The path where Jenkins stores data for this job
+## CIVI_REPO: The name of the repo for which we have PR (eg `civicrm-core`)
+## ghprbTargetBranch: The version of CiviCRM to install, expressed as a branch or tag (e.g. `master`, `5.59`, `5.57.0`)
+## ghprbPullId: Pull request ID number
+## BLDTYPE: The type of build to use for this test-run
+## SUITES: Space-delimited list of test suites (ex: "phpunit-e2e phpunit-drupal")
+assert_common EXECUTOR_NUMBER WORKSPACE CIVI_REPO BLDTYPE ghprbPullId ghprbTargetBranch SUITES
+
+export TIME_FUNC="linear:500"
+
+detect_civiver "$CIVI_REPO" "$ghprbTargetBranch"
+assert_testable_version "$CIVIVER"
+
+#################################################
+## Main
+
+use_bknix
+
+BLDNAME="build-$EXECUTOR_NUMBER"
+BLDDIR="$BKITBLD/$BLDNAME"
+
+## Cleanup left-overs from previous test-runs
+clean_legacy_workspace "$WORKSPACE/junit" "$WORKSPACE/civibuild-html" "$WORKSPACE/checkstyle"
+init_std_workspace
+if [ -d "$BKITBLD/$BLDNAME" ]; then
+  echo y | civibuild destroy "$BLDNAME"
+fi
+
+## Report details about the test environment
+civibuild env-info
+
+## Download dependencies, apply patches, and perform fresh DB installation
+$GUARD civibuild download "$BLDNAME" --type "$BLDTYPE" --civi-ver "$CIVIVER" \
+  --patch "https://github.com/civicrm/${CIVI_REPO}/pull/${ghprbPullId}"
+
+## No obvious problems blocking a build...
+$GUARD civibuild install "$BLDNAME"
+
+## Run the tests
+$GUARD civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" $SUITES
+
+exit $?
