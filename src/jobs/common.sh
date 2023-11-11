@@ -54,6 +54,9 @@ function assert_common() {
       BLDTYPE)
         assert_regex '^[0-9a-z\.-]\+$' "$BLDTYPE" "Missing or invalid BLDTYPE"
         ;;
+      BLDNAME)
+        assert_regex '^[0-9a-z\.-]\+$' "$BLDTYPE" "Missing or invalid BLDTYPE"
+        ;;
       CIVIVER)
         assert_regex '^[0-9a-z\.-]\+$' "$CIVIVER" "Missing or invalid CIVIVER"
         ;;
