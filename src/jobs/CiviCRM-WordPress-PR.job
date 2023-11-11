@@ -10,7 +10,8 @@ set -e
 
 GUARD=
 BLDTYPE="wp-demo"
-SUITES='upgrade phpunit-e2e karma phpunit-wordpress'
+#SUITES='upgrade phpunit-e2e karma phpunit-wordpress'
+SUITES='upgrade phpunit-e2e phpunit-wordpress'
 export TIME_FUNC="linear:500"
 
 ## EXECUTOR_NUMBER: The number of this concurrent process

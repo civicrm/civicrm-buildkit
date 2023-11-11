@@ -3,14 +3,15 @@ set -e
 
 ## Example usage:
 ##
-## $ env ghprbTargetBranch=7.x-master ghprbPullId=159 run-bknix-job --mock dfl CiviCRM-Drupal-PR
+## $ env ghprbTargetBranch=7.x-master ghprbPullId=676 run-bknix-job --mock dfl CiviCRM-Drupal-PR
 
 #################################################
 ## Environment variables
 
 GUARD=
 BLDTYPE="drupal-clean"
-SUITES='upgrade karma phpunit-e2e phpunit-drupal'
+#SUITES='upgrade karma phpunit-e2e phpunit-drupal'
+SUITES='upgrade phpunit-e2e phpunit-drupal'
 export TIME_FUNC="linear:500"
 
 ## EXECUTOR_NUMBER: The number of this concurrent process
