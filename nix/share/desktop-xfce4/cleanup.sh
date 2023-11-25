@@ -23,6 +23,11 @@ function prompt_delete() {
   fi
 }
 
+function init_bash_history() {
+  echo 'cd ~/buildkit'
+  echo 'loco run'
+}
+
 nix-collect-garbage
 sudo apt-get clean
 
@@ -34,5 +39,7 @@ for bld in dmaster wpmaster sdmaster drupal{,9}-{clean,demo} ; do
   prompt_delete "$HOME/buildkit/build/${bld}.sh"
   prompt_delete "$HOME/buildkit/build/.civibuild/snapshot/${bld}"
 done
+
+init_bash_history > "$HOME/.bash_history"
 
 sudo fstrim /
