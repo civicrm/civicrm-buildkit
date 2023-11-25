@@ -11,6 +11,8 @@ application developing for CiviCRM.
 * Timezone
     * To change timezone, look in the main navbar. Right-click on the date/time.
       Choose "Properties". For "Timezone", type the name of your continent (eg "Europe/" or "America/").
+* Display
+    * To change screen resolution, look in main navbar. Click on "Applications > Settings > Display"
 
 ## Quick Start
 
@@ -19,7 +21,9 @@ application developing for CiviCRM.
    * Enter the command `loco run`.
    * Observe the final summary has a list of running services.
    * Keep this tab open. You may shutdown services by pressing "Ctrl-C".
-* In tab #2, create a new site (or a restore a previous site). Here are some examples:
+* In tab #2, create a new site (or a restore a previous site).
+  Here are some example commands using `civibuild`:
+
    ```bash
    ## Create a new site (Drupal)
    civibuild create dmaster
@@ -27,21 +31,23 @@ application developing for CiviCRM.
    ## Create a new site (WordPress)
    civibuild create wpmaster
 
-   ## Restore a previous site (Drupal)
+   ## Create a new site (Standalone)
+   civibuild create sdmaster
+
+   ## Restore a previous site (e.g. "dmaster")
+   civibuild list
    civibuild restore dmaster
    civibuild show dmaster
-
-   ## Restore a previous site (WordPress)
-   civibuild restore wpmaster
-   civibuild show wpmaster
    ```
+
 * Open the site in a web browser
-   * Tip: Look at the summary provided by "civibuild".
+   * Tip: Look at the output from "civibuild" above.
      There will be a URL and username/password.
      Hold down "Ctrl" and click on the site URL.
 * Open the CiviCRM code
     ```bash
-    ## Locate the folder with CiviCRM source code. If you don't
+    ## Locate the folder with CiviCRM source code.
+    ## If you don't know it, you can search for it:
     find -name Civi.php | xargs dirname
 
     # Open that folder in Visual Studio Code
@@ -109,4 +115,7 @@ Here is a general description how this virtual desktop is configured:
         * Disable minimap
         * Add launch config to `~/.config/Code/User/settings.json` ("Listen for XDebug", "Run PHPUnit (headless)", "Run PHPUnit (E2E)")
     * In "Display", set resolution to 1440x900
-* Cleanup `buildkit/build`, `.ssh`, browser cache, APT cache, nix-collect-garbage
+* Cleanup (to`buildkit/build`, `.ssh`, browser cache, `apt-get clean`, `nix-collect-garbage`, `fstrim /`
+    ```
+    bash ~/buildkit/nix/share/desktop-xfce4/cleanup.sh
+    ```

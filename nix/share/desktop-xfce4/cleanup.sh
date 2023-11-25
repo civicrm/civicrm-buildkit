@@ -18,6 +18,8 @@ function prompt_delete() {
     if [ -z "$CONFIRM" -o "$CONFIRM" = "y" ]; then
       rm -rf "$1"
     fi
+  else
+    msg "Not found: $1"
   fi
 }
 
@@ -27,8 +29,10 @@ sudo apt-get clean
 prompt_delete "$HOME/.cache/mozilla/firefox"
 prompt_delete "$HOME/.ssh"
 
-for bld in dmaster wpmaster drupal{,9}-{clean,demo} ; do
+for bld in dmaster wpmaster sdmaster drupal{,9}-{clean,demo} ; do
   prompt_delete "$HOME/buildkit/build/${bld}"
   prompt_delete "$HOME/buildkit/build/${bld}.sh"
   prompt_delete "$HOME/buildkit/build/.civibuild/snapshot/${bld}"
 done
+
+sudo fstrim /
