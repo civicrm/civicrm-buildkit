@@ -28,7 +28,7 @@ CRM_Core_Transaction::create()->run(function () {
     'cms_pass' => getenv('DEMO_PASS'),
     'notify' => FALSE,
     $adminEmail => $adminEmail,
-    'contactID' => $contactID,
+    'contact_id' => $contactID,
   ];
   $userID = \CRM_Core_BAO_CMSUser::create($params, $adminEmail);
 
