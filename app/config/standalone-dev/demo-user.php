@@ -24,15 +24,18 @@ CRM_Core_Transaction::create()->run(function () {
     ->execute()->first()['id'];
   $adminEmail = getenv('DEMO_EMAIL');
   $params = [
-    'cms_name' => getenv('DEMO_USER'),
-    'cms_pass' => getenv('DEMO_PASS'),
-    'notify' => FALSE,
-    $adminEmail => $adminEmail,
+    'cms_name'   => getenv('DEMO_USER'),
+    'cms_pass'   => getenv('DEMO_PASS'),
+    'notify'     => FALSE,
+    $adminEmail  => $adminEmail,
     'contact_id' => $contactID,
   ];
   $userID = \CRM_Core_BAO_CMSUser::create($params, $adminEmail);
 
-  // @todo decide which permissions the demo user should have; create a role for those; apply the role to the user.
-  // This code can be added later once the data structures for roles etc. have settled.
+  // Add the staff role to the demo user.
+  \Civi\Api4\User::update(FALSE)
+    ->addWhere('id', '=', $userID)
+    ->addValue('roles:name', ['staff'])
+    ->execute();
 
 });
