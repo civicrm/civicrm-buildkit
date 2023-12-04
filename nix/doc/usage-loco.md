@@ -8,7 +8,7 @@ The highlights of this document can be summarized as a few steps:
 
 ```
 ## Step 1. Open a subshell
-cd ~/bknix
+cd ~/buildkit
 nix-shell -A dfl
 # ... or similarly: use-bknix dfl -s
 
@@ -26,10 +26,10 @@ The rest of this document explains these steps in more depth.
 
 ## Important Folders
 
-* `~/bknix` - The location where you put the `bknix` repo.
-* `~/bknix/build` - A workspace with various web-builds, git-repos, and such.
-* `~/bknix/civicrm-buildkit` - A collection of PHP/JS/BASH tools like `civix`, `phpunit4`, `drush`, or `civibuild`
-* `~/bknix/.loco/var` - Auto-generated configuration files (like `civibuild.conf`, `httpd.conf`, or `redis.conf`), PID files, log files, MySQL data, etc
+* `~/buildkit` - The location where you put the `bknix` repo.
+* `~/buildkit/build` - A workspace with various web-builds, git-repos, and such.
+* `~/buildkit/civicrm-buildkit` - A collection of PHP/JS/BASH tools like `civix`, `phpunit4`, `drush`, or `civibuild`
+* `~/buildkit/.loco/var` - Auto-generated configuration files (like `civibuild.conf`, `httpd.conf`, or `redis.conf`), PID files, log files, MySQL data, etc
 
 ## Step 1. Open a subshell
 
@@ -70,27 +70,27 @@ and start the corresponding services.
 
 ```
 $ loco run
-[VOLUME] Initialize folder: /Users/myuser/bknix/.loco/var
-[[ Start ramdisk at "/Users/myuser/bknix/.loco/var" (600mb) ]]
+[VOLUME] Initialize folder: /Users/myuser/buildkit/.loco/var
+[[ Start ramdisk at "/Users/myuser/buildkit/.loco/var" (600mb) ]]
 > Create ramdevice (600mb)
 > Format device (/dev/disk2)
 Initialized /dev/rdisk2 as a 600 MB case-insensitive HFS Plus volume
-> Mount (/Users/myuser/bknix/.loco/var)
+> Mount (/Users/myuser/buildkit/.loco/var)
 [VOLUME] Service does not specify "run" option
-[redis] Initialize folder: /Users/myuser/bknix/.loco/var/redis
-[php-fpm] Initialize folder: /Users/myuser/bknix/.loco/var/php-fpm
-[redis] Start service: redis-server --port "6380" --bind "127.0.0.1" --pidfile "/Users/myuser/bknix/.loco/var/redis/redis.pid" --dir "/Users/myuser/bknix/.loco/var/redis"
+[redis] Initialize folder: /Users/myuser/buildkit/.loco/var/redis
+[php-fpm] Initialize folder: /Users/myuser/buildkit/.loco/var/php-fpm
+[redis] Start service: redis-server --port "6380" --bind "127.0.0.1" --pidfile "/Users/myuser/buildkit/.loco/var/redis/redis.pid" --dir "/Users/myuser/buildkit/.loco/var/redis"
 
 ...
 
 ======================[ Startup Summary ]======================
-[VOLUME] Loco data volume is a ram disk "/Users/myuser/bknix/.loco/var".
+[VOLUME] Loco data volume is a ram disk "/Users/myuser/buildkit/.loco/var".
 [redis] Redis is running on "127.0.0.1:6380".
 [php-fpm] PHP-FPM is running on "127.0.0.1:9009"
 [mailcatcher] Mailcatcher is running on "smtp://127.0.0.1:1025" and "http://127.0.0.1:1080"
-[apache-vdr] Apache HTTPD is running at "http://127.0.0.1:8001" with content from "/Users/myuser/bknix/build".
+[apache-vdr] Apache HTTPD is running at "http://127.0.0.1:8001" with content from "/Users/myuser/buildkit/build".
 [mysql] MySQL is running on "127.0.0.1:3307". The default credentials are user="root" and password="".
-[buildkit] Buildkit (/Users/myuser/bknix/civicrm-buildkit) is configured to use these services. It produces builds in "/Users/myuser/bknix/build".
+[buildkit] Buildkit (/Users/myuser/buildkit/civicrm-buildkit) is configured to use these services. It produces builds in "/Users/myuser/buildkit/build".
 
 Services have been started. To shutdown, press Ctrl-C.
 ===============================================================
