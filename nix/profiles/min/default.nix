@@ -11,7 +11,7 @@ let
 
 in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
 
-    (if isAppleM1 then dists.bkit.php74 else dists.bkit.php73)
+    dists.bkit.php74
     dists.default.nodejs-14_x
     dists.default.apacheHttpd
     dists.default.mailhog
