@@ -6,7 +6,7 @@
 
 echo "[[Download civicrm-community-messages]]"
 
-git_cache_setup "https://github.com/civicrm/civicrm-community-messages.git"              "$CACHE_DIR/civicrm/civicrm-community-messages.git"
+git_cache_setup "https://lab.civicrm.org/infra/community-messages.git"  "$CACHE_DIR/civicrm/civicrm-community-messages.git"
 
 mkdir "$WEB_ROOT"
 pushd "$WEB_ROOT" >> /dev/null
