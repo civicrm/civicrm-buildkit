@@ -7,10 +7,10 @@
 [ -z "$CMS_VERSION" ] && CMS_VERSION=master
 ## Hmm, not really used...
 
-mkdir -p "$WEB_ROOT" "$WEB_ROOT/web" "$WEB_ROOT/web/uploads" "$WEB_ROOT/data"
+mkdir -p "$WEB_ROOT" "$WEB_ROOT/web" "$WEB_ROOT/web/upload" "$WEB_ROOT/data"
 
 pushd "$WEB_ROOT"
-  amp datadir "./data" "./web/uploads"
+  amp datadir "./data" "./web/upload"
 
   git clone ${CACHE_DIR}/civicrm/civicrm-core.git                     -b "$CIVI_VERSION" web/core
   git clone ${CACHE_DIR}/civicrm/civicrm-packages.git                 -b "$CIVI_VERSION" web/core/packages
