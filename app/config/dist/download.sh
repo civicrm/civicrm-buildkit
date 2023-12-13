@@ -4,6 +4,12 @@
 
 ###############################################################################
 
+git_cache_setup_id civicrm/civicrm-backdrop
+git_cache_setup_id civicrm/civicrm-joomla
+git_cache_setup_id civicrm/civicrm-wordpress
+
+###############################################################################
+
 echo "[[Download CiviCRM]]"
 
 mkdir "$WEB_ROOT"

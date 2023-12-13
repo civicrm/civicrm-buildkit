@@ -37,4 +37,5 @@ function git_cache_map() {
 }
 
 git_cache_setup_id civicrm/civicrm-core civicrm/civicrm-packages
-git_cache_setup_id civicrm/civicrm-backdrop civicrm/civicrm-drupal civicrm/civicrm-drupal-8 civicrm/civicrm-joomla civicrm/civicrm-wordpress
+git_cache_setup_id civicrm/civicrm-drupal
+git_cache_setup_id civicrm/civicrm-drupal-8

@@ -3,6 +3,10 @@
 ## download.sh -- Download WordPress and CiviCRM
 
 ###############################################################################
+
+git_cache_setup_id civicrm/civicrm-wordpress
+
+###############################################################################
 [ -z "$CMS_VERSION" ] && CMS_VERSION=latest
 
 echo "[[Download WordPress]]"
