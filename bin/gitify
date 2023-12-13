@@ -279,6 +279,7 @@ fi
 
 check_dep
 default_cache_setup
+legacy_cache_warmup
 
 ## config_repo  <repo-name>        <local-path>               <default-branch>       <git-scripts-path>
 case "$CIVICRM_CMS" in

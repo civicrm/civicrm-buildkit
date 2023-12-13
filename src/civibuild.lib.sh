@@ -1757,6 +1757,10 @@ function default_cache_setup() {
   fi
 }
 
+function legacy_cache_warmup() {
+  git_cache_setup_id civicrm/civicrm-{core,packages,backdrop,drupal,drupal-8,joomla,wordpress}
+}
+
 ###############################################################################
 ## Edit a line in a file
 ## usage: cvutil_ed <file> <grep-match> <sed-replace>

@@ -1,1 +1,2 @@
 default_cache_setup
+legacy_cache_warmup
