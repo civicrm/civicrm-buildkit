@@ -1110,7 +1110,7 @@ function backdrop_download() {
   cvutil_assertvars backdrop_download WEB_ROOT CMS_VERSION PRJDIR CACHE_DIR
   echo "[[Download Backdrop]]"
   mkdir "$WEB_ROOT"
-  git_cache_clone_id backdrop/backdrop "$WEB_ROOT/web" -b "$CMS_VERSION"
+  git_cache_clone backdrop/backdrop "$WEB_ROOT/web" -b "$CMS_VERSION"
 
   # See: https://github.com/backdrop/backdrop/pull/3018
   pushd "$WEB_ROOT/web/core/includes/database/mysql"
@@ -1622,9 +1622,9 @@ function git_cache_setup_id() {
 
 ###############################################################################
 ## Update a common cache and then clone it
-## usage: git_cache_clone_id <cache-id> <clone-options...>
-## example: git_cache_clone_id civicrm/civicrm-core -b 5.99 --depth 1 /tmp/my-core
-function git_cache_clone_id() {
+## usage: git_cache_clone <cache-id> <clone-options...>
+## example: git_cache_clone civicrm/civicrm-core -b 5.99 --depth 1 /tmp/my-core
+function git_cache_clone() {
   local cache_id="$1"
   shift
   git_cache_setup_id "$cache_id"

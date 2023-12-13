@@ -25,9 +25,9 @@ pushd "$WEB_ROOT" >> /dev/null
     composer install --no-dev --no-interaction
   fi
   civicrm_download_composer_d8
-  git_cache_clone_id "civicrm/org.civicoop.civirules"                      -b "$RULES_VERSION"     vendor/civicrm/civicrm-core/tools/extensions/org.civicoop.civirules
-  git_cache_clone_id "TechToThePeople/civisualize"                         -b "master"             vendor/civicrm/civicrm-core/tools/extensions/civisualize
-  git_cache_clone_id "civicrm/org.civicrm.module.cividiscount"             -b "$DISC_VERSION"      vendor/civicrm/civicrm-core/tools/extensions/cividiscount
-  git_cache_clone_id "civicrm/org.civicrm.contactlayout"                   -b "master"             vendor/civicrm/civicrm-core/tools/extensions/org.civicrm.contactlayout
+  git_cache_clone "civicrm/org.civicoop.civirules"                      -b "$RULES_VERSION"     vendor/civicrm/civicrm-core/tools/extensions/org.civicoop.civirules
+  git_cache_clone "TechToThePeople/civisualize"                         -b "master"             vendor/civicrm/civicrm-core/tools/extensions/civisualize
+  git_cache_clone "civicrm/org.civicrm.module.cividiscount"             -b "$DISC_VERSION"      vendor/civicrm/civicrm-core/tools/extensions/cividiscount
+  git_cache_clone "civicrm/org.civicrm.contactlayout"                   -b "master"             vendor/civicrm/civicrm-core/tools/extensions/org.civicrm.contactlayout
 
 popd >> /dev/null

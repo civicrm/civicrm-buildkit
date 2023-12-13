@@ -13,9 +13,9 @@ pushd "$WEB_ROOT/web"
   drupal7_po_download "${CIVICRM_LOCALES:-de_DE}" drupal-7.x views-7.x-3.x
 
   pushd sites/all/modules
-    git_cache_clone_id "civicrm/civicrm-core"                                -b "$CIVI_VERSION"      civicrm
-    git_cache_clone_id "civicrm/civicrm-drupal"                              -b "7.x-$CIVI_VERSION"  civicrm/drupal
-    git_cache_clone_id "civicrm/civicrm-packages"                            -b "$CIVI_VERSION"      civicrm/packages
+    git_cache_clone "civicrm/civicrm-core"                                -b "$CIVI_VERSION"      civicrm
+    git_cache_clone "civicrm/civicrm-drupal"                              -b "7.x-$CIVI_VERSION"  civicrm/drupal
+    git_cache_clone "civicrm/civicrm-packages"                            -b "$CIVI_VERSION"      civicrm/packages
     api4_download_conditional civicrm                                                                civicrm/ext/api4
 
     extract-url --cache-ttl 172800 civicrm=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
