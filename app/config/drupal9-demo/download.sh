@@ -4,13 +4,6 @@
 
 ###############################################################################
 
-git_cache_setup_id TechToThePeople/civisualize
-git_cache_setup_id civicrm/org.civicoop.civirules
-git_cache_setup_id civicrm/org.civicrm.module.cividiscount
-git_cache_setup_id civicrm/org.civicrm.contactlayout
-
-###############################################################################
-
 #[ -z "$CMS_VERSION" ] && CMS_VERSION=8.7.x
 [ -z "$CMS_VERSION" ] && CMS_VERSION='^9'
 [ -z "$VOL_VERSION" ] && VOL_VERSION='master'
@@ -33,8 +26,8 @@ pushd "$WEB_ROOT" >> /dev/null
   fi
   drupal8_po_download "${CIVICRM_LOCALES:-de_DE}" "drupal-$( _drupalx_version x.y ).x"
   civicrm_download_composer_d8
-  git clone "${CACHE_DIR}/civicrm/org.civicoop.civirules.git"              -b "$RULES_VERSION"     vendor/civicrm/civicrm-core/tools/extensions/org.civicoop.civirules
-  git clone "${CACHE_DIR}/TechToThePeople/civisualize.git"                 -b "master"             vendor/civicrm/civicrm-core/tools/extensions/civisualize
-  git clone "${CACHE_DIR}/civicrm/org.civicrm.module.cividiscount.git"     -b "$DISC_VERSION"      vendor/civicrm/civicrm-core/tools/extensions/cividiscount
-  git clone "${CACHE_DIR}/civicrm/org.civicrm.contactlayout.git"           -b "master"             vendor/civicrm/civicrm-core/tools/extensions/org.civicrm.contactlayout
+  git_cache_clone_id "civicrm/org.civicoop.civirules"                      -b "$RULES_VERSION"     vendor/civicrm/civicrm-core/tools/extensions/org.civicoop.civirules
+  git_cache_clone_id "TechToThePeople/civisualize"                         -b "master"             vendor/civicrm/civicrm-core/tools/extensions/civisualize
+  git_cache_clone_id "civicrm/org.civicrm.module.cividiscount"             -b "$DISC_VERSION"      vendor/civicrm/civicrm-core/tools/extensions/cividiscount
+  git_cache_clone_id "civicrm/org.civicrm.contactlayout"                   -b "master"             vendor/civicrm/civicrm-core/tools/extensions/org.civicrm.contactlayout
 popd >> /dev/null
