@@ -7,6 +7,7 @@
 git_cache_setup_id civicrm/civicrm-demo-wp
 git_cache_setup_id TechToThePeople/civisualize
 git_cache_setup_id civicrm/org.civicoop.civirules
+git_cache_setup_id civicrm/org.civicrm.module.cividiscount
 
 ###############################################################################
 [ -z "$VOL_VERSION" ] && VOL_VERSION='master'

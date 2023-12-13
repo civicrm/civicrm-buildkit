@@ -38,4 +38,4 @@ function git_cache_map() {
 
 git_cache_setup_id civicrm/civicrm-core civicrm/civicrm-packages
 git_cache_setup_id civicrm/civicrm-backdrop civicrm/civicrm-drupal civicrm/civicrm-drupal-8 civicrm/civicrm-joomla civicrm/civicrm-wordpress
-git_cache_setup_id civicrm/org.civicrm.module.cividiscount civicrm/org.civicrm.contactlayout
+git_cache_setup_id civicrm/org.civicrm.contactlayout
