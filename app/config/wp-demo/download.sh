@@ -3,6 +3,10 @@
 ## download.sh -- Download WordPress and CiviCRM
 
 ###############################################################################
+
+git_cache_setup_id civicrm/civicrm-demo-wp
+
+###############################################################################
 [ -z "$VOL_VERSION" ] && VOL_VERSION='master'
 [ -z "$NG_PRFL_VERSION" ] && NG_PRFL_VERSION='master'
 
