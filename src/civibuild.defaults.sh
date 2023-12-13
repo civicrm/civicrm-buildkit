@@ -34,6 +34,9 @@
 ###############################################################################
 ## Common variables
 
+## Should we print lots of debug info?
+VERBOSE=
+
 ## The name of on-going action (eg "create" or "reset")
 ACTION=
 

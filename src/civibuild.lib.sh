@@ -1607,7 +1607,6 @@ function git_cache_setup() {
 ## example: git_cache_setup_id civicrm/civicrm-core
 ## post-condition: $CACHE_DIR/$cache_id.git is a recently-updated clone
 function git_cache_setup_id() {
-  set +x
   cvutil_assertvars git_cache_setup_id CACHE_DIR
   for cache_id in "$@" ; do
     local path="$CACHE_DIR/${cache_id}.git"
@@ -1617,7 +1616,6 @@ function git_cache_setup_id() {
     fi
     git_cache_setup "$url" "$path"
   done
-  set -x
 }
 
 ###############################################################################
