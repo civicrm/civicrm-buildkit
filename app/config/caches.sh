@@ -16,17 +16,28 @@
 ##    of the build process.
 ##  - To checkout the code, use "svn_cache_clone" (instead of "svn co")
 
-git_cache_setup "https://github.com/civicrm/civicrm-backdrop.git"            "$CACHE_DIR/civicrm/civicrm-backdrop.git"
-git_cache_setup "https://github.com/civicrm/civicrm-core.git"                "$CACHE_DIR/civicrm/civicrm-core.git"
-git_cache_setup "https://github.com/civicrm/civicrm-drupal.git"              "$CACHE_DIR/civicrm/civicrm-drupal.git"
-git_cache_setup "https://github.com/civicrm/civicrm-drupal-8.git"            "$CACHE_DIR/civicrm/civicrm-drupal-8.git"
-git_cache_setup "https://github.com/civicrm/civicrm-packages.git"            "$CACHE_DIR/civicrm/civicrm-packages.git"
-git_cache_setup "https://github.com/civicrm/civicrm-joomla.git"              "$CACHE_DIR/civicrm/civicrm-joomla.git"
-git_cache_setup "https://github.com/civicrm/civicrm-wordpress.git"           "$CACHE_DIR/civicrm/civicrm-wordpress.git"
-git_cache_setup "https://github.com/civicrm/civicrm-demo-wp.git"             "$CACHE_DIR/civicrm/civicrm-demo-wp.git"
-git_cache_setup "https://github.com/civicrm/api4.git"                        "$CACHE_DIR/civicrm/api4.git"
+function git_cache_map() {
+  case "$1" in
+    "civicrm/civicrm-backdrop")                echo "https://github.com/civicrm/civicrm-backdrop.git" ; ;;
+    "civicrm/civicrm-core")                    echo "https://github.com/civicrm/civicrm-core.git" ; ;;
+    "civicrm/civicrm-drupal")                  echo "https://github.com/civicrm/civicrm-drupal.git" ; ;;
+    "civicrm/civicrm-drupal-8")                echo "https://github.com/civicrm/civicrm-drupal-8.git" ; ;;
+    "civicrm/civicrm-packages")                echo "https://github.com/civicrm/civicrm-packages.git" ; ;;
+    "civicrm/civicrm-joomla")                  echo "https://github.com/civicrm/civicrm-joomla.git" ; ;;
+    "civicrm/civicrm-wordpress")               echo "https://github.com/civicrm/civicrm-wordpress.git" ; ;;
+    "civicrm/civicrm-demo-wp")                 echo "https://github.com/civicrm/civicrm-demo-wp.git" ; ;;
+    "civicrm/api4")                            echo "https://github.com/civicrm/api4.git" ; ;;
+    "civicrm/org.civicoop.civirules")          echo "https://lab.civicrm.org/extensions/civirules.git" ; ;;
+    "TechToThePeople/civisualize")             echo "https://lab.civicrm.org/extensions/civisualize.git" ; ;;
+    "civicrm/org.civicrm.module.cividiscount") echo "https://lab.civicrm.org/extensions/cividiscount.git" ; ;;
+    "civicrm/org.civicrm.contactlayout")       echo "https://github.com/civicrm/org.civicrm.contactlayout.git" ; ;;
+    "backdrop/backdrop")                       echo "https://github.com/backdrop/backdrop.git" ; ;;
+    *)                                         cvutil_fatal "Unrecognized cache id: $1"
+  esac
+}
 
-git_cache_setup "https://lab.civicrm.org/extensions/civirules.git" "$CACHE_DIR/civicrm/org.civicoop.civirules.git"
-git_cache_setup "https://lab.civicrm.org/extensions/civisualize.git" "$CACHE_DIR/TechToThePeople/civisualize.git"
-git_cache_setup "https://lab.civicrm.org/extensions/cividiscount.git" "$CACHE_DIR/civicrm/org.civicrm.module.cividiscount.git"
-git_cache_setup "https://github.com/civicrm/org.civicrm.contactlayout.git" "$CACHE_DIR/civicrm/org.civicrm.contactlayout.git"
+git_cache_setup_id civicrm/civicrm-core civicrm/civicrm-packages
+git_cache_setup_id civicrm/civicrm-backdrop civicrm/civicrm-drupal civicrm/civicrm-drupal-8 civicrm/civicrm-joomla civicrm/civicrm-wordpress
+git_cache_setup_id civicrm/civicrm-demo-wp
+git_cache_setup_id civicrm/api4
+git_cache_setup_id civicrm/org.civicoop.civirules TechToThePeople/civisualize civicrm/org.civicrm.module.cividiscount civicrm/org.civicrm.contactlayout

@@ -1598,6 +1598,28 @@ function git_cache_setup() {
   fi
 }
 
+
+###############################################################################
+## Initialize (or update) a cached copy of a git repo in $CACHE_DIR.
+## Use a logical name for the cache dir.
+##
+## usage: git_cache_setup_id <cache-id>
+## example: git_cache_setup_id civicrm/civicrm-core
+## post-condition: $CACHE_DIR/$cache_id.git is a recently-updated clone
+function git_cache_setup_id() {
+  set +x
+  cvutil_assertvars git_cache_setup_id CACHE_DIR
+  for cache_id in "$@" ; do
+    local path="$CACHE_DIR/${cache_id}.git"
+    local url=$(git_cache_map "$cache_id")
+    if [[ -z "$url" ]]; then
+      cvutil_fatal "Failed to find URL for cache ($cache_id)"
+    fi
+    git_cache_setup "$url" "$path"
+  done
+  set -x
+}
+
 ###############################################################################
 ## Fix the remote configurations of any git repos in <build-dir>, changing any
 ## references to <cache-base-dir> to proper remotes
