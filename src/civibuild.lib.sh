@@ -1622,6 +1622,18 @@ function git_cache_setup_id() {
 }
 
 ###############################################################################
+## Update a common cache and then clone it
+## usage: git_cache_clone_id <cache-id> <clone-options...>
+## example: git_cache_clone_id civicrm/civicrm-core -b 5.99 --depth 1 /tmp/my-core
+function git_cache_clone_id() {
+  local cache_id="$1"
+  shift
+  git_cache_setup_id "$cache_id"
+  git clone "$CACHE_DIR/${cache_id}.git" "$@"
+  # TOOD: Might be nice to call git_cache_deref_remotes here, but then we need to know the output-dir
+}
+
+###############################################################################
 ## Fix the remote configurations of any git repos in <build-dir>, changing any
 ## references to <cache-base-dir> to proper remotes
 ## usage: git_cache_deref_remotes <cache-base-dir> <build-dir>
