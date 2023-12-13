@@ -27,6 +27,7 @@ fi
 
 source "$PRJDIR/src/civibuild.lib.sh"
 source "$PRJDIR/src/civibuild.aliases.sh"
+source "$PRJDIR/src/civibuild.caches.sh"
 source "$PRJDIR/src/civibuild.parse.sh"
 source "$PRJDIR/src/civibuild.app.sh"
 

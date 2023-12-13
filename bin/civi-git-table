@@ -20,6 +20,7 @@ PRJDIR=$(dirname "$BINDIR")
 
 source "$PRJDIR/src/civibuild.lib.sh"
 source "$PRJDIR/src/civibuild.aliases.sh"
+source "$PRJDIR/src/civibuild.caches.sh"
 
 source "$PRJDIR/src/civibuild.defaults.sh"
 [ -f "$PRJDIR/app/civibuild.conf" ] && source "$PRJDIR/app/civibuild.conf"

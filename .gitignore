@@ -62,6 +62,7 @@ bin/karma
 bin/paratest
 bin/paratest.bat
 bin/phantomjs
+bin/phive
 bin/php-symbol-diff
 bin/phpcbf
 bin/phpcbf.bat
@@ -90,6 +91,7 @@ web/
 /.loco/var/
 /.loco/*.overrides.yml
 /.loco/var.keep/
+/.phive/
 /nix/etc/bashrc.local
 /nix/result
 /nix/result*

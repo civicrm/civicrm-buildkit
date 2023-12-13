@@ -42,7 +42,7 @@ civibuild env-info
 
 ## Download dependencies, apply patches
 civibuild download "$BLDNAME" --type "empty"
-cloneCmd=$(printf 'git clone ${CACHE_DIR}/civicrm/%q.git -b %q src' "$CIVI_REPO" "$ghprbTargetBranch")
+cloneCmd=$(printf 'git_cache_clone civicrm/%q -b %q src' "$CIVI_REPO" "$ghprbTargetBranch")
 civibuild run "$BLDNAME" --eval "$cloneCmd"
 civibuild run "$BLDNAME" --eval 'git_cache_deref_remotes "$CACHE_DIR" "$WEB_ROOT"'
 

@@ -11,21 +11,23 @@
 [ -z "$DISC_VERSION" ] && DISC_VERSION='master'
 
 mkdir "$WEB_ROOT"
-composer create-project drupal/recommended-project:"$CMS_VERSION" "$WEB_ROOT" --no-interaction
+composer create-project drupal/recommended-project:"$CMS_VERSION" "$WEB_ROOT" --no-interaction --no-install
 
 pushd "$WEB_ROOT" >> /dev/null
   composer_allow_common_plugins
+  composer install
   composer require drupal/userprotect
   ## Some D8 builds include a specific revision of phpunit, but Civi uses standalone phpunit (PHAR)
   if composer info | grep -q ^phpunit/phpunit\ ; then
     composer config "discard-changes" true ## Weird. phpcs has changes which interfere with other work.
+    composer remove --dev drupal/core-dev
     composer remove phpunit/phpunit
     composer install --no-dev --no-interaction
   fi
   civicrm_download_composer_d8
-  git clone "${CACHE_DIR}/civicrm/org.civicoop.civirules.git"              -b "$RULES_VERSION"     vendor/civicrm/civicrm-core/tools/extensions/org.civicoop.civirules
-  git clone "${CACHE_DIR}/TechToThePeople/civisualize.git"                 -b "master"             vendor/civicrm/civicrm-core/tools/extensions/civisualize
-  git clone "${CACHE_DIR}/civicrm/org.civicrm.module.cividiscount.git"     -b "$DISC_VERSION"      vendor/civicrm/civicrm-core/tools/extensions/cividiscount
-  git clone "${CACHE_DIR}/civicrm/org.civicrm.contactlayout.git"           -b "master"             vendor/civicrm/civicrm-core/tools/extensions/org.civicrm.contactlayout
+  git_cache_clone "civicrm/org.civicoop.civirules"                      -b "$RULES_VERSION"     vendor/civicrm/civicrm-core/tools/extensions/org.civicoop.civirules
+  git_cache_clone "TechToThePeople/civisualize"                         -b "master"             vendor/civicrm/civicrm-core/tools/extensions/civisualize
+  git_cache_clone "civicrm/org.civicrm.module.cividiscount"             -b "$DISC_VERSION"      vendor/civicrm/civicrm-core/tools/extensions/cividiscount
+  git_cache_clone "civicrm/org.civicrm.contactlayout"                   -b "master"             vendor/civicrm/civicrm-core/tools/extensions/org.civicrm.contactlayout
 
 popd >> /dev/null

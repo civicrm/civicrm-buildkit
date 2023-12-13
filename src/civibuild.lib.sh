@@ -548,7 +548,7 @@ function api4_download_conditional() {
     ## Circa v5.16 (3e20c1acb397d6dfe?), api4+core got into a bidrectional dependency, and api4@~4.5
     ## seems to be the closest release that corresponds to the dev-periods of 5.16-5.18.
     ## Circa v5.19.alpha1 (#15309), api4 should be merged into core.
-    master|5.16*|5.17*|5.18*|5.19*) git clone "${CACHE_DIR}/civicrm/api4.git" -b "4.5" "$api4_path" ;;
+    master|5.16*|5.17*|5.18*|5.19*) git_cache_setup_id civicrm/api4 ; git clone "${CACHE_DIR}/civicrm/api4.git" -b "4.5" "$api4_path" ;;
     # 5.14*|5.15*) git clone "${CACHE_DIR}/civicrm/api4.git" -b "4.4" "$api4_path" ;;
     *) echo "Skipping api4 download" ;; ## Shrug
       ##EXTCIVIVER=$( php -r '$x=simplexml_load_file("civicrm/xml/version.xml"); echo $x->version_no;' )
@@ -1110,7 +1110,7 @@ function backdrop_download() {
   cvutil_assertvars backdrop_download WEB_ROOT CMS_VERSION PRJDIR CACHE_DIR
   echo "[[Download Backdrop]]"
   mkdir "$WEB_ROOT"
-  git clone "$CACHE_DIR/backdrop/backdrop.git" "$WEB_ROOT/web" -b "$CMS_VERSION"
+  git_cache_clone backdrop/backdrop "$WEB_ROOT/web" -b "$CMS_VERSION"
 
   # See: https://github.com/backdrop/backdrop/pull/3018
   pushd "$WEB_ROOT/web/core/includes/database/mysql"
@@ -1598,6 +1598,40 @@ function git_cache_setup() {
   fi
 }
 
+
+###############################################################################
+## Initialize (or update) a cached copy of a git repo in $CACHE_DIR.
+## Use a logical name for the cache dir.
+##
+## usage: git_cache_setup_id <cache-id>
+## example: git_cache_setup_id civicrm/civicrm-core
+## post-condition: $CACHE_DIR/$cache_id.git is a recently-updated clone
+function git_cache_setup_id() {
+  set +x
+  cvutil_assertvars git_cache_setup_id CACHE_DIR
+  for cache_id in "$@" ; do
+    local path="$CACHE_DIR/${cache_id}.git"
+    local url=$(git_cache_map "$cache_id")
+    if [[ -z "$url" ]]; then
+      cvutil_fatal "Failed to find URL for cache ($cache_id)"
+    fi
+    git_cache_setup "$url" "$path"
+  done
+  set -x
+}
+
+###############################################################################
+## Update a common cache and then clone it
+## usage: git_cache_clone <cache-id> <clone-options...>
+## example: git_cache_clone civicrm/civicrm-core -b 5.99 --depth 1 /tmp/my-core
+function git_cache_clone() {
+  local cache_id="$1"
+  shift
+  git_cache_setup_id "$cache_id"
+  git clone "$CACHE_DIR/${cache_id}.git" "$@"
+  # TOOD: Might be nice to call git_cache_deref_remotes here, but then we need to know the output-dir
+}
+
 ###############################################################################
 ## Fix the remote configurations of any git repos in <build-dir>, changing any
 ## references to <cache-base-dir> to proper remotes
@@ -1721,6 +1755,10 @@ function default_cache_setup() {
       source "$PRJDIR/app/config/caches.sh"
     fi
   fi
+}
+
+function legacy_cache_warmup() {
+  git_cache_setup_id civicrm/civicrm-{core,packages,backdrop,drupal,drupal-8,joomla,wordpress}
 }
 
 ###############################################################################

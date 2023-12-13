@@ -24,10 +24,10 @@ drupal_download
 
 mkdir -p "$WEB_ROOT/src"
 pushd "$WEB_ROOT/src"
-  git clone "${CACHE_DIR}/civicrm/civicrm-core.git"                        -b "$CIVI_VERSION"      civicrm-core
-  git clone "${CACHE_DIR}/civicrm/civicrm-drupal.git"                      -b "7.x-$CIVI_VERSION"  civicrm-drupal-7
-  git clone "${CACHE_DIR}/civicrm/civicrm-packages.git"                    -b "$CIVI_VERSION"      civicrm-packages
-  git clone "${CACHE_DIR}/civicrm/org.civicoop.civirules.git"              -b master               civirules
+  git_cache_clone "civicrm/civicrm-core"                                -b "$CIVI_VERSION"      civicrm-core
+  git_cache_clone "civicrm/civicrm-drupal"                              -b "7.x-$CIVI_VERSION"  civicrm-drupal-7
+  git_cache_clone "civicrm/civicrm-packages"                            -b "$CIVI_VERSION"      civicrm-packages
+  git_cache_clone "civicrm/org.civicoop.civirules"                      -b master               civirules
 
   extract-url --cache-ttl 172800 civicrm-l10n=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
   ## or https://raw.github.com/civicrm/l10n/master/po/fr_CA/civicrm.mo => civicrm-l10n/l10n/fr_CA/LC_MESSAGES/

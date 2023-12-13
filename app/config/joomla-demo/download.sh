@@ -12,9 +12,9 @@ cvutil_mkdir "$WEB_ROOT" "$WEB_ROOT/src"
 joomla site:download joomla --release="$CMS_VERSION" --www="$WEB_ROOT"
 
 pushd "$WEB_ROOT" >> /dev/null
-  git clone ${CACHE_DIR}/civicrm/civicrm-joomla.git    -b "$CIVI_VERSION" src/civicrm
-  git clone ${CACHE_DIR}/civicrm/civicrm-core.git      -b "$CIVI_VERSION" src/civicrm/admin/civicrm
-  git clone ${CACHE_DIR}/civicrm/civicrm-packages.git  -b "$CIVI_VERSION" src/civicrm/admin/civicrm/packages
+  git_cache_clone civicrm/civicrm-joomla            -b "$CIVI_VERSION" src/civicrm
+  git_cache_clone civicrm/civicrm-core              -b "$CIVI_VERSION" src/civicrm/admin/civicrm
+  git_cache_clone civicrm/civicrm-packages          -b "$CIVI_VERSION" src/civicrm/admin/civicrm/packages
 
   git_set_hooks civicrm-joomla      src/civicrm                      "../admin/civicrm/tools/scripts/git"
   git_set_hooks civicrm-core        src/civicrm/admin/civicrm                      "../tools/scripts/git"

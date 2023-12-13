@@ -4,12 +4,6 @@
 
 ###############################################################################
 
-git_cache_setup "https://github.com/civicrm/org.civicrm.shoreditch.git" "$CACHE_DIR/civicrm/org.civicrm.shoreditch.git"
-git_cache_setup "https://github.com/civicrm/org.civicrm.styleguide.git" "$CACHE_DIR/civicrm/org.civicrm.styleguide.git"
-git_cache_setup "https://github.com/civicrm/org.civicrm.civicase.git" "$CACHE_DIR/civicrm/org.civicrm.civicase.git"
-
-###############################################################################
-
 WPCLI_ARGS=
 [ -n "$CMS_VERSION" ] && WPCLI_ARGS="$WPCLI_ARGS --version=$CMS_VERSION"
 
@@ -26,16 +20,16 @@ echo "[[Download CiviCRM]]"
 [ ! -d "$WEB_ROOT/wp-content/plugins" ] && mkdir -p "$WEB_ROOT/wp-content/plugins"
 pushd $WEB_ROOT/wp-content/plugins >> /dev/null
 
-  git clone ${CACHE_DIR}/civicrm/civicrm-wordpress.git                -b "$CIVI_VERSION" civicrm
-  git clone ${CACHE_DIR}/civicrm/civicrm-core.git                     -b "$CIVI_VERSION" civicrm/civicrm
-  git clone ${CACHE_DIR}/civicrm/civicrm-packages.git                 -b "$CIVI_VERSION" civicrm/civicrm/packages
+  git_cache_clone civicrm/civicrm-wordpress                        -b "$CIVI_VERSION" civicrm
+  git_cache_clone civicrm/civicrm-core                             -b "$CIVI_VERSION" civicrm/civicrm
+  git_cache_clone civicrm/civicrm-packages                         -b "$CIVI_VERSION" civicrm/civicrm/packages
   api4_download_conditional civicrm/civicrm                                              civicrm/civicrm/ext/api4
-  git clone ${CACHE_DIR}/civicrm/civicrm-demo-wp.git                  -b master          civicrm-demo-wp
+  git_cache_clone civicrm/civicrm-demo-wp                          -b master          civicrm-demo-wp
 
   mkdir -p civicrm/civicrm/ext
-  git clone ${CACHE_DIR}/civicrm/org.civicrm.shoreditch.git           -b master civicrm/civicrm/ext/shoreditch
-  git clone ${CACHE_DIR}/civicrm/org.civicrm.styleguide.git           -b master civicrm/civicrm/ext/styleguide
-  git clone ${CACHE_DIR}/civicrm/org.civicrm.civicase.git             -b master civicrm/civicrm/ext/civicase
+  git_cache_clone civicrm/org.civicrm.shoreditch                   -b master civicrm/civicrm/ext/shoreditch
+  git_cache_clone civicrm/org.civicrm.styleguide                   -b master civicrm/civicrm/ext/styleguide
+  git_cache_clone civicrm/org.civicrm.civicase                     -b master civicrm/civicrm/ext/civicase
 
   git_set_hooks civicrm-wordpress   civicrm                    "../civicrm/tools/scripts/git"
   git_set_hooks civicrm-core        civicrm/civicrm            "../tools/scripts/git"

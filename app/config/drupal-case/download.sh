@@ -4,9 +4,13 @@
 
 ###############################################################################
 
-git_cache_setup "https://github.com/civicrm/org.civicrm.shoreditch.git" "$CACHE_DIR/civicrm/org.civicrm.shoreditch.git"
-git_cache_setup "https://github.com/civicrm/org.civicrm.styleguide.git" "$CACHE_DIR/civicrm/org.civicrm.styleguide.git"
-git_cache_setup "https://github.com/civicrm/org.civicrm.civicase.git" "$CACHE_DIR/civicrm/org.civicrm.civicase.git"
+git_cache_setup_id civicrm/civicrm-core civicrm/civicrm-packages civicrm/civicrm-drupal
+git_cache_setup_id civicrm/api4
+git_cache_setup_id civicrm/org.civicrm.shoreditch
+git_cache_setup_id civicrm/org.civicrm.styleguide
+git_cache_setup_id civicrm/org.civicrm.civicase
+
+###############################################################################
 
 [ -z "$CMS_VERSION" ] && CMS_VERSION=7
 

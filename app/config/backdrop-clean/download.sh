@@ -4,8 +4,6 @@
 
 ###############################################################################
 
-git_cache_setup "https://github.com/backdrop/backdrop.git" "$CACHE_DIR/backdrop/backdrop.git"
-
 [ -z "$CMS_VERSION" ] && CMS_VERSION="1.x"
 [ -z "$CIVI_VERSION" ] && CIVI_VERSION=master
 
@@ -19,9 +17,9 @@ echo "[[Download CiviCRM]]"
 [ ! -d "$WEB_ROOT/web/modules" ] && mkdir -p "$WEB_ROOT/web/modules"
 pushd "$WEB_ROOT/web/modules" >> /dev/null
 
-  git clone ${CACHE_DIR}/civicrm/civicrm-core.git      -b "$CIVI_VERSION"     civicrm
-  git clone ${CACHE_DIR}/civicrm/civicrm-backdrop.git  -b "1.x-$CIVI_VERSION" civicrm/backdrop
-  git clone ${CACHE_DIR}/civicrm/civicrm-packages.git  -b "$CIVI_VERSION"     civicrm/packages
+  git_cache_clone civicrm/civicrm-core      -b "$CIVI_VERSION"     civicrm
+  git_cache_clone civicrm/civicrm-backdrop  -b "1.x-$CIVI_VERSION" civicrm/backdrop
+  git_cache_clone civicrm/civicrm-packages  -b "$CIVI_VERSION"     civicrm/packages
 
   extract-url --cache-ttl 172800 civicrm=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
 

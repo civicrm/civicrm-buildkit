@@ -18,9 +18,9 @@ echo "[[Download CiviCRM]]"
 [ ! -d "$WEB_ROOT/web/wp-content/plugins" ] && mkdir -p "$WEB_ROOT/web/wp-content/plugins"
 pushd "$WEB_ROOT/web/wp-content/plugins" >> /dev/null
 
-  git clone ${CACHE_DIR}/civicrm/civicrm-wordpress.git                -b "$CIVI_VERSION" civicrm
-  git clone ${CACHE_DIR}/civicrm/civicrm-core.git                     -b "$CIVI_VERSION" civicrm/civicrm
-  git clone ${CACHE_DIR}/civicrm/civicrm-packages.git                 -b "$CIVI_VERSION" civicrm/civicrm/packages
+  git_cache_clone civicrm/civicrm-wordpress                        -b "$CIVI_VERSION" civicrm
+  git_cache_clone civicrm/civicrm-core                             -b "$CIVI_VERSION" civicrm/civicrm
+  git_cache_clone civicrm/civicrm-packages                         -b "$CIVI_VERSION" civicrm/civicrm/packages
 
   cd civicrm
   extract-url --cache-ttl 172800 civicrm=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz

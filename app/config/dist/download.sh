@@ -8,13 +8,13 @@ echo "[[Download CiviCRM]]"
 
 mkdir "$WEB_ROOT"
 
-git clone ${CACHE_DIR}/civicrm/civicrm-core.git        -b "$CIVI_VERSION"     "$WEB_ROOT/src"
-git clone ${CACHE_DIR}/civicrm/civicrm-backdrop.git    -b "1.x-$CIVI_VERSION" "$WEB_ROOT/src/backdrop"
-git clone ${CACHE_DIR}/civicrm/civicrm-drupal.git      -b "7.x-$CIVI_VERSION" "$WEB_ROOT/src/drupal"
-git clone ${CACHE_DIR}/civicrm/civicrm-drupal-8.git    -b "$CIVI_VERSION"     "$WEB_ROOT/src/drupal-8"
-git clone ${CACHE_DIR}/civicrm/civicrm-joomla.git      -b "$CIVI_VERSION"     "$WEB_ROOT/src/joomla"
-git clone ${CACHE_DIR}/civicrm/civicrm-wordpress.git   -b "$CIVI_VERSION"     "$WEB_ROOT/src/WordPress"
-git clone ${CACHE_DIR}/civicrm/civicrm-packages.git    -b "$CIVI_VERSION"     "$WEB_ROOT/src/packages"
+git_cache_clone civicrm/civicrm-core                -b "$CIVI_VERSION"     "$WEB_ROOT/src"
+git_cache_clone civicrm/civicrm-backdrop            -b "1.x-$CIVI_VERSION" "$WEB_ROOT/src/backdrop"
+git_cache_clone civicrm/civicrm-drupal              -b "7.x-$CIVI_VERSION" "$WEB_ROOT/src/drupal"
+git_cache_clone civicrm/civicrm-drupal-8            -b "$CIVI_VERSION"     "$WEB_ROOT/src/drupal-8"
+git_cache_clone civicrm/civicrm-joomla              -b "$CIVI_VERSION"     "$WEB_ROOT/src/joomla"
+git_cache_clone civicrm/civicrm-wordpress           -b "$CIVI_VERSION"     "$WEB_ROOT/src/WordPress"
+git_cache_clone civicrm/civicrm-packages            -b "$CIVI_VERSION"     "$WEB_ROOT/src/packages"
 
 ## 24hr * 60min/hr * 60sec/min = 86400
 http_cache_setup "http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz" "$CACHE_DIR/civicrm/civicrm-l10n-daily.tar.gz" 86400
