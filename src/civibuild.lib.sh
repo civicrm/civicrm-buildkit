@@ -1109,6 +1109,7 @@ function backdrop_user_role() {
 function backdrop_download() {
   cvutil_assertvars backdrop_download WEB_ROOT CMS_VERSION PRJDIR CACHE_DIR
   echo "[[Download Backdrop]]"
+  git_cache_setup_id backdrop/backdrop
   mkdir "$WEB_ROOT"
   git clone "$CACHE_DIR/backdrop/backdrop.git" "$WEB_ROOT/web" -b "$CMS_VERSION"
 
