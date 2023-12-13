@@ -4,7 +4,7 @@
 
 ###############################################################################
 
-git_cache_setup_id "backdrop/backdrop"
+git_cache_setup_id backdrop/backdrop
 git_cache_setup_id civicrm/civicrm-backdrop
 git_cache_setup_id TechToThePeople/civisualize
 git_cache_setup_id civicrm/org.civicoop.civirules

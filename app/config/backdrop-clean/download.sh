@@ -4,8 +4,10 @@
 
 ###############################################################################
 
-git_cache_setup_id "backdrop/backdrop"
+git_cache_setup_id backdrop/backdrop
 git_cache_setup_id civicrm/civicrm-backdrop
+
+###############################################################################
 
 [ -z "$CMS_VERSION" ] && CMS_VERSION="1.x"
 [ -z "$CIVI_VERSION" ] && CIVI_VERSION=master
