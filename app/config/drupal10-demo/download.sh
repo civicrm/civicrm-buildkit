@@ -4,6 +4,10 @@
 
 ###############################################################################
 
+git_cache_setup_id TechToThePeople/civisualize
+
+###############################################################################
+
 #[ -z "$CMS_VERSION" ] && CMS_VERSION=8.7.x
 [ -z "$CMS_VERSION" ] && CMS_VERSION='^10'
 [ -z "$NG_PRFL_VERSION" ] && NG_PRFL_VERSION='master'
