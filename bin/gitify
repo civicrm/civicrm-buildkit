@@ -20,6 +20,7 @@ PRJDIR=$(dirname "$BINDIR")
 
 source "$PRJDIR/src/civibuild.lib.sh"
 source "$PRJDIR/src/civibuild.aliases.sh"
+source "$PRJDIR/src/civibuild.caches.sh"
 
 ## Make sure bundled utilities are available, regardless of local config
 export PATH="$BINDIR:$PATH"
