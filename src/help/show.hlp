@@ -7,6 +7,7 @@
 
 [33mOptions:[0m
 [32m  -h, --help[0m           Displays help for a command
+[32m  -v[0m                   Verbose output
 [32m  --html <dir>[0m         A new HTML dir which will report build status in detail
 [32m  --new-scan <file>[0m    A new JSON file which summarizes the git structure
 [32m  --last-scan <file>[0m   An existing JSON file which summarizes the old git structure

@@ -16,13 +16,21 @@ function civibuild_app_usage() {
 ## Run an external script (based on the site-type)
 ## usage: civibuild_app_run <script-name>
 function civibuild_app_run() {
+  local _shellopt="$-"
+
   MAIN_SCRIPT="${SITE_CONFIG_DIR}/$1.sh"
   [ ! -f "$MAIN_SCRIPT" ] && echo "ERROR: Missing main script ($MAIN_SCRIPT)" && exit 98
 
   echo "[[Execute $MAIN_SCRIPT]]"
-  set -ex
+
+  set -e
+  if [[ -n "$VERBOSE" ]]; then
+    set -x
+  fi
+
   source "$MAIN_SCRIPT"
-  set +ex
+
+  set -${_shellopt}
 }
 
 ###############################################################################

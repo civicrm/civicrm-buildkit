@@ -126,8 +126,12 @@ function civibuild_parse() {
     shift
 
     case "$OPTION" in
-      -h|--help|-?)
+      -h|--help|-\?)
         civibuild_app_usage
+        ;;
+
+      -v)
+        VERBOSE=1
         ;;
 
       --admin-email)
