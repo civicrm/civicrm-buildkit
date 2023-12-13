@@ -7,6 +7,7 @@
 
 [33mOptions:[0m
 [32m  -h, --help[0m           Displays help for a command
+[32m  -v[0m                   Verbose output
 [32m  --eval <code>[0m        Run an impromptu fragment of shell code (with the civibuild environment/functions)
 [32m  --script <file>[0m      Run a script fragment of shell code (in the civibuild environment/functions)
 

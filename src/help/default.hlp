@@ -3,6 +3,7 @@ civibuild [options] command
 
 [33mOptions:[0m
 [32m  -h, --help <command>[0m Displays help for a command
+[32m  -v[0m                   Verbose output
 
 [33mCommands:[0m
  [33mBuild Management[0m

@@ -7,6 +7,7 @@
 
 [33mOptions:[0m
 [32m  -h, --help[0m           Displays help for a command
+[32m  -v[0m                   Verbose output
 [32m  --clone-id <name>[0m    The name of the specific clone. [Required]
 [32m  --force[0m              If necessary, destroy pre-existing files/directories/DBs
 

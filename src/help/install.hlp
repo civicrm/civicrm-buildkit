@@ -7,6 +7,7 @@
 
 [33mOptions:[0m
 [32m  -h, --help[0m           Displays help for a command
+[32m  -v[0m                   Verbose output
 [32m  --type <type>[0m        The type of system to install (ex: drupal-demo). Must be one of the available types - see https://docs.civicrm.org/dev/en/latest/tools/civibuild/#build-types (If omitted, assume <build-name>) [Optional] 
 [32m  --web-root <path>[0m    The full path to the website root. [Default: ${BLDDIR}/<build-name>]
 [32m  --civi-ver <ver>[0m     The branch or tag of CiviCRM desired (master, 4.7, 4.6, 4.6.0, etc) [Optional]
