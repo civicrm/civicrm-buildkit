@@ -4,6 +4,7 @@
 
 ###############################################################################
 
+git_cache_setup_id civicrm/civicrm-drupal
 git_cache_setup_id civicrm/civicrm-joomla
 git_cache_setup_id civicrm/civicrm-wordpress
 git_cache_setup "https://github.com/civicrm/l10n.git"           "$CACHE_DIR/civicrm/l10n.git"

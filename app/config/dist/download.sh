@@ -5,6 +5,8 @@
 ###############################################################################
 
 git_cache_setup_id civicrm/civicrm-backdrop
+git_cache_setup_id civicrm/civicrm-drupal
+git_cache_setup_id civicrm/civicrm-drupal-8
 git_cache_setup_id civicrm/civicrm-joomla
 git_cache_setup_id civicrm/civicrm-wordpress
 

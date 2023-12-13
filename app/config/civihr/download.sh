@@ -5,6 +5,7 @@
 ###############################################################################
 
 git_cache_setup "https://github.com/compucorp/civihr.git" "$CACHE_DIR/compucorp/civihr.git"
+git_cache_setup_id civicrm/civicrm-drupal
 
 [ -z "$CMS_VERSION" ] && CMS_VERSION=7.x
 [ -z "$CIVI_VERSION" ] && CIVI_VERSION=5.3.1
