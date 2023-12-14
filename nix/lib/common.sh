@@ -608,7 +608,9 @@ function install_xfce4_launchers() {
 ## Determine the location of the profile dir
 ## Ex: "get_nix_profile_path bknix-dfl" ==> "/nix/var/nix/profiles/per-user/myuser/bknix-dfl"
 function get_nix_profile_path() {
-  if [ -e "$HOME/.local/state/nix/profiles" ]; then
+  if [ "$USER" == "root" ]; then
+    echo "/nix/var/nix/profiles/$1"
+  elif [ -e "$HOME/.local/state/nix/profiles" ]; then
     echo "$HOME/.local/state/nix/profiles/$1"
   elif [ -e "/nix/var/nix/profiles/per-user/$USER" ]; then
     echo "/nix/var/nix/profiles/per-user/$USER/$1"
