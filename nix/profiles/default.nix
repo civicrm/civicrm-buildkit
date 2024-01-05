@@ -48,4 +48,9 @@ rec {
     * Another in-between mix of versions
     */
    alt = import ./alt/default.nix;
+
+   /**
+    * Tool-chain used during releases
+    */
+   releaser = import ./releaser/default.nix;
 }
