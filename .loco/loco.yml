@@ -83,6 +83,10 @@ services:
     pid_file: '$LOCO_SVC_VAR/mailhog.pid'
     message: 'Mailhog is running on "<comment>smtp://$LOCALHOST:$MAIL_SMTP_PORT</comment>" and "<comment>http://$LOCALHOST:$MAIL_HTTP_PORT</comment>"'
 
+  chrome:
+    run: 'loco-pid-file "$LOCO_SVC_VAR/chrome.pid" -- "$CHROME_BIN" --disable-gpu --headless --remote-debugging-address="$LOCALHOST" --remote-debugging-port="$CHROME_PORT"'
+    pid_file : '$LOCO_SVC_VAR/chrome.pid'
+
   ## apache-vdr uses a "virtual document root" to host a wildcard domain;
   ## Formula: "http://{SUBDOMAIN}.{HTTPD_DOMAIN}:{HTTPD_PORT}/" <==> "./build/{SUBDOMAIN}/"
   ## Ex: "http://foobar.bknix:8001/" <==> "./build/foobar/"
