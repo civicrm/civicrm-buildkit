@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -e
+
+## Example usage:
+##
+## $ env ghprbTargetBranch=master ghprbPullId=387 run-bknix-job --mock dfl CiviCRM-Packages-Test
+
+#################################################
+
+CIVI_REPO=civicrm-packages
+BLDTYPE=drupal-clean
+#SUITES='all'
+#SUITES='upgrade karma phpunit-e2e phpunit-drupal'
+SUITES='phpunit-civi'
+
+run_bknix_include "$BKNIX_JOBS/Generic-Test.job"
