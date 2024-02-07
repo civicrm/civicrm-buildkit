@@ -9,8 +9,8 @@ set -e
 
 CIVI_REPO=civicrm-packages
 BLDTYPE=drupal-clean
-#SUITES='all'
+SUITES='all'
 #SUITES='upgrade karma phpunit-e2e phpunit-drupal'
-SUITES='phpunit-civi'
+#SUITES='phpunit-civi'
 
 run_bknix_include "$BKNIX_JOBS/Generic-Test.job"
