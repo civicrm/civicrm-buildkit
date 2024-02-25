@@ -99,4 +99,14 @@ in rec {
     zendExtension = true;
   };
 
+  xdebug33 = buildPecl {
+    ## XDebug 3.3 supports php80, php81, php82, php83 (https://xdebug.org/docs/compat)
+    version = "3.3.1";
+    pname = "xdebug";
+    sha256 = "TrTuJwu8xfFBlcOPbuWFgOAHz0iGzjLhFDAxirW8IxU=";
+    doCheck = true;
+    checkTarget = "test";
+    zendExtension = true;
+  };
+
 }
