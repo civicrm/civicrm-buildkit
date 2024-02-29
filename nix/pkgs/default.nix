@@ -40,7 +40,7 @@ in pharDirectives // rec {
    php82 = import ./php82/default.nix;
    php83 = import ./php83/default.nix;
    transifexClient = import ./transifexClient/default.nix;
-   ramdisk = callPackage (fetchTarball https://github.com/totten/ramdisk/archive/v0.1.1.tar.gz) {};
+   ramdisk = callPackage (fetchTarball https://github.com/totten/ramdisk/archive/v0.1.2.tar.gz) {};
 
    # We don't actually modify the tzdata package, but we should have a singular pinning so that it same pkg is used in different flows.
    tzdata = pkgs.tzdata;
