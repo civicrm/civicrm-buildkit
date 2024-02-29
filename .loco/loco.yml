@@ -29,8 +29,9 @@ default_environment:
  - XDEBUG_PORT=9003
  #- XDEBUG_CONFIG=...
 
- ## RAMDISK_SIZE: Most daemons (including MySQL) store runtime data in a ramdisk.
- - RAMDISK_SIZE=600
+ ## RAMDISK_SIZE: Optionally store all runtime data (incl MySQL) in a ramdisk.
+ - RAMDISK_SIZE=off
+ # - RAMDISK_SIZE=600
 
  ## CIVICRM_LOCALES: When pre-generating CiviCRM datasets, limit the number of locales.
  - CIVICRM_LOCALES=en_US,fr_FR,de_DE
