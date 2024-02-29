@@ -1,6 +1,12 @@
 format: 'loco-0.1'
 
 ## This is the default configuration used for local development environments.
+##
+## You can modify the configuration with any of these techniques:
+##  - Edit this file
+##  - Add an adjacent file (`loco.overrides.yml`) or global file (`/etc/bknix-ci/loco.overrides.yml`)
+##  - Add environment-variables to your shell configuration file (eg `~/.profile` or `~/.bashrc`)
+##  - Manually set environment-variables when you open your shell (*before calling loco*)
 
 #### General configuration
 default_environment:
@@ -29,8 +35,10 @@ default_environment:
  - XDEBUG_PORT=9003
  #- XDEBUG_CONFIG=...
 
- ## RAMDISK_SIZE: Most daemons (including MySQL) store runtime data in a ramdisk.
- - RAMDISK_SIZE=600
+ ## RAMDISK_SIZE: Optionally store all runtime data (incl MySQL) in a ramdisk.
+ - RAMDISK_SIZE=off
+ # - RAMDISK_SIZE=600
+ # 600mb is usually enough for 2-3 full dev environments, depending on CMS
 
  ## CIVICRM_LOCALES: When pre-generating CiviCRM datasets, limit the number of locales.
  - CIVICRM_LOCALES=en_US,fr_FR,de_DE

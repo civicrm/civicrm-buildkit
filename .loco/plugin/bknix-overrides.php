@@ -61,7 +61,8 @@ function applyOverrides(&$config, &$override) {
 Loco::dispatcher()->addListener('loco.config.filter', function($e) {
   $files = [
     preg_replace(';\.ya?ml$;', '.overrides.yml', $e['file']),
-    '/etc/bknix-ci/loco-overrides.yaml',
+    '/etc/bknix-ci/loco.overrides.yml', // Matches ^^^ better
+    '/etc/bknix-ci/loco-overrides.yaml', // Deprecated
   ];
   foreach ($files as $f) {
     if (file_exists($f)) {
