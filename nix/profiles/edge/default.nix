@@ -11,7 +11,7 @@ let
 
 in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
 
-    dists.bkit.php82
+    dists.bkit.php83
     dists.default.nodejs-14_x
     dists.default.apacheHttpd
     dists.default.mailhog
