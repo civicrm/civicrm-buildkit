@@ -100,7 +100,6 @@ return function() {
     'https://develop.tadpole.cc/plugins/civicrm-network-groups' => 'wp-plugin',
     'https://develop.tadpole.cc/plugins/civicrm-groups-sync' => 'wp-plugin',
 
-
      // Some random exts that don't appear in the feeds.
     'https://github.com/3sd/civicrm-pinpoint' => 'ext',
     'https://github.com/3sd/civicrm-recalculate-recipients' => 'ext',
@@ -155,7 +154,7 @@ return function() {
     'https://github.com/eileenmcnaughton/org.wikimedia.omnimail' => 'ext',
     'https://github.com/eileenmcnaughton/testdata' => 'ext',
     'https://github.com/systopia/activity-entity' => 'ext',
-    'https://github.com/systopia/aip',
+    'https://github.com/systopia/aip' => 'ext',
     'https://github.com/systopia/Contact-Update-Queue' => 'ext',
     'https://github.com/systopia/de.systopia.amazonbounceapi' => 'ext',
     'https://github.com/systopia/de.systopia.anonymiser' => 'ext',
