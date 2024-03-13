@@ -73,6 +73,15 @@ return function() {
     'https://lab.civicrm.org/dev/coworker' => 'tools',
     'https://lab.civicrm.org/documentation/vale-standards' => 'tools',
 
+    // Public docker/compose/k8s projects that build on civicrm
+    'https://github.com/BlackflySolutions/Simuliidae' => 'docker/blackfly-simuliidae',
+    'https://github.com/UEPAL-Civiparoisse-Documentation/fr.uepalparoisse.dockerfiles' => 'docker/uepal-civiparoisse',
+    'https://github.com/progressivetech/longshore/' => 'docker/powerbase-longshore',
+    'https://lab.civicrm.org/michaelmcandrew/civicrm-buildkit-docker' => 'docker/3sd-civicrm-buildkit-docker',
+    'https://lab.civicrm.org/michaelmcandrew/civicrm-docker' => 'docker/3sd-civicrm-docker',
+    'https://lab.civicrm.org/partners/civicoop/civicrm-dev-docker' => 'docker/civicoop-civicrm-dev-docker',
+    'https://lab.civicrm.org/ufundo/docker-project-template' => 'docker/ufundo-project-template',
+
     // Drupal Modules
     'https://git.drupalcode.org/project/civicrm_entity' => 'drupal-module',
     'https://github.com/civicrm/apachesolr_civiAttachments' => 'drupal-module',
