@@ -1,8 +1,10 @@
+{ php, dbms }:
+
 /**
- * The bleeding-edge profile (`edge`) uses the highest software versions, even if they are
- * not yet supported by CiviCRM.
+ * These is an *almost complete* profile. It's just missing PHP and MySQL.
+ * Call this function and supply specific versions of php/mysql.
  *
- * Note: The `dists` var provides a list of major releases of Nix upstream (eg v19.09 <=> dists.v1909).
+ * Example usage: `php74m80 = phpXXmXX { php=dists.bkit.php74; dbms=dists.bkit.mysql80 }`
  */
 let
     dists = import ../../pins;
@@ -11,13 +13,12 @@ let
 
 in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
 
-    dists.bkit.php83
+    php
     dists.default.nodejs-14_x
     dists.default.apacheHttpd
     dists.default.mailhog
     dists.default.memcached
-    /* dists.default.mariadb */
-    dists.default.mysql80
+    dbms
     dists.default.redis
     dists.bkit.transifexClient
 
