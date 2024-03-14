@@ -47,10 +47,14 @@ civicrm_install_cv
 "${WEB_ROOT}/drupal/sites/default/civicrm/extensions/rpow/bin/harvey-dent" --root "${WEB_ROOT}/drupal"
 echo "DROP DATABASE IF EXISTS fredge"| amp sql -N civi -a
 echo "CREATE DATABASE IF NOT EXISTS fredge"| amp sql -N civi -a
+echo "CREATE DATABASE IF NOT EXISTS smashpig"| amp sql -N civi -a
 eval mysql $CIVI_DB_ARGS <<EOSQL
   GRANT ALL PRIVILEGES ON fredge.* TO $CMS_DB_USER@'%';
   GRANT SELECT ON fredge.* TO $CIVI_DB_USER@'%';
   GRANT SELECT ON fredge.* TO civiro@'%';
+  GRANT ALL PRIVILEGES ON smashpig.* TO $CMS_DB_USER@'%';
+  GRANT SELECT ON smashpig.* TO $CIVI_DB_USER@'%';
+  GRANT SELECT ON smashpig.* TO civiro@'%';
 EOSQL
 
 ###############################################################################
