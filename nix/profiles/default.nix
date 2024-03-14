@@ -3,7 +3,17 @@
  * all the recommended development tools. Each item returned here is a
  * list of packages that can be installed in (one of) your profile(s).
  */
-rec {
+let
+  phpXXmXX = import ./phpXXmXX/default.nix;
+  dists = import ../pins;
+
+  ## Some older packages aren't buildable on Apple M1, so we use closest match.
+  stdenv = dists.default.stdenv;
+  isAppleM1 = stdenv.isDarwin && stdenv.isAarch64;
+
+  oldestAvailableMysql = (if isAppleM1 then dists.bkit.mysql80 else dists.bkit.mysql57);
+
+in rec {
 
    /* ---------- Partial profiles; building-blocks ---------- */
 
@@ -19,38 +29,56 @@ rec {
 
    /* ---------- Full profiles ---------- */
 
-   /**
-    * The minimum system requirements.
-    */
-   min = import ./min/default.nix;
+   php73m57 = phpXXmXX { php = dists.bkit.php73; dbms = dists.bkit.mysql57; };
+   php73m80 = phpXXmXX { php = dists.bkit.php73; dbms = dists.bkit.mysql80; };
+   php73r105 = phpXXmXX { php = dists.bkit.php73; dbms = dists.bkit.mariadb105; };
+   php73r106 = phpXXmXX { php = dists.bkit.php73; dbms = dists.bkit.mariadb106; };
+
+   php74m57 = phpXXmXX { php = dists.bkit.php74; dbms = dists.bkit.mysql57; };
+   php74m80 = phpXXmXX { php = dists.bkit.php74; dbms = dists.bkit.mysql80; };
+   php74r105 = phpXXmXX { php = dists.bkit.php74; dbms = dists.bkit.mariadb105; };
+   php74r106 = phpXXmXX { php = dists.bkit.php74; dbms = dists.bkit.mariadb106; };
+
+   php80m57 = phpXXmXX { php = dists.bkit.php80; dbms = dists.bkit.mysql57; };
+   php80m80 = phpXXmXX { php = dists.bkit.php80; dbms = dists.bkit.mysql80; };
+   php80r105 = phpXXmXX { php = dists.bkit.php80; dbms = dists.bkit.mariadb105; };
+   php80r106 = phpXXmXX { php = dists.bkit.php80; dbms = dists.bkit.mariadb106; };
+
+   php81m57 = phpXXmXX { php = dists.bkit.php81; dbms = dists.bkit.mysql57; };
+   php81m80 = phpXXmXX { php = dists.bkit.php81; dbms = dists.bkit.mysql80; };
+   php81r105 = phpXXmXX { php = dists.bkit.php81; dbms = dists.bkit.mariadb105; };
+   php81r106 = phpXXmXX { php = dists.bkit.php81; dbms = dists.bkit.mariadb106; };
+
+   php82m57 = phpXXmXX { php = dists.bkit.php82; dbms = dists.bkit.mysql57; };
+   php82m80 = phpXXmXX { php = dists.bkit.php82; dbms = dists.bkit.mysql80; };
+   php82r105 = phpXXmXX { php = dists.bkit.php82; dbms = dists.bkit.mariadb105; };
+   php82r106 = phpXXmXX { php = dists.bkit.php82; dbms = dists.bkit.mariadb106; };
+
+   php83m57 = phpXXmXX { php = dists.bkit.php83; dbms = dists.bkit.mysql57; };
+   php83m80 = phpXXmXX { php = dists.bkit.php83; dbms = dists.bkit.mysql80; };
+   php83r105 = phpXXmXX { php = dists.bkit.php83; dbms = dists.bkit.mariadb105; };
+   php83r106 = phpXXmXX { php = dists.bkit.php83; dbms = dists.bkit.mariadb106; };
 
    /**
-    * The maximum tested system requirements.
+    * These aliases represent the current minimum/maximum, as viewed from
+    * the perspective of dev/master. In particular:
+    *   - min: The oldest supported+runnable version
+    *   - max: the newest supported+runnable version
+    *   - edge: The bleeding-edge. Not yet supported. Partially runnable.
+    *   - old: A recent/older version
+    *   - dfl: A typical default. Corresponds to PR testing.
+    *   - alt: An alternative version. Basically, with MariaDB and middle-of-the-road PHP.
     */
-   max = import ./max/default.nix;
-
-   /**
-    * An old minimum from a past release.
-    */
-   old = import ./old/default.nix;
-
-   /**
-    * A new maximum for a future release.
-    */
-   edge = import ./edge/default.nix;
-
-   /**
-    * A nice, in-between list of requirements
-    */
-   dfl = import ./dfl/default.nix;
-
-   /**
-    * Another in-between mix of versions
-    */
-   alt = import ./alt/default.nix;
+   old = phpXXmXX { php = dists.bkit.php73; dbms = oldestAvailableMysql; };
+   min = phpXXmXX { php = dists.bkit.php74; dbms = oldestAvailableMysql; };
+   dfl = phpXXmXX { php = dists.bkit.php82; dbms = oldestAvailableMysql; };
+   alt = php80r105;
+   max = php82m80;
+   edge = php83m80;
 
    /**
     * Tool-chain used during releases
     */
    releaser = import ./releaser/default.nix;
+
 }
