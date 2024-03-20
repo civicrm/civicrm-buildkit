@@ -111,10 +111,14 @@ function run_bknix_main() {
     exit 1
   fi
 
-  case "$1" in
-    old|min|dfl|max|alt|edge) BKPROF="$1" ; ;;
-    *) run_bknix_fatal "Missing or invalid PROFILE" ; ;;
-  esac
+  if [[ $1 =~ ^php[0-9]{2}[mr][0-9]+$ ]]; then
+    BKPROF="$1"
+  else
+    case "$1" in
+      old|min|dfl|max|alt|edge) BKPROF="$1" ; ;;
+      *) run_bknix_fatal "Missing or invalid PROFILE" ; ;;
+    esac
+  fi
   export BKPROF
 
   if [ -n "$LOADED_BKPROF" ]; then
