@@ -77,6 +77,18 @@ in rec {
    edge = php83m80;
 
    /**
+    * These aliases are short-hand. They're not intended for CI testing,
+    * where you shold probably consider mysql versions more intentionally.
+    * But they may be useful for quick/local hacking.
+    */
+   php73 = php73m80;
+   php74 = php74m80;
+   php80 = php80m80;
+   php81 = php81m80;
+   php82 = php82m80;
+   php83 = php83m80;
+
+   /**
     * Tool-chain used during releases
     */
    releaser = import ./releaser/default.nix;
