@@ -35,6 +35,9 @@ source "$BINDIR/../lib/common.sh"
 ###########################################################
 ## Main
 
+if [ -f "/etc/bknix-ci/install-developer.conf" ]; then
+  source "/etc/bknix-ci/install-developer.conf"
+fi
 PROFILES=${PROFILES:-min max dfl}
 
 assert_not_root_user
