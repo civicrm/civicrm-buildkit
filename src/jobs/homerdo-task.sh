@@ -294,15 +294,19 @@ function load_request() {
   #eval $( cat "$1" | well_formed_variables | new_variables | escape_variables )
   eval $( cat "$1" | well_formed_variables | known_variables | escape_variables )
 
-  case "$BKPROF" in
-    old|min|dfl|max|alt|edge)
-      BKIT="$HOME/buildkit"
-      ;;
-    *)
-      echo >&2 "Unrecognized BKPROF=[$BKPROF]"
-      exit 3
-      ;;
-  esac
+  if [[ "$BKPROF" =~ ^php[0-9]{2}[mr][0-9]+$ ]]; then
+    BKIT="$HOME/buildkit"
+  else
+    case "$BKPROF" in
+      old|min|dfl|max|alt|edge)
+        BKIT="$HOME/buildkit"
+        ;;
+      *)
+        echo >&2 "Unrecognized BKPROF=[$BKPROF]"
+        exit 3
+        ;;
+    esac
+  fi
 }
 
 function well_formed_variables() {
