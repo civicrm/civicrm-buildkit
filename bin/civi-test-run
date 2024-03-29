@@ -79,6 +79,7 @@ function show_help() {
   echo "                        - phpunit-drupal"
   echo "                        - phpunit-wordpress"
   echo "                        - phpunit-backdrop"
+  echo "                        - phpunit-uf (alias for phpunit-{drupal,wordpress,backdrop})"
   echo "                        - phpunit-creditnotes"
   echo "                        - phpunit-flexmailer"
   echo "                        - upgrade"
@@ -261,6 +262,20 @@ function junit_placeholder() {
   echo '</testsuites>' >> "$JUNITDIR/none.xml"
 }
 
+function task_phpunit_uf() {
+  $GUARD pushd "$CIVI_CORE"
+    $GUARD civibuild restore "$BLDNAME"
+    $GUARD cv flush --cwd="$CIVI_CORE"
+    local uf=$(cv ev 'echo CIVICRM_UF;')
+    case "$uf" in
+      Backdrop) task_phpunit_backdrop ;;
+      Drupal) task_phpunit_drupal ;;
+      WordPress) task_phpunit_wordpress ;;
+      *) echo "Skipped phpunit-uf. No suites known for CIVICRM_UF=[$uf]" ;;
+    esac
+  $GUARD popd
+}
+
 function task_phpunit_drupal() {
   $GUARD pushd "$CIVI_CORE/drupal"
   if ! $GUARD $(getPhpunitVer) --log-junit "$JUNITDIR/phpunit_drupal.xml" ${PHPUNIT_ARGS[@]} ; then
@@ -427,6 +442,7 @@ for TESTTYPE in $SUITES ; do
     phpunit-api3) task_phpunit api_v3_AllTests ;;
     phpunit-api4) task_phpunit api_v4_AllTests ;;
     phpunit-civi)  task_phpunit 'Civi\AllTests' ;;
+    phpunit-uf) task_phpunit_uf ;;
     phpunit-drupal) task_phpunit_drupal ;;
     phpunit-wordpress) task_phpunit_wordpress ;;
     phpunit-backdrop) task_phpunit_backdrop ;;
