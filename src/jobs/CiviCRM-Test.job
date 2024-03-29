@@ -56,11 +56,11 @@ if [ -d "$BKITBLD/$BLDNAME" ]; then
 fi
 
 ## Download dependencies, apply, and perform fresh DB installation
-#$GUARD civibuild download "$BLDNAME" --type "$BLDTYPE" --civi-ver "$CIVIVER" $PATCHARGS
-#$GUARD civibuild install "$BLDNAME"
+$GUARD civibuild download "$BLDNAME" --type "$BLDTYPE" --civi-ver "$CIVIVER" $PATCHARGS
+$GUARD civibuild install "$BLDNAME"
 
 if [ "$ORNERY" = "disable" ]; then
-  echo civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" --exclude-group ornery $SUITES
+  $GUARD civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" --exclude-group ornery $SUITES
 else
-  echo civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" $SUITES
+  $GUARD civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" $SUITES
 fi
