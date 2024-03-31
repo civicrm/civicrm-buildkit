@@ -3,7 +3,7 @@ set -e
 
 ## Example usage:
 ##
-## $ env CIVIVER=master BLDTYPE=drupal-clean ghprbPullId=100 SUITE=make-snapshots run-bknix-job --mock min CiviCRM-Civix-Test
+## $ env CIVIVER=master BLDTYPE=drupal-clean SUITE=make-snapshots run-bknix-job --mock min CiviCRM-Civix-Test
 ## $ env CIVIVER=master BLDTYPE=drupal-clean SUITE=make-snapshots PATCH=https://github.com/totten/civix/pull/340 run-bknix-job --mock min CiviCRM-Civix-Test
 
 
@@ -17,13 +17,10 @@ set -e
 assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE CIVIVER
 
 ## SUITE: The kind of civix test to run (e.g. `make-snapshots`, `run-tests`, or 'all')
-assert_regex "^\(run-tests\|make-snapshots\)$" "$SUITE"
+assert_common SUITE
 
 ## PATCH: Optional. URL of a pending pull-request in any `civicrm-*` repo (e.g. `https://github.com/civicrm/civicrm-packages/pull/1234`)
 assert_regex '^\(\|https://github.com/civicrm/civicrm-[a-z]*/pull/[0-9]\+/*\|https://github.com/totten/civix/pull/[0-9]\+/*\)$' "$PATCH" "Invalid PATCH"
-
-## ghprbPullId: (optional)The pull-request ID (for `civix.git`)
-if [ -n "$ghprbPullId" ]; then assert_common ghprbPullId; fi
 
 ## CIVIX_TYPE: Whether to test basic repo or to compile PHAR.
 ## (This may only matter for 'make-snapshots' testing.)
@@ -91,25 +88,22 @@ pushd "$BKITBLD/$BLDNAME/src/civix"
   fi
 popd
 pushd "$BKITBLD/$BLDNAME/src/civix"
-  if [ -n "$ghprbPullId" ]; then
-    echo "Apply patch (pull request $ghprbPullId)"
-    git scan am -N "https://github.com/totten/civix/pull/${ghprbPullId}"
-  fi
-
   composer install
-  case "$SUITE" in
-    all)
-      ./scripts/make-snapshots.sh --"$CIVIX_TYPE" --version HEAD --test
-      ./scripts/run-tests.sh --debug --log-junit "$WORKSPACE_JUNIT/civix-phpunit.xml"
-      ;;
-    make-snapshots)
-      ./scripts/make-snapshots.sh --"$CIVIX_TYPE" --version HEAD --test
-      ;;
-    run-tests)
-      # DEBUG=2
-      ./scripts/run-tests.sh --debug --log-junit "$WORKSPACE_JUNIT/civix-phpunit.xml"
-      ;;
-  esac
+  for "suite" in "$SUITE" ; do
+    case "$suite" in
+      all)
+        ./scripts/make-snapshots.sh --"$CIVIX_TYPE" --version HEAD --test
+        ./scripts/run-tests.sh --debug --log-junit "$WORKSPACE_JUNIT/civix-phpunit.xml"
+        ;;
+      make-snapshots)
+        ./scripts/make-snapshots.sh --"$CIVIX_TYPE" --version HEAD --test
+        ;;
+      run-tests)
+        # DEBUG=2
+        ./scripts/run-tests.sh --debug --log-junit "$WORKSPACE_JUNIT/civix-phpunit.xml"
+        ;;
+    esac
+  done
 popd
 
 exit $?
