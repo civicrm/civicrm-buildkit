@@ -38,7 +38,7 @@ function assert_common() {
         assert_regex '^[0-9]\+$' "$ghprbPullId" "ghprbPullId must be a number."
         ;;
       ghprbTargetBranch)
-        assert_regex '^[0-9a-z\.-]\+$' "$ghprbTargetBranch" "ghprbTargetBranch should be a branch name."
+        assert_regex '^[0-9a-z][0-9a-z\.-]*$' "$ghprbTargetBranch" "ghprbTargetBranch should be a branch name."
         ;;
       CIVI_REPO)
         assert_regex '^civicrm-\(backdrop\|core\|drupal\|drupal-8\|packages\|wordpress\)$' "$CIVI_REPO"
@@ -52,13 +52,13 @@ function assert_common() {
         assert_regex '^[0-9]\+$' "$BUILD_NUMBER" "Missing or invalid BUILD_NUMBER"
         ;;
       BLDTYPE)
-        assert_regex '^[0-9a-z\.-]\+$' "$BLDTYPE" "Missing or invalid BLDTYPE"
+        assert_regex '^[0-9a-z][0-9a-z\.-]*$' "$BLDTYPE" "Missing or invalid BLDTYPE"
         ;;
       BLDNAME)
-        assert_regex '^[0-9a-z\.-]\+$' "$BLDTYPE" "Missing or invalid BLDTYPE"
+        assert_regex '^[0-9a-z][0-9a-z\.-]*$' "$BLDTYPE" "Missing or invalid BLDTYPE"
         ;;
       CIVIVER)
-        assert_regex '^[0-9a-z\.-]\+$' "$CIVIVER" "Missing or invalid CIVIVER"
+        assert_regex '^[0-9a-z][0-9a-z\.-]*$' "$CIVIVER" "Missing or invalid CIVIVER"
         ;;
       EXECUTOR_NUMBER)
         assert_regex '^[0-9]\+$' "$EXECUTOR_NUMBER" "EXECUTOR_NUMBER must be a number. (If you are running manually, consider using --mock.)"
@@ -66,8 +66,11 @@ function assert_common() {
       PHPUNIT)
         assert_regex '^phpunit[0-9]*$' "$PHPUNIT" "PHPUNIT ($PHPUNIT) should identify a general version (such as phpunit8 or phpunit9)"
         ;;
+      SUITE)
+        assert_regex '^[a-zA-Z][0-9a-zA-Z-]*\( [a-zA-Z][0-9a-zA-Z-]*\)*$' "$SUITE" "Missing or invalid SUITE"
+        ;;
       SUITES)
-        assert_regex '^[ 0-9a-z\.-]\+$' "$SUITES" "Missing or invalid SUITES"
+        assert_regex '^[a-zA-Z][0-9a-zA-Z-]*\( [a-zA-Z][0-9a-zA-Z-]*\)*$' "$SUITES" "Missing or invalid SUITES"
         ;;
       TIME_FUNC)
         assert_regex '^[ 0-9a-z:\.-]\+$' "$TIME_FUNC" "Missing or invalid TIME_FUNC"
