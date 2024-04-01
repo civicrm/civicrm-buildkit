@@ -68,6 +68,11 @@ function assert_common() {
       BLDNAME)
         assert_regex '^[0-9a-z][0-9a-z\.-]*$' "$BLDTYPE" "Missing or invalid BLDTYPE"
         ;;
+      BKIT)
+        if [ ! -e "$BKIT/bin/civi-download-tools" ]; then
+          echo "BKIT must be a valid buildkit folder. (Missing flag-file bin/civi-download-tools.)"
+        fi
+        ;;
       CIVIVER)
         assert_regex '^[0-9a-z][0-9a-z\.-]*$' "$CIVIVER" "Missing or invalid CIVIVER"
         ;;
@@ -76,6 +81,11 @@ function assert_common() {
         ;;
       JOB_NAME)
         if [ -z "$JOB_NAME" ]; then fatal "Missing JOB_NAME" ; fi
+        ;;
+      LOCO_PRJ)
+        if [ ! -e "$LOCO_PRJ/.loco" ]; then
+          fatal "LOCO_PRJ must be a valid project"
+        fi
         ;;
       PHPUNIT)
         assert_regex '^phpunit[0-9]*$' "$PHPUNIT" "PHPUNIT ($PHPUNIT) should identify a general version (such as phpunit8 or phpunit9)"
@@ -149,6 +159,18 @@ function use_bknix_tmp() {
 
 function _stop_loco() {
   (cd "$LOCO_PRJ" && loco stop)
+}
+
+## Setup a mock Jenkins environment
+function init_jenkins_mock() {
+  echo "Using mock Jenkins environment"
+  export EXECUTOR_NUMBER=0
+  export BUILD_NUMBER=123
+  export WORKSPACE="$HOME/tmp/mock-workspace"
+  if [ ! -d "$WORKSPACE" ]; then
+    mkdir -p "$WORKSPACE"
+  fi
+  cd "$WORKSPACE"
 }
 
 ## Setup the standard build folders within the workspace.

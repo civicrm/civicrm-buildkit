@@ -1,0 +1,151 @@
+#!/usr/bin/env bash
+{ # start: run-job
+
+RUN_BKNIX_CLEANUP_FILES=()
+RUN_BKNIX_CLEANUP_FUNCS=()
+trap run_job_cleanup EXIT
+
+function run_job_help() {
+  echo "usage: run-job [--mock] [JOB_NAME]"
+  echo
+  echo "example: run-job --mock CiviRM-Core-Matrix"
+  echo
+  echo "tip: If <JOB_NAME> is omitted, and if you execute within a real Jenkins"
+  echo "environment, then it will use the active \$JOB_NAME."
+  echo ""
+  echo "tip: If <JOB_NAME> is an HTTPS URL, then it will fetch and run the"
+  echo "script. This is useful if you want to configure Jenkins to temporarily"
+  echo "use a WIP script."
+  echo
+  echo "tip: To spin-up/spin-down a test environment, use run-bknix-job."
+}
+
+function run_job_fatal() {
+  echo "$@" 1>&2
+  echo 1>&2
+  run_job_help 1>&2
+  exit 1
+}
+
+function run_job_mktemp() {
+  local tmpfile="/tmp/run-bknix-$USER-"$(date '+%Y-%m-%d-%H-%M'-$RANDOM$RANDOM)
+  touch "$tmpfile"
+  chmod 600 "$tmpfile"
+  echo "$tmpfile"
+}
+
+function run_job_cleanup() {
+  for func in "${RUN_BKNIX_CLEANUP_FUNCS[@]}" ; do
+    #echo >&2 "[run-job: cleanup] $func"
+    $func
+  done
+  for file in "${RUN_BKNIX_CLEANUP_FILES[@]}" ; do
+    #echo >&2 "[run-job: cleanup] $file"
+    if [ -e "$file" ]; then
+      rm -f "$file"
+    fi
+  done
+}
+
+## If there's a redeploy while bash is running, then bash gets stupid.
+## Instead of loading bash scripts directly, we load through a temp file.
+## run_job_include <SCRIPT_1> <SCRIPT_2> ...
+function run_job_include() {
+  local tmpfile=$(run_job_mktemp)
+  touch "$tmpfile"
+  RUN_BKNIX_CLEANUP_FILES+=("$tmpfile")
+
+  for file in "$@" ; do
+    cat "$file" >> "$tmpfile"
+    echo >> "$tmpfile"
+  done
+
+  source "$tmpfile"
+}
+
+function run_job_main() {
+  if [ -z "$BKNIX_JOBS" ]; then
+    BKNIX_JOBS="/opt/buildkit/src/jobs"
+  fi
+  if [ ! -r "$BKNIX_JOBS/common.sh" ]; then
+    run_job_fatal "File $BKNIX_JOBS/common.sh is not readable."
+  fi
+  export BKNIX_JOBS
+
+  IS_MOCK_JENKINS=
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+
+    case $key in
+      --help|-h) run_job_help ; exit 0 ; ;;
+      --mock) IS_MOCK_JENKINS=1 ; shift ; ;;
+      *)
+        break
+        ;;
+    esac
+  done
+
+  if [ -n "$1" ]; then
+    JOB_NAME="$1"
+    shift
+  fi
+
+  if [ $# -gt 0 ]; then
+    run_job_help
+    exit 1
+  fi
+
+  source "$BKNIX_JOBS/common.sh"
+  assert_common JOB_NAME
+
+  if [ -n "$IS_MOCK_JENKINS" ]; then
+    init_jenkins_mock
+  fi
+
+  if [ -d "$WORKSPACE/build" ]; then
+    rm -rf "$WORKSPACE/build"
+  fi
+
+  run_job_exec
+}
+
+## Execute the main job script
+function run_job_exec() {
+  ## JOB_NAME can be complicated (when using matrix jobs). We want a trimmed-down name.
+  BKNIX_JOB_NAME="$JOB_NAME"
+  case "$BKNIX_JOB_NAME" in
+    https:*)
+      BKNIX_JOB_URL="$BKNIX_JOB_NAME"
+      BKNIX_JOB_NAME=$(basename "$BKNIX_JOB_URL")
+      BKNIX_JOB_SCRIPT=$(run_job_mktemp)
+      RUN_BKNIX_CLEANUP_FILES+=("$BKNIX_JOB_SCRIPT")
+      run_job_download "$BKNIX_JOB_URL" "$BKNIX_JOB_SCRIPT"
+      ;;
+    *)
+      BKNIX_JOB_NAME=$(echo "$BKNIX_JOB_NAME" | cut -d '/' -f 1)
+      BKNIX_JOB_SCRIPT="$BKNIX_JOBS/$BKNIX_JOB_NAME.job"
+      ;;
+  esac
+  export BKNIX_JOB_SCRIPT BKNIX_JOB_NAME
+
+  if [ ! -e "$BKNIX_JOB_SCRIPT" ]; then
+    run_job_fatal "Missing or invalid JOB_NAME. No such file \"$BKNIX_JOB_SCRIPT\"."
+  fi
+
+  run_job_include "$BKNIX_JOB_SCRIPT"
+}
+
+## usage: run_job_download <url> <out-file>
+function run_job_download() {
+  if which wget >> /dev/null ; then
+    wget -O "$2" "$1"
+  elif which curl >> /dev/null ; then
+    curl -L -o "$2" "$1"
+  else
+    echo "error: failed to locate curl or wget"
+  fi
+}
+
+run_job_main "$@"
+
+} # end: run-job
