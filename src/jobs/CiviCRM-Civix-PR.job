@@ -20,7 +20,7 @@ assert_regex "^\(run-tests\|make-snapshots\)$" "$SUITE"
 #################################################
 ## Main
 
-use_bknix_tmp
+assert_bknix_temporary
 
 ################################################
 ## Setup environment

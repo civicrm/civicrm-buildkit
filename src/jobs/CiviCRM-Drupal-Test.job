@@ -13,4 +13,4 @@ SUITES='upgrade phpunit-e2e phpunit-drupal'
 #SUITES='upgrade karma phpunit-e2e phpunit-drupal'
 #SUITES='phpunit-drupal'
 
-run_bknix_include "$BKNIX_JOBS/Generic-Test.job"
+run_job_include "$BKNIX_JOBS/Generic-Test.job"

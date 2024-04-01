@@ -24,7 +24,7 @@ assert_regex '^\(\|https://github.com/civicrm/civicrm-[a-z]*/pull/[0-9]\+/*\)$' 
 #################################################
 ## Main
 
-use_bknix
+assert_bknix_durable
 
 ## Build definition
 ## Note: Suffixes are unique within a period of 180 days.

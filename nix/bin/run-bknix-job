@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+{ ## start: run-bknix-job
 
 RUN_BKNIX_HOMER_IMAGES="$HOME/images"
 RUN_BKNIX_CLEANUP_FILES=()
@@ -6,11 +7,17 @@ RUN_BKNIX_CLEANUP_FUNCS=()
 trap run_bknix_cleanup EXIT
 
 function run_bknix_help() {
-  echo "usage: run-bknix-job [--mock] [--loaded] <PROFILE> [<JOB_NAME>]"
+  echo "usage: run-bknix-job [--mock] [<RUN_MODE>] [<PROFILE> [<JOB_NAME>]]"
   echo
-  echo "example: run-bknix-job min CiviRM-Core-Matrix"
-  echo "example: run-bknix-job --mock min CiviRM-Core-Matrix"
-  echo "example: run-bknix-job min"
+  echo "example: run-bknix-job --isolate"
+  echo "example: run-bknix-job --active min shell"
+  echo "example: run-bknix-job --autostart php74m80 CiviRM-Core-Matrix"
+  echo
+  echo "The <RUN_MODE> determines how to access PHP/MySQL/etc. It is one of:"
+  echo "  --active: Use an active, pre-installed copy of the nix profile"
+  echo "  --isolate: Create an isolated container (homerdo; Linux-only)"
+  echo "  --autostart: Start everything (nix-shell, PHP, MySQL) as current user"
+  echo "  --autostart-services: As above, but only start PHP/MySQL"
   echo
   echo "tip: If <JOB_NAME> is omitted, and if you execute within a real Jenkins"
   echo "environment, then it will use the active \$JOB_NAME."
@@ -18,9 +25,6 @@ function run_bknix_help() {
   echo "tip: If <JOB_NAME> is an HTTPS URL, then it will fetch and run the"
   echo "script. This is useful if you want to configure Jenkins to temporarily"
   echo "use a WIP script."
-  echo
-  echo "tip: If you have already loaded the required bknix profile, then pass"
-  echo "option --loaded to prevent double-loading."
 }
 
 function run_bknix_fatal() {
@@ -50,33 +54,6 @@ function run_bknix_cleanup() {
   done
 }
 
-function run_bknix_mock() {
-  echo "Using mock Jenkins environment"
-  export EXECUTOR_NUMBER=0
-  export BUILD_NUMBER=123
-  export WORKSPACE="$HOME/tmp/mock-workspace"
-  if [ ! -d "$WORKSPACE" ]; then
-    mkdir -p "$WORKSPACE"
-  fi
-  cd "$WORKSPACE"
-}
-
-## If there's a redeploy while bash is running, then bash gets stupid.
-## Instead of loading bash scripts directly, we load through a temp file.
-## run_bknix_include <SCRIPT_1> <SCRIPT_2> ...
-function run_bknix_include() {
-  local tmpfile=$(run_bknix_mktemp)
-  touch "$tmpfile"
-  RUN_BKNIX_CLEANUP_FILES+=("$tmpfile")
-
-  for file in "$@" ; do
-    cat "$file" >> "$tmpfile"
-    echo >> "$tmpfile"
-  done
-
-  source "$tmpfile"
-}
-
 function run_bknix_main() {
   if [ -z "$BKNIX_JOBS" ]; then
     BKNIX_JOBS="/opt/buildkit/src/jobs"
@@ -86,97 +63,100 @@ function run_bknix_main() {
   fi
   export BKNIX_JOBS
 
+  if [ -z "$BKIT" ]; then
+    BKIT=$(cd "$BKNIX_JOBS/../.." && pwd)
+  fi
+
   IS_MOCK_JENKINS=
-  LOADED_BKPROF=
+  RUN_MODE=
   while [[ $# -gt 0 ]]; do
     key="$1"
 
     case $key in
-      --mock)
-        IS_MOCK_JENKINS=1
-        shift
-        ;;
-      --loaded)
-        LOADED_BKPROF=1
-        shift
-        ;;
+      --help|-h) run_bknix_help ; exit 0 ; ;;
+      --mock) IS_MOCK_JENKINS=1 ; shift ; ;;
+      --isolate) RUN_MODE=isolate ; shift ; ;;
+      --autostart) RUN_MODE=autostart ; shift ; ;;
+      --autostart-services) RUN_MODE=autostart-services ; shift ; ;;
+      --active) RUN_MODE=active ; shift ; ;;
       *)
         break
         ;;
     esac
   done
 
-  if [ $# -lt 1 ]; then
+  if [ -n "$1" -a "${1:0:1}" != "-" ]; then
+    export BKPROF="$1"
+    shift
+  fi
+  if [ -n "$1" -a "${1:0:1}" != "-" ]; then
+    export JOB_NAME="$1"
+    shift
+  fi
+  if [ $# -gt 1 -o -z "$BKPROF" -o -z "$JOB_NAME" ]; then
     run_bknix_help
     exit 1
   fi
-
-  if [[ $1 =~ ^php[0-9]{2}[mr][0-9]+$ ]]; then
-    BKPROF="$1"
-  else
-    case "$1" in
-      old|min|dfl|max|alt|edge) BKPROF="$1" ; ;;
-      *) run_bknix_fatal "Missing or invalid PROFILE" ; ;;
-    esac
+  if [ -z "$RUN_MODE" ]; then
+    ## Fallback to old behavior
+    if [ -e /etc/bknix-ci/is-runner -a "$USER" != "homer" ]; then
+      RUN_MODE=isolate
+    else
+      RUN_MODE=active
+    fi
   fi
-  export BKPROF
 
-  if [ -n "$LOADED_BKPROF" ]; then
-    LOADED_BKPROF="$BKPROF"
-  fi
+  source "$BKNIX_JOBS/common.sh"
+  assert_common BKPROF JOB_NAME
 
   if [ -n "$IS_MOCK_JENKINS" ]; then
-    run_bknix_mock
+    init_jenkins_mock
   fi
 
   if [ -d "$WORKSPACE/build" ]; then
     rm -rf "$WORKSPACE/build"
   fi
 
-  if [ -e /etc/bknix-ci/is-runner -a "$USER" != "homer" ]; then
-    if [ -z "$JOB_NAME" ]; then
-      export JOB_NAME="$2"
-    fi
-    "$BKNIX_JOBS/homerdo-task.sh" all
-    return
-  fi
+  case "$RUN_MODE" in
+    isolate)
+      ## Create a container in image $RUN_BKNIX_HOMER_IMAGES/bknix-$BKPROF-$N.img
+      assert_common BKPROF
+      "$BKNIX_JOBS/homerdo-runjob.sh" all
+      return
+      ;;
+    autostart)
+      ## Start a nix-shell to get PHP+MySQL binaries. Then start the services.
+      assert_common BKPROF
+      ( cd "$BKIT" && nix-shell -A "$BKPROF" --run 'cd "$WORKSPACE" && run-bknix-job --autostart-services' )
+      return
+      ;;
+    autostart-services)
+      ## Use current PHP+MySQL binaries. Start the services.
+      assert_common BKPROF BKITBLD LOCO_PRJ BKIT
+      LOADED_BKPROF="$BKPROF"
+      (cd "$LOCO_PRJ" && loco clean)
+      (cd "$LOCO_PRJ" && loco start)
+      RUN_BKNIX_CLEANUP_FUNCS+=('run_bknix_stop_loco')
 
-  ## JOB_NAME can be complicated (when using matrix jobs). We want a trimmed-down name.
-  BKNIX_JOB_NAME="$2"
-  if [ -z "$BKNIX_JOB_NAME" ]; then
-    BKNIX_JOB_NAME="$JOB_NAME"
-  fi
-  case "$BKNIX_JOB_NAME" in
-    https:*)
-      BKNIX_JOB_URL="$BKNIX_JOB_NAME"
-      BKNIX_JOB_NAME=$(basename "$BKNIX_JOB_URL")
-      BKNIX_JOB_SCRIPT=$(run_bknix_mktemp)
-      RUN_BKNIX_CLEANUP_FILES+=("$BKNIX_JOB_SCRIPT")
-      run_bknix_download "$BKNIX_JOB_URL" "$BKNIX_JOB_SCRIPT"
+      ## Pin the version of run-job to match the version of run-bknix-job.
+      ## This resolves edge-case where we're writing/evaluating changes to {run-job,run-bknix-job}.
+      ## The local copy will take precedence over the (non-existent/older) copy on Github.
+      "$BKNIX_JOBS/../../bin/run-job"
+      ;;
+    active)
+      ## Use the pre-installed nix profile.
+      use-bknix "$BKPROF" -cr bash -c 'cd "$WORKSPACE" && run-job'
       ;;
     *)
-      BKNIX_JOB_NAME=$(echo "$BKNIX_JOB_NAME" | cut -d '/' -f 1)
-      BKNIX_JOB_SCRIPT="$BKNIX_JOBS/$BKNIX_JOB_NAME.job"
+      run_bknix_fatal "Unrecognized run mode ($RUN_MODE). Please specify one of: --isolate | --autostart | --autostart-services | --active"
       ;;
   esac
-  export BKNIX_JOB_SCRIPT BKNIX_JOB_NAME
-
-  if [ ! -e "$BKNIX_JOB_SCRIPT" ]; then
-    run_bknix_fatal "Missing or invalid JOB_NAME. No such file \"$BKNIX_JOB_SCRIPT\"."
-  fi
-
-  run_bknix_include "$BKNIX_JOBS/common.sh" "$BKNIX_JOB_SCRIPT"
 }
 
-## usage: run_bknix_download <url> <out-file>
-function run_bknix_download() {
-  if which wget >> /dev/null ; then
-    wget -O "$2" "$1"
-  elif which curl >> /dev/null ; then
-    curl -L -o "$2" "$1"
-  else
-    echo "error: failed to locate curl or wget"
-  fi
+function run_bknix_stop_loco() {
+  (cd "$LOCO_PRJ" && loco stop)
 }
 
 run_bknix_main "$@"
+
+} ## end: run-bknix-job

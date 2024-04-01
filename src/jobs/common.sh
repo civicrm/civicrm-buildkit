@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+{ ## start common.sh
 
 ## Common utilities to include in jobs...
 
@@ -48,6 +49,16 @@ function assert_common() {
           fatal "Failed to find BKITBLD for $BKPROF"
         fi
         ;;
+      BKPROF)
+        if [[ "$BKPROF" =~ ^php[0-9]{2}([mr][0-9]+)?$ ]]; then
+          true
+        else
+          case "$BKPROF" in
+            old|min|dfl|max|alt|edge) true ; ;;
+            *) fatal "Missing or invalid BKPROF" ; ;;
+          esac
+        fi
+        ;;
       BUILD_NUMBER)
         assert_regex '^[0-9]\+$' "$BUILD_NUMBER" "Missing or invalid BUILD_NUMBER"
         ;;
@@ -57,11 +68,24 @@ function assert_common() {
       BLDNAME)
         assert_regex '^[0-9a-z][0-9a-z\.-]*$' "$BLDTYPE" "Missing or invalid BLDTYPE"
         ;;
+      BKIT)
+        if [ ! -e "$BKIT/bin/civi-download-tools" ]; then
+          echo "BKIT must be a valid buildkit folder. (Missing flag-file bin/civi-download-tools.)"
+        fi
+        ;;
       CIVIVER)
         assert_regex '^[0-9a-z][0-9a-z\.-]*$' "$CIVIVER" "Missing or invalid CIVIVER"
         ;;
       EXECUTOR_NUMBER)
         assert_regex '^[0-9]\+$' "$EXECUTOR_NUMBER" "EXECUTOR_NUMBER must be a number. (If you are running manually, consider using --mock.)"
+        ;;
+      JOB_NAME)
+        if [ -z "$JOB_NAME" ]; then fatal "Missing JOB_NAME" ; fi
+        ;;
+      LOCO_PRJ)
+        if [ ! -e "$LOCO_PRJ/.loco" ]; then
+          fatal "LOCO_PRJ must be a valid project"
+        fi
         ;;
       PHPUNIT)
         assert_regex '^phpunit[0-9]*$' "$PHPUNIT" "PHPUNIT ($PHPUNIT) should identify a general version (such as phpunit8 or phpunit9)"
@@ -106,35 +130,36 @@ function assign_smarty() {
   export SMARTY3_ENABLE
 }
 
-## Load the BKPROF into the current shell
-function use_bknix() {
-  if [ -n "$LOADED_BKPROF" ]; then
-    assert_common BKITBLD
-    return
-  fi
-
-  if [ ! -z `which await-bknix` ]; then
-    await-bknix "$USER" "$BKPROF"
-  fi
-
-  case "$BKPROF" in old|min|max|alt|dfl|edge) eval $(use-bknix "$BKPROF") ;; esac
-  assert_common BKITBLD
-}
-
-function use_bknix_tmp() {
-  use_bknix
+function assert_bknix_durable() {
   case "$USER" in
     homer|runner-*)
-      (cd "$LOCO_PRJ" && loco clean)
-      (cd "$LOCO_PRJ" && loco start)
-      RUN_BKNIX_CLEANUP_FUNCS+=('_stop_loco')
+      echo >&2 "WARNING: This job is expected to run in a persistent environment. User $USER suggests it is temporary."
       ;;
-    ## else: This must be a traditional system that runs with system-services.
+  esac
+
+}
+
+function assert_bknix_temporary() {
+  case "$USER" in
+    homer|runner-*)
+      true
+      ;;
+    *)
+      echo >&2 "WARNING: This job is expected to run in a temporary environment. User $USER suggests it is persistent."
+      ;;
   esac
 }
 
-function _stop_loco() {
-  (cd "$LOCO_PRJ" && loco stop)
+## Setup a mock Jenkins environment
+function init_jenkins_mock() {
+  echo "Using mock Jenkins environment"
+  export EXECUTOR_NUMBER=0
+  export BUILD_NUMBER=123
+  export WORKSPACE="$HOME/tmp/mock-workspace"
+  if [ ! -d "$WORKSPACE" ]; then
+    mkdir -p "$WORKSPACE"
+  fi
+  cd "$WORKSPACE"
 }
 
 ## Setup the standard build folders within the workspace.
@@ -285,3 +310,5 @@ function assert_testable_version() {
   esac
 
 }
+
+} ## end common.sh

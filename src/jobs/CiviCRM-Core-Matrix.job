@@ -17,7 +17,7 @@ assert_common EXECUTOR_NUMBER WORKSPACE CIVIVER SUITES
 #################################################
 ## Main
 
-use_bknix_tmp
+assert_bknix_temporary
 
 BLDNAME="build-$EXECUTOR_NUMBER"
 

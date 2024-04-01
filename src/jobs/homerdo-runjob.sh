@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 {
-## This adapter allows `run-bknix-jobs` to isolate Jenkins jobs with `homerdo`.
+## This adapter allows `run-job` to isolate Jenkins jobs with `homerdo`.
 ## General flow:
 ##
-## - Jenkins connects via SSH. It passes a bunch of variables and calls `run-bknix-job`.
-## - `run-bknix-job` detects `homerdo` and asks `homerdo-task.sh all` to forward the job.
-## - `homerdo-task.sh request` captures the request-environment and stores it as a file.
-## - `homerdo-task.sh pick-image` loads or creates a home-image (eg `bknix-max-0.img`).
-## - `homerdo-task.sh setup` performs basic maintenance on `bknix-max-0.img` (eg `civi-download-tools`)
-## - `homerdo-task.sh exec` loads `bknix-max-0.img`, executes the test-job, and transfers
+## - Jenkins connects via SSH. It passes a bunch of variables and calls `run-job --homerdo`.
+## - `run-job --homerdo` asks `homerdo-runjob.sh all` to forward the job.
+## - `homerdo-runjob.sh request` captures the request-environment and stores it as a file.
+## - `homerdo-runjob.sh pick-image` loads or creates a home-image (eg `bknix-max-0.img`).
+## - `homerdo-runjob.sh setup` performs basic maintenance on `bknix-max-0.img` (eg `civi-download-tools`)
+## - `homerdo-runjob.sh exec` loads `bknix-max-0.img`, executes the test-job, and transfers
 ##   any new artifacts from `~homer/$WORKSPACE` to `~mainuser/$WORKSPACE`.
 
 #####################################################################
@@ -55,7 +55,7 @@ function on_shutdown() {
 #####################################################################
 ## TASK: Do the entire process!
 ## USER: (anyone)
-## EXAMPLE: `JOB_NAME=FooBar BKPROF=min homer-do-task.sh`
+## EXAMPLE: `JOB_NAME=FooBar BKPROF=min homer-do-runjob.sh`
 function do_all() {
   local imageDir="$HOME/images"
 
@@ -100,7 +100,7 @@ function do_all() {
 #####################################################################
 ## TASK: New Request
 ## USER: (anyone)
-## EXAMPLE: `homerdo-task.sh request > /tmp/request-1234.txt`
+## EXAMPLE: `homerdo-runjob.sh request > /tmp/request-1234.txt`
 ##
 ## Generate a request message. This will be relayed to other subtasks.
 
@@ -112,8 +112,8 @@ function do_request() {
 #####################################################################
 ## TASK: Pick image
 ## USER: (anyone)
-## USAGE: `homerdo-task.sh pick-image <REQUEST> <PID>`
-## EXAMPLE: `cd $IMGDIR && flock . homerdo-task.sh pick-image /tmp/request-1234.txt $$`
+## USAGE: `homerdo-runjob.sh pick-image <REQUEST> <PID>`
+## EXAMPLE: `cd $IMGDIR && flock . homerdo-runjob.sh pick-image /tmp/request-1234.txt $$`
 ##
 ## Choose which image-file to use as homer's $HOME.
 ## NOTE: For concurrent invocations, run this with `flock`.
@@ -184,7 +184,7 @@ function do_pick_image() {
 ## TASK: Setup Base Layer
 ## USER: "homer"
 ## HOME FILE MODE: "Base"
-## EXAMPLE: `homerdo-task.sh setup /tmp/request-1234.txt > /tmp/my-log.txt`
+## EXAMPLE: `homerdo-runjob.sh setup /tmp/request-1234.txt > /tmp/my-log.txt`
 ##
 ## Use this to download common tools or warm-up common caches. Anything you
 ## do during "setup" will may be re-used in future calls.
@@ -230,7 +230,7 @@ function do_setup() {
 ## TASK: Execute job
 ## USER: "homer"
 ## HOME FILE MODE: "Temp"
-## EXAMPLE: `homerdo-task.sh exec /tmp/request-1234.txt > /tmp/my-log.txt`
+## EXAMPLE: `homerdo-runjob.sh exec /tmp/request-1234.txt > /tmp/my-log.txt`
 ##
 ## Use this to do the heavy-lifting of job execution. You might create
 ## new sites, run PHPUnit, etc.
@@ -252,8 +252,7 @@ function do_exec() {
 
   cd "$BKIT"
   cat ".loco/worker-n.yml" | grep -v CIVI_TEST_MODE > ".loco/loco.yml"
-  local cmd=$(printf "run-bknix-job --loaded %q" "$BKPROF")
-  nix-shell -A "$BKPROF" --run "$cmd"
+  BKIT="$BKIT" run-bknix-job --autostart
 
   # echo "EXEC: Start post-run shell. Press Ctrl-D to finish post-run shell." && nix-shell -A "$BKPROF"
 }
@@ -271,7 +270,7 @@ function show_request_cmd() {
     echo "${prefix}  $LINE \\"
   done
   echo -n "$prefix  "
-  printf "run-bknix-job %q %q\n" "$BKPROF" "$JOB_NAME"
+  printf "run-job\n"
   echo
 }
 

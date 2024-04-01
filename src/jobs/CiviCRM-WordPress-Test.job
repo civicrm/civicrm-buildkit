@@ -13,4 +13,4 @@ SUITES='upgrade phpunit-e2e phpunit-wordpress'
 #SUITES='upgrade phpunit-e2e karma phpunit-wordpress'
 #SUITES='phpunit-wordpress'
 
-run_bknix_include "$BKNIX_JOBS/Generic-Test.job"
+run_job_include "$BKNIX_JOBS/Generic-Test.job"

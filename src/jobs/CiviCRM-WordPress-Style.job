@@ -18,4 +18,4 @@ esac
 #################################################
 
 CIVI_REPO=civicrm-wordpress
-run_bknix_include "$BKNIX_JOBS/Generic-Style.job"
+run_job_include "$BKNIX_JOBS/Generic-Style.job"
