@@ -28,7 +28,7 @@ assert_regex '^\(disable\|enable\)$' "$ORNERY" "Invalid ORNERY flag"
 #################################################
 ## Bootstrap
 
-use_bknix_tmp
+# use_bknix_tmp
 
 #################################################
 ## Local variables

@@ -18,7 +18,7 @@ assert_common EXECUTOR_NUMBER WORKSPACE
 #################################################
 ## Bootstrap
 
-use_bknix_tmp
+# use_bknix_tmp
 
 #################################################
 ## Report details about the test environment

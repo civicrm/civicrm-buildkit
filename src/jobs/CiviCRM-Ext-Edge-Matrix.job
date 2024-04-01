@@ -20,7 +20,7 @@ assert_regex '^[0-9a-z\.-]\+$' "$BUILDTYPE" "Missing or invalid BUILDTYPE"
 #################################################
 ## Main
 
-use_bknix_tmp
+# use_bknix_tmp
 
 # Set ENV for the TMPDIR so that mosaico test and mosaico build don't clobber each other
 npm config set tmp "/home/$USER/npm-tmp/"

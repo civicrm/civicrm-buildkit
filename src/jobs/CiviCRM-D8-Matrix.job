@@ -31,7 +31,7 @@ fi
 #################################################
 ## Main
 
-use_bknix_tmp
+# use_bknix_tmp
 
 BLDNAME="build-$EXECUTOR_NUMBER"
 

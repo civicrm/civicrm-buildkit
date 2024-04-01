@@ -18,7 +18,7 @@ assert_common EXECUTOR_NUMBER WORKSPACE SUITES ghprbPullId ghprbTargetBranch
 
 ## TODO: rethink this env-var. for the moment, setting it duplicates the behavior of "use_bknix_tmp"
 export CIVI_TEST_MODE=
-use_bknix_tmp
+# use_bknix_tmp
 
 civi-test-pr --no-interaction \
   --patch="https://github.com/civicrm/civicrm-core/pull/${ghprbPullId}" \

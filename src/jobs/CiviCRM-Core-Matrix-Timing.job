@@ -18,7 +18,7 @@ assert_common EXECUTOR_NUMBER WORKSPACE CIVIVER SUITES TIME_FUNC
 #################################################
 ## Main
 
-use_bknix_tmp
+# use_bknix_tmp
 
 BLDNAME="build-$EXECUTOR_NUMBER"
 echo "TIME_FUNC=$TIME_FUNC"

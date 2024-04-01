@@ -30,7 +30,7 @@ assert_regex '^\(src\|phar\)$' "$CIVIX_TYPE" "Invalid CIVIX_TYPE"
 #################################################
 ## Main
 
-use_bknix_tmp
+# use_bknix_tmp
 
 ################################################
 ## Setup environment
