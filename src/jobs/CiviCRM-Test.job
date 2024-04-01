@@ -3,7 +3,7 @@ set -e
 
 ## Example usage:
 ##
-## $ env BLDTYPE=drupal-clean CIVIVER=master SUITES=phpunit-e2e run-bknix-job --mock max CiviCRM-Test
+## $ env BLDTYPE=drupal-clean CIVIVER=master SUITE=phpunit-e2e run-bknix-job --mock max CiviCRM-Test
 
 #################################################
 ## Environment variables
@@ -12,9 +12,9 @@ set -e
 ## WORKSPACE: The path where Jenkins stores data for this job
 ## BLDTYPE: The type of civibuild site to create (e.g. `drupal-clean` or `wp-demo`)
 ## CIVIVER: The version of CiviCRM to install, expressed as a branch or tag (e.g. `master`, `5.59`, `5.57.0`)
-## SUITES: Space-limited list of test-suites (e.g. `phpunit-e2e phpunit-civi`)
+## SUITE: Space-limited list of test-suites (e.g. `phpunit-e2e phpunit-civi`)
 ## ORNERY: Either "enable" or "disable". If omitted, implies "disable"
-assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE CIVIVER SUITES
+assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE CIVIVER SUITE
 
 ## CIVICOMMIT: Optional. Override the the `civicrm-core` version with specific commit. Can help with debugging/manual bisection.
 assert_regex '^[0-9a-z\.-]*$' "$CIVICOMMIT" "Missing or invalid CIVICOMMIT"
@@ -60,7 +60,7 @@ $GUARD civibuild download "$BLDNAME" --type "$BLDTYPE" --civi-ver "$CIVIVER" $PA
 $GUARD civibuild install "$BLDNAME"
 
 if [ "$ORNERY" = "disable" ]; then
-  $GUARD civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" --exclude-group ornery $SUITES
+  $GUARD civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" --exclude-group ornery $SUITE
 else
-  $GUARD civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" $SUITES
+  $GUARD civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" $SUITE
 fi
