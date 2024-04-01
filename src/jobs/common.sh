@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+{ ## start common.sh
 
 ## Common utilities to include in jobs...
 
@@ -48,6 +49,16 @@ function assert_common() {
           fatal "Failed to find BKITBLD for $BKPROF"
         fi
         ;;
+      BKPROF)
+        if [[ "$BKPROF" =~ ^php[0-9]{2}([mr][0-9]+)?$ ]]; then
+          true
+        else
+          case "$BKPROF" in
+            old|min|dfl|max|alt|edge) true ; ;;
+            *) fatal "Missing or invalid BKPROF" ; ;;
+          esac
+        fi
+        ;;
       BUILD_NUMBER)
         assert_regex '^[0-9]\+$' "$BUILD_NUMBER" "Missing or invalid BUILD_NUMBER"
         ;;
@@ -62,6 +73,9 @@ function assert_common() {
         ;;
       EXECUTOR_NUMBER)
         assert_regex '^[0-9]\+$' "$EXECUTOR_NUMBER" "EXECUTOR_NUMBER must be a number. (If you are running manually, consider using --mock.)"
+        ;;
+      JOB_NAME)
+        if [ -z "$JOB_NAME" ]; then fatal "Missing JOB_NAME" ; fi
         ;;
       PHPUNIT)
         assert_regex '^phpunit[0-9]*$' "$PHPUNIT" "PHPUNIT ($PHPUNIT) should identify a general version (such as phpunit8 or phpunit9)"
@@ -285,3 +299,5 @@ function assert_testable_version() {
   esac
 
 }
+
+} ## end common.sh
