@@ -8,4 +8,4 @@ set -e
 #################################################
 
 CIVI_REPO=civicrm-drupal
-run_bknix_include "$BKNIX_JOBS/Generic-Style.job"
+run_job_include "$BKNIX_JOBS/Generic-Style.job"
