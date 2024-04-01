@@ -27,7 +27,7 @@ assert_testable_version "$CIVIVER"
 #################################################
 ## Main
 
-# use_bknix_tmp
+assert_bknix_temporary
 
 BLDNAME="build-$EXECUTOR_NUMBER"
 BLDDIR="$BKITBLD/$BLDNAME"

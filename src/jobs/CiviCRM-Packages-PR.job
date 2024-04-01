@@ -25,7 +25,7 @@ assert_testable_version "$CIVIVER"
 #################################################
 ## Main
 
-use_bknix
+assert_bknix_durable
 
 BLDNAME="pkg-$ghprbPullId-$(php -r 'echo base_convert(time()%(180*24*60*60), 10, 36);')"
 BLDDIR="$BKITBLD/$BLDNAME"

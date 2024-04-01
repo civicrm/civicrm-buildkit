@@ -55,7 +55,7 @@ BLDNAME="build-$EXECUTOR_NUMBER"
 
 ## TODO: rethink this env-var. for the moment, setting it duplicates the behavior of "use_bknix_tmp"
 export CIVI_TEST_MODE=
-# use_bknix_tmp
+assert_bknix_temporary
 
 #################################################
 ## Run a command, but hide any sensitive environmet variables

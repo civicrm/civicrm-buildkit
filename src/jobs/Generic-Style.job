@@ -23,7 +23,7 @@ assert_testable_version "$CIVIVER"
 #################################################
 ## Main
 
-# use_bknix_tmp
+assert_bknix_temporary
 
 ## Build definition
 assert_common BKITBLD EXECUTOR_NUMBER

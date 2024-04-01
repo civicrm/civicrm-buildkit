@@ -35,7 +35,7 @@ esac
 #################################################
 ## Main
 
-use_bknix
+assert_bknix_durable
 
 BLDNAME="wp-$ghprbPullId-$(php -r 'echo base_convert(time()%(180*24*60*60), 10, 36);')"
 BLDDIR="$BKITBLD/$BLDNAME"

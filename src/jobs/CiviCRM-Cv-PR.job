@@ -27,7 +27,7 @@ assert_regex "^\(cv-std\|cv-installer\|cv-null\)$" "$SUITE"
 #################################################
 ## Main
 
-# use_bknix_tmp
+assert_bknix_temporary
 
 ################################################
 ## Skip some configurations

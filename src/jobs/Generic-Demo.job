@@ -23,7 +23,7 @@ assert_testable_version "$CIVIVER"
 #################################################
 ## Main
 
-use_bknix
+assert_bknix_durable
 
 BLDDIR="$BKITBLD/$BLDNAME"
 

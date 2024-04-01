@@ -130,35 +130,24 @@ function assign_smarty() {
   export SMARTY3_ENABLE
 }
 
-## Load the BKPROF into the current shell
-function use_bknix() {
-  if [ -n "$LOADED_BKPROF" ]; then
-    assert_common BKITBLD
-    return
-  fi
-
-  if [ ! -z `which await-bknix` ]; then
-    await-bknix "$USER" "$BKPROF"
-  fi
-
-  case "$BKPROF" in old|min|max|alt|dfl|edge) eval $(use-bknix "$BKPROF") ;; esac
-  assert_common BKITBLD
-}
-
-function use_bknix_tmp() {
-  use_bknix
+function assert_bknix_durable() {
   case "$USER" in
     homer|runner-*)
-      (cd "$LOCO_PRJ" && loco clean)
-      (cd "$LOCO_PRJ" && loco start)
-      RUN_BKNIX_CLEANUP_FUNCS+=('_stop_loco')
+      echo >&2 "WARNING: This job is expected to run in a persistent environment. User $USER suggests it is temporary."
       ;;
-    ## else: This must be a traditional system that runs with system-services.
   esac
+
 }
 
-function _stop_loco() {
-  (cd "$LOCO_PRJ" && loco stop)
+function assert_bknix_temporary() {
+  case "$USER" in
+    homer|runner-*)
+      true
+      ;;
+    *)
+      echo >&2 "WARNING: This job is expected to run in a temporary environment. User $USER suggests it is persistent."
+      ;;
+  esac
 }
 
 ## Setup a mock Jenkins environment
