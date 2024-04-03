@@ -36,13 +36,6 @@ assert_bknix_temporary
 ## Setup environment
 BLDNAME="build-$EXECUTOR_NUMBER"
 export TIME_FUNC="linear:500"
-export CIVIX_WORKSPACE
-case "$BLDTYPE" in
-  drupal-clean) CIVIX_WORKSPACE="$BKITBLD/$BLDNAME/web/sites/all/modules/civicrm/ext/civixtest" ; ;;
-  drupal-demo) CIVIX_WORKSPACE="$BKITBLD/$BLDNAME/web/sites/all/modules/civicrm/ext/civixtest" ; ;;
-  wp-demo) CIVIX_WORKSPACE="$BKITBLD/$BLDNAME/web/wp-content/plugins/civicrm/civicrm/ext/civixtest" ; ;;
-  *) echo "Unrecognized BLDTYPE=$BLDTYPE" ; exit 1 ; ;;
-esac
 
 ## Reset (cleanup after previous tests)
 clean_legacy_workspace "$WORKSPACE/junit" "$WORKSPACE/civibuild-html" "$WORKSPACE/last-scan.json" "$WORKSPACE/new-scan.json"
@@ -78,6 +71,15 @@ civibuild show "$BLDNAME" \
   --new-scan "$WORKSPACE_BUILD/new-scan.json"
 cp "$WORKSPACE_BUILD/new-scan.json" "$WORKSPACE_BUILD/last-scan.json"
 
+## Examine build
+pushd "$BKITBLD/$BLDNAME"
+  echo "Check for path"
+  CIVIX_WORKSPACE=$(cv path -d '[civicrm.root]/ext/civixtest')
+  export CIVIX_WORKSPACE
+popd
+
+echo ; echo; echo; echo "CIVIX_WORKSPACE=$CIVIX_WORKSPACE" ; echo; echo; echo
+
 ## Setup civix and run tests
 mkdir "$BKITBLD/$BLDNAME/src"
 git clone "https://github.com/totten/civix" "$BKITBLD/$BLDNAME/src/civix"
@@ -89,7 +91,7 @@ pushd "$BKITBLD/$BLDNAME/src/civix"
 popd
 pushd "$BKITBLD/$BLDNAME/src/civix"
   composer install
-  for "suite" in "$SUITE" ; do
+  for suite in "$SUITE" ; do
     case "$suite" in
       all)
         ./scripts/make-snapshots.sh --"$CIVIX_TYPE" --version HEAD --test
