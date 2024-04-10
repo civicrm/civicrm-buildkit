@@ -26,7 +26,7 @@ CIVI_SETTINGS="${CMS_ROOT}/civicrm.settings.php"
 CIVI_FILES="${CMS_ROOT}/files/civicrm"
 CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
 CIVI_UF="Backdrop"
-civicrm_install
+civicrm_install_transitional
 
 ###############################################################################
 ## Extra configuration
