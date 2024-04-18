@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+set -e
+
+## Example usage:
+##
+## $ env BLDTYPE=drupal-clean CIVIVER=master run-job --mock CiviCRM-Demo
+## $ env BLDTYPE=drupal-clean CIVIVER=master PATCH="https://github.com/civicrm/civicrm-packages/pull/387" run-job --mock CiviCRM-Demo
+
+#################################################
+## Environment variables
+
+GUARD=
+
+## EXECUTOR_NUMBER: The number of this concurrent process
+## WORKSPACE: The path where Jenkins stores data for this job
+## BLDTYPE: The type of civibuild site to create (e.g. `drupal-clean` or `wp-demo`)
+## CIVIVER: The version of CiviCRM to install, expressed as a branch or tag (e.g. `master`, `5.59`, `5.57.0`)
+assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE CIVIVER
+
+## PATCH: Optional. URL of a pending pull-request in any `civicrm-*` repo (e.g. `https://github.com/civicrm/civicrm-packages/pull/1234`)
+if [ -n "$PATCH" ]; then assert_common PATCH ; fi
+
+assert_testable_version "$CIVIVER"
+
+## Try to make a site-name that corresponds to the pull-request (PATCH; if given)
+case "$PATCH" in
+  https://github.com/civicrm/civicrm-backdrop/pull/*)
+    ghprbPullId=$(echo "$PATCH" | cut -f7 -d/ )
+    BLDNAME="bd-$ghprbPullId-$(php -r 'echo base_convert(time()%(180*24*60*60), 10, 36);')"
+    ;;
+
+  https://github.com/civicrm/civicrm-drupal/pull/*)
+    ghprbPullId=$(echo "$PATCH" | cut -f7 -d/ )
+    BLDNAME="d7-$ghprbPullId-$(php -r 'echo base_convert(time()%(180*24*60*60), 10, 36);')"
+    ;;
+
+  https://github.com/civicrm/civicrm-core/pull/*)
+    ghprbPullId=$(echo "$PATCH" | cut -f7 -d/ )
+    BLDNAME="core-$ghprbPullId-$(php -r 'echo base_convert(time()%(180*24*60*60), 10, 36);')"
+    ;;
+
+  https://github.com/civicrm/civicrm-packages/pull/*)
+    ghprbPullId=$(echo "$PATCH" | cut -f7 -d/ )
+    BLDNAME="pkgs-$ghprbPullId-$(php -r 'echo base_convert(time()%(180*24*60*60), 10, 36);')"
+    ;;
+
+  https://github.com/civicrm/civicrm-wordpress/pull*)
+    ghprbPullId=$(echo "$PATCH" | cut -f7 -d/ )
+    BLDNAME="wp-$ghprbPullId-$(php -r 'echo base_convert(time()%(180*24*60*60), 10, 36);')"
+    ;;
+
+  *)
+    ghprbPullId=
+    BLDNAME="demo-$BUILD_NUMBER-$(php -r 'echo base_convert(time()%(180*24*60*60), 10, 36);')"
+    ;;
+esac
+
+assert_common BLDNAME
+
+#################################################
+## Main
+
+assert_bknix_durable
+
+BLDDIR="$BKITBLD/$BLDNAME"
+
+## Cleanup left-overs from previous test-runs
+clean_legacy_workspace "$WORKSPACE/junit" "$WORKSPACE/civibuild-html" "$WORKSPACE/checkstyle"
+init_std_workspace
+if [ -d "$BKITBLD/$BLDNAME" ]; then
+  echo y | civibuild destroy "$BLDNAME"
+fi
+
+## Report details about the test environment
+$GUARD civibuild env-info
+
+## Download dependencies, apply patches, and perform fresh DB installation
+[ -n "$PATCH" ] && PATCHARGS="--patch $PATCH" || PATCHARGS=""
+$GUARD civibuild download "$BLDNAME" --type "$BLDTYPE" --civi-ver "$CIVIVER" $PATCHARGS
+
+## No obvious problems blocking a build...
+$GUARD civibuild install "$BLDNAME"
+
+exit $?

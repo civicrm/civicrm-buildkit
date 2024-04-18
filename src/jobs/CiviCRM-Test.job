@@ -3,7 +3,8 @@ set -e
 
 ## Example usage:
 ##
-## $ env BLDTYPE=drupal-clean CIVIVER=master SUITE=phpunit-e2e run-bknix-job --mock max CiviCRM-Test
+## $ env BLDTYPE=drupal-clean CIVIVER=master SUITE=phpunit-e2e run-job --mock CiviCRM-Test
+## $ env BLDTYPE=drupal-clean CIVIVER=master SUITE=phpunit-e2e PATCH="https://github.com/civicrm/civicrm-packages/pull/387" run-job --mock CiviCRM-Test
 
 #################################################
 ## Environment variables
@@ -20,7 +21,7 @@ assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE CIVIVER SUITE
 assert_regex '^[0-9a-z\.-]*$' "$CIVICOMMIT" "Missing or invalid CIVICOMMIT"
 
 ## PATCH: Optional. URL of a pending pull-request in any `civicrm-*` repo (e.g. `https://github.com/civicrm/civicrm-packages/pull/1234`)
-assert_regex '^\(\|https://github.com/civicrm/civicrm-[a-z]*/pull/[0-9]\+/*\)$' "$PATCH" "Invalid PATCH"
+if [ -n "$PATCH" ]; then assert_common PATCH ; fi
 
 ORNERY=${ORNERY:-disable}
 assert_regex '^\(disable\|enable\)$' "$ORNERY" "Invalid ORNERY flag"
@@ -47,7 +48,7 @@ export TIME_FUNC="linear:500"
 ## Report details about the test environment
 set -x
 
-civibuild env-info
+$GUARD civibuild env-info
 
 ## Reset (cleanup after previous tests)
 init_std_workspace

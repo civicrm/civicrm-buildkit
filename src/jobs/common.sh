@@ -87,6 +87,9 @@ function assert_common() {
           fatal "LOCO_PRJ must be a valid project"
         fi
         ;;
+      PATCH)
+        assert_regex '^https://github.com/civicrm/civicrm-[a-z]*/pull/[0-9]\+/*' "$PATCH" "Invalid or missing PATCH"
+        ;;
       PHPUNIT)
         assert_regex '^phpunit[0-9]*$' "$PHPUNIT" "PHPUNIT ($PHPUNIT) should identify a general version (such as phpunit8 or phpunit9)"
         ;;
