@@ -55,6 +55,19 @@ case "$PATCH" in
     ;;
 esac
 
+## Adding UF suffix will reduce conflicts in cases where you make 5 diff demos for the same PR.
+## That's not something we do systemically, though. And if you're really doing that, then maybe
+## revisit the naming-convention and purge-mechanism.
+case "$BLDTYPE" in
+  drupal-*) true ;;
+  drupal9-*) BLDNAME="${BLDNAME}d9" ;;
+  drupal10-*) BLDNAME="${BLDNAME}d10" ;;
+  backdrop-*) BLDNAME="${BLDNAME}bd" ;;
+  joomla-*) BLDNAME="${BLDNAME}j" ;;
+  standalone-*) BLDNAME="${BLDNAME}sa" ;;
+  wp-*) BLDNAME="${BLDNAME}wp" ;;
+esac
+
 assert_common BLDNAME
 
 #################################################
