@@ -16,6 +16,7 @@ pushd "$WEB_ROOT"
   git_cache_clone civicrm/civicrm-packages                         -b "$CIVI_VERSION" web/core/packages
 popd
 
+civibuild_apply_user_extras
 pushd "$WEB_ROOT/web/core"
   composer install
 popd
