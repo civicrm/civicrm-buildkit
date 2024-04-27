@@ -608,7 +608,8 @@ function civicrm_download_composer_d8() {
   composer require "${EXTRA_COMPOSER[@]}" civicrm/civicrm-{core,packages,drupal-8}:"$CIVI_VERSION_COMP" --prefer-source
   [ -n "$EXTRA_PATCH" ] && git scan am -N "${EXTRA_PATCH[@]}"
 
-  local civicrm_version_php=$(find -name civicrm-version.php)
+  local civicrm_version_php=$(find -name civicrm-version.php | head -n1)
+  ## "head -n1": If you install drupal{9,10}-dev, then there may be mutiple ways to get civicrm-version.php
   if [ -f "$civicrm_version_php" ]; then
     local civi_root=$(dirname "$civicrm_version_php")
     #extract-url --cache-ttl 172800 vendor/civicrm/civicrm-core=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz ## Issue: Don't write directly into vendor tree
@@ -1769,5 +1770,46 @@ function cvutil_ed() {
   if grep -q "$matches" "$file"  ; then
     mv "$file" "$file".bak
     sed "$replacement" < "$file".bak > "$file"
+  fi
+}
+
+###############################################################################
+## Users may call civibuild with extra options like `--dl` and `--patch`.
+## Read those options and apply them to this build.
+##
+## By default, civibuild_apply_user_extras() is called automatically after running
+## `app/config/*/download.sh`. However, if your download script wants to specify
+## the exact moment to apply patches, then it may call this directly.
+function civibuild_apply_user_extras() {
+  cvutil_assertvars civibuild_apply_user_extras WEB_ROOT CACHE_DIR
+
+  git_cache_deref_remotes "$CACHE_DIR" "$WEB_ROOT"
+
+  if [ -n "$HAS_USER_EXTRAS" ]; then
+    echo "[civibuild_apply_user_extras] Already applied"
+    return
+  fi
+
+  HAS_USER_EXTRAS=1
+
+  if [ -n "$EXTRA_DLS" ]; then
+    pushd "$WEB_ROOT" >> /dev/null
+      if ! extract-url -v -d '|' "$EXTRA_DLS" ; then
+        echo "Failed to extract extra archives"
+        exit 94
+      fi
+    popd >> /dev/null
+  fi
+
+  if [ -n "$PATCHES" ]; then
+    echo "[civibuild_apply_user_extras] Applying..."
+    pushd "$WEB_ROOT" >> /dev/null
+      if ! git scan automerge --rebuild --url-split='|' "$PATCHES" --passthru='--ignore-whitespace' ; then
+        echo "Failed to apply patch(es)"
+        exit 95
+      fi
+    popd >> /dev/null
+  else
+    echo "[civibuild_apply_user_extras] No patches"
   fi
 }
