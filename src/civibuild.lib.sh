@@ -608,7 +608,8 @@ function civicrm_download_composer_d8() {
   composer require "${EXTRA_COMPOSER[@]}" civicrm/civicrm-{core,packages,drupal-8}:"$CIVI_VERSION_COMP" --prefer-source
   [ -n "$EXTRA_PATCH" ] && git scan am -N "${EXTRA_PATCH[@]}"
 
-  local civicrm_version_php=$(find -name civicrm-version.php)
+  local civicrm_version_php=$(find -name civicrm-version.php | head -n1)
+  ## "head -n1": If you install drupal{9,10}-dev, then there may be mutiple ways to get civicrm-version.php
   if [ -f "$civicrm_version_php" ]; then
     local civi_root=$(dirname "$civicrm_version_php")
     #extract-url --cache-ttl 172800 vendor/civicrm/civicrm-core=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz ## Issue: Don't write directly into vendor tree
