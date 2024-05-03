@@ -27,6 +27,8 @@ pushd "$WEB_ROOT/web"
     git_cache_clone "civicrm/org.civicrm.contactlayout"                   -b "master"             civicrm/tools/extensions/org.civicrm.contactlayout
     extract-url --cache-ttl 172800 civicrm=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
     ## or https://raw.github.com/civicrm/l10n/master/po/fr_CA/civicrm.mo => civicrm/l10n/fr_CA/LC_MESSAGES/
+
+    civibuild_apply_user_extras
     pushd civicrm
       composer install
     popd

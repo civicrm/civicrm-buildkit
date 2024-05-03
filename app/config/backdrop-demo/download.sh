@@ -4,7 +4,7 @@
 
 ###############################################################################
 
-[ -z "$CMS_VERSION" ] && CMS_VERSION="1.x"
+[ -z "$CMS_VERSION" ] && CMS_VERSION="1.27.x" ## FIXME: After 1.28-dev stabilizes, we can switch back to 1.x.
 [ -z "$CIVI_VERSION" ] && CIVI_VERSION=master
 [ -z "$VOL_VERSION" ] && VOL_VERSION='master'
 [ -z "$NG_PRFL_VERSION" ] && NG_PRFL_VERSION='master'

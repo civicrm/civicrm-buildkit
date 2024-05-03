@@ -67,26 +67,11 @@ function civibuild_app_download() {
 
   if [ ! -d "$WEB_ROOT" ]; then
     IS_INSTALLED=
+    HAS_USER_EXTRAS=
     pushd "$PRJDIR" > /dev/null
       default_cache_setup
       civibuild_app_run download
-      git_cache_deref_remotes "$CACHE_DIR" "$WEB_ROOT"
-      if [ -n "$EXTRA_DLS" ]; then
-        pushd "$WEB_ROOT" >> /dev/null
-          if ! extract-url -v -d '|' "$EXTRA_DLS" ; then
-            echo "Failed to extract extra archives"
-            exit 94
-          fi
-        popd >> /dev/null
-      fi
-      if [ -n "$PATCHES" ]; then
-        pushd "$WEB_ROOT" >> /dev/null
-          if ! git scan automerge --rebuild --url-split='|' "$PATCHES" --passthru='--ignore-whitespace' ; then
-            echo "Failed to apply patch(es)"
-            exit 95
-          fi
-        popd >> /dev/null
-      fi
+      civibuild_apply_user_extras
     popd > /dev/null
     if [ ! -d "$WEB_ROOT" ]; then
       echo "Download failed to create directory"
