@@ -20,6 +20,10 @@ CIVI_TEMPLATEC="${WEB_ROOT}/data/templates_c"
 GENCODE_CONFIG_TEMPLATE="${CMS_ROOT}/civicrm.config.php.standalone"
 
 pushd "$CIVI_CORE"
+  # If you've switched branches and triggered `reinstall`, then you need to refresh composer deps/autoloader before installing
+  # This probably adds ~1 second on new builds, but it can save umpteen minutes of confusion during triage/debugging.
+  composer install
+
   ./tools/standalone/bin/scaffold "$WEB_ROOT"
   ## This may technically be a bit redundant with 'composer install' for new builds.
   ## But for long-lived sites that have rebuilds, it's handy.
