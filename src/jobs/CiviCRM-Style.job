@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+set -e
+
+## Example usage:
+##
+## $ env CIVIVER=master PATCH="https://github.com/civicrm/civicrm-drupal/pull/679" run-job --mock CiviCRM-Style
+## $ env CIVIVER=master PATCH="https://github.com/civicrm/civicrm-core/pull/30136" run-job --mock CiviCRM-Style
+
+#################################################
+## Environment variables
+
+## EXECUTOR_NUMBER: The number of this concurrent process
+## WORKSPACE: The path where Jenkins stores data for this job
+## BLDTYPE: The type of civibuild site to create (e.g. `drupal-clean` or `wp-demo`)
+## CIVIVER: The version of CiviCRM to install, expressed as a branch or tag (e.g. `master`, `5.59`, `5.57.0`)
+## PATCH: URL of a pending pull-request in any `civicrm-*` repo (e.g. `https://github.com/civicrm/civicrm-packages/pull/1234`)
+assert_common EXECUTOR_NUMBER WORKSPACE CIVIVER PATCH
+
+#################################################
+## Bootstrap
+
+assert_bknix_temporary
+
+#################################################
+## Local variables
+GUARD=
+
+BLDNAME="build-$EXECUTOR_NUMBER"
+BLDDIR="$BKITBLD/$BLDNAME"
+
+case "$PATCH" in
+  'https://github.com/civicrm/civicrm-core/pull/'*)       ghprbTargetBranch="$CIVIVER" ; ;;
+  'https://github.com/civicrm/civicrm-backdrop/pull/'*)   ghprbTargetBranch="1.x-$CIVIVER" ; ;;
+  'https://github.com/civicrm/civicrm-drupal/pull/'*)     ghprbTargetBranch="7.x-$CIVIVER" ; ;;
+  'https://github.com/civicrm/civicrm-drupal-8/pull/'*)   ghprbTargetBranch="$CIVIVER" ; ;;
+  'https://github.com/civicrm/civicrm-wordpress/pull/'*)  ghprbTargetBranch="$CIVIVER" ; ;;
+  *) echo "Style is not checked on this repository" ; exit 0 ; ;;
+esac
+ghprbPullId=$(echo "$PATCH" | cut -d/ -f 7)
+CIVI_REPO=$(echo "$PATCH" | cut -d/ -f 5)
+assert_common CIVI_REPO ghprbPullId ghprbTargetBranch
+
+#################################################
+## Report details about the test environment
+set -x
+
+echo "TODO: check ghprbTargetBranch=($ghprbTargetBranch) ghprbPullId=($ghprbPullId)"
+
+## Not needed now - b/c we're gonna show in the test matrix with BKPROF=phpXXmXX
+# $GUARD civibuild env-info
+
+## Reset (cleanup after previous tests)
+init_std_workspace
+if [ -d "$BKITBLD/$BLDNAME" ]; then
+  echo y | civibuild destroy "$BLDNAME"
+fi
+
+## Download dependencies, apply patches
+civibuild download "$BLDNAME" --type "empty"
+cloneCmd=$(printf 'git_cache_clone civicrm/%q -b %q src' "$CIVI_REPO" "$ghprbTargetBranch")
+civibuild run "$BLDNAME" --eval "$cloneCmd"
+civibuild run "$BLDNAME" --eval 'git_cache_deref_remotes "$CACHE_DIR" "$WEB_ROOT"'
+
+pushd "$BLDDIR/web/src"
+  git scan am -N "https://github.com/civicrm/$CIVI_REPO/pull/${ghprbPullId}"
+  xcivilint "origin/$ghprbTargetBranch" "$CIVI_REPO""#""${ghprbPullId}"
+popd
