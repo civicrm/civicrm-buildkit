@@ -14,6 +14,9 @@ pushd "$WEB_ROOT"
 
   git_cache_clone civicrm/civicrm-core                             -b "$CIVI_VERSION" web/core
   git_cache_clone civicrm/civicrm-packages                         -b "$CIVI_VERSION" web/core/packages
+
+  extract-url --cache-ttl 172800 web/core=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
+  ## or https://raw.github.com/civicrm/l10n/master/po/fr_CA/civicrm.mo => civicrm/l10n/fr_CA/LC_MESSAGES/
 popd
 
 civibuild_apply_user_extras
