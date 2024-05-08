@@ -32,6 +32,7 @@ environment:
  - MYSQLD_PORT=$(portnum "$BASE_PORT" "$EXECUTOR_NUMBER" 1)
  - PHPFPM_PORT=$(portnum "$BASE_PORT" "$EXECUTOR_NUMBER" 2)
  - REDIS_PORT=$(portnum "$BASE_PORT" "$EXECUTOR_NUMBER" 5)
+ - CHROME_PORT=$(portnum "$BASE_PORT" "$EXECUTOR_NUMBER" 7)
 
  ## XDEBUG_*: Enable or disable main XDebug options
  - XDEBUG_MODE=off
@@ -60,9 +61,10 @@ environment:
  - NODE_PATH=$BKIT/node_modules:$NODE_PATH
  - PATH=$BKIT/bin:$BKIT/node_modules/.bin:$LOCO_PRJ/.loco/bin:$PATH
  - CIVICRM_L10N_SYMLINK=1
+ - CHROME_HOST=${LOCALHOST}
 
 default_environment:
- - CHROME_BIN=$(which "chromium")
+ - CHROME_BIN=$(find-chrome)
 
 #### Functional service definitions
 services:
@@ -115,6 +117,9 @@ services:
       - 'mysql_tzinfo_to_sql "$TZDIR" | mysql mysql'
     message: 'Buildkit (<comment>$BKIT</comment>) is configured to use these services. It produces builds in "<comment>$HTTPD_VDROOT</comment>".'
 
+  chrome-headless:
+    run: 'loco-pid-file "$LOCO_SVC_VAR/chrome-headless.pid" -- "$CHROME_BIN" --disable-gpu --headless --remote-debugging-address="$CHROME_HOST" --remote-debugging-port="$CHROME_PORT"'
+    pid_file : '$LOCO_SVC_VAR/chrome-headless.pid'
 
 ## Configure the loco=>systemd export
 export:
