@@ -620,6 +620,33 @@ function civicrm_download_composer_d8() {
 }
 
 ###############################################################################
+## Setup CiviCRM l10n data folder
+##
+## usage: civicrm_l10n_setup [<TARGET_DIR>]
+## example: civicrm_l10n_setup web/sites/all/modules/civicrm
+##
+## Perform some mix of these tasks:
+## - Warmup relevant caches
+## - If "TARGET_DIR" is given, then make an l10n folder.
+##   (If CIVICRM_L10N_SYMLINK is enabled, then it's actually a symlink).
+function civicrm_l10n_setup() {
+  local target="$1"
+  if [ -n "$CIVICRM_L10N_SYMLINK" ]; then
+    civicrm-l10n-folder "$CACHE_DIR/civicrm/l10n"
+  fi
+
+  if [ -n "$target" ]; then
+    if [ -n "$CIVICRM_L10N_SYMLINK" ]; then
+      ln -sf "$CACHE_DIR/civicrm/l10n" "$target/l10n"
+    else
+      ## From refactoring POV, "extract-url" is what we've been using, so it's safer to drop-in this change.
+      ## Cache is also more attuned to non-shared folders.
+      extract-url --cache-ttl 172800 "$target=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz"
+    fi
+  fi
+}
+
+###############################################################################
 ## Generate config files and setup database
 function civicrm_install() {
   cvutil_assertvars civicrm_install CIVI_CORE CIVI_FILES CIVI_TEMPLATEC
