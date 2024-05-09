@@ -25,8 +25,7 @@ pushd "$WEB_ROOT/web"
     git_cache_clone "TechToThePeople/civisualize"                         -b "master"             civicrm/tools/extensions/civisualize
     git_cache_clone "civicrm/org.civicrm.module.cividiscount"             -b "$DISC_VERSION"      civicrm/tools/extensions/cividiscount
     git_cache_clone "civicrm/org.civicrm.contactlayout"                   -b "master"             civicrm/tools/extensions/org.civicrm.contactlayout
-    extract-url --cache-ttl 172800 civicrm=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
-    ## or https://raw.github.com/civicrm/l10n/master/po/fr_CA/civicrm.mo => civicrm/l10n/fr_CA/LC_MESSAGES/
+    civicrm_l10n_setup civicrm
 
     civibuild_apply_user_extras
     pushd civicrm

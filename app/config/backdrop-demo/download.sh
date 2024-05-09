@@ -29,7 +29,7 @@ pushd "$WEB_ROOT/web/modules" >> /dev/null
   git_cache_clone civicrm/org.civicrm.module.cividiscount     -b "$DISC_VERSION"      civicrm/tools/extensions/cividiscount
   git_cache_clone civicrm/org.civicrm.contactlayout           -b "master"             civicrm/tools/extensions/org.civicrm.contactlayout
   api4_download_conditional civicrm                                           civicrm/ext/api4
-  extract-url --cache-ttl 172800 civicrm=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
+  civicrm_l10n_setup civicrm
   git_set_hooks civicrm-drupal      civicrm/backdrop   "../tools/scripts/git"
   git_set_hooks civicrm-core        civicrm            "tools/scripts/git"
   git_set_hooks civicrm-packages    civicrm/packages   "../tools/scripts/git"

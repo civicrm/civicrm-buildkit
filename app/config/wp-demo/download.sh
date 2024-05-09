@@ -32,9 +32,9 @@ pushd "$WEB_ROOT/web/wp-content/plugins" >> /dev/null
   git_cache_clone civicrm/org.civicrm.module.cividiscount          -b master          civicrm/civicrm/tools/extensions/cividiscount
   git_cache_clone civicrm/org.civicrm.contactlayout                -b master          civicrm/civicrm/tools/extensions/org.civicrm.contactlayout
 
-  cd civicrm
-  extract-url --cache-ttl 172800 civicrm=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz
-  cd -
+#  cd civicrm
+  civicrm_l10n_setup civicrm/civicrm
+#  cd -
 
   git_set_hooks civicrm-wordpress   civicrm                    "../civicrm/tools/scripts/git"
   git_set_hooks civicrm-core        civicrm/civicrm            "../tools/scripts/git"
