@@ -31,6 +31,8 @@ pushd "$WEB_ROOT" >> /dev/null
   composer config repositories.civicrm-packages '{"type": "path", "url": "./src/civicrm-packages", "options": { "symlink": false }}'
   ## The symlink:false helps when running the installation step. We should probably fix that...
 
+  civicrm_l10n_setup "src/civicrm-core"
+
   civibuild_apply_user_extras
   civicrm_download_composer_d8
 popd >> /dev/null
