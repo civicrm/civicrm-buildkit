@@ -612,8 +612,9 @@ function civicrm_download_composer_d8() {
   ## "head -n1": If you install drupal{9,10}-dev, then there may be mutiple ways to get civicrm-version.php
   if [ -f "$civicrm_version_php" ]; then
     local civi_root=$(dirname "$civicrm_version_php")
-    #extract-url --cache-ttl 172800 vendor/civicrm/civicrm-core=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz ## Issue: Don't write directly into vendor tree
-    extract-url --cache-ttl 172800 "$civi_root=http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz" ## Issue: Don't write directly into vendor tree
+    civicrm_l10n_setup "$civi_root"
+    ## FIXME: This goes under `vendor/` which can get reset. For something more persistent,
+    ## put it outside of 'vendor/' and update the installer to ensure that 'civicrm.settings.php' retains the alternate location.
   else
     cvutil_fatal "Cannot download l10n data - failed to locate civicrm-core"
   fi
