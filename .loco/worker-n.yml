@@ -59,6 +59,7 @@ environment:
  - MYSQL_HOME=$LOCO_VAR/mysql/conf
  - NODE_PATH=$BKIT/node_modules:$NODE_PATH
  - PATH=$BKIT/bin:$BKIT/node_modules/.bin:$LOCO_PRJ/.loco/bin:$PATH
+ - CIVICRM_L10N_SYMLINK=1
 
 default_environment:
  - CHROME_BIN=$(which "chromium")
