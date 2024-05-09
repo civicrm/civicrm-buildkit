@@ -572,6 +572,8 @@ function composer_allow_common_plugins() {
 ## and this allows one to avoid copy-pasting those fiddly bits.
 ##
 ## Be sure to "cd" into the root of the composer project, then call `civicrm_download_composer_d8`
+##
+## usage: civicrm_download_composer_d8 [<CIVICRM_ROOT>]
 function civicrm_download_composer_d8() {
   cvutil_assertvars civicrm_download_composer_d8 CIVI_VERSION CMS_VERSION
 
@@ -580,6 +582,7 @@ function civicrm_download_composer_d8() {
   composer config extra.compile-mode all
   composer config minimum-stability dev
 
+  local CIVI_ROOT="$1"
   local CIVI_VERSION_COMP=$(civicrm_composer_ver "$CIVI_VERSION")
   local EXTRA_COMPOSER=()
   local EXTRA_PATCH=()
@@ -608,16 +611,18 @@ function civicrm_download_composer_d8() {
   composer require "${EXTRA_COMPOSER[@]}" civicrm/civicrm-{core,packages,drupal-8}:"$CIVI_VERSION_COMP" --prefer-source
   [ -n "$EXTRA_PATCH" ] && git scan am -N "${EXTRA_PATCH[@]}"
 
-  local civicrm_version_php=$(find -name civicrm-version.php | head -n1)
-  ## "head -n1": If you install drupal{9,10}-dev, then there may be mutiple ways to get civicrm-version.php
-  if [ -f "$civicrm_version_php" ]; then
-    local civi_root=$(dirname "$civicrm_version_php")
-    civicrm_l10n_setup "$civi_root"
-    ## FIXME: This goes under `vendor/` which can get reset. For something more persistent,
-    ## put it outside of 'vendor/' and update the installer to ensure that 'civicrm.settings.php' retains the alternate location.
-  else
-    cvutil_fatal "Cannot download l10n data - failed to locate civicrm-core"
+  if [ -z "$CIVI_ROOT" ]; then
+    local civicrm_version_php=$(find -name civicrm-version.php | head -n1)
+    if [ -f "$civicrm_version_php" ]; then
+      CIVI_ROOT=$(dirname "$civicrm_version_php")
+    else
+      cvutil_fatal "Failed to locate civicrm-core"
+    fi
   fi
+
+  civicrm_l10n_setup "$CIVI_ROOT"
+  ## FIXME: This goes under `vendor/` which can get reset. For something more persistent,
+  ## put it outside of 'vendor/' and update the installer to ensure that 'civicrm.settings.php' retains the alternate location.
 }
 
 ###############################################################################
