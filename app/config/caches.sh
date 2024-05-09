@@ -13,3 +13,5 @@
 
 ## Setup cache by ID (per git_cache_map)
 #git_cache_setup_id civicrm/civicrm-core civicrm/civicrm-packages
+
+civicrm_l10n_setup

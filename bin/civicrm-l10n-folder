@@ -1,0 +1,119 @@
+#!/usr/bin/env php
+<?php
+
+define('TAR_FILE_TTL', 30 * 60);
+define('TAR_URL', 'http://download.civicrm.org/civicrm-l10n-core/archives/civicrm-l10n-daily.tar.gz');
+main($argv);
+
+function main(array $argv) {
+  if (!isset($argv[1])) {
+    $program = basename($argv[0]);
+    printf("Download/update the l10n folder (if the folder is new or stale)");
+    printf("usage: %s <L10N_FOLDER> [<TTL_SECONDS>]\n", $program);
+    printf("\n");
+    printf("example: %s web/core/civicrm/l10n 86400\n", $program);
+    return 1;
+  }
+
+  $finalDir = $argv[1];
+  $workDir = dirname($finalDir) . '/.work-' . basename($finalDir);
+  $ttl = $argv[2] ?? (3 * 24 * 60 * 60);
+
+  if (!is_dir($workDir)) {
+    mkdir($workDir, 0777, TRUE);
+  }
+  $fp = fopen("$workDir/lock", "w");
+  if (flock($fp, LOCK_EX)) {
+    try {
+      runUpdate($workDir, $finalDir, $ttl);
+    } finally {
+      flock($fp, LOCK_UN);
+      fclose($fp);
+    }
+  }
+  else {
+    echo "Folder is already being updated by another process. Skipping update.\n";
+  }
+}
+
+function runUpdate(string $workDir, string $finalDir, int $ttl) {
+  $lastUpdateFile = "$workDir/last-update";
+  $newDir = "$workDir/new";
+  $archiveDir = "$workDir/old";
+  $tarFile = "$workDir/new.tar.gz";
+
+  if (file_exists($finalDir) && !empty(glob("$finalDir/??_??"))) {
+    if (file_exists($lastUpdateFile) && (time() - filemtime($lastUpdateFile)) < $ttl) {
+      return;
+    }
+    if (!file_exists("$finalDir/.auto-update")) {
+      return;
+    }
+  }
+
+  deleteDirectory($newDir);
+  deleteDirectory($archiveDir);
+
+  if (!file_exists($tarFile) || time() - filemtime($tarFile) > TAR_FILE_TTL) {
+    echo "Downloading " . (TAR_URL) . "...\n";
+    downloadFile(TAR_URL, $tarFile);
+  }
+
+  echo "Extracting to temporary directory...\n";
+  $phar = new PharData($tarFile);
+  if (!$phar->extractTo($newDir)) {
+    unlink($tarFile); /* Might be corrupted. If you re-run, download again. */
+    throw new \RuntimeException("Failed to extract $tarFile to $newDir");
+  }
+
+  if (!file_exists("$newDir/l10n/fr_FR/LC_MESSAGES/civicrm.mo")) {
+    unlink($tarFile); /* Might be corrupted. If you re-run, download again. */
+    throw new \RuntimeException("Malformed archive. Content missing!");
+  }
+  touch("$newDir/l10n/.auto-update");
+
+  echo "Swapping folders to finalize update...\n";
+  mkdir($archiveDir);
+  if (file_exists($finalDir)) {
+    rename($finalDir, "$archiveDir/l10n");
+  }
+  if (rename("$newDir/l10n", $finalDir) && touch($lastUpdateFile)) {
+    touch($lastUpdateFile);
+    echo "Update successful.\n";
+  }
+  else {
+    throw new \RuntimeException("Failed to install new folder!");
+  }
+}
+
+function deleteDirectory($dir) {
+  if (!is_dir($dir)) {
+    return FALSE;
+  }
+
+  $files = array_diff(scandir($dir), array('.', '..'));
+  foreach ($files as $file) {
+    (is_dir("$dir/$file")) ? deleteDirectory("$dir/$file") : unlink("$dir/$file");
+  }
+  return rmdir($dir);
+}
+
+function downloadFile(string $url, string $outputFile): void {
+  $fp = fopen($outputFile, 'w');
+  if (!$fp) {
+    throw new \RuntimeException("Unable to write to file ($outputFile).");
+  }
+
+  $ch = curl_init($url);
+  curl_setopt($ch, CURLOPT_FILE, $fp);
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE); // Follow redirects if any
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // Disable SSL verification for simplicity
+  curl_setopt($ch, CURLOPT_TIMEOUT, 60); // Adjust timeout as needed
+  curl_exec($ch);
+  if (curl_errno($ch)) {
+    throw new \RuntimeException('Error: ' . curl_error($ch));
+  }
+
+  curl_close($ch);
+  fclose($fp);
+}
