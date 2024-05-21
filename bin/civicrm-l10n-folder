@@ -75,15 +75,23 @@ function runUpdate(string $workDir, string $finalDir, int $ttl) {
   echo "Swapping folders to finalize update...\n";
   mkdir($archiveDir);
   if (file_exists($finalDir)) {
-    rename($finalDir, "$archiveDir/l10n");
+    renameDirectory($finalDir, "$archiveDir/l10n");
   }
-  if (rename("$newDir/l10n", $finalDir) && touch($lastUpdateFile)) {
+  if (renameDirectory("$newDir/l10n", $finalDir) && touch($lastUpdateFile)) {
     touch($lastUpdateFile);
     echo "Update successful.\n";
   }
   else {
     throw new \RuntimeException("Failed to install new folder!");
   }
+}
+
+function renameDirectory($from, $to) {
+  system('mv ' . escapeshellarg($from) . ' ' . escapeshellarg($to), $exit);
+  if ($exit !== 0) {
+    throw new \RuntimeException("Failed to move \"$from\" to \"$to\"");
+  }
+  return TRUE;
 }
 
 function deleteDirectory($dir) {
