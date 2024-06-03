@@ -108,5 +108,11 @@
      "url": "https://github.com/wp-cli/wp-cli/releases/download/v2.10.0/wp-cli-2.10.0.phar",
      "sha256": "4c6a93cecae7f499ca481fa7a6d6d4299c8b93214e5e5308e26770dbfd3631df",
      "buildkit-path": "bin/wp"
+   },
+
+   "bee":  {
+     "url": "https://github.com/backdrop-contrib/bee/releases/download/1.x-1.0.1/bee.phar",
+     "sha256": "c58669bfac3f902544bc3c39827eb29587f45ad8afc0ee02aad937d0e808d31e",
+     "buildkit-path": "bin/bee"
    }
 }
