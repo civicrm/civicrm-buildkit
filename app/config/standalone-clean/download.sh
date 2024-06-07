@@ -7,7 +7,7 @@
 [ -z "$CMS_VERSION" ] && CMS_VERSION=master
 ## Hmm, not really used...
 
-mkdir -p "$WEB_ROOT/web" "$WEB_ROOT/web/private" "$WEB_ROOT/web/public" "$WEB_ROOT/web/extensions"
+mkdir -p "$WEB_ROOT/web"
 
 pushd "$WEB_ROOT/web"
   amp datadir "./private" "./public" "./extensions"

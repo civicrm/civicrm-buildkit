@@ -13,11 +13,11 @@ amp_install
 
 CIVI_DOMAIN_NAME="Demonstrators Anonymous"
 CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
-CIVI_CORE="${WEB_ROOT}/core"
+CIVI_CORE="${WEB_ROOT}/web/core"
 CIVI_UF="Standalone"
-CIVI_SETTINGS="${CMS_ROOT}/private/civicrm.settings.php"
-CIVI_TEMPLATEC="${CMS_ROOT}/private/compiler_cache"
-GENCODE_CONFIG_TEMPLATE="${CMS_ROOT}/civicrm.standalone.php"
+CIVI_SETTINGS="${WEB_ROOT}/web/private/civicrm.settings.php"
+CIVI_TEMPLATEC="${WEB_ROOT}/web/private/compiler_cache"
+GENCODE_CONFIG_TEMPLATE="${WEB_ROOT}/web/civicrm.standalone.php"
 
 pushd "$CIVI_CORE"
   # If you've switched branches and triggered `reinstall`, then you need to refresh composer deps/autoloader before installing
