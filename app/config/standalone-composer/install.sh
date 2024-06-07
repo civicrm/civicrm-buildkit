@@ -17,7 +17,7 @@ CIVI_CORE="${WEB_ROOT}/vendor/civicrm/civicrm-core"
 CIVI_UF="Standalone"
 CIVI_SETTINGS="${WEB_ROOT}/private/civicrm.settings.php"
 CIVI_TEMPLATEC="${WEB_ROOT}/private/compiler_cache"
-GENCODE_CONFIG_TEMPLATE="${CMS_ROOT}/civicrm.standalone.php"
+GENCODE_CONFIG_TEMPLATE="${WEB_ROOT}/civicrm.standalone.php"
 
 civicrm_install_cv
 

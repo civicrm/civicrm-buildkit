@@ -7,9 +7,9 @@
 [ -z "$CMS_VERSION" ] && CMS_VERSION=master
 ## Hmm, not really used...
 
-mkdir -p "$WEB_ROOT" "$WEB_ROOT/private" "$WEB_ROOT/public" "$WEB_ROOT/extensions"
+mkdir -p "$WEB_ROOT/web" "$WEB_ROOT/web/private" "$WEB_ROOT/web/public" "$WEB_ROOT/web/extensions"
 
-pushd "$WEB_ROOT"
+pushd "$WEB_ROOT/web"
   amp datadir "./private" "./public" "./extensions"
 
   git_cache_clone civicrm/civicrm-core                             -b "$CIVI_VERSION" core
@@ -19,6 +19,6 @@ pushd "$WEB_ROOT"
 popd
 
 civibuild_apply_user_extras
-pushd "$WEB_ROOT/core"
+pushd "$WEB_ROOT/web/core"
   composer install
 popd

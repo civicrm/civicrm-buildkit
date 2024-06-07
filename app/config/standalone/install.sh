@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## install.sh -- Create config files and databases; fill the databases
-[ -d "$WEB_ROOT" ] && CMS_ROOT="$WEB_ROOT"
+[ -d "$WEB_ROOT/web" ] && CMS_ROOT="$WEB_ROOT/web"
 
 ###############################################################################
 ## Create virtual-host and databases
@@ -15,8 +15,8 @@ CIVI_DOMAIN_NAME="Demonstrators Anonymous"
 CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
 CIVI_CORE="${WEB_ROOT}/core"
 CIVI_UF="Standalone"
-CIVI_SETTINGS="${WEB_ROOT}/private/civicrm.settings.php"
-CIVI_TEMPLATEC="${WEB_ROOT}/private/compiler_cache"
+CIVI_SETTINGS="${CMS_ROOT}/private/civicrm.settings.php"
+CIVI_TEMPLATEC="${CMS_ROOT}/private/compiler_cache"
 GENCODE_CONFIG_TEMPLATE="${CMS_ROOT}/civicrm.standalone.php"
 
 pushd "$CIVI_CORE"
@@ -24,7 +24,7 @@ pushd "$CIVI_CORE"
   # This probably adds ~1 second on new builds, but it can save umpteen minutes of confusion during triage/debugging.
   composer install
 
-  ./tools/standalone/bin/scaffold "$WEB_ROOT"
+  ./tools/standalone/bin/scaffold "$CMS_ROOT"
   ## This may technically be a bit redundant with 'composer install' for new builds.
   ## But for long-lived sites that have rebuilds, it's handy.
 popd
