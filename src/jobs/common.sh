@@ -136,7 +136,7 @@ function assign_smarty() {
 function assert_bknix_durable() {
   case "$USER" in
     homer|runner-*)
-      echo >&2 "WARNING: This job is expected to run in a persistent environment. User $USER suggests it is temporary."
+      echo >&2 "WARNING: This job is expected to run in a persistent environment. The user is \"$USER\" which suggests it is temporary."
       ;;
   esac
 
@@ -148,7 +148,7 @@ function assert_bknix_temporary() {
       true
       ;;
     *)
-      echo >&2 "WARNING: This job is expected to run in a temporary environment. User $USER suggests it is persistent."
+      echo >&2 "WARNING: This job is expected to run in a temporary environment. The user is \"$USER\" which suggests it is persistent."
       ;;
   esac
 }
