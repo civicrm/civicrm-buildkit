@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+set -e
+
+## Example usage:
+##
+## $ env CIVIVER=master BLDTYPE=drupal-clean SUITE=cv-std run-job --mock CiviCRM-Cv-Test
+## $ env CIVIVER=master BLDTYPE=drupal-clean PATCH=https://github.com/civicrm/cv/pull/191 SUITE=cv-std run-job --mock CiviCRM-Cv-Test
+
+#################################################
+## Environment variables
+
+## EXECUTOR_NUMBER: The number of this concurrent process
+## WORKSPACE: The path where Jenkins stores data for this job
+## BLDTYPE: The type of civibuild site to create (e.g. `drupal-clean` or `wp-demo`)
+## CIVIVER: The version of CiviCRM to install, expressed as a branch or tag (e.g. `master`, `5.59`, `5.57.0`)
+assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE CIVIVER
+
+## SUITE: The kind of cv test to run (e.g. `cv-std`)
+assert_regex "^\(cv-std\|cv-installer\|cv-null\)$" "$SUITE"
+
+## PATCH: Optional. URL of a pending pull-request in any `civicrm-*` repo (e.g. `https://github.com/civicrm/civicrm-packages/pull/1234`)
+assert_regex '^\(\|https://github.com/civicrm/civicrm-[a-z]*/pull/[0-9]\+/*\|https://github.com/civicrm/cv/pull/[0-9]\+/*\)$' "$PATCH" "Invalid PATCH"
+
+## PHPUNIT: The version of PHPUnit to use
+PHPUNIT=${PHPUNIT:-phpunit9}
+assert_common PHPUNIT
+
+#################################################
+## Main
+
+assert_bknix_temporary
+
+################################################
+## Setup environment
+BLDNAME="build-$EXECUTOR_NUMBER"
+
+## Reset (cleanup after previous tests)
+clean_legacy_workspace "$WORKSPACE/junit" "$WORKSPACE/civibuild-html" "$WORKSPACE/last-scan.json" "$WORKSPACE/new-scan.json"
+init_std_workspace
+if [ -d "$BKITBLD/$BLDNAME" ]; then
+  echo y | civibuild destroy "$BLDNAME"
+fi
+export CV_TEST_BUILD="$BKITBLD/$BLDNAME/web"
+
+## Report details about the test environment
+# civibuild env-info
+
+################################################
+## Download application (with civibuild)
+case "$CIVIVER" in
+  # Patch was needed for civix. Not sure about cv.
+  5.51) civibuild download "$BLDNAME" --civi-ver "$CIVIVER" --type "$BLDTYPE" --patch "https://github.com/civicrm/civicrm-core/pull/23991" ; ;;
+  *) civibuild download "$BLDNAME" --civi-ver "$CIVIVER" --type "$BLDTYPE" ; ;;
+esac
+
+## Install application (with civibuild)
+civibuild install "$BLDNAME" \
+  --admin-pass "n0ts3cr3t"
+
+## Report details about this build of the application
+civibuild show "$BLDNAME" \
+  --html "$WORKSPACE_HTML" \
+  --last-scan "$WORKSPACE_BUILD/last-scan.json" \
+  --new-scan "$WORKSPACE_BUILD/new-scan.json"
+cp "$WORKSPACE_BUILD/new-scan.json" "$WORKSPACE_BUILD/last-scan.json"
+
+## Setup cv and run tests
+## TODO: Try downloading cv before building the site. Figure a way to override the live cv.phar.
+mkdir -p "$BKITBLD/$BLDNAME/src"
+
+git clone "https://github.com/civicrm/cv" "$BKITBLD/$BLDNAME/src/cv"
+
+pushd "$BKITBLD/$BLDNAME/src/cv"
+  if [ -n "$PATCH" ]; then
+    echo "Apply patch ($PATCH)"
+    git scan am -N "$PATCH"
+  fi
+popd
+
+pushd "$BKITBLD/$BLDNAME/src/cv"
+  composer install
+  case "$SUITE" in
+    cv-std)
+      xphpunit --group std --log-junit "$WORKSPACE_JUNIT/cv-std.xml" --debug
+      ;;
+    cv-installer)
+      echo "ERROR: Not implemented. Need suitable build with code and no database."
+      #xphpunit --group installer --junit "$WORKSPACE_JUNIT/cv-std.xml" --debug
+      exit 1
+      ;;
+    cv-null)
+      echo "Nothing to do"
+      ;;
+  esac
+popd
+
+exit $?
