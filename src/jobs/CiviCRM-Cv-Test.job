@@ -25,6 +25,10 @@ assert_regex '^\(\|https://github.com/civicrm/civicrm-[a-z]*/pull/[0-9]\+/*\|htt
 PHPUNIT=${PHPUNIT:-phpunit9}
 assert_common PHPUNIT
 
+## CV_TYPE: Whether to test basic repo or to compile PHAR.
+CV_TYPE=${CV_TYPE:-src}
+assert_regex '^\(src\|phar\)$' "$CV_TYPE" "Invalid CV_TYPE"
+
 #################################################
 ## Main
 
@@ -79,19 +83,24 @@ popd
 
 pushd "$BKITBLD/$BLDNAME/src/cv"
   composer install
-  case "$SUITE" in
-    cv-std)
-      xphpunit --group std --log-junit "$WORKSPACE_JUNIT/cv-std.xml" --debug
-      ;;
-    cv-installer)
-      echo "ERROR: Not implemented. Need suitable build with code and no database."
-      #xphpunit --group installer --junit "$WORKSPACE_JUNIT/cv-std.xml" --debug
-      exit 1
-      ;;
-    cv-null)
-      echo "Nothing to do"
-      ;;
-  esac
+  if [ -e ./scripts/run-tests.sh ] ; then
+    ./scripts/run-tests.sh --log-junit "$WORKSPACE_JUNIT/$SUITE.xml" --debug
+  else
+    ## TODO: Drop this after 0.3.50 or so
+    case "$SUITE" in
+      cv-std)
+        xphpunit --group std --log-junit "$WORKSPACE_JUNIT/cv-std.xml" --debug
+        ;;
+      cv-installer)
+        echo "ERROR: Not implemented. Need suitable build with code and no database."
+        #xphpunit --group installer --junit "$WORKSPACE_JUNIT/cv-std.xml" --debug
+        exit 1
+        ;;
+      cv-null)
+        echo "Nothing to do"
+        ;;
+    esac
+  fi
 popd
 
 exit $?
