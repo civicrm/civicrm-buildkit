@@ -84,9 +84,11 @@ popd
 pushd "$BKITBLD/$BLDNAME/src/cv"
   composer install
   if [ -e ./scripts/run-tests.sh ] ; then
+    echo "Running tests (SUITE=$SUITE CV_TYPE=$CV_TYPE) via ./scripts/run-tests.sh"
     ./scripts/run-tests.sh --log-junit "$WORKSPACE_JUNIT/$SUITE.xml" --debug
   else
     ## TODO: Drop this after 0.3.50 or so
+    echo "Running tests (SUITE=$SUITE) via xphpunit (ignore CV_TYPE=$CV_TYPE)"
     case "$SUITE" in
       cv-std)
         xphpunit --group std --log-junit "$WORKSPACE_JUNIT/cv-std.xml" --debug
