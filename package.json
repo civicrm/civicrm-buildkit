@@ -11,7 +11,7 @@
   "devDependencies": {
     "bower": "^1.8.8",
     "civicrm-cv": "^0.1.2",
-    "grunt-cli": "^1.2.0",
+    "grunt-cli": "^1.4.3",
     "jasmine-core": "~3.3.0",
     "jshint": "^2.10.2",
     "watch": "^0.13.0"
