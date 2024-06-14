@@ -19,7 +19,7 @@ pushd "$WEB_ROOT/web"
   fi
   git checkout "$CMS_VERSION"
 
-  amp datadir "./private" "./public" "./extensions"
+  amp datadir "./private" "./public" "./ext"
   composer install
   composer civicrm:publish
 popd

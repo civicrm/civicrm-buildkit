@@ -10,7 +10,7 @@
 mkdir -p "$WEB_ROOT/web"
 
 pushd "$WEB_ROOT/web"
-  amp datadir "./private" "./public" "./extensions"
+  amp datadir "./private" "./public" "./ext"
 
   git_cache_clone civicrm/civicrm-core                             -b "$CIVI_VERSION" core
   git_cache_clone civicrm/civicrm-packages                         -b "$CIVI_VERSION" core/packages
