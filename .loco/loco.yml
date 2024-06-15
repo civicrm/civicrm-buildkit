@@ -49,7 +49,9 @@ default_environment:
  ## LOCALHOST: Bind services to a local IP address.
  - LOCALHOST=127.0.0.1
 
- - CHROME_BIN=$(which "chromium")
+ - CHROME_BIN=$(find-chrome)
+ - CHROME_HOST=${LOCALHOST}
+ - CHROME_PORT=9222
 
 #### Mandatory environment settings
 environment:
@@ -127,3 +129,16 @@ services:
     init:
       - 'loco-buildkit-init'
     message: 'Buildkit (<comment>$BKIT</comment>) is configured to use these services. It produces builds in "<comment>$HTTPD_VDROOT</comment>".'
+
+  ## Chrome is trickier - the choice of how to start depends a lot on context.
+  chrome:
+    enabled: false
+    run: 'loco-pid-file "$LOCO_SVC_VAR/chrome.pid" -- "$CHROME_BIN" --remote-debugging-address="$CHROME_HOST" --remote-debugging-port="$CHROME_PORT"'
+    pid_file : '$LOCO_SVC_VAR/chrome.pid'
+    message: 'Chrome (UI) is running on "<comment>http://$CHROME_HOST:$CHROME_PORT</comment>" to support automated testing.'
+
+  chrome-headless:
+    enabled: false
+    run: 'loco-pid-file "$LOCO_SVC_VAR/chrome-headless.pid" -- "$CHROME_BIN" --disable-gpu --headless --remote-debugging-address="$CHROME_HOST" --remote-debugging-port="$CHROME_PORT"'
+    pid_file : '$LOCO_SVC_VAR/chrome-headless.pid'
+    message: 'Chrome (headless) is running on "<comment>http://$CHROME_HOST:$CHROME_PORT</comment>" to support automated testing.'
