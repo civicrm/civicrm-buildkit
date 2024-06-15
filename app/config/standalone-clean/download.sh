@@ -1,24 +1,24 @@
 #!/usr/bin/env bash
 
-## download.sh -- Download Standalone project and CiviCRM core
+## download.sh -- Download CiviCRM core and configure it for standalone development
 
 ###############################################################################
 
 [ -z "$CMS_VERSION" ] && CMS_VERSION=master
-## Interpreted as tag/branch of "civicrm-standalone.git".
-## May use git remotes to referencing Github ("{user}/{branch}").
+## Hmm, not really used...
 
-git clone https://github.com/civicrm/civicrm-standalone "$WEB_ROOT"
+mkdir -p "$WEB_ROOT/web"
 
-pushd "$WEB_ROOT"
-  if [[ "$CMS_VERSION" == *"/"* ]]; then
-    _git_owner=$(dirname "$CMS_VERSION")
-    git remote add "$_git_owner" "https://github.com/${_git_owner}/civicrm-standalone.git"
-    git fetch "$_git_owner"
-  fi
-  git checkout "$CMS_VERSION"
+pushd "$WEB_ROOT/web"
+  amp datadir "./private" "./public" "./ext"
 
-  amp datadir "./data" "./web/upload"
+  git_cache_clone civicrm/civicrm-core                             -b "$CIVI_VERSION" core
+  git_cache_clone civicrm/civicrm-packages                         -b "$CIVI_VERSION" core/packages
+
+  civicrm_l10n_setup core
+popd
+
+civibuild_apply_user_extras
+pushd "$WEB_ROOT/web/core"
   composer install
-  composer civicrm:publish
 popd
