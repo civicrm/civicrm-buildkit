@@ -120,6 +120,7 @@ services:
   chrome-headless:
     run: 'loco-pid-file "$LOCO_SVC_VAR/chrome-headless.pid" -- "$CHROME_BIN" --disable-gpu --headless --remote-debugging-address="$CHROME_HOST" --remote-debugging-port="$CHROME_PORT"'
     pid_file : '$LOCO_SVC_VAR/chrome-headless.pid'
+    message: 'Chrome (headless) is running on "<comment>http://$CHROME_HOST:$CHROME_PORT</comment>" to support automated testing.'
 
 ## Configure the loco=>systemd export
 export:
