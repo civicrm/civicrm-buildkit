@@ -16,7 +16,7 @@ CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
 CIVI_CORE="${CMS_ROOT}/vendor/civicrm/civicrm-core"
 CIVI_UF="Standalone"
 CIVI_SETTINGS="${CMS_ROOT}/private/civicrm.settings.php"
-CIVI_TEMPLATEC="${CMS_ROOT}/private/compiler_cache"
+CIVI_TEMPLATEC="${CMS_ROOT}/private/cache"
 GENCODE_CONFIG_TEMPLATE="${CMS_ROOT}/civicrm.standalone.php"
 
 civicrm_install_cv

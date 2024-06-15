@@ -16,7 +16,7 @@ CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
 CIVI_CORE="${WEB_ROOT}/web/core"
 CIVI_UF="Standalone"
 CIVI_SETTINGS="${WEB_ROOT}/web/private/civicrm.settings.php"
-CIVI_TEMPLATEC="${WEB_ROOT}/web/private/compiler_cache"
+CIVI_TEMPLATEC="${WEB_ROOT}/web/private/cache"
 GENCODE_CONFIG_TEMPLATE="${WEB_ROOT}/web/civicrm.standalone.php"
 
 pushd "$CIVI_CORE"
