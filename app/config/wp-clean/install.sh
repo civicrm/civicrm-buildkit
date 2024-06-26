@@ -36,7 +36,7 @@ fi
 CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
 CIVI_UF="WordPress"
 
-civicrm_install
+civicrm_install_transitional
 
 ###############################################################################
 ## Extra configuration
