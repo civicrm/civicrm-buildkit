@@ -4,7 +4,7 @@
 
 ###############################################################################
 
-echo $CMS_VERSION
+[ -z "$CIVI_VERSION" ] && CIVI_VERSION=master
 [ -z "$CMS_VERSION" ] && CMS_VERSION=master
 ## Interpreted as tag/branch of "civicrm-standalone.git".
 ## May use git remotes to referencing Github ("{user}/{branch}").
@@ -20,6 +20,14 @@ pushd "$WEB_ROOT/web"
   git checkout "$CMS_VERSION"
 
   amp datadir "./private" "./public" "./ext"
-  composer install
+
+  ## `civicrm-standalone.git:composer.json` is hard-coded to master. If user requests anything else, then we must update it.
+  if [ "$CIVI_VERSION" == "master" ]; then
+    composer install
+  else
+    CIVI_VERSION_COMP=$(civicrm_composer_ver "$CIVI_VERSION")
+    composer require civicrm/civicrm-{core,packages}:"$CIVI_VERSION_COMP" --prefer-source
+  fi
+
   composer civicrm:publish
 popd
