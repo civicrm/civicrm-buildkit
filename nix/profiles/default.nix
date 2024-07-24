@@ -31,31 +31,37 @@ in rec {
 
    php73m57 = phpXXmXX { php = dists.bkit.php73; dbms = dists.bkit.mysql57; };
    php73m80 = phpXXmXX { php = dists.bkit.php73; dbms = dists.bkit.mysql80; };
+   php73m84 = phpXXmXX { php = dists.bkit.php73; dbms = dists.bkit.mysql84; };
    php73r105 = phpXXmXX { php = dists.bkit.php73; dbms = dists.bkit.mariadb105; };
    php73r106 = phpXXmXX { php = dists.bkit.php73; dbms = dists.bkit.mariadb106; };
 
    php74m57 = phpXXmXX { php = dists.bkit.php74; dbms = dists.bkit.mysql57; };
    php74m80 = phpXXmXX { php = dists.bkit.php74; dbms = dists.bkit.mysql80; };
+   php74m84 = phpXXmXX { php = dists.bkit.php74; dbms = dists.bkit.mysql84; };
    php74r105 = phpXXmXX { php = dists.bkit.php74; dbms = dists.bkit.mariadb105; };
    php74r106 = phpXXmXX { php = dists.bkit.php74; dbms = dists.bkit.mariadb106; };
 
    php80m57 = phpXXmXX { php = dists.bkit.php80; dbms = dists.bkit.mysql57; };
    php80m80 = phpXXmXX { php = dists.bkit.php80; dbms = dists.bkit.mysql80; };
+   php80m84 = phpXXmXX { php = dists.bkit.php80; dbms = dists.bkit.mysql84; };
    php80r105 = phpXXmXX { php = dists.bkit.php80; dbms = dists.bkit.mariadb105; };
    php80r106 = phpXXmXX { php = dists.bkit.php80; dbms = dists.bkit.mariadb106; };
 
    php81m57 = phpXXmXX { php = dists.bkit.php81; dbms = dists.bkit.mysql57; };
    php81m80 = phpXXmXX { php = dists.bkit.php81; dbms = dists.bkit.mysql80; };
+   php81m84 = phpXXmXX { php = dists.bkit.php81; dbms = dists.bkit.mysql84; };
    php81r105 = phpXXmXX { php = dists.bkit.php81; dbms = dists.bkit.mariadb105; };
    php81r106 = phpXXmXX { php = dists.bkit.php81; dbms = dists.bkit.mariadb106; };
 
    php82m57 = phpXXmXX { php = dists.bkit.php82; dbms = dists.bkit.mysql57; };
    php82m80 = phpXXmXX { php = dists.bkit.php82; dbms = dists.bkit.mysql80; };
+   php82m84 = phpXXmXX { php = dists.bkit.php82; dbms = dists.bkit.mysql84; };
    php82r105 = phpXXmXX { php = dists.bkit.php82; dbms = dists.bkit.mariadb105; };
    php82r106 = phpXXmXX { php = dists.bkit.php82; dbms = dists.bkit.mariadb106; };
 
    php83m57 = phpXXmXX { php = dists.bkit.php83; dbms = dists.bkit.mysql57; };
    php83m80 = phpXXmXX { php = dists.bkit.php83; dbms = dists.bkit.mysql80; };
+   php83m84 = phpXXmXX { php = dists.bkit.php83; dbms = dists.bkit.mysql84; };
    php83r105 = phpXXmXX { php = dists.bkit.php83; dbms = dists.bkit.mariadb105; };
    php83r106 = phpXXmXX { php = dists.bkit.php83; dbms = dists.bkit.mariadb106; };
 

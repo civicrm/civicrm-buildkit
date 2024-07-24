@@ -30,6 +30,7 @@ in pharDirectives // rec {
    mysql56 = (import ./mysql56/default.nix).mysql56;
    mysql57 = dists.default.mysql57;
    mysql80 = dists.default.mysql80;
+   mysql84 = dists.v2405.mysql84;
    mariadb105 = dists.v2105.mariadb;
    mariadb106 = dists.default.mariadb;
 
