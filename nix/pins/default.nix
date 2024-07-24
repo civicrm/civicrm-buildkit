@@ -10,6 +10,7 @@ rec {
   v2205 = import (import  ./22.05.nix) {};
   v2305 = import (import  ./23.05.nix) {};
   v2311 = import (import  ./23.11.nix) {};
+  v2405 = import (import  ./24.05.nix) {};
 
   bkit = import ../pkgs;
   default = v2205;
