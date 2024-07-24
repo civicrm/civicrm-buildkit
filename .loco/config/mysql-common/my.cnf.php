@@ -19,7 +19,8 @@ read_rnd_buffer_size = 4M
 myisam_sort_buffer_size = 64M
 thread_cache_size = 8
 <?php if (!matchVer('/Ver 8.\d/')) { printf("query_cache_size= 16M\n"); } ?>
-<?php if (matchVer('/Ver 8.\d/')) { printf("default_authentication_plugin = mysql_native_password\n"); } ?>
+<?php if (matchVer('/Ver (8.4|9.\d)/')) { printf("mysql_native_password = ON\n"); } ?>
+<?php if (matchVer('/Ver 8.[0123]/')) { printf("default_authentication_plugin = mysql_native_password\n"); } ?>
 # Try number of CPU's*2 for thread_concurrency
 #MariaDB?# thread_concurrency = 8
 
