@@ -18,14 +18,14 @@ read_buffer_size = 1M
 read_rnd_buffer_size = 4M
 myisam_sort_buffer_size = 64M
 thread_cache_size = 8
-<?php if (!matchVer('/Ver 8.0/')) { printf("query_cache_size= 16M\n"); } ?>
-<?php if (matchVer('/Ver 8.0/')) { printf("default_authentication_plugin = mysql_native_password\n"); } ?>
+<?php if (!matchVer('/Ver 8.\d/')) { printf("query_cache_size= 16M\n"); } ?>
+<?php if (matchVer('/Ver 8.\d/')) { printf("default_authentication_plugin = mysql_native_password\n"); } ?>
 # Try number of CPU's*2 for thread_concurrency
 #MariaDB?# thread_concurrency = 8
 
 binlog_format	= row
 sync_binlog	= 1
-<?php if (matchVer('/Ver 8.0/')) { printf("skip-log-bin\n"); } ?>
+<?php if (matchVer('/Ver 8.\d/')) { printf("skip-log-bin\n"); } ?>
 
 innodb_file_per_table = 1
 # You can set .._buffer_pool_size up to 50 - 80 %
@@ -39,7 +39,7 @@ innodb_file_per_table = 1
 
 <?php if (matchVer('/Ver 5.6/')) { printf("innodb_large_prefix = 1\n"); } ?>
 <?php if (matchVer('/Ver 5.6/')) { printf("sql_mode=\"STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION\"\n"); } ?>
-<?php if (!matchVer('/Ver 8.0/')) { printf("innodb_file_format = Barracuda\n"); } ?>
+<?php if (!matchVer('/Ver 8.\d/')) { printf("innodb_file_format = Barracuda\n"); } ?>
 
 <?php if (matchVer('/Ver 5.7/')) { ?>
 # https://expressionengine.com/blog/mysql-5.7-server-os-x-has-gone-away
