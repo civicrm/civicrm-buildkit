@@ -13,7 +13,41 @@ let
 
   oldestAvailableMysql = (if isAppleM1 then dists.bkit.mysql80 else dists.bkit.mysql57);
 
-in rec {
+  ## These lists help generate every possible combination of {PHP}x{MySQL}, i.e.
+  ##  - php73m57 php73m80 php73m84 php73r105 php73r106
+  ##  - php74m57 php74m80 php74m84 php74r105 php74r106
+  ##  - php80m57 php80m80 php80m84 php80r105 php80r106
+  ##  - php81m57 php81m80 php81m84 php81r105 php81r106
+  ##  - php82m57 php82m80 php82m84 php82r105 php82r106
+  ##  - php83m57 php83m80 php83m84 php83r105 php83r106
+
+  phpVersions = {
+    php73 = dists.bkit.php73;
+    php74 = dists.bkit.php74;
+    php80 = dists.bkit.php80;
+    php81 = dists.bkit.php81;
+    php82 = dists.bkit.php82;
+    php83 = dists.bkit.php83;
+  };
+
+  dbmsVersions = {
+    m57 = dists.bkit.mysql57;
+    m80 = dists.bkit.mysql80;
+    m84 = dists.bkit.mysql84;
+    r105 = dists.bkit.mariadb105;
+    r106 = dists.bkit.mariadb106;
+  };
+
+  combinations = builtins.foldl' (acc: phpVersion:
+    builtins.foldl' (innerAcc: dbmsVersion:
+      innerAcc // {
+        "${phpVersion}${dbmsVersion}" = phpXXmXX { php = phpVersions.${phpVersion}; dbms = dbmsVersions.${dbmsVersion}; };
+      }
+    ) acc (builtins.attrNames dbmsVersions)
+  ) {} (builtins.attrNames phpVersions);
+
+
+in combinations // rec {
 
    /* ---------- Partial profiles; building-blocks ---------- */
 
@@ -26,44 +60,6 @@ in rec {
     * bknix-specific management utilities
     */
    mgmt = import ./mgmt/default.nix;
-
-   /* ---------- Full profiles ---------- */
-
-   php73m57 = phpXXmXX { php = dists.bkit.php73; dbms = dists.bkit.mysql57; };
-   php73m80 = phpXXmXX { php = dists.bkit.php73; dbms = dists.bkit.mysql80; };
-   php73m84 = phpXXmXX { php = dists.bkit.php73; dbms = dists.bkit.mysql84; };
-   php73r105 = phpXXmXX { php = dists.bkit.php73; dbms = dists.bkit.mariadb105; };
-   php73r106 = phpXXmXX { php = dists.bkit.php73; dbms = dists.bkit.mariadb106; };
-
-   php74m57 = phpXXmXX { php = dists.bkit.php74; dbms = dists.bkit.mysql57; };
-   php74m80 = phpXXmXX { php = dists.bkit.php74; dbms = dists.bkit.mysql80; };
-   php74m84 = phpXXmXX { php = dists.bkit.php74; dbms = dists.bkit.mysql84; };
-   php74r105 = phpXXmXX { php = dists.bkit.php74; dbms = dists.bkit.mariadb105; };
-   php74r106 = phpXXmXX { php = dists.bkit.php74; dbms = dists.bkit.mariadb106; };
-
-   php80m57 = phpXXmXX { php = dists.bkit.php80; dbms = dists.bkit.mysql57; };
-   php80m80 = phpXXmXX { php = dists.bkit.php80; dbms = dists.bkit.mysql80; };
-   php80m84 = phpXXmXX { php = dists.bkit.php80; dbms = dists.bkit.mysql84; };
-   php80r105 = phpXXmXX { php = dists.bkit.php80; dbms = dists.bkit.mariadb105; };
-   php80r106 = phpXXmXX { php = dists.bkit.php80; dbms = dists.bkit.mariadb106; };
-
-   php81m57 = phpXXmXX { php = dists.bkit.php81; dbms = dists.bkit.mysql57; };
-   php81m80 = phpXXmXX { php = dists.bkit.php81; dbms = dists.bkit.mysql80; };
-   php81m84 = phpXXmXX { php = dists.bkit.php81; dbms = dists.bkit.mysql84; };
-   php81r105 = phpXXmXX { php = dists.bkit.php81; dbms = dists.bkit.mariadb105; };
-   php81r106 = phpXXmXX { php = dists.bkit.php81; dbms = dists.bkit.mariadb106; };
-
-   php82m57 = phpXXmXX { php = dists.bkit.php82; dbms = dists.bkit.mysql57; };
-   php82m80 = phpXXmXX { php = dists.bkit.php82; dbms = dists.bkit.mysql80; };
-   php82m84 = phpXXmXX { php = dists.bkit.php82; dbms = dists.bkit.mysql84; };
-   php82r105 = phpXXmXX { php = dists.bkit.php82; dbms = dists.bkit.mariadb105; };
-   php82r106 = phpXXmXX { php = dists.bkit.php82; dbms = dists.bkit.mariadb106; };
-
-   php83m57 = phpXXmXX { php = dists.bkit.php83; dbms = dists.bkit.mysql57; };
-   php83m80 = phpXXmXX { php = dists.bkit.php83; dbms = dists.bkit.mysql80; };
-   php83m84 = phpXXmXX { php = dists.bkit.php83; dbms = dists.bkit.mysql84; };
-   php83r105 = phpXXmXX { php = dists.bkit.php83; dbms = dists.bkit.mariadb105; };
-   php83r106 = phpXXmXX { php = dists.bkit.php83; dbms = dists.bkit.mariadb106; };
 
    /**
     * These aliases represent the current minimum/maximum, as viewed from
@@ -78,21 +74,21 @@ in rec {
    old = phpXXmXX { php = dists.bkit.php73; dbms = oldestAvailableMysql; };
    min = phpXXmXX { php = dists.bkit.php74; dbms = oldestAvailableMysql; };
    dfl = phpXXmXX { php = dists.bkit.php82; dbms = oldestAvailableMysql; };
-   alt = php80r105;
-   max = php82m80;
-   edge = php83m80;
+   alt = combinations.php80r105;
+   max = combinations.php82m80;
+   edge = combinations.php83m80;
 
    /**
     * These aliases are short-hand. They're not intended for CI testing,
     * where you shold probably consider mysql versions more intentionally.
     * But they may be useful for quick/local hacking.
     */
-   php73 = php73m80;
-   php74 = php74m80;
-   php80 = php80m80;
-   php81 = php81m80;
-   php82 = php82m80;
-   php83 = php83m80;
+   php73 = combinations.php73m80;
+   php74 = combinations.php74m80;
+   php80 = combinations.php80m80;
+   php81 = combinations.php81m80;
+   php82 = combinations.php82m80;
+   php83 = combinations.php83m80;
 
    /**
     * Tool-chain used during releases
