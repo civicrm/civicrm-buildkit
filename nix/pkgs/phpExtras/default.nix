@@ -109,4 +109,17 @@ in rec {
     zendExtension = true;
   };
 
+  xdebug34 = buildPecl {
+    ## XDebug 3.4 supports php81, php82, php83, php84 (https://xdebug.org/docs/compat)
+    version = "3.4.0alpha1";
+    pname = "xdebug";
+    src = pkgs.fetchurl {
+      url = "https://github.com/xdebug/xdebug/archive/refs/tags/3.4.0alpha1.tar.gz";
+      sha256 = "sha256-kHTKNoIBVbMZ2HLbSjXb0odBtdNb/yYQtEZVbxs6O1g=";
+    };
+    doCheck = true;
+    checkTarget = "test";
+    zendExtension = true;
+  };
+
 }

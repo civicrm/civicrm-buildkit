@@ -28,6 +28,7 @@ let
     php81 = dists.bkit.php81;
     php82 = dists.bkit.php82;
     php83 = dists.bkit.php83;
+    php84 = dists.bkit.php84;
   };
 
   dbmsVersions = {
@@ -90,6 +91,7 @@ in combinations // rec {
    php81 = combinations.php81m80;
    php82 = combinations.php82m80;
    php83 = combinations.php83m80;
+   php84 = combinations.php84m80;
 
    /**
     * Tool-chain used during releases
