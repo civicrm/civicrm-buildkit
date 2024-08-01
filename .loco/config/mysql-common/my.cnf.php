@@ -18,8 +18,8 @@ read_buffer_size = 1M
 read_rnd_buffer_size = 4M
 myisam_sort_buffer_size = 64M
 thread_cache_size = 8
-<?php if (!matchVer('/Ver 8.\d/')) { printf("query_cache_size= 16M\n"); } ?>
-<?php if (matchVer('/Ver (8.4|9.\d)/')) { printf("mysql_native_password = ON\n"); } ?>
+<?php if (!matchVer('/Ver [89].\d/')) { printf("query_cache_size= 16M\n"); } ?>
+<?php if (matchVer('/Ver 8.4/')) { printf("mysql_native_password = ON\n"); } ?>
 <?php if (matchVer('/Ver 8.[0123]/')) { printf("default_authentication_plugin = mysql_native_password\n"); } ?>
 # Try number of CPU's*2 for thread_concurrency
 #MariaDB?# thread_concurrency = 8
@@ -40,7 +40,7 @@ innodb_file_per_table = 1
 
 <?php if (matchVer('/Ver 5.6/')) { printf("innodb_large_prefix = 1\n"); } ?>
 <?php if (matchVer('/Ver 5.6/')) { printf("sql_mode=\"STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION\"\n"); } ?>
-<?php if (!matchVer('/Ver 8.\d/')) { printf("innodb_file_format = Barracuda\n"); } ?>
+<?php if (!matchVer('/Ver [89].\d/')) { printf("innodb_file_format = Barracuda\n"); } ?>
 
 <?php if (matchVer('/Ver 5.7/')) { ?>
 # https://expressionengine.com/blog/mysql-5.7-server-os-x-has-gone-away
