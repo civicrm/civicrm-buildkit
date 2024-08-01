@@ -34,6 +34,7 @@ let
     m57 = dists.bkit.mysql57;
     m80 = dists.bkit.mysql80;
     m84 = dists.bkit.mysql84;
+    m90 = dists.bkit.mysql90;
     r105 = dists.bkit.mariadb105;
     r106 = dists.bkit.mariadb106;
   };

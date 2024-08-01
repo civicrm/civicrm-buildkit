@@ -31,6 +31,7 @@ in pharDirectives // rec {
    mysql57 = dists.default.mysql57;
    mysql80 = dists.default.mysql80;
    mysql84 = dists.v2405.mysql84;
+   mysql90 = dists.v2405.mysql90;
    mariadb105 = dists.v2105.mariadb;
    mariadb106 = dists.default.mariadb;
 
