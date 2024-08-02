@@ -2,6 +2,17 @@
  * This folder aims to help users setup _profiles_ which include a long
  * all the recommended development tools. Each item returned here is a
  * list of packages that can be installed in (one of) your profile(s).
+ *
+ * The main list is built as the Cartesian product of PHP versions and DBMS versions, ie
+ *
+ *   php73m57 php73m80 php73m84 php73r105 php73r106
+ *   php74m57 php74m80 php74m84 php74r105 php74r106
+ *   php80m57 php80m80 php80m84 php80r105 php80r106
+ *   php81m57 php81m80 php81m84 php81r105 php81r106
+ *   php82m57 php82m80 php82m84 php82r105 php82r106
+ *   php83m57 php83m80 php83m84 php83r105 php83r106
+ *
+ * Additionally, there are aliases like `min`, `max`, `php81`, etc.
  */
 let
   phpXXmXX = import ./phpXXmXX/default.nix;
@@ -13,32 +24,30 @@ let
 
   oldestAvailableMysql = (if isAppleM1 then dists.bkit.mysql80 else dists.bkit.mysql57);
 
-  ## These lists help generate every possible combination of {PHP}x{MySQL}, i.e.
-  ##  - php73m57 php73m80 php73m84 php73r105 php73r106
-  ##  - php74m57 php74m80 php74m84 php74r105 php74r106
-  ##  - php80m57 php80m80 php80m84 php80r105 php80r106
-  ##  - php81m57 php81m80 php81m84 php81r105 php81r106
-  ##  - php82m57 php82m80 php82m84 php82r105 php82r106
-  ##  - php83m57 php83m80 php83m84 php83r105 php83r106
+  attrsets = dists.default.lib;
 
-  phpVersions = {
-    php73 = dists.bkit.php73;
-    php74 = dists.bkit.php74;
-    php80 = dists.bkit.php80;
-    php81 = dists.bkit.php81;
-    php82 = dists.bkit.php82;
-    php83 = dists.bkit.php83;
-    php84 = dists.bkit.php84;
-  };
+  ## Example: rekeyRecord foo bar {foo_1=100;foo_2=200}
+  ## Output:              ======> {bar_1=100;bar_2=200}
+  rekeyRecord = prefixOld: prefixNew: record:
+    let
+      rekey = key:
+        if builtins.match "^${prefixOld}(.*)" key != null then
+          "${prefixNew}${builtins.elemAt (builtins.match "^${prefixOld}(.*)" key) 0}"
+        else
+          key;
+    in attrsets.mapAttrs' (k: v: { name=(rekey k); value=v; }) record;
 
-  dbmsVersions = {
-    m57 = dists.bkit.mysql57;
-    m80 = dists.bkit.mysql80;
-    m84 = dists.bkit.mysql84;
-    m90 = dists.bkit.mysql90;
-    r105 = dists.bkit.mariadb105;
-    r106 = dists.bkit.mariadb106;
-  };
+  ## phpVersions = { php73=PKG, php80=PKG, ... }
+  phpVersions = (attrsets.filterAttrs (name: value: builtins.match "php[0-9]+" name != null) dists.bkit);
+
+  ## mysqlVersions = { mysql57=PKG, mysql80=PKG, ... }
+  mysqlVersions = (attrsets.filterAttrs (name: value: builtins.match "mysql[0-9]+" name != null) dists.bkit);
+
+  ## mariadbVersions = { mariadb105=PKG, mariadb106=PKG, ...}
+  mariadbVersions = (attrsets.filterAttrs (name: value: builtins.match "mariadb[0-9]+" name != null) dists.bkit);
+
+  ## dbmsVersions = { m57=PKG, m80=PKG, r105=PKG, r106=PKG, ...}
+  dbmsVersions = (rekeyRecord "mysql" "m" mysqlVersions) // (rekeyRecord "mariadb" "r" mariadbVersions);
 
   combinations = builtins.foldl' (acc: phpVersion:
     builtins.foldl' (innerAcc: dbmsVersion:
@@ -47,7 +56,6 @@ let
       }
     ) acc (builtins.attrNames dbmsVersions)
   ) {} (builtins.attrNames phpVersions);
-
 
 in combinations // rec {
 
