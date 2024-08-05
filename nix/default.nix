@@ -42,10 +42,10 @@ in
      *
      * To allow a user to run or install one of the forked packages, we return the bkpkgs set.
      *
-     *   nix-shell -A bkpkgs.php56
-     *   nix-shell -A bkpkgs.php70
-     *   nix-env -f . -i -A bkpkgs.php56
-     *   nix-env -f . -i -A bkpkgs.php70
+     *   nix-shell -A bkpkgs.ph83
+     *   nix-shell -A bkpkgs.php73
+     *   nix-env -f . -i -A bkpkgs.php83
+     *   nix-env -f . -i -A bkpkgs.php73
      */
 
     allClis // {

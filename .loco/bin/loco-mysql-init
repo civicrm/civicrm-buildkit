@@ -11,7 +11,7 @@ php "$LOCO_CFG/mysql-common/my.cnf.php" > "$LOCO_SVC_VAR"/conf/common-my.cnf
 if echo "$mysql_version" | grep 'Distrib 5.7' -q; then
   mysqld --defaults-file="$LOCO_SVC_VAR/conf/my.cnf" --initialize-insecure --explicit_defaults_for_timestamp --datadir="$LOCO_SVC_VAR/data"
 
-elif echo "$mysql_version" | grep 'Ver 8.0' -q; then
+elif echo "$mysql_version" | grep 'Ver [89].' -q; then
   #mysqld --no-defaults --initialize-insecure --explicit_defaults_for_timestamp --datadir="$LOCO_SVC_VAR/data"
   mysqld --defaults-file="$LOCO_SVC_VAR/conf/my.cnf" --initialize-insecure --explicit_defaults_for_timestamp --datadir="$LOCO_SVC_VAR/data"
 
