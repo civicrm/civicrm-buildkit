@@ -1,5 +1,4 @@
 rec {
-  v1803 = import (import  ./18.03.nix) {};
   v1809 = import (import  ./18.09.nix) {};
   v1903 = import (import  ./19.03.nix) {};
   v1909 = import (import  ./19.09.nix) {};

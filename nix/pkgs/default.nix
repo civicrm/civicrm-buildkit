@@ -26,7 +26,6 @@ let
 
 in pharDirectives // rec {
 
-   mysql55 = (import ./mysql55/default.nix).mysql55;
    mysql56 = (import ./mysql56/default.nix).mysql56;
    mysql57 = dists.default.mysql57;
    mysql80 = dists.default.mysql80;
@@ -35,8 +34,6 @@ in pharDirectives // rec {
    mariadb105 = dists.v2105.mariadb;
    mariadb106 = dists.default.mariadb;
 
-   php56 = import ./php56/default.nix;
-   php70 = import ./php70/default.nix;
    php71 = import ./php71/default.nix;
    php72 = import ./php72/default.nix;
    php73 = import ./php73/default.nix;
