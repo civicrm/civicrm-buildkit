@@ -11,7 +11,10 @@ let
     stdenv = dists.default.stdenv;
     isAppleM1 = stdenv.isDarwin && stdenv.isAarch64;
 
-in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
+    isValidPackage = pkg: (builtins.tryEval pkg).success && pkg != null && pkg.type == "derivation";
+
+in if (isValidPackage php) && (isValidPackage dbms)
+  then (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
 
     php
     dists.default.nodejs-14_x
@@ -22,4 +25,6 @@ in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
     dists.default.redis
     dists.bkit.transifexClient
 
-] ++ (if isAppleM1 then [] else [dists.default.chromium])
+  ] ++ (if isAppleM1 then [] else [dists.default.chromium])
+
+  else throw "Unsupported: Some dependencies for this combination of PHP/MySQL are not available in this environment."

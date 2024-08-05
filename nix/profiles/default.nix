@@ -57,7 +57,7 @@ let
     ) acc (builtins.attrNames dbmsVersions)
   ) {} (builtins.attrNames phpVersions);
 
-in combinations // rec {
+  allProfiles = combinations // rec {
 
    /* ---------- Partial profiles; building-blocks ---------- */
 
@@ -106,4 +106,14 @@ in combinations // rec {
     */
    releaser = import ./releaser/default.nix;
 
-}
+  };
+
+  isValidProfile = x: (builtins.tryEval x).success;
+
+#in allProfiles
+in attrsets.filterAttrs (k: v: isValidProfile v) allProfiles
+
+## FIXME: It might be nicer to return the full list.  This would mean that
+## commands like `nix-shell -A phpXXmXX` would raise slightly more precise
+## error when running on unsupported environment.  But then you also have to
+## update the publication-steps (doc/publish.md) to omit invalid items.
