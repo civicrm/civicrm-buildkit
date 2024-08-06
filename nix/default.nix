@@ -10,6 +10,8 @@ let
       name = "bknix";
       buildInputs = packageList ++ [ pkgs.makeWrapper ];
       shellHook = ''
+        PS1='\n\[\033[1;32m\][${profileName}:\w]\$\[\033[0m\] '
+
         if [ ! -f ".loco/loco.yml" -a -f "../.loco/loco.yml" ]; then
           cd ..
         fi
