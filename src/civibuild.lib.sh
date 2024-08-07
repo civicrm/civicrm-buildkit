@@ -608,7 +608,7 @@ function civicrm_download_composer_d8() {
     *) echo 'No Extra Patch required' ; ;;
   esac
 
-  composer require "${EXTRA_COMPOSER[@]}" civicrm/civicrm-{core,packages,drupal-8}:"$CIVI_VERSION_COMP" --prefer-source
+  composer require "${EXTRA_COMPOSER[@]}" civicrm/civicrm-{core,packages,drupal-8}:"$CIVI_VERSION_COMP" --prefer-source -W
   [ -n "$EXTRA_PATCH" ] && git scan am -N "${EXTRA_PATCH[@]}"
 
   if [ -z "$CIVI_ROOT" ]; then
