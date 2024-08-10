@@ -18,8 +18,10 @@ PRJDIR=$(dirname "$BINDIR")
 [ -z "$CIVIBUILD_HOME" ] && TMPDIR="$PRJDIR/app/tmp" || TMPDIR="$CIVIBUILD_HOME/.civibuild/tmp"
 [ -z "$CIVIBUILD_HOME" ] && BLDDIR="$PRJDIR/build" || BLDDIR="$CIVIBUILD_HOME"
 
-## Make sure bundled utilities are available, regardless of local config
-export PATH="$BINDIR:$PATH"
+## Make sure bundled utilities are available
+if [[ ":$PATH:" != *":$BINDIR:"* ]]; then
+  export PATH="$BINDIR:$PATH"
+fi
 
 if [ -z "$OFFLINE" ]; then
   civi-download-tools --quiet
