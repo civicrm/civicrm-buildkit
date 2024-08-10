@@ -24,6 +24,7 @@ TTL_BLDTYPE=180  ## During setup, warmup 'bldtype' (if >3 hours since last)
 CLEANUP_FILES=() ## List of files/directories to delete
 RESPONSE=        ## Tar-formatted fifo
 MAX_IMAGES=8     ## If there are more than X copies of an image, then refuse to make more
+GLOBAL_MARKER="/etc/bknix-ci/buildkit-ts" ## If this file changes, then all caches need warmup
 
 #####################################################################
 ## Main
@@ -203,7 +204,7 @@ function do_setup() {
     git clone https://github.com/civicrm/civicrm-buildkit "$BKIT"
   fi
 
-  if is_stale "$BKIT/.ttl-tools" "$TTL_TOOLS" ; then
+  if is_stale "$BKIT/.ttl-tools" "$TTL_TOOLS" "$GLOBAL_MARKER" ; then
     (cd "$BKIT" && git checkout -- package-lock.json composer.lock && git pull)
     # (cd "$BKIT" && nix-shell -A "$BKPROF" --run './bin/civi-download-tools')
     (cd "$BKIT" && nix-shell -A "$BKPROF" --run './bin/civi-download-tools && civibuild cache-warmup')
@@ -215,7 +216,7 @@ function do_setup() {
   safe_delete "$BKIT/build/warmup" "$BKIT/build/warmup.sh"
   if [[ -d "$BKIT/app/config/$BLDTYPE" && "$BLDTYPE" =~ ^(drupal|drupal8|drupal9|backdrop|wp|standalone)-(empty|clean|demo)$ ]]; then
     local flag_file="$BKIT/.ttl-$BLDTYPE"
-    if is_stale "$flag_file" "$TTL_BLDTYPE" ; then
+    if is_stale "$flag_file" "$TTL_BLDTYPE" "$GLOBAL_MARKER" ; then
       safe_delete "$BKIT/build/warmup" "$BKIT/build/warmup.sh"
       (cd "$BKIT" && nix-shell -A "$BKPROF" --run "civibuild download warmup --type $BLDTYPE")
       safe_delete "$BKIT/build/warmup" "$BKIT/build/warmup.sh"
@@ -369,10 +370,20 @@ function escape_variables() {
 }
 
 ## Check if it's time for an update
-## usage: is_stale <MARKER> <MINUTES>
+##
+## usage: is_stale <BUILD_MARKER> <MINUTES> [<GLOBAL_TS_FILE>]
+##
+## BUILD_MARKER: Path to a timestamp-file.
+##     Identifies the last time when -this- build was updated.
+## MINUTES: Integer, number or minutes.
+##     If the BUILD_MARKER is older than MINUTES, then we must refresh.
+## GLOBAL_TS_FILE: Path to a timestamp-file.
+##     Identifies the last global-update.
+##     If GLOBAL_TS_FILE  is newer than BUILD_MARKER, then we must refresh.
 function is_stale () {
   local file_path="$1"
   local max_age_minutes="$2"
+  local global_ts_flag="$3"
 
   if [[ ! -f "$file_path" ]]; then
     # File does not exist, so it's expired
@@ -385,10 +396,14 @@ function is_stale () {
   if [[ $file_age_seconds -gt $max_age_seconds ]]; then
     # File is older than the specified max age
     return 0
-  else
-    # File is not older than the specified max age
-    return 1
   fi
+  if [[ -n "$global_ts_flag" && "$global_ts_flag" -nt "$file_path" ]]; then
+    ## We've had a global reset.
+    return 0
+  fi
+
+  # File is not older than the specified max age
+  return 1
 }
 
 function safe_delete() {
