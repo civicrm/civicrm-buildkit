@@ -57,6 +57,21 @@ case "$CIVIVER" in
   *) civibuild download "$BLDNAME" --civi-ver "$CIVIVER" --type "$BLDTYPE" ; ;;
 esac
 
+## Setup cv and run tests
+## TODO: Try downloading cv before building the site. Figure a way to override the live cv.phar.
+mkdir -p "$BKITBLD/$BLDNAME/src"
+git clone "https://github.com/civicrm/cv" "$BKITBLD/$BLDNAME/src/cv"
+pushd "$BKITBLD/$BLDNAME/src/cv"
+  if [ -n "$PATCH" ]; then
+    echo "Apply patch ($PATCH)"
+    git scan am -N "$PATCH"
+  fi
+  nix-shell --run ./scripts/build.sh ## Must use PHP version as required by `box`
+  mkdir -p dist/bin
+  cp bin/cv.phar dist/bin/cv
+  PATH="$PWD/dist/bin:$PATH"
+popd
+
 ## Install application (with civibuild)
 civibuild install "$BLDNAME" \
   --admin-pass "n0ts3cr3t"
@@ -67,19 +82,6 @@ civibuild show "$BLDNAME" \
   --last-scan "$WORKSPACE_BUILD/last-scan.json" \
   --new-scan "$WORKSPACE_BUILD/new-scan.json"
 cp "$WORKSPACE_BUILD/new-scan.json" "$WORKSPACE_BUILD/last-scan.json"
-
-## Setup cv and run tests
-## TODO: Try downloading cv before building the site. Figure a way to override the live cv.phar.
-mkdir -p "$BKITBLD/$BLDNAME/src"
-
-git clone "https://github.com/civicrm/cv" "$BKITBLD/$BLDNAME/src/cv"
-
-pushd "$BKITBLD/$BLDNAME/src/cv"
-  if [ -n "$PATCH" ]; then
-    echo "Apply patch ($PATCH)"
-    git scan am -N "$PATCH"
-  fi
-popd
 
 pushd "$BKITBLD/$BLDNAME/src/cv"
   composer install
