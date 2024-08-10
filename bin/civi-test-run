@@ -6,15 +6,15 @@ function getPhpunitVer() {
   if [ -n "$PHPUNIT" ]; then
     case "$PHPUNIT" in
       phpunit5)
-        echo "$PHPUNIT --tap"
+        echo "$PHPUNIT --stderr --tap"
         return
         ;;
       phpunit6|phpunit7|phpunit8)
-        echo "$PHPUNIT --printer \Civi\Test\TAP"
+        echo "$PHPUNIT --stderr --printer \Civi\Test\TAP"
         return
         ;;
       phpunit9)
-        echo "$PHPUNIT --printer \Civi\Test\TAP"
+        echo "$PHPUNIT --stderr --printer \Civi\Test\TAP"
         return
         ;;
     esac
@@ -22,13 +22,13 @@ function getPhpunitVer() {
 
   CIVIVER=$(getCiviVer)
   if [ $(php -r "echo version_compare('$CIVIVER', '5.65', '>=');") ]; then
-    echo "phpunit9 --printer \Civi\Test\TAP"
+    echo "phpunit9 --stderr --printer \Civi\Test\TAP"
   elif [ $(php -r "echo version_compare('$CIVIVER', '5.39', '>=');") ]; then
-    echo "phpunit8 --printer \Civi\Test\TAP"
+    echo "phpunit8 --stderr --printer \Civi\Test\TAP"
   elif [ $(php -r "echo version_compare('$CIVIVER', '5.28', '>=');") ]; then
-    echo "phpunit7 --printer \Civi\Test\TAP"
+    echo "phpunit7 --stderr --printer \Civi\Test\TAP"
   elif [ $(php -r "echo version_compare('$CIVIVER', '5.22', '>=');") ]; then
-    echo "phpunit6 --printer \Civi\Test\TAP"
+    echo "phpunit6 --stderr --printer \Civi\Test\TAP"
   else
     echo 'phpunit5 --tap'
   fi
