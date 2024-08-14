@@ -217,16 +217,20 @@ $c['gitlabRelease()'] = function($client, $verNum, SymfonyStyle $io) {
 
 /**
  * Upload a list of files to Gitlab. Attach them to a specific release.
- * @param string $projectUrl
- *   Base URL for Gitlab project (https:///DOMAIN/OWNER/REPO).
+ *
+ * @param string $gitlabUrl
+ *   Base URL for Gitlab (https://DOMAIN)
+ * @param string $project
+ *   Name of Gitlab project (OWNER/REPO)
  * @param string $verNum
  * @param string[] $assets
  *   List of local files to upload. The remote file will have a matching name.
  */
-$c['gitlabUpload()'] = function (string $projectUrl, string $verNum, array $assets, SymfonyStyle $io, $gitlabClient, $input, $gitlabRelease) {
+$c['gitlabUpload()'] = function (string $gitlabUrl, string $project, string $verNum, array $assets, SymfonyStyle $io, $gitlabClient, $input, $gitlabRelease) {
   $verbose = function($data) use ($io) {
     return $io->isVerbose() ? toJSON($data) : '';
   };
+  $projectUrl = joinUrl($gitlabUrl, $project);
 
   $client = $gitlabClient($projectUrl);
   assertThat(preg_match('/^\d[0-9a-z\.\-\+]*$/', $verNum));
@@ -264,7 +268,7 @@ $c['gitlabUpload()'] = function (string $projectUrl, string $verNum, array $asse
     $release = fromJSON($client->post('releases/' . urlencode($verNum) . '/assets/links', [
       'form_params' => [
         'name' => basename($asset),
-        'url' => joinUrl($projectUrl, $upload['url']),
+        'url' => joinUrl($gitlabUrl, $upload['full_path']),
       ],
     ]));
     $io->writeln("<info>Updated release</info> " . $verbose($release));
@@ -430,7 +434,7 @@ $c['task_esr_publish()'] = function (array $versionSpec, $input, $io, $runner, $
   $esrVer = $versionSpec['version'] . '+esr';
 
   $io->section("Publish ESR tarballs to Gitlab ($gitlabUrl/esr/core)");
-  $gitlabUpload("$gitlabUrl/esr/core", $esrVer, $files);
+  $gitlabUpload($gitlabUrl, "/esr/core", $esrVer, $files);
 
   $io->section('Publish ESR tarballs to Google Cloud');
   $dry = $input->getOption('dry-run') ? '-n' : '';
