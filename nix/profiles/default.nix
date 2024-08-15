@@ -86,7 +86,7 @@ let
    dfl = phpXXmXX { php = dists.bkit.php82; dbms = oldestAvailableMysql; };
    alt = combinations.php80r105;
    max = combinations.php82m80;
-   edge = combinations.php83m80;
+   edge = combinations.php84m80;
 
    /**
     * These aliases are short-hand. They're not intended for CI testing,
