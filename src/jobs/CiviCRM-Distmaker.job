@@ -1,0 +1,137 @@
+#!/usr/bin/env bash
+set -e
+
+## Example usage:
+##
+## $ env CIVIVER=master run-job --mock CiviCRM-Distmaker
+## $ env CIVIVER=master PATCH="https://github.com/civicrm/civicrm-packages/pull/379" run-job --mock CiviCRM-Distmaker
+##
+## The outputs will be like: {WORKSPACE}/build/dist/{PR-ID}/civicrm-X.Y.Z-{UF}-{DATETIME}.tar.gz
+
+#################################################
+## Environment variables
+
+## EXECUTOR_NUMBER: The number of this concurrent process
+## WORKSPACE: The path where Jenkins stores data for this job
+## CIVIVER: The version of CiviCRM to install, expressed as a branch or tag (e.g. `master`, `5.59`, `5.57.0`)
+assert_common EXECUTOR_NUMBER WORKSPACE CIVIVER
+
+## CIVICOMMIT: Optional. Override the the `civicrm-core` version with specific commit. Can help with debugging/manual bisection.
+assert_regex '^[0-9a-z\.-]*$' "$CIVICOMMIT" "Missing or invalid CIVICOMMIT"
+
+## PATCH: Optional. URL of a pending pull-request in any `civicrm-*` repo (e.g. `https://github.com/civicrm/civicrm-packages/pull/1234`)
+assert_regex '^\(\|https://github.com/civicrm/civicrm-[a-z]*/pull/[0-9]\+/*\)$' "$PATCH" "Invalid PATCH"
+
+#################################################
+## Bootstrap
+
+assert_bknix_temporary
+
+#################################################
+## Local variables
+GUARD=
+
+BLDNAME="build-$EXECUTOR_NUMBER"
+BLDDIR="$BKITBLD/$BLDNAME"
+BLDTYPE="dist"
+[ -n "$PATCH" ] && PATCHARGS="--patch $PATCH" || PATCHARGS=""
+
+## Configure distmaker
+export DM_TARGETDIR="$BLDDIR/out/tar"
+export DM_VERSION_SUFFIX=
+
+case "$PATCH" in
+  https://github.com/civicrm/civicrm-backdrop/pull/*)
+    ghprbPullId=$(echo "$PATCH" | cut -f7 -d/ )
+    FOLDER="bd-$ghprbPullId"
+    ;;
+
+  https://github.com/civicrm/civicrm-drupal/pull/*)
+    ghprbPullId=$(echo "$PATCH" | cut -f7 -d/ )
+    FOLDER="d7-$ghprbPullId"
+    ;;
+
+  https://github.com/civicrm/civicrm-core/pull/*)
+    ghprbPullId=$(echo "$PATCH" | cut -f7 -d/ )
+    FOLDER="core-$ghprbPullId"
+    ;;
+
+  https://github.com/civicrm/civicrm-packages/pull/*)
+    ghprbPullId=$(echo "$PATCH" | cut -f7 -d/ )
+    FOLDER="pkgs-$ghprbPullId"
+    ;;
+
+  https://github.com/civicrm/civicrm-wordpress/pull*)
+    ghprbPullId=$(echo "$PATCH" | cut -f7 -d/ )
+    FOLDER="wp-$ghprbPullId"
+    ;;
+
+  *)
+    ghprbPullId=
+    FOLDER="dev-$BUILD_NUMBER"
+    ;;
+esac
+
+export FILE_SUFFIX=$( date -u '+%Y%m%d%H%M' )
+
+
+#########################
+## Helpers
+
+## Export the description of an amp install and import as shell variables
+## usage: _amp_import <root> <name> <shell-prefix>
+## example: _amp_imprt /var/www/build/myproject civi CIVI
+function _amp_import() {
+  local amp_vars_file_path=$(mktemp.php ampvar)
+  amp export --root="$1" --name=$2 --prefix=$3_ --output-file="$amp_vars_file_path"
+  source "$amp_vars_file_path"
+  rm -f "$amp_vars_file_path"
+}
+
+#########################
+## Main logic
+
+civibuild env-info
+init_std_workspace
+if [ -d "$BKITBLD/$BLDNAME" ]; then
+  echo y | civibuild destroy "$BLDNAME"
+fi
+
+civibuild download "$BLDNAME" --type "$BLDTYPE" --civi-ver "$CIVIVER" $PATCHARGS
+civibuild install "$BLDNAME"
+
+## Build the tarballs
+pushd "$BLDDIR/src"
+  _amp_import "$BLDDIR/web" civi CIVI
+  echo > bin/setup.conf
+  env DBHOST="$CIVI_DB_HOST" \
+    DBPORT="$CIVI_DB_PORT" \
+    DBNAME="$CIVI_DB_NAME" \
+    DBUSER="$CIVI_DB_USER" \
+    DBPASS="$CIVI_DB_PASS" \
+    ./bin/setup.sh -Dg
+popd
+
+pushd "$BLDDIR/src/distmaker"
+  # ./distmaker.sh all
+  ## Skip items with poor cost-benefit for PR-testing... l10n, d7_dir, patchset, sk
+
+  DM_KEEP_GIT=1 ./distmaker.sh Drupal
+  DM_KEEP_GIT=1 DM_KEEP_DEPS=1 ./distmaker.sh Backdrop
+  DM_KEEP_GIT=1 DM_KEEP_DEPS=1 ./distmaker.sh standalone
+  DM_KEEP_GIT=1 DM_KEEP_DEPS=1 ./distmaker.sh Joomla
+  DM_KEEP_GIT=1 DM_KEEP_DEPS=1 ./distmaker.sh WordPress
+  DM_KEEP_GIT=1 DM_KEEP_DEPS=1 ./distmaker.sh report
+popd
+
+## Move the tarballs to their place
+pushd "$DM_TARGETDIR"
+  regmv '\.zip$' "-${FILE_SUFFIX}.zip"
+  regmv '\.tgz$' "-${FILE_SUFFIX}.tgz"
+  regmv '\.tar\.gz$' "-${FILE_SUFFIX}.tar.gz"
+  regmv '\.json$' "-${FILE_SUFFIX}.json"
+
+  mkdir -p "$WORKSPACE_DIST/$FOLDER"
+  find . -maxdepth 2 \( -name '*.zip' -o -name '*.tgz' -o -name '*.tar.gz' -o -name '*.json' \) \
+    -exec mv '{}' "$WORKSPACE_DIST/$FOLDER/" \;
+popd
