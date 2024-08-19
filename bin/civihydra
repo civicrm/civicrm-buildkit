@@ -127,6 +127,14 @@ function hydra_create() {
         subsite_dl="web/tmp=$TARFILE"
         ;;
 
+      civicrm-*-standalone.tar.gz|civicrm-*-standalone-*.tar.gz)
+        subsite_name="${HYDRA_PREFIX}sa"
+        subsite_type="empty"
+        subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}sa")
+        subsite_dl=".=$TARFILE"
+        [ -n "$l10n_url" ] && l10n_dl="web/core=$l10n_url"
+        ;;
+
       civicrm-*-wordpress.zip|civicrm-*-wordpress-*.zip)
         subsite_name="${HYDRA_PREFIX}wp"
         subsite_type="wp-empty"
@@ -158,6 +166,15 @@ function hydra_create() {
      else
       civibuild create "$subsite_name" --type "$subsite_type" --dl "$subsite_dl" --url "$subsite_url"
     fi
+
+    case $(basename "$TARFILE") in
+      civicrm-*-standalone.tar.gz|civicrm-*-standalone-*.tar.gz)
+        pushd "$BLDDIR/$subsite_name"
+          mv web web.orig
+          mv civicrm-standalone web
+        popd
+        ;;
+    esac
   done
 }
 
@@ -195,6 +212,13 @@ function hydra_show() {
         subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}wp")
         login_url="$subsite_url/wp-admin/"
         install_url="$subsite_url/wp-admin/plugins.php"
+        install_blurb=""
+        ;;
+
+      *-sa)
+        subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}sa")
+        login_url="$subsite_url/civicrm/login"
+        install_url="$subsite_url/civicrm/setup"
         install_blurb=""
         ;;
 
