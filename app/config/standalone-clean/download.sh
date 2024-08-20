@@ -15,7 +15,7 @@ pushd "$WEB_ROOT/web"
   git_cache_clone civicrm/civicrm-core                             -b "$CIVI_VERSION" core
   git_cache_clone civicrm/civicrm-packages                         -b "$CIVI_VERSION" core/packages
 
-  civicrm_l10n_setup core
+  civicrm_l10n_setup private
 popd
 
 civibuild_apply_user_extras
