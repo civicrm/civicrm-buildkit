@@ -135,6 +135,12 @@ function run_bknix_main() {
       assert_common BKPROF BKITBLD LOCO_PRJ BKIT
       LOADED_BKPROF="$BKPROF"
       (cd "$LOCO_PRJ" && loco clean)
+      if (cd "$LOCO_PRJ" && loco sh . -- .loco/bin/loco-check-ports); then
+        true
+      else
+        echo >&2 "Port check failed. Is this a zombie attack?"
+        exit 1
+      fi
       (cd "$LOCO_PRJ" && loco start)
       RUN_BKNIX_CLEANUP_FUNCS+=('run_bknix_stop_loco')
 

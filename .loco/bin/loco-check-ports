@@ -1,0 +1,38 @@
+#!/usr/bin/env php
+<?php
+
+### Pre-validate that TCP ports are open/available for binding services
+
+/**
+ * Determine if a service is listening for connections
+ *
+ * @param string $host
+ * @param int $port
+ * @return bool
+ */
+function checkHostPort($host, $port) {
+  $fp = @fsockopen($host, $port, $errno, $errstr, 1);
+  $result = $fp ? TRUE : FALSE;
+  if ($fp !== FALSE) {
+     @fclose($fp);
+  }
+  return $result;
+}
+
+$ip = getenv('LOCALHOST') ?: '127.0.0.1';
+$vars = ['CHROME_PORT', 'MAIL_SMTP_PORT', 'MAIL_HTTP_PORT', 'MEMCACHED_PORT', 'MYSQLD_PORT', 'PHPFPM_PORT', 'REDIS_PORT'];
+$errors = [];
+foreach ($vars as $var) {
+  $value = getenv($var);
+  if ($value && checkHostPort($ip, $value)) {
+    $errors[] = sprintf("Port check failed. %s=%d but %s:%s is already in use!\n", $var, $value, $ip, $value);
+  }
+}
+
+if (empty($errors)) {
+  exit(0);
+}
+else {
+  echo implode("", $errors);
+  exit(1);
+}
