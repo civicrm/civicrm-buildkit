@@ -143,6 +143,7 @@
   cmd=()
   ssh_agent=
   size=${HOMER_SIZE}
+  timeout=
   verbose=0
 
   cleanup_files=()
@@ -183,6 +184,7 @@
     #echo "  --share REL_PATH     Mount a shared folder"
     echo "  -s|--size SIZE       Size for any new filesystems (Default: HOMER_SIZE=$HOMER_SIZE)"
     echo "  -t|--temp            Enable temporary file mode"
+    echo "     --timeout LIMIT   Stop if runtime exceeds LIMIT (Example: 90s or 30m or 2h)"
     echo "  -v                   Enable verbose output"
     echo
     echo "Tips:"
@@ -196,7 +198,7 @@
   function task_install {
     print_h1 "Install"
     assert_root_user
-    assert_cmd sudo adduser addgroup getent realpath ps pgrep killall unshare flock setfacl qemu-img mkfs.ext4
+    assert_cmd sudo adduser addgroup getent realpath ps pgrep killall unshare flock setfacl qemu-img mkfs.ext4 timeout
 
     mkdir -p "$HOMER_VAR"
     chmod 700 "$HOMER_VAR"
@@ -466,6 +468,10 @@
       printf "mount --bind %q ~homer/%q\n" "$lhs" "$rhs"
     done
 
+    if [ -n "$timeout" ]; then
+      assert_valid_timeout
+      echo -n "timeout $timeout " ## continue to next...
+    fi
     echo "sudo -iu \"$HOMER_USER\" ${cmd[@]}"
   }
 
@@ -612,6 +618,10 @@
     if [ -n "$use_temp" ]; then
       sudocmd+=("$use_temp")
     fi
+    if [ -n "$timeout" ]; then
+      assert_valid_timeout
+      sudocmd+=("--timeout" "$timeout")
+    fi
     sudocmd+=("-i" "$img")
     sudocmd+=("--owner-pid" "$owner_pid")
     local vs=0
@@ -660,6 +670,10 @@
 
   function assert_valid_size() {
     assert_regex '^[0-9]\+[mg]$' "$size" "Missing or invalid image size ($size)"
+  }
+
+  function assert_valid_timeout() {
+    assert_regex '^[0-9]\+[smhd]$' "$timeout" "Missing or invalid timeout ($timeout)"
   }
 
   ## usage: assert_regex <grep-style-regex> <value> [<error-message>]
@@ -776,6 +790,7 @@
       --owner-pid)  owner_pid="$2"    ; shift 2 ; ;;
       -s|--size)    size="$2"         ; shift 2 ; ;;
       -t|--temp)    use_temp="--temp" ; shift 1 ; ;;
+      --timeout)    timeout="$2"      ; shift 2 ; assert_valid_timeout ; ;;
       -h|--help|help) action="usage"  ; shift 1 ; ;;
       install|uninstall|run|enter|status|create|mount|unmount|exec|enter-exec) action="$1" ; shift ; ;;
       -*)           fatal "Unrecognized option $1" ; ;;
