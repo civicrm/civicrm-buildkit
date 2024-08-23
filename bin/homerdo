@@ -141,6 +141,7 @@
   owner_pid=$$
   shares=()
   cmd=()
+  out_pid_file=
   ssh_agent=
   size=${HOMER_SIZE}
   timeout=
@@ -166,6 +167,7 @@
     echo "  $prog [OPTIONS] [run] [--] [CMD]"
     echo "  $prog [OPTIONS] enter [--] [CMD]"
     echo "  $prog [OPTIONS] status"
+    echo "  $prog [OPTIONS] kill"
     echo
     echo "Sysadmin actions:"
     echo "  $prog install"
@@ -444,7 +446,8 @@
     mount --bind "$homer_ns" "$homer_ns"
     mount --make-private "$homer_ns"
     touch "$homer_ns"/{pid,mount}
-    unshare --wd=/tmp --kill-child --pid="$homer_ns/pid" --mount="$homer_ns/mount" --mount-proc bash "$script"
+    "$SELF" pid-file --out-pid-file "$homer_ns/unshare.pid" -- \
+      unshare --wd=/tmp --kill-child --pid="$homer_ns/pid" --mount="$homer_ns/mount" --mount-proc bash "$script"
   }
 
   function _task_exec_script() {
@@ -517,6 +520,41 @@
     fi
     echo "avail"
     exit 10
+  }
+
+  ###########################################################################
+  ## Forcibly shutdown an active session
+
+  function task_kill() {
+    assert_valid_shares; realize_shares
+    assert_valid_img; realize_img
+
+    if [ $EUID -ne 0 ]; then
+      as_root kill
+      exit $?
+    fi
+
+    print_h2 "Kill"
+    assert_root_user
+    assert_ownership
+
+    local pid=$(cat "$homer_ns/unshare.pid")
+    if [ -n "$pid" ]; then
+      kill "$pid"
+    fi
+    _task_unmount
+  }
+
+  ###########################################################################
+  ## Internal utility: Run a command as current user. Records its PID in a file.
+  ##
+  ## Example: homerdo pid-file --out-pid-file /tmp/my.pid -- do_some_work
+
+  function task_pid_file() {
+    assert_regex  '.' out_pid_file
+    echo $$ > "$out_pid_file"
+    print_note "Generated \"$out_pid_file\" (`cat $out_pid_file`)  for \""${cmd[@]}"\""
+    exec "${cmd[@]}"
   }
 
   ###########################################################################
@@ -794,7 +832,8 @@
       -t|--temp)    use_temp="--temp" ; shift 1 ; ;;
       --timeout)    timeout="$2"      ; shift 2 ; assert_valid_timeout ; ;;
       -h|--help|help) action="usage"  ; shift 1 ; ;;
-      install|uninstall|run|enter|status|create|mount|unmount|exec|enter-exec) action="$1" ; shift ; ;;
+      --out-pid-file) out_pid_file="$2" ; shift 2 ; ;;
+      install|uninstall|run|enter|status|kill|create|mount|unmount|exec|enter-exec|pid-file) action="$1" ; shift ; ;;
       -*)           fatal "Unrecognized option $1" ; ;;
       *)            parsing=          ; ;;
     esac
@@ -815,9 +854,9 @@
 
   case "$action" in
     enter-exec) f=task_enter_exec ; ;;
+    pid-file) f=task_pid_file ; ;;
     *) f="task_${action}" ; ;;
   esac
   $f
   exit $?
 }
-
