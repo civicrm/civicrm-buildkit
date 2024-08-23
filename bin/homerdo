@@ -468,6 +468,8 @@
       printf "mount --bind %q ~homer/%q\n" "$lhs" "$rhs"
     done
 
+    echo 'mount -t proc proc /proc'
+
     if [ -n "$timeout" ]; then
       assert_valid_timeout
       echo -n "timeout $timeout " ## continue to next...
