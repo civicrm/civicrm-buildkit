@@ -366,6 +366,7 @@ function install_dispatcher() {
   echo -n > /etc/sudoers.d/dispatcher
   #echo "Defaults:${DISPATCH_USER} env_keep+=SSH_AUTH_SOCK" >> /etc/sudoers.d/dispatcher
   echo "${DISPATCH_USER} ALL = (root) NOPASSWD: NOSETENV: /usr/local/bin/homerdo" >> /etc/sudoers.d/dispatcher
+  echo "${DISPATCH_USER} ALL = (root) NOPASSWD: NOSETENV: /usr/local/bin/slotdo" >> /etc/sudoers.d/dispatcher
 }
 
 ## Initialize a copy of buildkit.
