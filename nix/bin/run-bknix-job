@@ -139,6 +139,13 @@ function run_bknix_main() {
         true
       else
         echo >&2 "Port check failed. Is this a zombie attack?"
+        echo >&2 "The Zombie Defense League is arriving. They will fight the zombie for 20 minutes. Please go find reinforcements!"
+        ## Keep this work-slot occupied. If it opens up, then a rapid sequence of jobs will try to use it, and they will all fail.
+        ## Remove this once we establish a better perimeter.
+        for n in `seq 1 20` ; do
+          sleep 60
+          date
+        done
         exit 1
       fi
       (cd "$LOCO_PRJ" && loco start)
