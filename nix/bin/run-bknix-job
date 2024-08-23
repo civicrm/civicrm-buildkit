@@ -121,8 +121,12 @@ function run_bknix_main() {
     isolate)
       ## Create a container in image $RUN_BKNIX_HOMER_IMAGES/bknix-$BKPROF-$N.img
       assert_common BKPROF
-      "$BKNIX_JOBS/homerdo-runjob.sh" all
-      return
+
+      local script=$(new_tmp_file)
+      RUN_BKNIX_CLEANUP_FILES+=("$script")
+      create_job_script "$BKNIX_JOBS/homerdo-runjob.sh" all > "$script"
+      sudo slotdo run "$EXECUTOR_NUMBER" "$script"
+      exit $?
       ;;
     autostart)
       ## Start a nix-shell to get PHP+MySQL binaries. Then start the services.
