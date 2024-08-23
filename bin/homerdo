@@ -346,9 +346,10 @@
       local lock_pid=$(cat "$homer_lock")
       if [ -n "$lock_pid" ]; then
         if ps -p "$lock_pid" > /dev/null; then
-          echo >&2 "Image $img already in use by PID $lock_pid"
+          echo >&2 "Image $img already reserved. (Existing owner: $lock_pid. Rejected owner: $owner_pid.)"
           exit 2
         else
+          assert_unshare_inactive
           rm -f "$homer_lock"
           _task_unmount ## Consider moving out of critical section
         fi
@@ -388,6 +389,11 @@
     assert_valid_img; realize_img
 
     assert_ownership
+    assert_unshare_inactive
+    ## You could proceed with unmounting from root-context, but it's
+    ## misleading. It just means that root-context loses visibility to
+    ## the handles. The underlying resources persist...
+
     _task_unmount
   }
 
@@ -742,6 +748,23 @@
         *..*) fatal "Invalid --share ($share): RHS must be relative" ; ;;
       esac
     done
+  }
+
+  ## Assert that there is no 'unshare' process for the current image
+  function assert_unshare_inactive() {
+    if [ ! -f "$homer_ns/unshare.pid" ]; then
+      return
+    fi
+
+    local unshare_pid=$(cat "$homer_ns/unshare.pid")
+    if [ -z "$unshare_pid" ]; then
+      return
+    fi
+
+    if ps -p "$unshare_pid" > /dev/null; then
+      echo >&2 "There is an active container (PID $unshare_pid). Use \"homerdo kill\" to force shutdown."
+      exit 1
+    fi
   }
 
   function assert_ownership() {
