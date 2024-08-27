@@ -314,4 +314,35 @@ function assert_testable_version() {
 
 }
 
+## Print all environment variables - with shell escaping.
+function escape_variables() {
+  while IFS= read -r -d $'\0' line; do
+    var="${line%%=*}"
+    val="${line#*=}"
+    printf "export $var=%q\n" "$val"
+  done < <(printenv -0)
+}
+
+## usage: myfile=$(new_tmp_file)
+function new_tmp_file() {
+  local tmpdir=${TMPDIR:-/tmp}
+  local tmpfile="$tmpdir/runjob-tmp-$RANDOM$RANDOM"
+  touch "$tmpfile"
+  chmod 600 "$tmpfile"
+  echo "$tmpfile"
+}
+
+## Generate bash script to run a command with current environment.
+## example: create_job_script ls -l / > file_list_script.sh
+function create_job_script() {
+  echo "#!/usr/bin/env bash"
+  echo "{"
+  escape_variables
+  echo
+  for part in "$@" ; do printf " %q" "$part" ; done
+  echo
+  echo 'exit $?'
+  echo "}"
+}
+
 } ## end common.sh

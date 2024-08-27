@@ -21,6 +21,7 @@
 SELF="$0"
 TTL_TOOLS=60     ## During setup, refresh 'civi-download-tools' (if >1 hour old)
 TTL_BLDTYPE=180  ## During setup, warmup 'bldtype' (if >3 hours since last)
+TTL_EXEC=120m    ## Finish execution within 2 hours - or bail out
 CLEANUP_FILES=() ## List of files/directories to delete
 RESPONSE=        ## Tar-formatted fifo
 MAX_IMAGES=8     ## If there are more than X copies of an image, then refuse to make more
@@ -87,12 +88,12 @@ function do_all() {
   # echo >&2 "[$USER] Prepared job (img=$img, request=$request, response=$response)"
 
   set -e
-  homerdo -i "$img" -- "$SELF" setup "$request"
+  homerdo --timeout "$TTL_EXEC" -i "$img" -- "$SELF" setup "$request"
   set +e
 
   (cd "$WORKSPACE" && tar xf "$response") &
   local tarpid=$!
-  homerdo -A -i "$img" --temp -- "$SELF" exec "$request" "$response"
+  homerdo --timeout "$TTL_EXEC" -A -i "$img" --temp -- "$SELF" exec "$request" "$response"
   local result=$?
   wait $tarpid
   exit $result

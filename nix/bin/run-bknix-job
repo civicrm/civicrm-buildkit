@@ -121,8 +121,12 @@ function run_bknix_main() {
     isolate)
       ## Create a container in image $RUN_BKNIX_HOMER_IMAGES/bknix-$BKPROF-$N.img
       assert_common BKPROF
-      "$BKNIX_JOBS/homerdo-runjob.sh" all
-      return
+
+      local script=$(new_tmp_file)
+      RUN_BKNIX_CLEANUP_FILES+=("$script")
+      create_job_script "$BKNIX_JOBS/homerdo-runjob.sh" all > "$script"
+      sudo slotdo run "$EXECUTOR_NUMBER" "$script"
+      exit $?
       ;;
     autostart)
       ## Start a nix-shell to get PHP+MySQL binaries. Then start the services.
@@ -139,6 +143,13 @@ function run_bknix_main() {
         true
       else
         echo >&2 "Port check failed. Is this a zombie attack?"
+        echo >&2 "The Zombie Defense League is arriving. They will fight the zombie for 20 minutes. Please go find reinforcements!"
+        ## Keep this work-slot occupied. If it opens up, then a rapid sequence of jobs will try to use it, and they will all fail.
+        ## Remove this once we establish a better perimeter.
+        for n in `seq 1 20` ; do
+          sleep 60
+          date
+        done
         exit 1
       fi
       (cd "$LOCO_PRJ" && loco start)

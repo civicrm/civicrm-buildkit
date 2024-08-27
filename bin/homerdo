@@ -141,8 +141,10 @@
   owner_pid=$$
   shares=()
   cmd=()
+  out_pid_file=
   ssh_agent=
   size=${HOMER_SIZE}
+  timeout=
   verbose=0
 
   cleanup_files=()
@@ -165,6 +167,7 @@
     echo "  $prog [OPTIONS] [run] [--] [CMD]"
     echo "  $prog [OPTIONS] enter [--] [CMD]"
     echo "  $prog [OPTIONS] status"
+    echo "  $prog [OPTIONS] kill"
     echo
     echo "Sysadmin actions:"
     echo "  $prog install"
@@ -183,6 +186,7 @@
     #echo "  --share REL_PATH     Mount a shared folder"
     echo "  -s|--size SIZE       Size for any new filesystems (Default: HOMER_SIZE=$HOMER_SIZE)"
     echo "  -t|--temp            Enable temporary file mode"
+    echo "     --timeout LIMIT   Stop if runtime exceeds LIMIT (Example: 90s or 30m or 2h)"
     echo "  -v                   Enable verbose output"
     echo
     echo "Tips:"
@@ -196,7 +200,7 @@
   function task_install {
     print_h1 "Install"
     assert_root_user
-    assert_cmd sudo adduser addgroup getent realpath ps pgrep killall unshare flock setfacl qemu-img mkfs.ext4
+    assert_cmd sudo adduser addgroup getent realpath ps pgrep killall unshare flock setfacl qemu-img mkfs.ext4 timeout
 
     mkdir -p "$HOMER_VAR"
     chmod 700 "$HOMER_VAR"
@@ -342,9 +346,10 @@
       local lock_pid=$(cat "$homer_lock")
       if [ -n "$lock_pid" ]; then
         if ps -p "$lock_pid" > /dev/null; then
-          echo >&2 "Image $img already in use by PID $lock_pid"
+          echo >&2 "Image $img already reserved. (Existing owner: $lock_pid. Rejected owner: $owner_pid.)"
           exit 2
         else
+          assert_unshare_inactive
           rm -f "$homer_lock"
           _task_unmount ## Consider moving out of critical section
         fi
@@ -384,6 +389,11 @@
     assert_valid_img; realize_img
 
     assert_ownership
+    assert_unshare_inactive
+    ## You could proceed with unmounting from root-context, but it's
+    ## misleading. It just means that root-context loses visibility to
+    ## the handles. The underlying resources persist...
+
     _task_unmount
   }
 
@@ -442,7 +452,8 @@
     mount --bind "$homer_ns" "$homer_ns"
     mount --make-private "$homer_ns"
     touch "$homer_ns"/{pid,mount}
-    unshare --wd=/tmp --kill-child --pid="$homer_ns/pid" --mount="$homer_ns/mount" --mount-proc bash "$script"
+    "$SELF" pid-file --out-pid-file "$homer_ns/unshare.pid" -- \
+      unshare --wd=/tmp --kill-child --pid="$homer_ns/pid" --mount="$homer_ns/mount" --mount-proc bash "$script"
   }
 
   function _task_exec_script() {
@@ -466,6 +477,12 @@
       printf "mount --bind %q ~homer/%q\n" "$lhs" "$rhs"
     done
 
+    echo 'mount -t proc proc /proc'
+
+    if [ -n "$timeout" ]; then
+      assert_valid_timeout
+      echo -n "timeout $timeout " ## continue to next...
+    fi
     echo "sudo -iu \"$HOMER_USER\" ${cmd[@]}"
   }
 
@@ -509,6 +526,41 @@
     fi
     echo "avail"
     exit 10
+  }
+
+  ###########################################################################
+  ## Forcibly shutdown an active session
+
+  function task_kill() {
+    assert_valid_shares; realize_shares
+    assert_valid_img; realize_img
+
+    if [ $EUID -ne 0 ]; then
+      as_root kill
+      exit $?
+    fi
+
+    print_h2 "Kill"
+    assert_root_user
+    assert_ownership
+
+    local pid=$(cat "$homer_ns/unshare.pid")
+    if [ -n "$pid" ]; then
+      kill "$pid"
+    fi
+    _task_unmount
+  }
+
+  ###########################################################################
+  ## Internal utility: Run a command as current user. Records its PID in a file.
+  ##
+  ## Example: homerdo pid-file --out-pid-file /tmp/my.pid -- do_some_work
+
+  function task_pid_file() {
+    assert_regex  '.' out_pid_file
+    echo $$ > "$out_pid_file"
+    print_note "Generated \"$out_pid_file\" (`cat $out_pid_file`)  for \""${cmd[@]}"\""
+    exec "${cmd[@]}"
   }
 
   ###########################################################################
@@ -612,6 +664,10 @@
     if [ -n "$use_temp" ]; then
       sudocmd+=("$use_temp")
     fi
+    if [ -n "$timeout" ]; then
+      assert_valid_timeout
+      sudocmd+=("--timeout" "$timeout")
+    fi
     sudocmd+=("-i" "$img")
     sudocmd+=("--owner-pid" "$owner_pid")
     local vs=0
@@ -662,6 +718,10 @@
     assert_regex '^[0-9]\+[mg]$' "$size" "Missing or invalid image size ($size)"
   }
 
+  function assert_valid_timeout() {
+    assert_regex '^[0-9]\+[smhd]$' "$timeout" "Missing or invalid timeout ($timeout)"
+  }
+
   ## usage: assert_regex <grep-style-regex> <value> [<error-message>]
   function assert_regex() {
     local regex="$1"
@@ -688,6 +748,23 @@
         *..*) fatal "Invalid --share ($share): RHS must be relative" ; ;;
       esac
     done
+  }
+
+  ## Assert that there is no 'unshare' process for the current image
+  function assert_unshare_inactive() {
+    if [ ! -f "$homer_ns/unshare.pid" ]; then
+      return
+    fi
+
+    local unshare_pid=$(cat "$homer_ns/unshare.pid")
+    if [ -z "$unshare_pid" ]; then
+      return
+    fi
+
+    if ps -p "$unshare_pid" > /dev/null; then
+      echo >&2 "There is an active container (PID $unshare_pid). Use \"homerdo kill\" to force shutdown."
+      exit 1
+    fi
   }
 
   function assert_ownership() {
@@ -776,8 +853,10 @@
       --owner-pid)  owner_pid="$2"    ; shift 2 ; ;;
       -s|--size)    size="$2"         ; shift 2 ; ;;
       -t|--temp)    use_temp="--temp" ; shift 1 ; ;;
+      --timeout)    timeout="$2"      ; shift 2 ; assert_valid_timeout ; ;;
       -h|--help|help) action="usage"  ; shift 1 ; ;;
-      install|uninstall|run|enter|status|create|mount|unmount|exec|enter-exec) action="$1" ; shift ; ;;
+      --out-pid-file) out_pid_file="$2" ; shift 2 ; ;;
+      install|uninstall|run|enter|status|kill|create|mount|unmount|exec|enter-exec|pid-file) action="$1" ; shift ; ;;
       -*)           fatal "Unrecognized option $1" ; ;;
       *)            parsing=          ; ;;
     esac
@@ -798,9 +877,9 @@
 
   case "$action" in
     enter-exec) f=task_enter_exec ; ;;
+    pid-file) f=task_pid_file ; ;;
     *) f="task_${action}" ; ;;
   esac
   $f
   exit $?
 }
-
