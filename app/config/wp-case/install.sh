@@ -23,7 +23,7 @@ CIVI_FILES="${WEB_ROOT}/wp-content/uploads/civicrm"
 CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
 CIVI_UF="WordPress"
 
-civicrm_install
+civicrm_install_transitional
 
 ###############################################################################
 ## Extra configuration

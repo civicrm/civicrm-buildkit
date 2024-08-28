@@ -696,20 +696,20 @@ function civicrm_install_transitional() {
   cvutil_assertvars civicrm_install CIVI_CORE
 
   ## If installing an older version, provide continuity (for purposes of test matrices/contrib tests/etc).
-  if civicrm_check_ver '<' 5.57.alpha1 ; then
-
-    civicrm_install
+  if civicrm_check_ver '<' 5.57.alpha1 ; then civicrm_install; return; fi
+  if [[ "$CIVI_UF" == "WordPress" ]]; then
+    if civicrm_check_ver '<' 5.78.alpha1 ; then civicrm_install; return; fi
+  fi
 
   ## Newer versions should use 'cv core:install' to match regular web-installer
-  else
-    # If you've switched branches and triggered `reinstall`, then you need to refresh composer deps/autoloader before installing
-    (cd "$CIVI_CORE" && composer install)
 
-    civicrm_install_cv
+  # If you've switched branches and triggered `reinstall`, then you need to refresh composer deps/autoloader before installing
+  (cd "$CIVI_CORE" && composer install)
 
-    ## Generating `civicrm.config.php` is necessary for `extern/*.php` and its E2E tests
-    (cd "$CIVI_CORE" && ./bin/setup.sh -g)
-  fi
+  civicrm_install_cv
+
+  ## Generating `civicrm.config.php` is necessary for `extern/*.php` and its E2E tests
+  (cd "$CIVI_CORE" && ./bin/setup.sh -g)
 }
 
 ###############################################################################
