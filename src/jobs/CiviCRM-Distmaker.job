@@ -120,6 +120,9 @@ pushd "$BLDDIR/src/distmaker"
   DM_KEEP_GIT=1 DM_KEEP_DEPS=1 ./distmaker.sh Backdrop
   DM_KEEP_GIT=1 DM_KEEP_DEPS=1 ./distmaker.sh standalone
   DM_KEEP_GIT=1 DM_KEEP_DEPS=1 ./distmaker.sh Joomla
+  if [ -f dists/joomla5_php.sh ]; then
+    DM_KEEP_GIT=1 DM_KEEP_DEPS=1 ./distmaker.sh Joomla5
+  fi
   DM_KEEP_GIT=1 DM_KEEP_DEPS=1 ./distmaker.sh WordPress
   DM_KEEP_GIT=1 DM_KEEP_DEPS=1 ./distmaker.sh report
 popd
