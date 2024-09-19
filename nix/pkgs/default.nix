@@ -33,7 +33,7 @@ in pharDirectives // rec {
 
    mysql56 = ifSupported "mysql56" (!isAppleM1) ((import ./mysql56/default.nix).mysql56);
    mysql57 = dists.default.mysql57;
-   mysql80 = dists.default.mysql80;
+   mysql80 = (import ./mysql80/default.nix);
    mysql84 = dists.v2405.mysql84;
    mysql90 = dists.v2405.mysql90;
    mariadb105 = if isAppleM1 then null else dists.v2105.mariadb;
