@@ -17,6 +17,8 @@ function generate() {
   echo '## Force usage of our my.cnf, unless our caller forces its own my.cnf.'
   echo 'if [[ $@ =~ "--defaults-file" ]]; then'
   echo '  true'
+  echo 'elif [[ $@ =~ "--no-defaults" ]]; then'
+  echo '  true'
   echo 'elif [ -n "$MYSQL_HOME" -a -e "$MYSQL_HOME/my.cnf" ]; then'
   echo '  cmd+=("--defaults-file=$MYSQL_HOME/my.cnf")'
   echo 'fi'
