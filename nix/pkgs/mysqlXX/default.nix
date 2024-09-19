@@ -9,7 +9,7 @@ in pkgs.stdenv.mkDerivation rec {
   name = "mysql-loco";
 
   src = ./src;
-  nativeBuildInputs = [ pkgs.makeWrapper pkgs.pkg-config pkgs.which mysql ];
+  nativeBuildInputs = [ pkgs.which mysql ];
 
   installPhase = ''
     mkdir -p $out/bin
