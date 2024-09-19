@@ -41,7 +41,7 @@ for SRC_FILE in "$SRC"/* ; do
   NAME=$(basename "$SRC_FILE")
   DEST_FILE="$DEST/$NAME"
 
-  echo "Wrap ($SRC_FILE) => ($DEST_FILE)"
+  #echo "Wrap ($SRC_FILE) => ($DEST_FILE)"
   generate "$SRC_FILE" > "$DEST_FILE"
   chmod +x "$DEST_FILE"
 done
