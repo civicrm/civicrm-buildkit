@@ -10,7 +10,7 @@ SRC="$1"
 DEST="$2"
 BASH=`which bash`
 
-function generate() {
+function generate_with_cnf() {
   echo "#!""$BASH"
   printf "cmd=(%q)\n" "$1"
   echo
@@ -30,20 +30,35 @@ function generate() {
   echo "#@ respect --defaults-file"
 }
 
+function generate_basic() {
+  echo "#!""$BASH"
+  printf "cmd=(%q)\n" "$1"
+  echo 'cmd+=("$@")'
+  # echo 'echo "RUN: ${cmd[@]}"'
+  printf 'exec ${cmd[@]}'"\n"
+}
+
 if [ -z "$SRC" -o -z "$DEST" ]; then
   echo "usage: $0 <SRC_BIN_DIR> <DEST_BIN_DIR>"
   exit 1
 fi
 
 if [ ! -e "$DEST" ]; then
-  mkdir "$DEST"
+  mkdir -p "$DEST"
 fi
 
-for SRC_FILE in "$SRC"/* ; do
+find "$SRC" -type f -maxdepth 1 | while read SRC_FILE ; do
   NAME=$(basename "$SRC_FILE")
   DEST_FILE="$DEST/$NAME"
 
-  #echo "Wrap ($SRC_FILE) => ($DEST_FILE)"
-  generate "$SRC_FILE" > "$DEST_FILE"
+  # echo "Wrap ($SRC_FILE) => ($DEST_FILE)"
+  case "$NAME" in
+    mysql|mysqladmin|mysqldumpslow|mysqlshow)
+      generate_with_cnf "$SRC_FILE" > "$DEST_FILE"
+      ;;
+    *)
+      generate_basic "$SRC_FILE" > "$DEST_FILE"
+      ;;
+  esac
   chmod +x "$DEST_FILE"
 done
