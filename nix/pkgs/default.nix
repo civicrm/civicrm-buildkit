@@ -34,12 +34,19 @@ let
 in pharDirectives // rec {
 
    mysql56 = ifSupported "mysql56" (!isAppleM1) ((import ./mysql56/default.nix).mysql56);
-   mysql57 = makeMysqlWrapper { mysql=dists.default.mysql57; };
-   mysql80 = makeMysqlWrapper { mysql=dists.default.mysql80; };
-   mysql84 = makeMysqlWrapper { mysql=dists.v2405.mysql84; };
-   mysql90 = makeMysqlWrapper { mysql=dists.v2405.mysql90; };
+   mysql57 = dists.default.mysql57;
+   mysql80 = dists.default.mysql80;
+   mysql84 = dists.v2405.mysql84;
+   mysql90 = dists.v2405.mysql90;
    mariadb105 = if isAppleM1 then null else dists.v2105.mariadb;
    mariadb106 = dists.default.mariadb;
+
+   # mysql57 = makeMysqlWrapper { mysql=dists.default.mysql57; };
+   # mysql80 = makeMysqlWrapper { mysql=dists.default.mysql80; };
+   # mysql84 = makeMysqlWrapper { mysql=dists.v2405.mysql84; };
+   # mysql90 = makeMysqlWrapper { mysql=dists.v2405.mysql90; };
+   # mariadb105 = if isAppleM1 then null else makeMysqlWrapper { mysql=dists.v2105.mariadb; };
+   # mariadb106 = makeMysqlWrapper { mysql=dists.default.mariadb; };
 
    php71 = ifSupported "php71" (!isAppleM1) (import ./php71/default.nix);
    php72 = ifSupported "php72" (!isAppleM1) (import ./php72/default.nix);
