@@ -131,7 +131,7 @@ function cvutil_rmrf() {
   if [ ! -e "$folder" ]; then
     return
   fi
-  find "$folder" -type d -print0 | xargs -0 -n 20 chmod u+w
+  find "$folder" -type d -print0 | xargs -0 -n 20 chmod -f u+w
   rm -rf "$folder"
 }
 
@@ -1698,16 +1698,40 @@ function git_cache_deref_remotes() {
 ## Joomla -- Generate config files and setup database
 ## usage: joomla_install
 function joomla_install() {
-  local parent=$(dirname "$CMS_ROOT")
-  local child=$(basename "$CMS_ROOT")
-  joomla site:install -v \
-    --www "$parent" \
-    -L "$CMS_DB_USER:$CMS_DB_PASS" -H "$CMS_DB_HOST" -P "$CMS_DB_PORT" --mysql-database "$CMS_DB_NAME" \
-    --overwrite \
-    --skip-exists-check \
-    "$child"
-  cvutil_php_nodbg amp datadir "$CMS_ROOT/logs" "$CMS_ROOT/tmp"
+  cvutil_assertvars joomla_install CMS_ROOT CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS
+
+  if [ $(echo "$ADMIN_PASS" | wc -m) -le 12 ]; then
+    echo "Joomla password must be at least 12 characters long"
+    exit 1
+  fi
+  pushd "$CMS_ROOT" >> /dev/null
+  php "installation/joomla.php" install -n -v \
+    --site-name="$CMS_TITLE" \
+    --admin-user="CiviCRM Admin" \
+    --admin-username="$ADMIN_USER" \
+    --admin-password="$ADMIN_PASS" \
+    --admin-email="$ADMIN_EMAIL" \
+    --db-host="$CMS_DB_HOST" \
+    --db-user="$CMS_DB_USER" \
+    --db-pass="$CMS_DB_PASS" \
+    --db-name="$CMS_DB_NAME" \
+    --db-prefix='j_'
+
+  cvutil_php_nodbg amp datadir "$CMS_ROOT/logs" "$CMS_ROOT/tmp" "$CMS_ROOT/administrator/cache"
+  popd >> /dev/null
 }
+###############################################################################
+## Joomla -- Generate config files and setup database
+## usage: joomla_uninstall
+function joomla_uninstall() {
+  pushd "$CMS_ROOT" >> /dev/null
+    [ -d .installation.bak ] && mv .installation.bak installation
+    [ -d .git.bak ]          && mv .git.bak .git
+    [ -f configuration.php ] && rm -f configuration.php
+    [ -f installation.zip  ] && unzip -q installation.zip
+  popd >> /dev/null
+}
+
 
 ###############################################################################
 ## Reset all the key details (username, password, email) for one of the
