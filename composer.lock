@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6291c696d571cfeb741408556aa52f3a",
+    "content-hash": "16dfe202a4ad11543efb480c8cd4b8ed",
     "packages": [
         {
             "name": "civicrm/composer-compile-plugin",
@@ -111,16 +111,16 @@
         },
         {
             "name": "civicrm/upgrade-test",
-            "version": "0.5",
+            "version": "0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/civicrm/civicrm-upgrade-test.git",
-                "reference": "61f7b607f86c555489b5d4a59fa59207af0526f6"
+                "reference": "ba10edce47baf5b705084644fdfdeabaebfcacc7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/61f7b607f86c555489b5d4a59fa59207af0526f6",
-                "reference": "61f7b607f86c555489b5d4a59fa59207af0526f6",
+                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/ba10edce47baf5b705084644fdfdeabaebfcacc7",
+                "reference": "ba10edce47baf5b705084644fdfdeabaebfcacc7",
                 "shasum": ""
             },
             "bin": [
@@ -146,9 +146,9 @@
             "description": "Collection of scripts and data-files for testing CiviCRM upgrades",
             "homepage": "https://github.com/civicrm/civicrm-upgrade-test",
             "support": {
-                "source": "https://github.com/civicrm/civicrm-upgrade-test/tree/0.5"
+                "source": "https://github.com/civicrm/civicrm-upgrade-test/tree/0.6"
             },
-            "time": "2022-07-21T10:16:39+00:00"
+            "time": "2024-09-20T12:40:18+00:00"
         },
         {
             "name": "drupal/coder",
