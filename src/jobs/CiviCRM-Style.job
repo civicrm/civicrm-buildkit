@@ -62,6 +62,6 @@ civibuild run "$BLDNAME" --eval "$cloneCmd"
 civibuild run "$BLDNAME" --eval 'git_cache_deref_remotes "$CACHE_DIR" "$WEB_ROOT"'
 
 pushd "$BLDDIR/web/src"
-  git scan am -N "https://github.com/civicrm/$CIVI_REPO/pull/${ghprbPullId}"
+  git scan am --rebuild --passthru='--ignore-whitespace' -N "https://github.com/civicrm/$CIVI_REPO/pull/${ghprbPullId}"
   xcivilint "origin/$ghprbTargetBranch" "$CIVI_REPO""#""${ghprbPullId}"
 popd
