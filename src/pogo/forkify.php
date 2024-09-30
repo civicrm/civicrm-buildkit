@@ -296,12 +296,14 @@ class Repos {
     // In standard 'dist' layout, civicrm-wordpress is a child dir. But in live WP install, it's the parent.
     $parent = $this->getPath('..');
     $child = $this->getPath('WordPress');
-    if (file_exists("$parent/wp-cli/civicrm.php") && !file_exists($child)) {
-      return $parent;
+
+    $flags = ['wp-cli/wp-cli-civicrm.php', 'wp-cli/civicrm.php'];
+    foreach ($flags as $flag) {
+      if (file_exists("$parent/$flag")) {
+        return $parent;
+      }
     }
-    else {
-      return $child;
-    }
+    return $child;
   }
 
   /**
