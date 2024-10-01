@@ -74,7 +74,17 @@ $c = clippy()->register(plugins());
 
 ###############################################################################
 #### Commands
-$globalOptions = '[-N|--dry-run] [-A|--expect-all] [-S|--step] [--root=]';
+$globalOptions = '[-N|--dry-run] [-A|--expect-all] [-S|--step] [--root=] [--detect]';
+
+$c['app']->command("paths $globalOptions", function (SymfonyStyle $io, Repos $repos, ?string $root, Cmdr $cmdr, $input) {
+  $repos->walk($repos->paths(), function ($name, $path, $branchPrefix) use ($io) {
+    $io->writeln(implode('|', [
+      '<comment>' . $name . '</comment>',
+      realpath($path),
+      $branchPrefix,
+    ]));
+  });
+})->setDescription('List the paths of the CiviCRM repos');
 
 $c['app']->command("remote:add $globalOptions remote url-prefix", function ($remote, $urlPrefix, SymfonyStyle $io, Repos $repos, Taskr $taskr) {
   $remoteUrls = $repos->remoteUrls($remote, $urlPrefix);
@@ -280,28 +290,55 @@ class Repos {
    */
   protected $input;
 
+  /**
+   * @var \Clippy\Cmdr
+   */
+  protected $cmdr;
+
+  private $_base;
+
   public function getPath(string $subdir) {
+    if ($this->_base === NULL) {
+      $this->_base = $this->findCivicrmRoot();
+    }
+    return ($subdir === '.')
+      ? $this->_base
+      : ($this->_base . DIRECTORY_SEPARATOR . $subdir);
+  }
+
+  protected function findCivicrmRoot() {
     if ($this->input->hasOption('root') && $this->input->getOption('root')) {
       $base = rtrim($this->input->getOption('root'), '/' . DIRECTORY_SEPARATOR);
     }
     else {
       $base = '.';
     }
-    return ($subdir === '.')
-      ? $base
-      : ($base . DIRECTORY_SEPARATOR . $subdir);
+
+    if ($this->input->hasOption('detect') && $this->input->getOption('detect')) {
+      $output = trim($this->cmdr->run('find {{0|s}} -name civicrm-version.php', [$base]));
+      $result = explode("\n", $output)[0];
+      if (empty($result) || !file_exists($result)) {
+        throw new \RuntimeException("Failed to find civicrm-version.php under " . getcwd());
+      }
+      return realpath(dirname($result));
+    }
+    else {
+      return $base;
+    }
   }
 
   protected function pickWordPress(): string {
     // In standard 'dist' layout, civicrm-wordpress is a child dir. But in live WP install, it's the parent.
     $parent = $this->getPath('..');
     $child = $this->getPath('WordPress');
-    if (file_exists("$parent/wp-cli/civicrm.php") && !file_exists($child)) {
-      return $parent;
+
+    $flags = ['wp-cli/wp-cli-civicrm.php', 'wp-cli/civicrm.php'];
+    foreach ($flags as $flag) {
+      if (file_exists("$parent/$flag")) {
+        return $parent;
+      }
     }
-    else {
-      return $child;
-    }
+    return $child;
   }
 
   /**
@@ -362,6 +399,18 @@ class Repos {
       ['joomla', $this->getPath('joomla'), $tgtRemote, $tgtBranch, $srcRemote, $srcBranch],
       ['packages', $this->getPath('packages'), $tgtRemote, $tgtBranch, $srcRemote, $srcBranch],
       ['wordpress', $this->pickWordPress(), $tgtRemote, $tgtBranch, $srcRemote, $srcBranch],
+    ]);
+  }
+
+  public function paths(): array {
+    return rekeyItems(['name', 'path', 'branchPrefix'], [
+      ['core', $this->getPath('.'), ''],
+      ['backdrop@1.x', $this->getPath('backdrop'), "1.x-"],
+      ['drupal@7.x', $this->getPath('drupal'), "7.x-"],
+      ['drupal-8', $this->getPath('drupal-8'), ''],
+      ['joomla', $this->getPath('joomla'), ''],
+      ['packages', $this->getPath('packages'), ''],
+      ['wordpress', $this->pickWordPress(), ''],
     ]);
   }
 
