@@ -1,0 +1,103 @@
+#!/bin/bash
+set -e
+
+## Example usage:
+##
+## $ env BLDTYPE=standalone-clean CIVIVER=5.75-security SUITE=phpunit-e2e run-job --mock Security-CiviCRM-Test
+## $ env BLDTYPE=drupal-clean CIVIVER=security-fixes SUITE=phpunit-e2e MR_PATCH="https://lab.civicrm.org/security/core/-/merge_requests/169" run-job --mock Security-CiviCRM-Test
+
+#################################################
+## Environment variables
+
+## EXECUTOR_NUMBER: The number of this concurrent process
+## WORKSPACE: The path where Jenkins stores data for this job
+## BLDTYPE: The type of civibuild site to create (e.g. `drupal-clean` or `wp-demo`)
+## CIVIVER: The version of CiviCRM to install, expressed as a branch or tag (e.g. `master`, `5.59`, `5.57.0`)
+## SUITE: Space-limited list of test-suites (e.g. `phpunit-e2e phpunit-civi`)
+## MR_PATCH: URL of the Gitlab merge-request
+## ORNERY: Either "enable" or "disable". If omitted, implies "disable"
+assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE CIVIVER SUITE
+
+## CIVICOMMIT: Optional. Override the the `civicrm-core` version with specific commit. Can help with debugging/manual bisection.
+assert_regex '^[0-9a-z\.-]*$' "$CIVICOMMIT" "Missing or invalid CIVICOMMIT"
+
+## MR_PATCH: Optional. URL of a pending pull-request in any `civicrm-*` repo (e.g. `https://lab.civicrm.org/security/foo/-/merge-requests/123/`)
+if [ -n "$MR_PATCH" ]; then
+  # "https://lab.civicrm.org/security/foo/-/merge-requests/123/"
+  #  1     2 3               4        5   6 7              8
+  assert_regex '^https://lab.civicrm.org/security/[a-z0-9-]*/-/merge_requests/[0-9]\+/*' "$MR_PATCH" "Invalid or missing MR_PATCH"
+  MR_PATCH_REPO=$( echo "$MR_PATCH" | cut -d/ -f5 )
+  MR_PATCH_ID=$( echo "$MR_PATCH" | cut -d/ -f8 )
+fi
+
+ORNERY=${ORNERY:-disable}
+assert_regex '^\(disable\|enable\)$' "$ORNERY" "Invalid ORNERY flag"
+
+SECVER="$CIVIVER"
+if [ "$SECVER" == "security-fixes" ]; then
+  ## This isn't perfect, but it should be close
+  CIVIVER=$( curl 'https://latest.civicrm.org/stable.php' | cut -d. -f1,2 )
+else
+  ## Ex: 5.99-security
+  CIVIVER=$( echo "$SECVER" | cut -f1 -d- )
+fi
+
+assert_common CIVIVER
+
+#################################################
+## Bootstrap
+
+assert_bknix_temporary
+
+#################################################
+## Local variables
+GUARD=
+
+## Build definition
+## Note: Suffixes are unique within a period of 180 days.
+BLDNAME="build-$EXECUTOR_NUMBER"
+BLDDIR="$BKITBLD/$BLDNAME"
+EXITCODES=""
+
+export TIME_FUNC="linear:500"
+
+#################################################
+## Report details about the test environment
+set -x
+
+$GUARD civibuild env-info
+
+## Reset (cleanup after previous tests)
+init_std_workspace
+if [ -d "$BKITBLD/$BLDNAME" ]; then
+  echo y | civibuild destroy "$BLDNAME"
+fi
+
+## Ensure we can connect to security repo
+civi-ssh-host-keys
+
+## Download dependencies, apply, and perform fresh DB installation
+$GUARD civibuild download "$BLDNAME" --type "$BLDTYPE" --civi-ver "$CIVIVER"
+
+pushd "$BKITBLD/$BLDNAME" >> /dev/null
+  ## This stuff could almost move into civibuild_apply_user_extras() or similar, but juggling asymmetric branch names is a bit awkward.
+  if echo "$SECVER" | grep -q security ; then
+    forkify --detect add-remotes security "git@lab.civicrm.org:security/"
+    forkify --detect fetch security
+    forkify --detect checkout "$SECVER"
+    patch_repo=$( forkify --detect paths | grep ^"$MR_PATCH_REPO" | cut -f2 -d\| )
+    if [ -z "$patch_repo" -o ! -e "$patch_repo" ]; then
+      fatal "Failed to find folder to patch"
+    fi
+    ( cd "$patch_repo" && git fetch security "refs/merge-requests/$MR_PATCH_ID/merge" && git checkout FETCH_HEAD )
+    # refs/merge-requests/169/merge or refs/merge-requests/169/head
+  fi
+popd
+
+$GUARD civibuild install "$BLDNAME"
+
+if [ "$ORNERY" = "disable" ]; then
+  $GUARD civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" --exclude-group ornery $SUITE
+else
+  $GUARD civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" $SUITE
+fi
