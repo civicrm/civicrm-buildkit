@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "16dfe202a4ad11543efb480c8cd4b8ed",
+    "content-hash": "a24e7478e71c2c706ad0e0d1da60ebe6",
     "packages": [
         {
             "name": "civicrm/composer-compile-plugin",
@@ -111,16 +111,16 @@
         },
         {
             "name": "civicrm/upgrade-test",
-            "version": "0.6",
+            "version": "0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/civicrm/civicrm-upgrade-test.git",
-                "reference": "ba10edce47baf5b705084644fdfdeabaebfcacc7"
+                "reference": "284e62ac8ff1c440960e1e3a2c709829a98bfd85"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/ba10edce47baf5b705084644fdfdeabaebfcacc7",
-                "reference": "ba10edce47baf5b705084644fdfdeabaebfcacc7",
+                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/284e62ac8ff1c440960e1e3a2c709829a98bfd85",
+                "reference": "284e62ac8ff1c440960e1e3a2c709829a98bfd85",
                 "shasum": ""
             },
             "bin": [
@@ -146,9 +146,9 @@
             "description": "Collection of scripts and data-files for testing CiviCRM upgrades",
             "homepage": "https://github.com/civicrm/civicrm-upgrade-test",
             "support": {
-                "source": "https://github.com/civicrm/civicrm-upgrade-test/tree/0.6"
+                "source": "https://github.com/civicrm/civicrm-upgrade-test/tree/0.7"
             },
-            "time": "2024-09-20T12:40:18+00:00"
+            "time": "2024-10-07T20:35:00+00:00"
         },
         {
             "name": "drupal/coder",
@@ -581,5 +581,5 @@
     "platform-overrides": {
         "php": "7.2"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
