@@ -40,5 +40,6 @@ including:
 
  * `backdrop_install` - Create Backdrop config files, tables, and data dirs (using `core/scripts/install.sh`)
  * `drupal_install` - Create Drupal config files, tables, and data dirs (using `drush site-install` and `sites/default`)
+ * `joomla_install` - Create Joomla config files, tables, and data dirs (using `installation/joomla.php`)
  * `wp_install` - Create WordPress config files, tables, and data dirs (using wp-cli)
  * `civicrm_install` - Create CiviCRM config files, tables, and data dirs
