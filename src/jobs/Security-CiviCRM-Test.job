@@ -85,12 +85,14 @@ pushd "$BKITBLD/$BLDNAME" >> /dev/null
     forkify --detect add-remotes security "git@lab.civicrm.org:security/"
     forkify --detect fetch security
     forkify --detect checkout "$SECVER"
-    patch_repo=$( forkify --detect paths | grep ^"$PATCH_REPO" | cut -f2 -d\| )
-    if [ -z "$patch_repo" -o ! -e "$patch_repo" ]; then
-      fatal "Failed to find folder to patch"
+    if [ -n "$PATCH_REPO" ]; then
+      patch_repo=$( forkify --detect paths | grep ^"$PATCH_REPO" | cut -f2 -d\| )
+      if [ -z "$patch_repo" -o ! -e "$patch_repo" ]; then
+        fatal "Failed to find folder to patch"
+      fi
+      ( cd "$patch_repo" && git fetch security "refs/merge-requests/$PATCH_ID/merge" && git checkout FETCH_HEAD )
+      # refs/merge-requests/169/merge or refs/merge-requests/169/head
     fi
-    ( cd "$patch_repo" && git fetch security "refs/merge-requests/$PATCH_ID/merge" && git checkout FETCH_HEAD )
-    # refs/merge-requests/169/merge or refs/merge-requests/169/head
   fi
 popd
 
