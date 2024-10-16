@@ -12,13 +12,46 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Question\Question;
 
 $c = clippy()->register(plugins());
+
+
 /**
  * @param array[] $ppl The list of contributor records
  * @param int[] $ids The list of selected contributor IDs
  * @param string[] $extras Additional contributor names that do not appear in the official listing
  * @return string[] List of names
  */
-$c['fmtNames()'] = function($ppl, $ids, $extras, SymfonyStyle $io) {
+$c['fmtNames()'] = function($ppl, $ids, $extras, $input = NULL, $fmtNamesOrdered = NULL, $fmtNamesByOrg = NULL) {
+  $fmt = $input->getOption('ordered') ? $fmtNamesOrdered : $fmtNamesByOrg;
+  return $fmt($ppl, $ids, $extras);
+};
+
+/**
+ * @param array[] $ppl The list of contributor records
+ * @param int[] $ids The list of selected contributor IDs
+ * @param string[] $extras Additional contributor names that do not appear in the official listing
+ * @return string[] List of names
+ */
+$c['fmtNamesOrdered()'] = function($ppl, $ids, $extras, SymfonyStyle $io) {
+  $names = [];
+  foreach ($ids as $id) {
+    $p = $ppl[$id];
+    if (!empty($p['organization'])) {
+      $names[] = sprintf("%s of %s", $p['name'] ?? $p['github'], $p['organization']);
+    }
+    else {
+      $names[] = $p['name'] ?? $p['github'];
+    }
+  }
+  return $names;
+};
+
+/**
+ * @param array[] $ppl The list of contributor records
+ * @param int[] $ids The list of selected contributor IDs
+ * @param string[] $extras Additional contributor names that do not appear in the official listing
+ * @return string[] List of names
+ */
+$c['fmtNamesByOrg()'] = function($ppl, $ids, $extras, SymfonyStyle $io) {
   $orgs = [];
   $names = [];
   foreach ($ids as $id) {
@@ -40,7 +73,8 @@ $c['fmtNames()'] = function($ppl, $ids, $extras, SymfonyStyle $io) {
   usort($names, function($a, $b) {
     return strnatcmp(mb_strtolower($a), mb_strtolower($b));
   });
-  return $names;
+  return array_reverse($names);
+  // return $names;
 };
 
 /**
@@ -48,7 +82,7 @@ $c['fmtNames()'] = function($ppl, $ids, $extras, SymfonyStyle $io) {
  * @param string $yamlFile
  * @param callable $fmtNames
  */
-$c['app']->main('[yamlFile]', function(SymfonyStyle $io, $yamlFile, $fmtNames) {
+$c['app']->main('[yamlFile] [--ordered]', function(SymfonyStyle $io, $yamlFile, $fmtNames) {
   $io->title(basename(__FILE__) . ": Build a list of contributor names");
   $io->section("Load contributor index");
   $yamlFile = $yamlFile ?? 'contributor-key.yml';
@@ -81,7 +115,7 @@ $c['app']->main('[yamlFile]', function(SymfonyStyle $io, $yamlFile, $fmtNames) {
   $names = $fmtNames($ppl, array_keys($idFlags), $extras);
   $io->section("Final list");
   $io->writeln(wordwrap(
-    implode("; ", array_reverse($names)),
+    implode("; ", $names),
     100
   ));
 });
