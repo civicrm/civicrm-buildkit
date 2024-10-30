@@ -132,6 +132,7 @@ EOPERM
     add 'access CiviGrant'
     add 'edit grants'
     add 'delete in CiviGrant'
+    add 'administer CiviDiscount'
 EOPERM
   ## Note: If you enable CiviGrant, the grant 'access CiviGrant', 'edit grants', 'delete in CiviGrant'
 

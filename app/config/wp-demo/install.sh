@@ -94,6 +94,7 @@ wp cap add civicrm_admin \
   administer_civicampaign \
   administer_civicase \
   administer_civicrm \
+  administer_cividiscount \
   administer_dedupe_rules \
   administer_reports \
   administer_reserved_groups \
