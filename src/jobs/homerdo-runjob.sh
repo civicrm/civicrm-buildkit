@@ -21,7 +21,8 @@
 SELF="$0"
 TTL_TOOLS=60     ## During setup, refresh 'civi-download-tools' (if >1 hour old)
 TTL_BLDTYPE=180  ## During setup, warmup 'bldtype' (if >3 hours since last)
-TTL_EXEC=120m    ## Finish execution within 2 hours - or bail out
+# TTL_EXEC=120m    ## Finish execution within 2 hours - or bail out
+TTL_EXEC=180m    ## 3h is really too long, but it is actually happening. We need to investigate why. See: dev/core#5597
 CLEANUP_FILES=() ## List of files/directories to delete
 RESPONSE=        ## Tar-formatted fifo
 MAX_IMAGES=8     ## If there are more than X copies of an image, then refuse to make more
