@@ -75,6 +75,7 @@ function show_help() {
   echo "                        - phpunit-civi"
   echo "                        - phpunit-core-exts"
   echo "                        - phpunit-crm"
+  echo "                        - phpunit-crm-{1,2,3}"
   echo "                        - phpunit-e2e"
   echo "                        - phpunit-drupal"
   echo "                        - phpunit-wordpress"
@@ -135,6 +136,27 @@ function task_phpunit_expr() {
   popd
 
   $GUARD phpunit-xml-cleanup "$JUNITDIR/$SUITE_NAME.xml"
+}
+
+## Run PHPUnit. Find all subsdirs matching a pattern and put them in a suite together.
+##
+## usage: task_phpunit_find <logical-suite-name> <work-dir> <find-expr...>
+## example: task_phpunit_find CRM_1 "$CIVI_CORE" ./tests/phpunit/CRM -name '[ABC]*' ;;
+function task_phpunit_find() {
+  local SUITE_NAME="$1"
+  local WORK_DIR="$2"
+  shift 2
+
+  pushd "$WORK_DIR"
+    local DIRS=$( find "$@" -type d )
+    if [ ! -f phpunit.xml.dist ]; then
+      fatal "($WORK_DIR) Cannot generate local phpunit.xml for $SUITE_NAME. The template phpunit.xml.dist is missing."
+    fi
+    php "$PRJDIR/src/phpunit-add-suite.php" "$SUITE_NAME" $( find "$@" ) < phpunit.xml.dist > phpunit.xml.tmp
+  popd
+
+  task_phpunit_expr "$SUITE_NAME" "$WORK_DIR" -c phpunit.xml.tmp --testsuite "$SUITE_NAME"
+  rm -f "$WORK_DIR/phpunit.xml.tmp"
 }
 
 ## usage: task_phpunit_core_extension <extension-dirname> <junit-name>
@@ -437,6 +459,10 @@ for TESTTYPE in $SUITES ; do
     upgrade@*) task_upgrade $(echo $TESTTYPE | sed s'/^upgrade//' ) ;;
     phpunit-e2e)  PHP_APC_CLI=on task_phpunit E2E_AllTests ;;
     phpunit-crm)  task_phpunit CRM_AllTests ;;
+    ## Alternatively, we may run the CRM suite as 3 roughly-equal sub-suites.
+    phpunit-crm-1) CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/CRM -mindepth 1 -maxdepth 1 -name 'C*' ;;
+    phpunit-crm-2) CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/CRM -mindepth 1 -maxdepth 1 -name '[ABDEFGHIJKLM]*' ;;
+    phpunit-crm-3) CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/CRM -mindepth 1 -maxdepth 1 -name '[NOPQRSTUVWXYZ]*' ;;
     # Handle legacy call for phpunit-api being equivilant to phpunit-api3
     phpunit-api)  task_phpunit api_v3_AllTests ;;
     phpunit-api3) task_phpunit api_v3_AllTests ;;
@@ -468,6 +494,10 @@ for TESTTYPE in $SUITES ; do
   fi
   if  [ $TESTTYPE = "phpunit-crm" ] || [ $TESTTYPE = "all" ] ; then
     [ ! -f "$JUNITDIR/CRM_AllTests.xml" ] && fatal "Missing XML: CRM_AllTests.xml"
+  fi
+  if  [ $TESTTYPE = "phpunit-crm-1" ] || [ $TESTTYPE = "phpunit-crm-2" ] || [ $TESTTYPE = "phpunit-crm-3" ] ; then
+    ## NOTE: These are NOT expected if when TESTTYPE="all". Instead, "all" has the larger phpunit-crm suite (above).
+    [ ! -f "$JUNITDIR/$TESTTYPE.xml" ] && fatal "Missing XML: $TESTTYPE.xml"
   fi
   if  [ $TESTTYPE = "phpunit-api" ] || [ $TESTTYPE = "all" ] ; then
     [ ! -f "$JUNITDIR/api_v3_AllTests.xml" ] && fatal "Missing XML: api_v3_AllTests.xml"
