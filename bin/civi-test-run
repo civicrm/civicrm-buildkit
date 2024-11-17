@@ -152,7 +152,7 @@ function task_phpunit_find() {
     if [ ! -f phpunit.xml.dist ]; then
       fatal "($WORK_DIR) Cannot generate local phpunit.xml for $SUITE_NAME. The template phpunit.xml.dist is missing."
     fi
-    php "$PRJDIR/src/phpunit-add-suite.php" "$SUITE_NAME" $( find "$@" ) < phpunit.xml.dist > phpunit.xml.tmp
+    php "$PRJDIR/src/phpunit-add-suite.php" "$SUITE_NAME" $( find "$@" | sort ) < phpunit.xml.dist > phpunit.xml.tmp
   popd
 
   task_phpunit_expr "$SUITE_NAME" "$WORK_DIR" -c phpunit.xml.tmp --testsuite "$SUITE_NAME"
