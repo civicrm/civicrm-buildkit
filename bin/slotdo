@@ -2,8 +2,10 @@
 
 ## Synopsis: Run jobs in a systemd process-container (identified by EXECUTOR_NUMBER).
 ##
-## usage: sudo slotdo <NUMBER> <SCRIPT>
-## example: sudo slotdo 10 /tmp/my-job.sh
+## usage: sudo slotdo run <NUMBER> <SCRIPT>
+## usage: sudo slotdo kill <NUMBER>
+## example: sudo slotdo run 2 /tmp/my-job.sh
+## example: sudo slotdo kill 2
 ##
 ## Motivation: Generally, Jenkins is responsible for ensuring that we only have one
 ## on-going task for each `EXECUTOR_NUMBER`. This requires calling some kind
