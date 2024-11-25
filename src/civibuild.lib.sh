@@ -1706,20 +1706,21 @@ function joomla_install() {
   fi
   pushd "$CMS_ROOT" >> /dev/null
 
-  CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
-  php "installation/joomla.php" install -n -v \
-    --site-name="$CMS_TITLE" \
-    --admin-user="CiviCRM Admin" \
-    --admin-username="$ADMIN_USER" \
-    --admin-password="$ADMIN_PASS" \
-    --admin-email="$ADMIN_EMAIL" \
-    --db-host="$CMS_DB_HOSTPORT" \
-    --db-user="$CMS_DB_USER" \
-    --db-pass="$CMS_DB_PASS" \
-    --db-name="$CMS_DB_NAME" \
-    --db-prefix='j_'
+    CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
+    php "installation/joomla.php" install -n -v \
+      --site-name="$CMS_TITLE" \
+      --admin-user="CiviCRM Admin" \
+      --admin-username="$ADMIN_USER" \
+      --admin-password="$ADMIN_PASS" \
+      --admin-email="$ADMIN_EMAIL" \
+      --db-host="$CMS_DB_HOSTPORT" \
+      --db-user="$CMS_DB_USER" \
+      --db-pass="$CMS_DB_PASS" \
+      --db-name="$CMS_DB_NAME" \
+      --db-prefix='j_'
 
-  cvutil_php_nodbg amp datadir "$CMS_ROOT/logs" "$CMS_ROOT/tmp" "$CMS_ROOT/administrator/cache"
+    cvutil_php_nodbg amp datadir "$CMS_ROOT/logs" "$CMS_ROOT/tmp" "$CMS_ROOT/administrator/cache"
+
   popd >> /dev/null
 }
 ###############################################################################
