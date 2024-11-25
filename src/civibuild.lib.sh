@@ -1737,6 +1737,7 @@ function joomla_uninstall() {
 
 
 ###############################################################################
+## (DEPRECATED: Use joomla_cli)
 ## Reset all the key details (username, password, email) for one of the
 ## Joomla user accounts.
 ##
@@ -1747,6 +1748,19 @@ UPDATE j_users
 SET username=@ENV[NEWUSER], password=md5(@ENV[NEWPASS]), email=@ENV[NEWMAIL]
 WHERE username=@ENV[OLDUSER];
 EOSQL
+}
+
+###############################################################################
+## Call a subcommand in the Joomla CLI (CMS_ROOT/cli/joomla.php)
+##
+## NOTE: As this is primarily intended for scripting, it implies `--no-interaction`.
+##
+## Ex: joomla_cli user:add --name=demo --username=demo --password=demo --email='demo@example.com'
+function joomla_cli() {
+  cvutil_assertvars joomla_install CMS_ROOT
+  pushd "$CMS_ROOT/cli" >> /dev/null
+    php joomla.php --no-interaction "$@"
+  popd >> /dev/null
 }
 
 ###############################################################################
