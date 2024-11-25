@@ -1700,10 +1700,9 @@ function git_cache_deref_remotes() {
 function joomla_install() {
   cvutil_assertvars joomla_install CMS_ROOT CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS
 
-  if [ $(echo "$ADMIN_PASS" | wc -m) -le 12 ]; then
-    echo "Joomla password must be at least 12 characters long"
-    exit 1
-  fi
+  ## install.php has its own password-validation that seems a bit quirkier
+  local tmp_pass=$(cvutil_makepasswd 16)
+
   pushd "$CMS_ROOT" >> /dev/null
 
     CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
@@ -1711,13 +1710,15 @@ function joomla_install() {
       --site-name="$CMS_TITLE" \
       --admin-user="CiviCRM Admin" \
       --admin-username="$ADMIN_USER" \
-      --admin-password="$ADMIN_PASS" \
+      --admin-password="$tmp_pass" \
       --admin-email="$ADMIN_EMAIL" \
       --db-host="$CMS_DB_HOSTPORT" \
       --db-user="$CMS_DB_USER" \
       --db-pass="$CMS_DB_PASS" \
       --db-name="$CMS_DB_NAME" \
       --db-prefix='j_'
+
+    joomla_cli user:reset-password --username="$ADMIN_USER" --password="$ADMIN_PASS"
 
     cvutil_php_nodbg amp datadir "$CMS_ROOT/logs" "$CMS_ROOT/tmp" "$CMS_ROOT/administrator/cache"
 
