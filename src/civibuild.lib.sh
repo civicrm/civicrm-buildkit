@@ -1695,6 +1695,45 @@ function git_cache_deref_remotes() {
 }
 
 ###############################################################################
+## Joomla -- Identify and download the main zip file
+
+## example: joomla4_download "$WEB_ROOT/web"
+function joomla4_download() {
+  _joomla_download 4 "$@"
+}
+
+## example: joomla5_download "$WEB_ROOT/web"
+function joomla5_download() {
+  _joomla_download 5 "$@"
+}
+
+## usage: _joomla_download <MAJOR_VERSION> <TARGET_PATH>
+## example: _joomla_download 4 "$WEB_ROOT/web"
+function _joomla_download() {
+  local major="$1"
+  local target="$2"
+  cvutil_assertvars joomla_download CMS_VERSION
+
+  pushd "$target" >> /dev/null
+
+    if [ "$CMS_VERSION" = 'latest' ]; then
+      http_download "https://update.joomla.org/core/j${major}/default.xml" joomla-latest.xml
+      # slightly brittle as <version> could include mutliple lines ... but it doesn't now
+      CMS_VERSION=$(grep -m1 '<version>' joomla-latest.xml | sed -E -e 's/<\/?version>//g'  -e 's/\s*//g')
+      rm joomla-latest.xml
+    fi
+
+    local VERSION_DASHES=$(echo $CMS_VERSION | tr '.' '-')
+    local ZIP_URL="https://downloads.joomla.org/cms/joomla${major}/$VERSION_DASHES/Joomla_$VERSION_DASHES-Stable-Full_Package.zip"
+    extract-url --cache-ttl 172800 .="$ZIP_URL"
+
+    # Save a copy of the installation directory for re-installation
+    zip -q -r installation.zip installation
+
+  popd >> /dev/null
+}
+
+###############################################################################
 ## Joomla -- Generate config files and setup database
 ## usage: joomla_install
 function joomla_install() {
