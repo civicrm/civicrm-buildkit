@@ -6,4 +6,3 @@
 
 joomla_uninstall
 amp_uninstall
-

@@ -13,8 +13,7 @@ amp_install
 joomla_install
 
 pushd "$CMS_ROOT" >> /dev/null
-  joomla_reset_user 'admin' "$ADMIN_USER" "$ADMIN_PASS" "$ADMIN_EMAIL"
-  joomla_reset_user 'user' "$DEMO_USER" "$DEMO_PASS" "$DEMO_EMAIL"
+  joomla_cli user:add --name="$DEMO_USER" --username="$DEMO_USER" --password="$DEMO_PASS" --email="$DEMO_EMAIL" --usergroup="Registered,Manager"
 popd >>/dev/null
 
 ###############################################################################

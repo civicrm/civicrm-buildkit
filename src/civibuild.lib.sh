@@ -38,10 +38,19 @@ function cvutil_assertvars() {
 
 ###############################################################################
 ## Run a PHP program and explicitly disable debugging.
-## usage: cvutil_php_nodbg <program name> [<args>...]
+## usage: cvutil_php_nodbg <program-name> [<args>...]
+## usage: cvutil_php_nodbg <relative-path> [<args>...]
+##
+## If the program name begins with './', then it is treated as a local file-path.
+## Otherwise, it is located on PATH.
 function cvutil_php_nodbg() {
-  local cmd=$(which "$1")
-  [ -z "$cmd" ] && cvutil_fatal "Failed to locate $cmd"
+  local cmd="$1"
+  if [[ ${cmd:0:2} == "./" ]]; then
+    true
+  else
+    cmd=$(which "$1")
+    [ -z "$cmd" ] && cvutil_fatal "Failed to locate $cmd"
+  fi
   shift
   XDEBUG_PORT= XDEBUG_MODE=off php -d xdebug.remote_enable=off "$cmd" "$@"
 }
@@ -131,7 +140,7 @@ function cvutil_rmrf() {
   if [ ! -e "$folder" ]; then
     return
   fi
-  find "$folder" -type d -print0 | xargs -0 -n 20 chmod u+w
+  find "$folder" -type d -print0 | xargs -0 -n 20 chmod -f u+w
   rm -rf "$folder"
 }
 
@@ -1695,21 +1704,89 @@ function git_cache_deref_remotes() {
 }
 
 ###############################################################################
-## Joomla -- Generate config files and setup database
-## usage: joomla_install
-function joomla_install() {
-  local parent=$(dirname "$CMS_ROOT")
-  local child=$(basename "$CMS_ROOT")
-  joomla site:install -v \
-    --www "$parent" \
-    -L "$CMS_DB_USER:$CMS_DB_PASS" -H "$CMS_DB_HOST" -P "$CMS_DB_PORT" --mysql-database "$CMS_DB_NAME" \
-    --overwrite \
-    --skip-exists-check \
-    "$child"
-  cvutil_php_nodbg amp datadir "$CMS_ROOT/logs" "$CMS_ROOT/tmp"
+## Joomla -- Identify and download the main zip file
+
+## example: joomla4_download "$WEB_ROOT/web"
+function joomla4_download() {
+  _joomla_download 4 "$@"
+}
+
+## example: joomla5_download "$WEB_ROOT/web"
+function joomla5_download() {
+  _joomla_download 5 "$@"
+}
+
+## usage: _joomla_download <MAJOR_VERSION> <TARGET_PATH>
+## example: _joomla_download 4 "$WEB_ROOT/web"
+function _joomla_download() {
+  local major="$1"
+  local target="$2"
+  cvutil_assertvars joomla_download CMS_VERSION
+
+  pushd "$target" >> /dev/null
+
+    if [ "$CMS_VERSION" = 'latest' ]; then
+      http_download "https://update.joomla.org/core/j${major}/default.xml" joomla-latest.xml
+      # slightly brittle as <version> could include mutliple lines ... but it doesn't now
+      CMS_VERSION=$(grep -m1 '<version>' joomla-latest.xml | sed -E -e 's/<\/?version>//g'  -e 's/\s*//g')
+      rm joomla-latest.xml
+    fi
+
+    local VERSION_DASHES=$(echo $CMS_VERSION | tr '.' '-')
+    local ZIP_URL="https://downloads.joomla.org/cms/joomla${major}/$VERSION_DASHES/Joomla_$VERSION_DASHES-Stable-Full_Package.zip"
+    extract-url --cache-ttl 172800 .="$ZIP_URL"
+
+    # Save a copy of the installation directory for re-installation
+    zip -q -r installation.zip installation
+
+  popd >> /dev/null
 }
 
 ###############################################################################
+## Joomla -- Generate config files and setup database
+## usage: joomla_install
+function joomla_install() {
+  cvutil_assertvars joomla_install CMS_ROOT CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS
+
+  ## install.php has its own password-validation that seems a bit quirkier
+  local tmp_pass=$(cvutil_makepasswd 16)
+
+  pushd "$CMS_ROOT" >> /dev/null
+
+    CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
+    cvutil_php_nodbg "./installation/joomla.php" install -n -v \
+      --site-name="$CMS_TITLE" \
+      --admin-user="CiviCRM Admin" \
+      --admin-username="$ADMIN_USER" \
+      --admin-password="$tmp_pass" \
+      --admin-email="$ADMIN_EMAIL" \
+      --db-host="$CMS_DB_HOSTPORT" \
+      --db-user="$CMS_DB_USER" \
+      --db-pass="$CMS_DB_PASS" \
+      --db-name="$CMS_DB_NAME" \
+      --db-prefix='j_'
+
+    joomla_cli user:reset-password --username="$ADMIN_USER" --password="$ADMIN_PASS"
+
+    cvutil_php_nodbg amp datadir "$CMS_ROOT/logs" "$CMS_ROOT/tmp" "$CMS_ROOT/administrator/cache"
+
+  popd >> /dev/null
+}
+###############################################################################
+## Joomla -- Generate config files and setup database
+## usage: joomla_uninstall
+function joomla_uninstall() {
+  pushd "$CMS_ROOT" >> /dev/null
+    [ -d .installation.bak ] && mv .installation.bak installation
+    [ -d .git.bak ]          && mv .git.bak .git
+    [ -f configuration.php ] && rm -f configuration.php
+    [ -f installation.zip  ] && unzip -q installation.zip
+  popd >> /dev/null
+}
+
+
+###############################################################################
+## (DEPRECATED: Use joomla_cli)
 ## Reset all the key details (username, password, email) for one of the
 ## Joomla user accounts.
 ##
@@ -1720,6 +1797,19 @@ UPDATE j_users
 SET username=@ENV[NEWUSER], password=md5(@ENV[NEWPASS]), email=@ENV[NEWMAIL]
 WHERE username=@ENV[OLDUSER];
 EOSQL
+}
+
+###############################################################################
+## Call a subcommand in the Joomla CLI (CMS_ROOT/cli/joomla.php)
+##
+## NOTE: As this is primarily intended for scripting, it implies `--no-interaction`.
+##
+## Ex: joomla_cli user:add --name=demo --username=demo --password=demo --email='demo@example.com'
+function joomla_cli() {
+  cvutil_assertvars joomla_install CMS_ROOT
+  pushd "$CMS_ROOT/cli" >> /dev/null
+    cvutil_php_nodbg ./joomla.php --no-interaction "$@"
+  popd >> /dev/null
 }
 
 ###############################################################################
