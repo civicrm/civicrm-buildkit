@@ -26,10 +26,11 @@ pushd "$WEB_ROOT" >> /dev/null
   git_cache_clone "civicrm/civicrm-core"                                -b "$CIVI_VERSION"      src/civicrm-core
   git_cache_clone "civicrm/civicrm-drupal-8"                            -b "$CIVI_VERSION"      src/civicrm-drupal-8
   git_cache_clone "civicrm/civicrm-packages"                            -b "$CIVI_VERSION"      src/civicrm-packages
-  composer config repositories.civicrm-core '{"type": "path", "url": "./src/civicrm-core", "options": { "symlink": false } }'
-  composer config repositories.civicrm-drupal-8 '{"type": "path", "url": "./src/civicrm-drupal-8", "options": { "symlink": false }}'
-  composer config repositories.civicrm-packages '{"type": "path", "url": "./src/civicrm-packages", "options": { "symlink": false }}'
-  ## The symlink:false helps when running the installation step. We should probably fix that...
+
+  if civicrm_check_requested_ver '<' 5.81.alpha1 ; then _composer_symlink=false ; else _composer_symlink=true ; fi
+  composer config repositories.civicrm-core '{"type": "path", "url": "./src/civicrm-core", "options": { "symlink": '$_composer_symlink' } }'
+  composer config repositories.civicrm-drupal-8 '{"type": "path", "url": "./src/civicrm-drupal-8", "options": { "symlink": '$_composer_symlink' }}'
+  composer config repositories.civicrm-packages '{"type": "path", "url": "./src/civicrm-packages", "options": { "symlink": '$_composer_symlink' }}'
 
   civibuild_apply_user_extras
   civicrm_download_composer_d8 vendor/civicrm/civicrm-core

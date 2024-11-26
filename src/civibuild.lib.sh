@@ -617,7 +617,8 @@ function civicrm_download_composer_d8() {
     *) echo 'No Extra Patch required' ; ;;
   esac
 
-  composer require "${EXTRA_COMPOSER[@]}" civicrm/civicrm-{core,packages,drupal-8}:"$CIVI_VERSION_COMP" --prefer-source -W
+  composer config 'preferred-install.civicrm/*' source
+  composer require "${EXTRA_COMPOSER[@]}" civicrm/civicrm-{core,packages,drupal-8}:"$CIVI_VERSION_COMP" -W
   [ -n "$EXTRA_PATCH" ] && git scan am -N "${EXTRA_PATCH[@]}"
 
   if [ -z "$CIVI_ROOT" ]; then
@@ -1006,6 +1007,23 @@ function civicrm_get_ver() {
 function civicrm_check_ver() {
   cvutil_assertvars civicrm_check_ver CIVI_CORE
   local ver=$( civicrm_get_ver "$CIVI_CORE" )
+  if env ACTUAL="$ver" OP="$1" EXPECT="$2" php -r 'exit(version_compare(getenv("ACTUAL"), getenv("EXPECT"), getenv("OP"))?0:1);'; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+###############################################################################
+## Check if the requested version of CiviCRM (*not yet downloaded*) matches some condition.
+## usage: civicrm_check_ver <op> <target>
+## example: if civicrm_check_ver '>=' '5.43' ; then echo NEW; else echo OLD; fi
+function civicrm_check_requested_ver() {
+  cvutil_assertvars civicrm_check_requested_ver CIVI_VERSION
+  local ver="$CIVI_VERSION"
+  if [[ "$ver" == "master" ]]; then
+    ver=9999999.9999.9999
+  fi
   if env ACTUAL="$ver" OP="$1" EXPECT="$2" php -r 'exit(version_compare(getenv("ACTUAL"), getenv("EXPECT"), getenv("OP"))?0:1);'; then
     return 0
   else
