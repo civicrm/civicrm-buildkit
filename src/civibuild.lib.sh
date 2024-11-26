@@ -38,10 +38,19 @@ function cvutil_assertvars() {
 
 ###############################################################################
 ## Run a PHP program and explicitly disable debugging.
-## usage: cvutil_php_nodbg <program name> [<args>...]
+## usage: cvutil_php_nodbg <program-name> [<args>...]
+## usage: cvutil_php_nodbg <relative-path> [<args>...]
+##
+## If the program name begins with './', then it is treated as a local file-path.
+## Otherwise, it is located on PATH.
 function cvutil_php_nodbg() {
-  local cmd=$(which "$1")
-  [ -z "$cmd" ] && cvutil_fatal "Failed to locate $cmd"
+  local cmd="$1"
+  if [[ ${cmd:0:2} == "./" ]]; then
+    true
+  else
+    cmd=$(which "$1")
+    [ -z "$cmd" ] && cvutil_fatal "Failed to locate $cmd"
+  fi
   shift
   XDEBUG_PORT= XDEBUG_MODE=off php -d xdebug.remote_enable=off "$cmd" "$@"
 }
@@ -1745,7 +1754,7 @@ function joomla_install() {
   pushd "$CMS_ROOT" >> /dev/null
 
     CMS_DB_HOSTPORT=$(cvutil_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
-    php "installation/joomla.php" install -n -v \
+    cvutil_php_nodbg "./installation/joomla.php" install -n -v \
       --site-name="$CMS_TITLE" \
       --admin-user="CiviCRM Admin" \
       --admin-username="$ADMIN_USER" \
@@ -1799,7 +1808,7 @@ EOSQL
 function joomla_cli() {
   cvutil_assertvars joomla_install CMS_ROOT
   pushd "$CMS_ROOT/cli" >> /dev/null
-    php joomla.php --no-interaction "$@"
+    cvutil_php_nodbg ./joomla.php --no-interaction "$@"
   popd >> /dev/null
 }
 
