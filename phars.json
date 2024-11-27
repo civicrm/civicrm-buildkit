@@ -24,8 +24,8 @@
    },
 
    "civix":  {
-     "url": "https://download.civicrm.org/civix/civix-24.09.2.phar",
-     "sha256": "62bc9ebd02921d98c05fe1aa9491444af77d463ee26e3815b11d2aeffbca3922",
+     "url": "https://download.civicrm.org/civix/civix-24.11.0.phar",
+     "sha256": "1a42c67a7976d33ec0a0ada65a71c00f82dfba4ba9c2d2e42c528af00e521648",
      "buildkit-path": "bin/civix"
    },
 
@@ -36,8 +36,8 @@
    },
 
    "cv":  {
-     "url": "https://download.civicrm.org/cv/cv-0.3.58.phar",
-     "sha256": "de057dc83b72282dd5fff244c46608a967666c3b6d33a0293ec46e4a24b317e8",
+     "url": "https://download.civicrm.org/cv/cv-0.3.59.phar",
+     "sha256": "733b3fd8419da2454fa1062c7249e456ab0e1af64b7f0b026bd2694207249d4b",
      "buildkit-path": "bin/cv"
    },
 
