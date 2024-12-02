@@ -15,27 +15,26 @@ foreach (['DEMO_EMAIL', 'DEMO_USER', 'DEMO_PASS'] as $var) {
 // Since users+contacts are stored in same DB, we can do transaction.
 CRM_Core_Transaction::create()->run(function () {
 
-  $contactID = \Civi\Api4\Contact::create(FALSE)
-    ->setValues([
-      'contact_type' => 'Individual',
-      'first_name' => 'Demo',
-      'last_name' => 'User',
-    ])
-    ->execute()->first()['id'];
-  $adminEmail = getenv('DEMO_EMAIL');
-  $params = [
-    'cms_name' => getenv('DEMO_USER'),
-    'cms_pass' => getenv('DEMO_PASS'),
-    'notify' => FALSE,
-    $adminEmail => $adminEmail,
-    'contact_id' => $contactID,
-  ];
-  $userID = \CRM_Core_BAO_CMSUser::create($params, $adminEmail);
+  $demoEmail = getenv('DEMO_EMAIL');
+  $demoUser = getenv('DEMO_USER');
+  $demoPass = getenv('DEMO_PASS');
 
-  // Provide the "Administer" role to the demo user
-  \Civi\Api4\User::update(FALSE)
-    ->addWhere('id', '=', $userID)
-    ->addValue('roles:name', ['admin'])
+  $contactID = \Civi\Api4\Contact::create(FALSE)
+    ->addValue('contact_type', 'Individual')
+    ->addValue('first_name', 'Demo')
+    ->addValue('last_name', 'User')
+    ->execute()->single()['id'];
+
+  \Civi\Api4\Email::create(FALSE)
+    ->addValue('email', $demoEmail)
+    ->addValue('contact_id', $contactID)
     ->execute();
 
+  // Create demo user with the "Administer" role
+  \Civi\Api4\User::create(FALSE)
+    ->addValue('username' , $demoUser)
+    ->addValue('password' , $demoPass)
+    ->addValue('contact_id' , $contactID)
+    ->addValue('roles:name', ['admin'])
+    ->execute();
 });
