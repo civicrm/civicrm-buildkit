@@ -635,6 +635,11 @@ function civicrm_download_composer_d8() {
   ## put it outside of 'vendor/' and update the installer to ensure that 'civicrm.settings.php' retains the alternate location.
 }
 
+function civicrm_enable_riverlea_theme() {
+  cvutil_assertvars civicrm_download_composer_d8 CIVI_VERSION CMS_VERSION
+  if civicrm_check_ver '>' 5.80.alpha1 ; then cv en --ignore-missing 'riverlea'; cv api setting.create theme_backend='minetta'; fi
+}
+
 ###############################################################################
 ## Setup CiviCRM l10n data folder
 ##
