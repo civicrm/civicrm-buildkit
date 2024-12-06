@@ -58,6 +58,8 @@ pushd "$CMS_ROOT" >> /dev/null
   cv api StatusPreference.create ignore_severity=critical name=checkOutboundMail
   cv api StatusPreference.create ignore_severity=critical name=checkLastCron
 
+  civicrm_enable_riverlea_theme
+
   ## Setup CiviCRM dashboards
   INSTALL_DASHBOARD_USERS="$ADMIN_USER;$DEMO_USER" cv scr "$SITE_CONFIG_DIR/install-dashboard.php"
 

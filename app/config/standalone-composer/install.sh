@@ -23,6 +23,7 @@ civicrm_install_cv
 
 pushd "$CMS_ROOT"
   composer civicrm:publish
+  civicrm_enable_riverlea_theme
 popd
 
 ###############################################################################
