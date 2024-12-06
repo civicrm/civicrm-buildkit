@@ -635,9 +635,17 @@ function civicrm_download_composer_d8() {
   ## put it outside of 'vendor/' and update the installer to ensure that 'civicrm.settings.php' retains the alternate location.
 }
 
+###############################################################################
+## Enable RiverLea (and one of its sub-themes) -- if available
+##
+## usage: civicrm_enable_riverlea_theme
+## todo: Add support for indicating preferred subtheme(s)
 function civicrm_enable_riverlea_theme() {
-  cvutil_assertvars civicrm_download_composer_d8 CIVI_VERSION CMS_VERSION
-  if civicrm_check_ver '>' 5.80.alpha1 ; then cv en --ignore-missing 'riverlea'; cv api setting.create theme_backend='minetta'; fi
+  cvutil_assertvars civicrm_enable_riverlea_theme CIVI_VERSION CMS_VERSION
+  if civicrm_check_ver '>' 5.80.alpha1 ; then
+    cv en --ignore-missing riverlea
+    cv vset theme_backend=minetta
+  fi
 }
 
 ###############################################################################
