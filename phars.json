@@ -68,18 +68,6 @@
      "sha256": "2bb076753ec5d672f5e2f96a97a0fe7e8e9ec24a439eed00fd29ef942c7905f9"
    },
 
-   "phpunit5":  {
-     "url": "https://phar.phpunit.de/phpunit-5.7.27.phar",
-     "sha256": "f0300a13f2653bee10b0ce24dbc8d94e65dc9be8966d822b9e455b6b294be16e",
-     "buildkit-path": "extern/phpunit5/phpunit5.phar"
-   },
-
-   "phpunit6":  {
-     "url": "https://phar.phpunit.de/phpunit-6.5.14.phar",
-     "sha256": "3ac5d3234ed2b2dd9aaaa1b33e5c275ce5d7d8f2e07ec7fa930f5036894cc689",
-     "buildkit-path": "extern/phpunit6/phpunit6.phar"
-   },
-
    "phpunit7":  {
      "url": "https://phar.phpunit.de/phpunit-7.5.15.phar",
      "sha256": "ae9c1fb46c61106c6835e905e3e0b23f565103d8bfcc311279c9599971349486",

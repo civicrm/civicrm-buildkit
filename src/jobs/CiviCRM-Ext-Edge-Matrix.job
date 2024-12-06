@@ -155,11 +155,6 @@ pushd "$EXTBASE"
   pushd "$EXTDIR"
     civibuild restore "$BLDNAME"
     cv en "$EXTKEY"
-#    if [ "$EXTKEY" = "org.civicrm.api4" ]; then cv flush; fi ## FIX+REMOVE ME
-#    phpunit5 --tap --group e2e --log-junit="$WORKSPACE_JUNIT/junit-e2e.xml"
-#    phpunit5 --tap --group headless --log-junit="$WORKSPACE_JUNIT/junit-headless.xml"
-#    phpunit6 --printer='Civi\Test\TAP' --group e2e --log-junit="$WORKSPACE_JUNIT/junit-e2e.xml"
- #   phpunit6 --printer='Civi\Test\TAP' --group headless --log-junit="$WORKSPACE_JUNIT/junit-headless.xml"
  if [ $BUILDTYPE != "git" ]; then
    if [ "$BKPROF" != "max" ]; then
       if [ "$EXTKEY" != "uk.co.vedaconsulting.mosaico" ]; then

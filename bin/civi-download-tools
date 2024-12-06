@@ -694,7 +694,11 @@ pushd $PRJDIR >> /dev/null
   [ -f "$PRJDIR/bin/_codecept-php5.phar" ] && rm -f "$PRJDIR/bin/_codecept-php5.phar"
   [ -f "$PRJDIR/bin/_codecept-php7.phar" ] && rm -f "$PRJDIR/bin/_codecept-php7.phar"
   [ -L "$PRJDIR/bin/phpunit4" ] && rm -f "$PRJDIR/bin/phpunit4"
+  [ -L "$PRJDIR/bin/phpunit5" ] && rm -f "$PRJDIR/bin/phpunit5"
+  [ -L "$PRJDIR/bin/phpunit6" ] && rm -f "$PRJDIR/bin/phpunit6"
   [ -f "$PRJDIR/extern/phpunit4/phpunit4.phar" ] && rm -f "$PRJDIR/extern/phpunit4/phpunit4.phar"
+  [ -f "$PRJDIR/extern/phpunit5/phpunit5.phar" ] && rm -f "$PRJDIR/extern/phpunit5/phpunit5.phar"
+  [ -f "$PRJDIR/extern/phpunit6/phpunit6.phar" ] && rm -f "$PRJDIR/extern/phpunit6/phpunit6.phar"
 
   ## Cleanup misnamed files from past
   [ -f "$PRJDIR/extern/phpunit4/phpunit6.phar" ] && rm -f "$PRJDIR/extern/phpunit4/phpunit6.phar" "$PRJDIR/extern/phpunit4/phpunit6.phar"
@@ -772,8 +776,6 @@ pushd $PRJDIR >> /dev/null
 
   ## Setup phpunit aliases for CLI usage
   make_link "$PRJDIR/bin" "drush8" "drush"
-  make_link "$PRJDIR/bin" "../extern/phpunit5/phpunit5.phar" "phpunit5"
-  make_link "$PRJDIR/bin" "../extern/phpunit6/phpunit6.phar" "phpunit6"
   make_link "$PRJDIR/bin" "../extern/phpunit7/phpunit7.phar" "phpunit7"
   make_link "$PRJDIR/bin" "../extern/phpunit8/phpunit8.phar" "phpunit8"
   make_link "$PRJDIR/bin" "../extern/phpunit9/phpunit9.phar" "phpunit9"

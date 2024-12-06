@@ -67,7 +67,7 @@ function phpunit_info_cli_core() {
   echo "Next, pick a version of PHPUnit (eg $(echo $PHPUNITS)), and then"
   echo "run an example test (eg CRM_Core_RegionTest):"
   echo
-  echo_cmd "env CIVICRM_UF=UnitTests phpunit5 tests/phpunit/CRM/Core/RegionTest.php"
+  echo_cmd "env CIVICRM_UF=UnitTests phpunit9 tests/phpunit/CRM/Core/RegionTest.php"
   echo
   echo "Most tests require specifying \"env CIVICRM_UF=UnitTests\". Some do not."
   echo "If you get this wrong, that's OK - there will be an error message describing"
@@ -91,7 +91,7 @@ function phpunit_info_cli_ext() {
   echo "Finally, pick a version of PHPUnit (eg $(echo $PHPUNITS)) and"
   echo "an example test (eg CRM_Myext_FooTest). Run it:"
   echo
-  echo_cmd "phpunit5 tests/phpunit/CRM/Myext/FooTest.php"
+  echo_cmd "phpunit9 tests/phpunit/CRM/Myext/FooTest.php"
   echo
 }
 
