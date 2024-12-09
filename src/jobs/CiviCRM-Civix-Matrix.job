@@ -68,7 +68,7 @@ civibuild show "$BLDNAME" \
 cp "$WORKSPACE_BUILD/new-scan.json" "$WORKSPACE_BUILD/last-scan.json"
 
 ## Setup civix and run tests
-mkdir "$BKITBLD/$BLDNAME/src"
+mkdir -p "$BKITBLD/$BLDNAME/src"
 git clone "https://github.com/totten/civix" "$BKITBLD/$BLDNAME/src/civix"
 pushd "$BKITBLD/$BLDNAME/src/civix"
   [ "$BKPROF" == "min" ] && CIVIX_TYPE="--src" || CIVIX_TYPE="--phar"
