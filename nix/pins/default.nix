@@ -11,6 +11,14 @@ rec {
   v2311 = import (import  ./23.11.nix) {};
   v2405 = import (import  ./24.05.nix) {};
 
+  ## Example: If you want to test with your own copy of nixpkgs, then setup your local source-tree:
+  ##
+  ##   git clone https://EXAMPLE.COM/NIXPKGS.GIT /home/myuser/src/nixpkgs
+  ##
+  ## And set buildkit to use that:
+  #
+  # v2405 = import /home/myuser/src/nixpkgs/default.nix {};
+
   bkit = import ../pkgs;
   default = v2205;
 }

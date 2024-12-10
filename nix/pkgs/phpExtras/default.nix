@@ -111,11 +111,11 @@ in rec {
 
   xdebug34 = buildPecl {
     ## XDebug 3.4 supports php81, php82, php83, php84 (https://xdebug.org/docs/compat)
-    version = "3.4.0alpha1";
+    version = "3.4.0";
     pname = "xdebug";
     src = pkgs.fetchurl {
-      url = "https://github.com/xdebug/xdebug/archive/refs/tags/3.4.0alpha1.tar.gz";
-      sha256 = "sha256-kHTKNoIBVbMZ2HLbSjXb0odBtdNb/yYQtEZVbxs6O1g=";
+      url = "https://xdebug.org/files/xdebug-3.4.0.tgz";
+      sha256 = "sha256-iWZ7jQSq8EwCPrEJkA4czpfKOfl/Lz8kGZYwzA4cx30";
     };
     doCheck = true;
     checkTarget = "test";
