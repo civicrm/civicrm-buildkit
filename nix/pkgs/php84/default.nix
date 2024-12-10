@@ -16,8 +16,8 @@ let
 in pkgs.php84.buildEnv {
 
   ## EVALUATE: apcu_bc
-  ## TODO: imap phpExtras.runkit7_4
-  extensions = { all, enabled }: with all; enabled++ [ phpExtras.xdebug34 tidy yaml memcached imagick opcache apcu redis ];
+  ## TODO: phpExtras.runkit7_4
+  extensions = { all, enabled }: with all; enabled++ [ phpExtras.xdebug34 tidy yaml memcached imagick opcache apcu redis imap ];
   extraConfig = phpIniSnippet1 + phpIniSnippet2;
 
 }
