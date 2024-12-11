@@ -645,6 +645,9 @@ function civicrm_enable_riverlea_theme() {
   if civicrm_check_ver '>' 5.80.alpha1 ; then
     cv en --ignore-missing riverlea
     cv vset theme_backend=minetta
+    if [[ "$CIVI_UF" == "Drupal" ]]; then
+      cv vset riverlea_dark_mode_backend=light
+    fi
   fi
 }
 
