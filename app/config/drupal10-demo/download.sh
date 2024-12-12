@@ -16,7 +16,7 @@ composer create-project drupal/recommended-project:"$CMS_VERSION" "$WEB_ROOT" --
 pushd "$WEB_ROOT" >> /dev/null
   composer_allow_common_plugins
   composer require drupal/userprotect
-  composer require drush/drush:13.3.1 ## FIXME: Unlock constraint. Pending drush #6154
+  composer require drush/drush
   ## Some D8 builds include a specific revision of phpunit, but Civi uses standalone phpunit (PHAR)
   if composer info | grep -q ^phpunit/phpunit\ ; then
     composer config "discard-changes" true ## Weird. phpcs has changes which interfere with other work.
