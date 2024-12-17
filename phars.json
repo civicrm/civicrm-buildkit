@@ -86,6 +86,12 @@
      "buildkit-path": "extern/phpunit9/phpunit9.phar"
    },
 
+   "phpunit10":  {
+     "url": "https://phar.phpunit.de/phpunit-10.5.39.phar",
+     "sha256": "8fc2fc1b23d35d4d8ab6ea5cbea9a4c47d118e3f2d6e9881f497ba856f4b7cc4",
+     "buildkit-path": "extern/phpunit10/phpunit10.phar"
+   },
+
    "pogo":  {
      "url": "https://github.com/totten/pogo/releases/download/v0.5.0/pogo-0.5.0.phar",
      "sha256": "c070b76c5b70debc26f79ac1e551d53c6a02b9ea514d0d7776bbd674906797d8",
