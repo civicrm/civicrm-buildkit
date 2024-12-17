@@ -76,11 +76,12 @@ function show_help() {
   echo "                        - karma"
   echo "                        - mixin"
   echo "                        - phpunit-api3"
+  echo "                        - phpunit-api3-{1,2}"
   echo "                        - phpunit-api4"
   echo "                        - phpunit-civi"
   echo "                        - phpunit-core-exts"
   echo "                        - phpunit-crm"
-  echo "                        - phpunit-crm-{1,2,3}"
+  echo "                        - phpunit-crm-{1,2,3,4}"
   echo "                        - phpunit-e2e"
   echo "                        - phpunit-drupal"
   echo "                        - phpunit-wordpress"
@@ -450,12 +451,15 @@ for TESTTYPE in $SUITES ; do
     phpunit-e2e)       PHP_APC_CLI=on task_phpunit_expr "$TESTTYPE" "$CIVI_CORE" tests/phpunit/E2E/ ; civibuild restore "$BLDNAME" ;  cv flush --cwd="$CIVI_CORE" ; ;;
     phpunit-crm)       CIVICRM_UF=UnitTests task_phpunit_expr "$TESTTYPE" "$CIVI_CORE" tests/phpunit/CRM/ ;;
     ## Alternatively, we may run the CRM suite as 3 roughly-equal sub-suites.
-    phpunit-crm-1)     CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/CRM -mindepth 1 -maxdepth 1 -name 'C*' ;;
-    phpunit-crm-2)     CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/CRM -mindepth 1 -maxdepth 1 -name '[ABDEFGHIJKLM]*' ;;
-    phpunit-crm-3)     CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/CRM -mindepth 1 -maxdepth 1 -name '[NOPQRSTUVWXYZ]*' ;;
+    phpunit-crm-1)     CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/CRM -mindepth 1 -maxdepth 1 -name 'Core' ;;
+    phpunit-crm-2)     CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/CRM -mindepth 1 -maxdepth 1 -name 'C*' ! -name Core ;;
+    phpunit-crm-3)     CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/CRM -mindepth 1 -maxdepth 1 -name '[ABDEFGHIJKLM]*' ;;
+    phpunit-crm-4)     CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/CRM -mindepth 1 -maxdepth 1 -name '[NOPQRSTUVWXYZ]*' ;;
     # Handle legacy call for phpunit-api being equivilant to phpunit-api3
     phpunit-api)       CIVICRM_UF=UnitTests task_phpunit_expr "$TESTTYPE" "$CIVI_CORE" tests/phpunit/api/v3 ;;
     phpunit-api3)      CIVICRM_UF=UnitTests task_phpunit_expr "$TESTTYPE" "$CIVI_CORE" tests/phpunit/api/v3 ;;
+    phpunit-api3-1)    CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/api/v3 -mindepth 1 -maxdepth 1 -name 'S*' ;;
+    phpunit-api3-2)    CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/api/v3 -mindepth 1 -maxdepth 1 -name '[A-RT-Z]*' ;;
     phpunit-api4)      CIVICRM_UF=UnitTests task_phpunit_expr "$TESTTYPE" "$CIVI_CORE" tests/phpunit/api/v4 ;;
     phpunit-civi)      CIVICRM_UF=UnitTests task_phpunit_expr "$TESTTYPE" "$CIVI_CORE" tests/phpunit/Civi ;;
     phpunit-uf)        task_phpunit_uf ;;
@@ -485,8 +489,8 @@ for TESTTYPE in $SUITES ; do
   if  [ $TESTTYPE = "phpunit-crm" ] || [ $TESTTYPE = "all" ] ; then
     [ ! -f "$JUNITDIR/CRM_AllTests.xml" ] && fatal "Missing XML: CRM_AllTests.xml"
   fi
-  if  [ $TESTTYPE = "phpunit-crm-1" ] || [ $TESTTYPE = "phpunit-crm-2" ] || [ $TESTTYPE = "phpunit-crm-3" ] ; then
-    ## NOTE: These are NOT expected if when TESTTYPE="all". Instead, "all" has the larger phpunit-crm suite (above).
+  if [[ $TESTTYPE =~ ^(phpunit-crm-[1-9]|phpunit-api3-[1-9])$ ]]; then
+    ## NOTE: These are NOT expected to run when TESTTYPE="all". Instead, "all" has the larger phpunit-crm and phpunit-api3 suites.
     [ ! -f "$JUNITDIR/$TESTTYPE.xml" ] && fatal "Missing XML: $TESTTYPE.xml"
   fi
   if  [ $TESTTYPE = "phpunit-api" ] || [ $TESTTYPE = "all" ] ; then
