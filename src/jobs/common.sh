@@ -216,8 +216,9 @@ function xphpunit() {
     case "$arg" in
      --tap)
        case "$PHPUNIT" in
-         phpunit7|phpunit8) args+=("--printer=Civi\Test\TAP") ; ;;
+         phpunit7|phpunit8|phpunit10) args+=("--printer=Civi\Test\TAP") ; ;;
          phpunit9) args+=("--debug") ; ;; ## FIXME Real TAP is better
+         phpunit10) ;; ## FIXME Don't have TAP support yet, and --debug is super-noisy
          *) args+=("$arg") ; ;;
        esac
        ;;

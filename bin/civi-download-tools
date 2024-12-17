@@ -779,6 +779,7 @@ pushd $PRJDIR >> /dev/null
   make_link "$PRJDIR/bin" "../extern/phpunit7/phpunit7.phar" "phpunit7"
   make_link "$PRJDIR/bin" "../extern/phpunit8/phpunit8.phar" "phpunit8"
   make_link "$PRJDIR/bin" "../extern/phpunit9/phpunit9.phar" "phpunit9"
+  make_link "$PRJDIR/bin" "../extern/phpunit10/phpunit10.phar" "phpunit10"
 
   ## Download joomlatools-console
   install_joomlatools_console "$JOOMLATOOLS_CONSOLE_VERSION"

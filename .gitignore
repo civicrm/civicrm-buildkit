@@ -77,6 +77,7 @@ bin/phpunit6
 bin/phpunit7
 bin/phpunit8
 bin/phpunit9
+bin/phpunit10
 bin/pogo
 bin/protractor
 bin/webdriver-manager

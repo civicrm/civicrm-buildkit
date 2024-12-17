@@ -17,6 +17,11 @@ function getPhpunitVer() {
         echo "$PHPUNIT --stderr --printer \Civi\Test\TAP"
         return
         ;;
+      phpunit10)
+         ## FIXME Don't have TAP support yet, and --debug is super-noisy
+        echo "$PHPUNIT --stderr"
+        return
+        ;;
     esac
   fi
 
@@ -97,29 +102,14 @@ function show_help() {
 ## Each task is responsible for depositing a JUnit XML file under
 ## "$JUNITDIR".
 
-function task_phpunit() {
-  SUITE="$1"
-
-  if ! $GUARD $TIMER phpunit-each ${PHPUNIT_ARGS[@]} "$CIVI_CORE" "$JUNITDIR" $SUITE ; then
-    EXITCODES="$EXITCODES phpunit"
-  fi
-  echo "Found EXITCODES=\"$EXITCODES\""
-
-  if [ $SUITE = 'E2E_AllTests' ]; then
-      $GUARD civibuild restore "$BLDNAME"
-      $GUARD cv flush --cwd="$CIVI_CORE" ## This is smelly. It begs the question of "what is leaking between tests".
-  fi
-
-  $GUARD phpunit-xml-cleanup "$JUNITDIR"/*.xml
-}
-
+#################################################
 ## Run a PHPUnit test suite (based on a flexible expression).
 ##
 ## In the future, it will get progressively harder to run tests based on class-name.
 ## File-names, paths, and groups will work better.
 ##
 ## usage: task_phpunit_expr <logical-suite-name> <pwd> [...phpunit file/filter options...]
-## example: task_phpunit_expr Foo.xml "$CIVI_CORE" tests/phpunit/Foo/
+## example: task_phpunit_expr phpunit-foo "$CIVI_CORE" tests/phpunit/Foo/
 function task_phpunit_expr() {
   local PHPUNIT_BASE=$(getPhpunitVer)
   local SUITE_NAME="$1"
@@ -130,7 +120,7 @@ function task_phpunit_expr() {
 
   pushd "$WORK_DIR"
     if ! $GUARD $TIMER $PHPUNIT_BASE ${PHPUNIT_ARGS[@]} --log-junit "$JUNITDIR/$SUITE_NAME.xml" "$@" ; then
-      EXITCODES="$EXITCODES phpunit"
+      EXITCODES="$EXITCODES $SUITE_NAME"
     fi
     echo "Found EXITCODES=\"$EXITCODES\""
   popd
@@ -453,25 +443,25 @@ export TIME_FUNC
 ## Main
 for TESTTYPE in $SUITES ; do
   case "$TESTTYPE" in
-    karma)  task_karma ;;
-    mixin) task_mixin ;;
-    upgrade) task_upgrade ;;
-    upgrade@*) task_upgrade $(echo $TESTTYPE | sed s'/^upgrade//' ) ;;
-    phpunit-e2e)  PHP_APC_CLI=on task_phpunit E2E_AllTests ;;
-    phpunit-crm)  task_phpunit CRM_AllTests ;;
+    karma)             task_karma ;;
+    mixin)             task_mixin ;;
+    upgrade)           task_upgrade ;;
+    upgrade@*)         task_upgrade $(echo $TESTTYPE | sed s'/^upgrade//' ) ;;
+    phpunit-e2e)       PHP_APC_CLI=on task_phpunit_expr "$TESTTYPE" "$CIVI_CORE" tests/phpunit/E2E/ ; civibuild restore "$BLDNAME" ;  cv flush --cwd="$CIVI_CORE" ; ;;
+    phpunit-crm)       CIVICRM_UF=UnitTests task_phpunit_expr "$TESTTYPE" "$CIVI_CORE" tests/phpunit/CRM/ ;;
     ## Alternatively, we may run the CRM suite as 3 roughly-equal sub-suites.
-    phpunit-crm-1) CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/CRM -mindepth 1 -maxdepth 1 -name 'C*' ;;
-    phpunit-crm-2) CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/CRM -mindepth 1 -maxdepth 1 -name '[ABDEFGHIJKLM]*' ;;
-    phpunit-crm-3) CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/CRM -mindepth 1 -maxdepth 1 -name '[NOPQRSTUVWXYZ]*' ;;
+    phpunit-crm-1)     CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/CRM -mindepth 1 -maxdepth 1 -name 'C*' ;;
+    phpunit-crm-2)     CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/CRM -mindepth 1 -maxdepth 1 -name '[ABDEFGHIJKLM]*' ;;
+    phpunit-crm-3)     CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/CRM -mindepth 1 -maxdepth 1 -name '[NOPQRSTUVWXYZ]*' ;;
     # Handle legacy call for phpunit-api being equivilant to phpunit-api3
-    phpunit-api)  task_phpunit api_v3_AllTests ;;
-    phpunit-api3) task_phpunit api_v3_AllTests ;;
-    phpunit-api4) task_phpunit api_v4_AllTests ;;
-    phpunit-civi)  task_phpunit 'Civi\AllTests' ;;
-    phpunit-uf) task_phpunit_uf ;;
-    phpunit-drupal) task_phpunit_drupal ;;
+    phpunit-api)       CIVICRM_UF=UnitTests task_phpunit_expr "$TESTTYPE" "$CIVI_CORE" tests/phpunit/api/v3 ;;
+    phpunit-api3)      CIVICRM_UF=UnitTests task_phpunit_expr "$TESTTYPE" "$CIVI_CORE" tests/phpunit/api/v3 ;;
+    phpunit-api4)      CIVICRM_UF=UnitTests task_phpunit_expr "$TESTTYPE" "$CIVI_CORE" tests/phpunit/api/v4 ;;
+    phpunit-civi)      CIVICRM_UF=UnitTests task_phpunit_expr "$TESTTYPE" "$CIVI_CORE" tests/phpunit/Civi ;;
+    phpunit-uf)        task_phpunit_uf ;;
+    phpunit-drupal)    task_phpunit_drupal ;;
     phpunit-wordpress) task_phpunit_wordpress ;;
-    phpunit-backdrop) task_phpunit_backdrop ;;
+    phpunit-backdrop)  task_phpunit_backdrop ;;
     phpunit-creditnotes) task_phpunit_core_extension sequentialcreditnotes ;;
     phpunit-flexmailer) task_phpunit_core_extension flexmailer ;;
     phpunit-financialacls) task_phpunit_core_extension financialacls ;;
