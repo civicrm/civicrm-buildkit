@@ -102,22 +102,7 @@ function show_help() {
 ## Each task is responsible for depositing a JUnit XML file under
 ## "$JUNITDIR".
 
-function task_phpunit() {
-  SUITE="$1"
-
-  if ! $GUARD $TIMER phpunit-each ${PHPUNIT_ARGS[@]} "$CIVI_CORE" "$JUNITDIR" $SUITE ; then
-    EXITCODES="$EXITCODES phpunit"
-  fi
-  echo "Found EXITCODES=\"$EXITCODES\""
-
-  if [ $SUITE = 'E2E_AllTests' ]; then
-      $GUARD civibuild restore "$BLDNAME"
-      $GUARD cv flush --cwd="$CIVI_CORE" ## This is smelly. It begs the question of "what is leaking between tests".
-  fi
-
-  $GUARD phpunit-xml-cleanup "$JUNITDIR"/*.xml
-}
-
+#################################################
 ## Run a PHPUnit test suite (based on a flexible expression).
 ##
 ## In the future, it will get progressively harder to run tests based on class-name.
