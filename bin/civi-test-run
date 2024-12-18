@@ -453,13 +453,13 @@ for TESTTYPE in $SUITES ; do
     ## Alternatively, we may run the CRM suite as 3 roughly-equal sub-suites.
     phpunit-crm-1)     CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/CRM -mindepth 1 -maxdepth 1 -name 'Core' ;;
     phpunit-crm-2)     CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/CRM -mindepth 1 -maxdepth 1 -name 'C*' ! -name Core ;;
-    phpunit-crm-3)     CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/CRM -mindepth 1 -maxdepth 1 -name '[ABDEFGHIJKLM]*' ;;
-    phpunit-crm-4)     CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/CRM -mindepth 1 -maxdepth 1 -name '[NOPQRSTUVWXYZ]*' ;;
+    phpunit-crm-3)     CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/CRM -mindepth 1 -maxdepth 1 -name '[ABEFGHIJKLM]*' ;;
+    phpunit-crm-4)     CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/CRM -mindepth 1 -maxdepth 1 -name '[DNOPQRSTUVWXYZ]*' ;;
     # Handle legacy call for phpunit-api being equivilant to phpunit-api3
     phpunit-api)       CIVICRM_UF=UnitTests task_phpunit_expr "$TESTTYPE" "$CIVI_CORE" tests/phpunit/api/v3 ;;
     phpunit-api3)      CIVICRM_UF=UnitTests task_phpunit_expr "$TESTTYPE" "$CIVI_CORE" tests/phpunit/api/v3 ;;
-    phpunit-api3-1)    CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/api/v3 -mindepth 1 -maxdepth 1 -name '[A-O]*' ;;
-    phpunit-api3-2)    CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/api/v3 -mindepth 1 -maxdepth 1 -name '[P-Z]*' ;;
+    phpunit-api3-1)    CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/api/v3 -mindepth 1 -maxdepth 1 -name '[ABCDEFGHIKLMNO]*' ;;
+    phpunit-api3-2)    CIVICRM_UF=UnitTests task_phpunit_find "$TESTTYPE" "$CIVI_CORE" ./tests/phpunit/api/v3 -mindepth 1 -maxdepth 1 -name '[JPQRSTUVWXYZ]*' ;;
     phpunit-api4)      CIVICRM_UF=UnitTests task_phpunit_expr "$TESTTYPE" "$CIVI_CORE" tests/phpunit/api/v4 ;;
     phpunit-civi)      CIVICRM_UF=UnitTests task_phpunit_expr "$TESTTYPE" "$CIVI_CORE" tests/phpunit/Civi ;;
     phpunit-uf)        task_phpunit_uf ;;
