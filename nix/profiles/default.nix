@@ -82,7 +82,7 @@ let
    min = combinations.php80m57;
    dfl = combinations.php82m57; /* Test suites run faster on MySQL 5.7 */
    alt = combinations.php80r105;
-   max = combinations.php82m80;
+   max = combinations.php83m80;
    edge = combinations.php84m80;
 
    /**
