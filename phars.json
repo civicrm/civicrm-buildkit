@@ -59,8 +59,8 @@
    },
 
    "loco":  {
-     "url": "https://github.com/totten/loco/releases/download/v0.8.0/loco-0.8.0.phar",
-     "sha256": "c8674f3d2b340877d09ab82f86e4c1f92a23ee415bf246323f4f9497d1c39746"
+     "url": "https://github.com/totten/loco/releases/download/v0.8.1/loco-0.8.1.phar",
+     "sha256": "c6c5c6fb9cecd2461332f4f94e7fa6e7dfd839b02d6969e7aa3c4ff95c1d2b6c"
    },
 
    "phive":  {
