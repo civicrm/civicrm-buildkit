@@ -20,9 +20,6 @@ let
 
   ## Some older packages aren't buildable on Apple M1, so we use closest match.
   stdenv = dists.default.stdenv;
-  isAppleM1 = stdenv.isDarwin && stdenv.isAarch64;
-
-  oldestAvailableMysql = (if isAppleM1 then dists.bkit.mysql80 else dists.bkit.mysql57);
 
   attrsets = dists.default.lib;
 
@@ -81,9 +78,9 @@ let
     *   - dfl: A typical default. Corresponds to PR testing.
     *   - alt: An alternative version. Basically, with MariaDB and middle-of-the-road PHP.
     */
-   old = phpXXmXX { php = dists.bkit.php73; dbms = oldestAvailableMysql; };
-   min = phpXXmXX { php = dists.bkit.php80; dbms = oldestAvailableMysql; };
-   dfl = phpXXmXX { php = dists.bkit.php82; dbms = oldestAvailableMysql; };
+   old = combinations.php74m57;
+   min = combinations.php80m57;
+   dfl = combinations.php82m57; /* Test suites run faster on MySQL 5.7 */
    alt = combinations.php80r105;
    max = combinations.php82m80;
    edge = combinations.php84m80;
