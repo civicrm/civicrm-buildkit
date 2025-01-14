@@ -58,3 +58,12 @@ for PROFILE in $PROFILES ; do
   do_as_dev "$(declare -f setup_buildkit)" setup_buildkit ".loco/loco.yml"
   break
 done
+
+echo
+echo "COMPLETED: Installed profiles: $PROFILES"
+echo
+echo "TIP: To persistently customize the profile list, set the PROFILES variable in /etc/bknix-ci/install-developer.conf and re-run."
+echo
+echo "  Example: PROFILES='min max edge'"
+echo "  Example: PROFILES='php74 php80 php81 php82'"
+echo "  Example: PROFILES='php80m57 php84m90'"
