@@ -124,15 +124,6 @@ function assert_common() {
   done
 }
 
-## Determine which version of Smarty to test.
-## If SMARTY3_ENABLE is already set, use it. Otherwise, choose a value of SMARTY3_ENABLE.
-function assign_smarty() {
-  if [[ "x$SMARTY3_ENABLE" = "x" && "$CIVIVER" = "master" ]]; then
-    SMARTY3_ENABLE=true
-  fi
-  export SMARTY3_ENABLE
-}
-
 function assert_bknix_durable() {
   case "$USER" in
     homer|runner-*)
