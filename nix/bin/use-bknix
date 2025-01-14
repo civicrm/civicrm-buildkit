@@ -32,6 +32,14 @@ TXT_CYAN='\[\033[0;36m\]'
 TXT_WHITE='\[\033[0;37m\]'
 
 ###########################################################
+## Helpers
+
+function fatal() {
+  echo >&2 "$@"
+  exit 1
+}
+
+###########################################################
 ## Input parsing
 
 function use_worker_n() {
@@ -41,8 +49,7 @@ function use_worker_n() {
   fi
 
   if [[ "x$EXECUTOR_NUMBER" = "x" ]]; then
-    echo "Error: The --worker-n option requires EXECUTOR_NUMBER" 1>&2
-    exit 1
+    fatal "Error: The --worker-n option requires EXECUTOR_NUMBER"
   fi
 }
 
@@ -61,7 +68,13 @@ while [ -n "$1" ]; do
   while [[ "$OPT" != "" ]]; do
 
     case "$OPT" in
-      old|min|dfl|max|alt|edge) PROFILE="$OPT" ; OPT="" ;;
+      old|min|dfl|max|alt|edge|php7*|php8*)
+        if [ -z "$PROFILE" ]; then
+          PROFILE="$OPT" ; OPT=""
+        else
+          fatal "Bad options: Too many profiles requested ($PROFILE $OPT). Choose one."
+        fi
+        ;;
       --shell) MODE=shell     ; OPT="" ;;
       --env) MODE=env         ; OPT="" ;;
       --run) MODE=run         ; OPT="" ;;
@@ -76,7 +89,7 @@ while [ -n "$1" ]; do
       -N*) use_worker_n ; OPT="-${OPT:2}" ;;
 
       -) OPT="" ; ;;
-      *) echo "Unrecognized option: $OPT" ; exit 1 ; ;;
+      *) fatal "Unrecognized option: $OPT" ; ;;
     esac
 
   done
