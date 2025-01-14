@@ -82,7 +82,7 @@ let
     *   - alt: An alternative version. Basically, with MariaDB and middle-of-the-road PHP.
     */
    old = phpXXmXX { php = dists.bkit.php73; dbms = oldestAvailableMysql; };
-   min = phpXXmXX { php = dists.bkit.php74; dbms = oldestAvailableMysql; };
+   min = phpXXmXX { php = dists.bkit.php80; dbms = oldestAvailableMysql; };
    dfl = phpXXmXX { php = dists.bkit.php82; dbms = oldestAvailableMysql; };
    alt = combinations.php80r105;
    max = combinations.php82m80;
