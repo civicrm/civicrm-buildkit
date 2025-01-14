@@ -13,7 +13,7 @@
 drupal_download
 
 pushd "$WEB_ROOT/web"
-  drush8 dl -y libraries-1 redirect-1 webform-4 options_element-1 webform_civicrm-4 views-3 login_destination-1 userprotect-1
+  drush8 dl -y redirect-1 webform-4 options_element-1 webform_civicrm-4 views-3 login_destination-1 userprotect-1
   drupal7_po_download "${CIVICRM_LOCALES:-de_DE}" drupal-7.x webform-7.x-4.x webform_civicrm-7.x-4.x views-7.x-3.x login_destination-7.x-1.x userprotect-7.x-1.x
 
   pushd sites/all/modules
