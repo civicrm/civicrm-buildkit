@@ -220,7 +220,7 @@ function cvutil_build_hostport() {
 ## example: $(cvutil_parse_site_name_id "drupal-demo/2") ==> SITE_NAME=drupal-demo SITE_ID=2
 ## example: $(cvutil_parse_site_name_id "drupal-demo") ==> SITE_NAME=drupal-demo
 function cvutil_parse_site_name_id() {
-  php -r '$parts=explode("/", $argv[1]);echo "SITE_NAME=" . $parts[0]."\n"; if (isset($parts[1])) echo "SITE_ID=" . $parts[1] . "\n";' -- "$1"
+  XDEBUG_PORT= XDEBUG_MODE=off php -r '$parts=explode("/", $argv[1]);echo "SITE_NAME=" . $parts[0]."\n"; if (isset($parts[1])) echo "SITE_ID=" . $parts[1] . "\n";' -- "$1"
 }
 
 ###############################################################################
@@ -1005,10 +1005,10 @@ function civicrm_get_ver() {
   pushd "$1" >> /dev/null
     if [ -f xml/version.xml ]; then
       ## Works in any git-based build, even if gencode hasn't run yet.
-      php -r 'echo simplexml_load_file("xml/version.xml")->version_no;'
+      XDEBUG_MODE=off XDEBUG_PORT= php -r 'echo simplexml_load_file("xml/version.xml")->version_no;'
     else
       ## works in any tar-based build.
-      php -r 'require "civicrm-version.php"; $a = civicrmVersion(); echo $a["version"];'
+      XDEBUG_MODE=off XDEBUG_PORT= php -r 'require "civicrm-version.php"; $a = civicrmVersion(); echo $a["version"];'
     fi
   popd >> /dev/null
 }
@@ -1020,7 +1020,7 @@ function civicrm_get_ver() {
 function civicrm_check_ver() {
   cvutil_assertvars civicrm_check_ver CIVI_CORE
   local ver=$( civicrm_get_ver "$CIVI_CORE" )
-  if env ACTUAL="$ver" OP="$1" EXPECT="$2" php -r 'exit(version_compare(getenv("ACTUAL"), getenv("EXPECT"), getenv("OP"))?0:1);'; then
+  if env XDEBUG_MODE=off XDEBUG_PORT= ACTUAL="$ver" OP="$1" EXPECT="$2" php -r 'exit(version_compare(getenv("ACTUAL"), getenv("EXPECT"), getenv("OP"))?0:1);'; then
     return 0
   else
     return 1
@@ -1037,7 +1037,7 @@ function civicrm_check_requested_ver() {
   if [[ "$ver" == "master" ]]; then
     ver=9999999.9999.9999
   fi
-  if env ACTUAL="$ver" OP="$1" EXPECT="$2" php -r 'exit(version_compare(getenv("ACTUAL"), getenv("EXPECT"), getenv("OP"))?0:1);'; then
+  if env XDEBUG_MODE=off XDEBUG_PORT= ACTUAL="$ver" OP="$1" EXPECT="$2" php -r 'exit(version_compare(getenv("ACTUAL"), getenv("EXPECT"), getenv("OP"))?0:1);'; then
     return 0
   else
     return 1

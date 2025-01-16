@@ -24,7 +24,7 @@ if [[ ":$PATH:" != *":$BINDIR:"* ]]; then
 fi
 
 if [ -z "$OFFLINE" ]; then
-  civi-download-tools --quiet
+  XDEBUG_MODE= XDEBUG_PORT= civi-download-tools --quiet
 fi
 
 source "$PRJDIR/src/civibuild.lib.sh"
