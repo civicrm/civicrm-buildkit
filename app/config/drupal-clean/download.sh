@@ -9,7 +9,7 @@
 drupal_download
 
 pushd "$WEB_ROOT/web"
-  drush dl -y libraries-1.0 views-3.7
+  drush dl -y libraries-1.x views-3.x
   drupal7_po_download "${CIVICRM_LOCALES:-de_DE}" drupal-7.x views-7.x-3.x
 
   pushd sites/all/modules
