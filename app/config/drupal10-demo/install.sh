@@ -69,7 +69,7 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   if [ -d "$CIVI_CORE/tools/extensions/org.civicrm.contactlayout" ]; then
     mv $CIVI_CORE/tools/extensions/org.civicrm.contactlayout files/civicrm/ext
   fi
-  cv api extension.refresh
+  cv api extension.refresh local=1 remote=0
 
   ## Demo sites always disable email and often disable cron
   cv api StatusPreference.create ignore_severity=critical name=checkOutboundMail
