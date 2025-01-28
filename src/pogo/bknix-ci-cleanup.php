@@ -36,7 +36,8 @@ $c['app']->command('dump', function($allTasks) {
   ]);
 });
 
-$c['app']->command('run [-N|--dry-run] [--threshold=]', function($dryRun, $threshold, SymfonyStyle $io, $allTasks, $findTasks, $isPartitionFull, $cmdr) {
+$c['app']->command('run [-N|--dry-run] [--threshold=] [--env-file=]', function($dryRun, $threshold, $envFile, SymfonyStyle $io, $allTasks, $findTasks, $isPartitionFull, $cmdr) {
+  /** @var \Clippy\Cmdr $cmdr */
   if (empty($threshold)) {
     $threshold = 90;
   }
@@ -62,7 +63,13 @@ $c['app']->command('run [-N|--dry-run] [--threshold=]', function($dryRun, $thres
         $io->writeln("<comment>DRY-RUN</comment>: " . $cmd);
       }
       else {
-        $cmdr->passthru($cmd, NULL);
+        if (!empty($envFile)) {
+          $fullCmd = 'env -i bash --login -c ' . escapeshellarg("source " . realpath($envFile) . ' ; ' . $cmd);
+        }
+        else {
+          $fullCmd = 'env -i bash --login -c ' . escapeshellarg($cmd);
+        }
+        $cmdr->passthru($fullCmd, NULL);
       }
     }
 
