@@ -16,7 +16,7 @@ wp_install
 ## Setup CiviCRM (config files, database tables)
 
 CIVI_DOMAIN_NAME="Demonstrators Anonymous"
-CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
+CIVI_DOMAIN_EMAIL="info@example.org"
 CIVI_CORE="${WEB_ROOT}/wp-content/plugins/civicrm/civicrm"
 CIVI_SETTINGS="${WEB_ROOT}/wp-content/uploads/civicrm/civicrm.settings.php"
 CIVI_FILES="${WEB_ROOT}/wp-content/uploads/civicrm"

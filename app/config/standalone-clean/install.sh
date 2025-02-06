@@ -12,7 +12,7 @@ amp_install
 ## Setup CiviCRM (config files, database tables)
 
 CIVI_DOMAIN_NAME="Demonstrators Anonymous"
-CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
+CIVI_DOMAIN_EMAIL="info@example.org"
 CIVI_CORE="${WEB_ROOT}/web/core"
 CIVI_UF="Standalone"
 CIVI_SETTINGS="${WEB_ROOT}/web/private/civicrm.settings.php"

@@ -24,7 +24,7 @@ drupal_install
 ## Setup CiviCRM (config files, database tables)
 
 CIVI_DOMAIN_NAME="Demonstrators Anonymous"
-CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
+CIVI_DOMAIN_EMAIL="info@example.org"
 CIVI_CORE="${CMS_ROOT}/sites/all/modules/civicrm"
 CIVI_SETTINGS="${CMS_ROOT}/sites/default/civicrm.settings.php"
 CIVI_FILES="${CMS_ROOT}/sites/default/files/civicrm"

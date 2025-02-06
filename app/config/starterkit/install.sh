@@ -12,7 +12,7 @@ amp_install
 
 DRUPAL_SITE_DIR=$(_drupal_multisite_dir "$CMS_URL" "$SITE_ID")
 CIVI_DOMAIN_NAME="Demonstrators Anonymous"
-CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
+CIVI_DOMAIN_EMAIL="info@example.org"
 CIVI_CORE="${WEB_ROOT}/profiles/civicrm_starterkit/modules/civicrm"
 CIVI_SETTINGS="${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}/civicrm.settings.php"
 CIVI_FILES="${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}/files/civicrm"

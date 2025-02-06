@@ -20,7 +20,7 @@ wp_install
 ## Setup CiviCRM (config files, database tables)
 
 CIVI_DOMAIN_NAME="Demonstrators Anonymous"
-CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
+CIVI_DOMAIN_EMAIL="info@example.org"
 CIVI_CORE="${CMS_ROOT}/wp-content/plugins/civicrm/civicrm"
 
 if [[ "$CIVI_VERSION" =~ ^4.[0123456](\.([0-9]|alpha|beta)+)?$ ]] ; then
