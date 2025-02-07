@@ -20,7 +20,7 @@ popd >>/dev/null
 ## Setup CiviCRM (config files, database tables)
 
 CIVI_DOMAIN_NAME="Demonstrators Anonymous"
-CIVI_DOMAIN_EMAIL="\"Demonstrators Anonymous\" <info@example.org>"
+CIVI_DOMAIN_EMAIL="info@example.org"
 CIVI_CORE="${CMS_ROOT}/administrator/components/com_civicrm/civicrm"
 CIVI_SETTINGS="${CMS_ROOT}/components/com_civicrm/civicrm.settings.php"
 CIVI_ADMSETTINGS="${CMS_ROOT}/administrator/components/com_civicrm/civicrm.settings.php"

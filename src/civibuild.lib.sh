@@ -771,17 +771,27 @@ function civicrm_install_cv() {
 ###############################################################################
 ## Update the CiviCRM domain's name+email
 function civicrm_update_domain() {
-  cvutil_assertvars civicrm_install CIVI_DOMAIN_NAME CIVI_DOMAIN_EMAIL
-  cvutil_php_nodbg amp sql -Ncivi --root="$CMS_ROOT" <<EOSQL
-    UPDATE civicrm_domain SET name = '$CIVI_DOMAIN_NAME';
-    SELECT @option_group_id := id
-      FROM civicrm_option_group n
-      WHERE name = 'from_email_address';
-    UPDATE civicrm_option_value
-      SET label = '$CIVI_DOMAIN_EMAIL'
-      WHERE option_group_id = @option_group_id
-      AND value = '1';
+  cvutil_assertvars civicrm_install CIVI_DOMAIN_NAME CIVI_DOMAIN_EMAIL CIVI_VERSION
+  ## In 6.0 the from_email_address option group was moved to the civicrm_site_email_address table
+  if civicrm_check_ver '<' 6.0.alpha1 ; then
+    cvutil_php_nodbg amp sql -Ncivi --root="$CMS_ROOT" <<EOSQL
+      UPDATE civicrm_domain SET name = '$CIVI_DOMAIN_NAME';
+      SELECT @option_group_id := id
+        FROM civicrm_option_group n
+        WHERE name = 'from_email_address';
+      UPDATE civicrm_option_value
+        SET label = '"$CIVI_DOMAIN_NAME" <$CIVI_DOMAIN_EMAIL>'
+        WHERE option_group_id = @option_group_id
+        AND value = '1';
 EOSQL
+  else
+    cvutil_php_nodbg amp sql -Ncivi --root="$CMS_ROOT" <<EOSQL
+      UPDATE civicrm_domain SET name = '$CIVI_DOMAIN_NAME';
+      UPDATE civicrm_site_email_address
+        SET email = '$CIVI_DOMAIN_EMAIL', display_name = '$CIVI_DOMAIN_NAME'
+        WHERE is_default = 1;
+EOSQL
+  fi
 }
 
 ###############################################################################
