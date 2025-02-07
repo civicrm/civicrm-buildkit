@@ -785,6 +785,10 @@ function civicrm_update_domain() {
         AND value = '1';
 EOSQL
   else
+    # Backward-compat: Extract email from inside angle brackets if using the old format
+    if [[ "$CIVI_DOMAIN_EMAIL" =~ \<.*\> ]]; then
+      CIVI_DOMAIN_EMAIL=$(echo "$CIVI_DOMAIN_EMAIL" | sed -n 's/.*<\([^>]*\)>.*/\1/p')
+    fi
     cvutil_php_nodbg amp sql -Ncivi --root="$CMS_ROOT" <<EOSQL
       UPDATE civicrm_domain SET name = '$CIVI_DOMAIN_NAME';
       UPDATE civicrm_site_email_address
