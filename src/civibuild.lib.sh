@@ -771,9 +771,15 @@ function civicrm_install_cv() {
 ###############################################################################
 ## Update the CiviCRM domain's name+email
 function civicrm_update_domain() {
-  cvutil_assertvars civicrm_install CIVI_DOMAIN_NAME CIVI_DOMAIN_EMAIL CIVI_VERSION
+  cvutil_assertvars civicrm_install CIVI_DOMAIN_NAME CIVI_DOMAIN_EMAIL CIVI_VERSION CIVI_CORE
+
+  # Backward-compat: Extract email from inside angle brackets if using the old format
+  if [[ "$CIVI_DOMAIN_EMAIL" =~ \<.*\> ]]; then
+    CIVI_DOMAIN_EMAIL=$(echo "$CIVI_DOMAIN_EMAIL" | sed -n 's/.*<\([^>]*\)>.*/\1/p')
+  fi
+
   ## In 6.0 the from_email_address option group was moved to the civicrm_site_email_address table
-  if civicrm_check_ver '<' 6.0.alpha1 ; then
+  if [ ! -e "$CIVI_CORE/schema/Core/SiteEmailAddress.entityType.php" ] ; then
     cvutil_php_nodbg amp sql -Ncivi --root="$CMS_ROOT" <<EOSQL
       UPDATE civicrm_domain SET name = '$CIVI_DOMAIN_NAME';
       SELECT @option_group_id := id
@@ -785,10 +791,6 @@ function civicrm_update_domain() {
         AND value = '1';
 EOSQL
   else
-    # Backward-compat: Extract email from inside angle brackets if using the old format
-    if [[ "$CIVI_DOMAIN_EMAIL" =~ \<.*\> ]]; then
-      CIVI_DOMAIN_EMAIL=$(echo "$CIVI_DOMAIN_EMAIL" | sed -n 's/.*<\([^>]*\)>.*/\1/p')
-    fi
     cvutil_php_nodbg amp sql -Ncivi --root="$CMS_ROOT" <<EOSQL
       UPDATE civicrm_domain SET name = '$CIVI_DOMAIN_NAME';
       UPDATE civicrm_site_email_address
