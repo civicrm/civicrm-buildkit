@@ -81,8 +81,8 @@
    },
 
    "phpunit9":  {
-     "url": "https://phar.phpunit.de/phpunit-9.6.20.phar",
-     "sha256": "4b49fdf48a3fdb5f4f4b5b18c43a542e75787edaf6a6ab39713f579d0a018210",
+     "url": "https://phar.phpunit.de/phpunit-9.6.22.phar",
+     "sha256": "9618d52015c9b06b4979a8e481ca9567be6be20e711e98926c61378a400e1f2e",
      "buildkit-path": "extern/phpunit9/phpunit9.phar"
    },
 
