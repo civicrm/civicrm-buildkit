@@ -300,7 +300,7 @@ function assert_testable_version() {
   fi
 
   case "$version" in
-    5.*|master*)           echo "PR test is supported for $version" ;;
+    6.*|5.*|master*)       echo "PR test is supported for $version" ;;
     *)                     fatal "PR test not supported for $version" ;;
   esac
 
