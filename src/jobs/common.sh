@@ -210,8 +210,17 @@ function export_server_logs() {
     echo
     return
   fi
-  find "${targets[@]}" -name '*.log*' -print0 | tar --null -cvzf "$WORKSPACE_LOG/$file" --files-from=- && echo "Exported logs" || echo "Exported logs, with anomaly"
-  echo
+
+  # Find log files and put them in an array
+  mapfile -d '' log_files < <(find "${targets[@]}" -name '*.log*' -print0)
+
+  # Check if any files were found
+  if [[ ${#log_files[@]} -gt 0 ]]; then
+    printf "%s\0" "${log_files[@]}" | tar --null -cvzf "$WORKSPACE_LOG/$file" --files-from=-
+    echo "Exported logs to $WORKSPACE_LOG/$file"
+  else
+    echo "No logs found"
+  fi
 }
 
 ## Remove old files
