@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 set -e
+## Example usage:
+##
+## $ run-job --mock Hello
 
 assert_common EXECUTOR_NUMBER WORKSPACE
 assert_bknix_temporary
