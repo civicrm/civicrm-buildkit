@@ -95,14 +95,14 @@ pushd "$BKITBLD/$BLDNAME/src/civix"
     case "$suite" in
       all)
         ./scripts/make-snapshots.sh --"$CIVIX_TYPE" --version HEAD --test
-        ./scripts/run-tests.sh --debug --log-junit "$WORKSPACE_JUNIT/civix-phpunit.xml"
+        ./scripts/run-tests.sh --civix-"$CIVIX_TYPE" --debug --log-junit "$WORKSPACE_JUNIT/civix-phpunit.xml"
         ;;
       make-snapshots)
         ./scripts/make-snapshots.sh --"$CIVIX_TYPE" --version HEAD --test
         ;;
       run-tests)
         # DEBUG=2
-        ./scripts/run-tests.sh --debug --log-junit "$WORKSPACE_JUNIT/civix-phpunit.xml"
+        ./scripts/run-tests.sh --civix-"$CIVIX_TYPE" --debug --log-junit "$WORKSPACE_JUNIT/civix-phpunit.xml"
         ;;
     esac
   done
