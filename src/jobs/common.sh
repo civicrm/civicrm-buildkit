@@ -205,13 +205,12 @@ function export_server_logs() {
 
   # Check if any files were found
   if [[ ${#log_files[@]} -gt 0 ]]; then
-    ## Transform (1): Prefer to output files relative to LOCO_PRJ ($HOME/buildkit or $HOME/bknix)
+    ## Prefer to output files relative to HOME
     for i in "${!log_files[@]}"; do
-      log_files[i]=$(echo "${log_files[i]}" | sed "s|^$LOCO_PRJ/||g")
+      log_files[i]=$(echo "${log_files[i]}" | sed "s|^$HOME/||g")
     done
 
-    ## Transform (2): Rename .loco/ as loco/ so it's easier to browse
-    printf "%s\0" "${log_files[@]}" | tar --null --transform "s|\.loco|loco|" -C "$LOCO_PRJ" -cvzf "$WORKSPACE_LOG/$file" --files-from=-
+    printf "%s\0" "${log_files[@]}" | tar --null -C "$HOME" -cvzf "$WORKSPACE_LOG/$file" --files-from=-
     echo "Exported logs to $WORKSPACE_LOG/$file"
   else
     echo "No logs found"
