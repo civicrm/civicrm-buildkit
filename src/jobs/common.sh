@@ -199,28 +199,33 @@ function init_std_workspace() {
 function export_server_logs() {
   local file="server-logs.tar.gz"
   echo "Export logs ($file)"
-  local targets=()
-  for target in "$LOCO_VAR" "$BLDDIR/web/private/log" "$BLDDIR/web/sites/default/files/civicrm" "$BLDDIR/web/wp-contents/uploads/civicrm" "$BLDDIR/web/files/civicrm" ; do
-    if [ -d "$target" ]; then
-      targets+=("$target")
-    fi
-  done
-  if [ ${#target[@]} -eq 0 ]; then
-    echo "No log folders found"
-    echo
-    return
-  fi
 
   # Find log files and put them in an array
-  mapfile -d '' log_files < <(find "${targets[@]}" -name '*.log*' -print0)
+  mapfile -d '' log_files < <( _export_server_logs )
 
   # Check if any files were found
   if [[ ${#log_files[@]} -gt 0 ]]; then
-    printf "%s\0" "${log_files[@]}" | tar --null -cvzf "$WORKSPACE_LOG/$file" --files-from=-
+    ## Transform (1): Prefer to output files relative to LOCO_PRJ ($HOME/buildkit or $HOME/bknix)
+    for i in "${!log_files[@]}"; do
+      log_files[i]=$(echo "${log_files[i]}" | sed "s|^$LOCO_PRJ/||g")
+    done
+
+    ## Transform (2): Rename .loco/ as loco/ so it's easier to browse
+    printf "%s\0" "${log_files[@]}" | tar --null --transform "s|\.loco|loco|" -C "$LOCO_PRJ" -cvzf "$WORKSPACE_LOG/$file" --files-from=-
     echo "Exported logs to $WORKSPACE_LOG/$file"
   else
     echo "No logs found"
   fi
+}
+
+## Internal helper: Print a list of server log files with \0 delimeter
+function _export_server_logs() {
+  ## Search for log files in common log folders
+  for target in "$LOCO_VAR" "$BLDDIR/web/private/log" "$BLDDIR/web/sites/default/files/civicrm/ConfigAndLog" "$BLDDIR/web/wp-contents/uploads/civicrm/ConfigAndLog" "$BLDDIR/web/files/civicrm/ConfigAndLog" ; do
+    if [ -d "$target" ]; then
+      find "$target" -readable -name '*.log*' -print0 || true
+    fi
+  done
 }
 
 ## Remove old files
