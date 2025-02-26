@@ -24,8 +24,8 @@
    },
 
    "civix":  {
-     "url": "https://download.civicrm.org/civix/civix-25.01.1.phar",
-     "sha256": "5b7150e4c711e3c55276d9bab7ace6e5b00037815890d5db69bac903c2d52d45",
+     "url": "https://download.civicrm.org/civix/civix-25.02.0.phar",
+     "sha256": "bf8c23b6b58a097277e32203fc1f7d6dc4c63c53bb1ba1469e3db8213c967b05",
      "buildkit-path": "bin/civix"
    },
 
