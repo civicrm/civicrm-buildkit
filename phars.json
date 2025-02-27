@@ -75,8 +75,8 @@
    },
 
    "phpunit8":  {
-     "url": "https://phar.phpunit.de/phpunit-8.5.27.phar",
-     "sha256": "04e65b8b2cb0465302f3d0115ad0a77411ba8d5c03be2607d58265da54f972e2",
+     "url": "https://phar.phpunit.de/phpunit-8.5.41.phar",
+     "sha256": "df3a284a28ef7eee387707b6cfd6e569f27698c557281c440addaee165c64c16",
      "buildkit-path": "extern/phpunit8/phpunit8.phar"
    },
 
