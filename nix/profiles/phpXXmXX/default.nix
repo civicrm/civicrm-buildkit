@@ -9,7 +9,7 @@
 let
     dists = import ../../pins;
     stdenv = dists.default.stdenv;
-    isAppleM1 = stdenv.isDarwin && stdenv.isAarch64;
+    isApple = stdenv.isDarwin;
 
     isValidPackage = pkg: (builtins.tryEval pkg).success && pkg != null && pkg.type == "derivation";
 
@@ -25,6 +25,6 @@ in if (isValidPackage php) && (isValidPackage dbms)
     dists.default.redis
     dists.bkit.transifexClient
 
-  ] ++ (if isAppleM1 then [] else [dists.default.chromium])
+  ] ++ (if isApple then [] else [dists.default.chromium])
 
   else throw "Unsupported: Some dependencies for this combination of PHP/MySQL are not available in this environment."
