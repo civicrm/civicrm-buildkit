@@ -56,8 +56,8 @@ case "$EXTKEY" in
     EXTS="org.civicrm.angularprofiles org.civicrm.volunteer"
     ;;
   uk.co.vedaconsulting.mosaico)
-    EXTGITS="https://github.com/civicrm/org.civicrm.shoreditch https://github.com/veda-consulting/uk.co.vedaconsulting.mosaico"
-    EXTS="org.civicrm.shoreditch uk.co.vedaconsulting.mosaico"
+    EXTGITS="https://github.com/veda-consulting/uk.co.vedaconsulting.mosaico"
+    EXTS="uk.co.vedaconsulting.mosaico"
     ;;
   org.civicoop.civirules)
     #EXTGITS="https://github.com/civicoop/org.civicoop.civirules"
@@ -66,7 +66,7 @@ case "$EXTKEY" in
     ;;
   de.systopia.eck)
     EXTGITS="https://github.com/systopia/de.systopia.eck"
-    EXTS="de.systopia.eck:"
+    EXTS="de.systopia.eck"
     ;;
   *)
     echo "Unrecognized extension key: $EXTKEY"
