@@ -229,6 +229,7 @@ function task_karma() {
 function task_upgrade() {
   if [ -e "$CIVI_CORE/tests/phpunit/Upgrade/" -a "$(ls $CIVI_CORE/tests/phpunit/Upgrade/*.php)"  ]; then
     export UPGRADE_TEST_FILTER="$@"
+    export CIVICRM_UPGRADE_EVIL=1
     task_phpunit_expr UpgradeTest "$CIVI_CORE" tests/phpunit/Upgrade/
   else
     if [ -z "$1" ]; then
