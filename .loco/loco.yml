@@ -87,6 +87,8 @@ services:
     run: 'php-fpm -y "$LOCO_SVC_VAR/php-fpm.conf" --nodaemonize'
     pid_file: '$LOCO_SVC_VAR/php-fpm.pid'
     message: 'PHP-FPM is running on "<comment>$LOCALHOST:$PHPFPM_PORT</comment>"'
+    io_mode: close-output
+    ## We've been using default `close-all`, but on php-fpm exits immediately on macOS 15.3. `close-output` seems to work better.
 
   mailhog:
     run: 'loco-pid-file "$LOCO_SVC_VAR/mailhog.pid" -- MailHog -ui-bind-addr "$LOCALHOST:$MAIL_HTTP_PORT" -api-bind-addr "$LOCALHOST:$MAIL_HTTP_PORT" -smtp-bind-addr "$LOCALHOST:$MAIL_SMTP_PORT"'
