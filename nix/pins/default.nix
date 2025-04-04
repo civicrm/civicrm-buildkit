@@ -15,9 +15,10 @@ rec {
   ##
   ##   git clone https://EXAMPLE.COM/NIXPKGS.GIT /home/myuser/src/nixpkgs
   ##
-  ## And set buildkit to use that:
+  ## And set buildkit to use that, as in:
   #
   # v2405 = import /home/myuser/src/nixpkgs/default.nix {};
+  # v2405 = import ((builtins.getEnv "HOME") + "/src/nixpkgs/default.nix") {};
 
   bkit = import ../pkgs;
   default = v2205;
