@@ -36,8 +36,8 @@
    },
 
    "cv":  {
-     "url": "https://download.civicrm.org/cv/cv-0.3.62.phar",
-     "sha256": "9d8687b049bd999b591750c9533e5d9a6a3ba762aca0e91e1f8b16d6513102c0",
+     "url": "https://download.civicrm.org/cv/cv-0.3.63.phar",
+     "sha256": "1a08fdbbdb5e9348c0b6d054e4d0bc0ab9c13b9f283ced5655901138e9d5e1e9",
      "buildkit-path": "bin/cv"
    },
 
