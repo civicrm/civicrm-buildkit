@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0e8a0776b0b49b764a3a1ba9a0e773c3",
+    "content-hash": "fe428c9f540ef3a4e41af790b831e979",
     "packages": [
         {
             "name": "civicrm/composer-compile-plugin",
@@ -111,16 +111,16 @@
         },
         {
             "name": "civicrm/upgrade-test",
-            "version": "0.8",
+            "version": "0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/civicrm/civicrm-upgrade-test.git",
-                "reference": "230c4a96977dc483c6fced7c546b587380cac5c0"
+                "reference": "d582d0b451b847e01c05ee13a2ab8acf9facfffb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/230c4a96977dc483c6fced7c546b587380cac5c0",
-                "reference": "230c4a96977dc483c6fced7c546b587380cac5c0",
+                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/d582d0b451b847e01c05ee13a2ab8acf9facfffb",
+                "reference": "d582d0b451b847e01c05ee13a2ab8acf9facfffb",
                 "shasum": ""
             },
             "bin": [
@@ -146,9 +146,9 @@
             "description": "Collection of scripts and data-files for testing CiviCRM upgrades",
             "homepage": "https://github.com/civicrm/civicrm-upgrade-test",
             "support": {
-                "source": "https://github.com/civicrm/civicrm-upgrade-test/tree/0.8"
+                "source": "https://github.com/civicrm/civicrm-upgrade-test/tree/0.9"
             },
-            "time": "2024-12-06T08:05:28+00:00"
+            "time": "2025-04-23T06:02:22+00:00"
         },
         {
             "name": "drupal/coder",
