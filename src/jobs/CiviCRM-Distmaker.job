@@ -20,7 +20,9 @@ assert_common EXECUTOR_NUMBER WORKSPACE CIVIVER
 assert_regex '^[0-9a-z\.-]*$' "$CIVICOMMIT" "Missing or invalid CIVICOMMIT"
 
 ## PATCH: Optional. URL of a pending pull-request in any `civicrm-*` repo (e.g. `https://github.com/civicrm/civicrm-packages/pull/1234`)
-assert_regex '^\(\|https://github.com/civicrm/civicrm-[a-z]*/pull/[0-9]\+/*\)$' "$PATCH" "Invalid PATCH"
+if [ -n "$PATCH" ]; then
+  assert_common PATCH
+fi
 
 #################################################
 ## Bootstrap
@@ -40,36 +42,14 @@ BLDTYPE="dist"
 export DM_TARGETDIR="$BLDDIR/out/tar"
 export DM_VERSION_SUFFIX=
 
-case "$PATCH" in
-  https://github.com/civicrm/civicrm-backdrop/pull/*)
-    ghprbPullId=$(echo "$PATCH" | cut -f7 -d/ )
-    FOLDER="bd-$ghprbPullId"
-    ;;
-
-  https://github.com/civicrm/civicrm-drupal/pull/*)
-    ghprbPullId=$(echo "$PATCH" | cut -f7 -d/ )
-    FOLDER="d7-$ghprbPullId"
-    ;;
-
-  https://github.com/civicrm/civicrm-core/pull/*)
-    ghprbPullId=$(echo "$PATCH" | cut -f7 -d/ )
-    FOLDER="core-$ghprbPullId"
-    ;;
-
-  https://github.com/civicrm/civicrm-packages/pull/*)
-    ghprbPullId=$(echo "$PATCH" | cut -f7 -d/ )
-    FOLDER="pkgs-$ghprbPullId"
-    ;;
-
-  https://github.com/civicrm/civicrm-wordpress/pull*)
-    ghprbPullId=$(echo "$PATCH" | cut -f7 -d/ )
-    FOLDER="wp-$ghprbPullId"
-    ;;
-
-  *)
-    ghprbPullId=
-    FOLDER="dev-$BUILD_NUMBER"
-    ;;
+parse_patch_url
+case "$PATCH_REPO" in
+  "civicrm-backdrop")  FOLDER="bd-$PATCH_PR_NUM" ; ;;
+  "civicrm-drupal")    FOLDER="d7-$PATCH_PR_NUM" ; ;;
+  "civicrm-core")      FOLDER="core-$PATCH_PR_NUM" ; ;;
+  "civicrm-packages")  FOLDER="pkgs-$PATCH_PR_NUM" ; ;;
+  "civicrm-wordpress") FOLDER="wp-$PATCH_PR_NUM" ; ;;
+  *)                   FOLDER="dev-$BUILD_NUMBER" ; ;;
 esac
 
 export FILE_SUFFIX=$( date -u '+%Y%m%d%H%M' )

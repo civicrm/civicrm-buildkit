@@ -23,36 +23,15 @@ if [ -n "$PATCH" ]; then assert_common PATCH ; fi
 assert_testable_version "$CIVIVER"
 
 ## Try to make a site-name that corresponds to the pull-request (PATCH; if given)
-case "$PATCH" in
-  https://github.com/civicrm/civicrm-backdrop/pull/*)
-    ghprbPullId=$(echo "$PATCH" | cut -f7 -d/ )
-    BLDNAME="bd-$ghprbPullId-$(php -r 'echo base_convert(time()%(180*24*60*60), 10, 36);')"
-    ;;
-
-  https://github.com/civicrm/civicrm-drupal/pull/*)
-    ghprbPullId=$(echo "$PATCH" | cut -f7 -d/ )
-    BLDNAME="d7-$ghprbPullId-$(php -r 'echo base_convert(time()%(180*24*60*60), 10, 36);')"
-    ;;
-
-  https://github.com/civicrm/civicrm-core/pull/*)
-    ghprbPullId=$(echo "$PATCH" | cut -f7 -d/ )
-    BLDNAME="core-$ghprbPullId-$(php -r 'echo base_convert(time()%(180*24*60*60), 10, 36);')"
-    ;;
-
-  https://github.com/civicrm/civicrm-packages/pull/*)
-    ghprbPullId=$(echo "$PATCH" | cut -f7 -d/ )
-    BLDNAME="pkgs-$ghprbPullId-$(php -r 'echo base_convert(time()%(180*24*60*60), 10, 36);')"
-    ;;
-
-  https://github.com/civicrm/civicrm-wordpress/pull*)
-    ghprbPullId=$(echo "$PATCH" | cut -f7 -d/ )
-    BLDNAME="wp-$ghprbPullId-$(php -r 'echo base_convert(time()%(180*24*60*60), 10, 36);')"
-    ;;
-
-  *)
-    ghprbPullId=
-    BLDNAME="demo-$BUILD_NUMBER-$(php -r 'echo base_convert(time()%(180*24*60*60), 10, 36);')"
-    ;;
+now=$(php -r 'echo base_convert(time()%(180*24*60*60), 10, 36);')
+parse_patch_url
+case "$PATCH_REPO" in
+  "civicrm-core")      BLDNAME="core-$PATCH_PR_NUM-$now" ; ;;
+  "civicrm-backdrop")  BLDNAME="bd-$PATCH_PR_NUM-$now" ; ;;
+  "civicrm-drupal")    BLDNAME="d7-$PATCH_PR_NUM-$now" ; ;;
+  "civicrm-packages")  BLDNAME="pkgs-$PATCH_PR_NUM-$now" ; ;;
+  "civicrm-wordpress") BLDNAME="wp-$PATCH_PR_NUM-$now" ; ;;
+  *)                   BLDNAME="demo-$BUILD_NUMBER-$now" ; ;;
 esac
 
 ## Adding UF suffix will reduce conflicts in cases where you make 5 diff demos for the same PR.
