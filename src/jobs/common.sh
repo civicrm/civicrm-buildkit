@@ -88,7 +88,13 @@ function assert_common() {
         fi
         ;;
       PATCH)
-        assert_regex '^https://\(github.com/civicrm/civicrm-[a-z0-9-]*/pull/[0-9]\+\|test.civicrm.org/duderino/file/github/civicrm/civicrm-core\)/*' "$PATCH" "Invalid or missing PATCH"
+        assert_regex '^https://\(github.com/civicrm/civicrm-[a-z0-9-]*/pull/[0-9]\+\|test.civicrm.org/duderino/file/github/civicrm/civicrm-[a-z0-9-]*\)' "$PATCH" "Invalid or missing PATCH"
+        ;;
+      PATCH_PR_NUM)
+        assert_regex '^[0-9]\+$' "$PATCH_PR_NUM" "ghprbPullId must be a number."
+        ;;
+      PATCH_REPO)
+        assert_regex '^civicrm-\(backdrop\|core\|drupal\|drupal-8\|packages\|wordpress\)$' "$PATCH_REPO"
         ;;
       PHPUNIT)
         assert_regex '^phpunit[0-9]*$' "$PHPUNIT" "PHPUNIT ($PHPUNIT) should identify a general version (such as phpunit8 or phpunit9)"
@@ -141,6 +147,42 @@ function assert_bknix_temporary() {
     *)
       echo >&2 "WARNING: This job is expected to run in a temporary environment. The user is \"$USER\" which suggests it is persistent."
       ;;
+  esac
+}
+
+## Read the `PATCH` (URL).
+## - If possible, set `PATCH_PR_NUM` and `PATCH_REPO`.
+## - Otherwise, `PATCH_PR_NUM` and `PATCH_REPO` and will be blank.
+function parse_patch_url() {
+  PATCH_PR_NUM=
+  PATCH_REPO=
+
+  case "$PATCH" in
+    'https://github.com/civicrm/'*)
+      case "$PATCH" in
+        'https://github.com/civicrm/civicrm-core/pull/'*)       ghprbTargetBranch="$CIVIVER" ; ;;
+        'https://github.com/civicrm/civicrm-backdrop/pull/'*)   ghprbTargetBranch="1.x-$CIVIVER" ; ;;
+        'https://github.com/civicrm/civicrm-drupal/pull/'*)     ghprbTargetBranch="7.x-$CIVIVER" ; ;;
+        'https://github.com/civicrm/civicrm-drupal-8/pull/'*)   ghprbTargetBranch="$CIVIVER" ; ;;
+        'https://github.com/civicrm/civicrm-wordpress/pull/'*)  ghprbTargetBranch="$CIVIVER" ; ;;
+      esac
+      PATCH_PR_NUM=$(echo "$PATCH" | cut -d/ -f 7)
+      PATCH_REPO=$(echo "$PATCH" | cut -d/ -f 5)
+      ;;
+
+    'https://test.civicrm.org/duderino/file/'*)
+      case "$PATCH" in
+        'https://test.civicrm.org/duderino/file/github/civicrm/civicrm-core/'*)       ghprbTargetBranch="$CIVIVER" ; ;;
+        'https://test.civicrm.org/duderino/file/github/civicrm/civicrm-backdrop/'*)   ghprbTargetBranch="1.x-$CIVIVER" ; ;;
+        'https://test.civicrm.org/duderino/file/github/civicrm/civicrm-drupal/'*)     ghprbTargetBranch="7.x-$CIVIVER" ; ;;
+        'https://test.civicrm.org/duderino/file/github/civicrm/civicrm-drupal-8/'*)   ghprbTargetBranch="$CIVIVER" ; ;;
+        'https://test.civicrm.org/duderino/file/github/civicrm/civicrm-wordpress/'*)  ghprbTargetBranch="$CIVIVER" ; ;;
+      esac
+      local patchId=$(echo "$PATCH" | cut -d/ -f 9)
+      PATCH_PR_NUM=$(echo "$patchId" | cut -d- -f 1)
+      PATCH_REPO=$(echo "$PATCH" | cut -d/ -f 8)
+      ;;
+
   esac
 }
 
