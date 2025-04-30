@@ -88,7 +88,7 @@ function assert_common() {
         fi
         ;;
       PATCH)
-        assert_regex '^https://github.com/civicrm/civicrm-[a-z0-9-]*/pull/[0-9]\+/*' "$PATCH" "Invalid or missing PATCH"
+        assert_regex '^https://\(github.com/civicrm/civicrm-[a-z0-9-]*/pull/[0-9]\+\|test.civicrm.org/duderino/file/github/civicrm/civicrm-core\)/*' "$PATCH" "Invalid or missing PATCH"
         ;;
       PHPUNIT)
         assert_regex '^phpunit[0-9]*$' "$PHPUNIT" "PHPUNIT ($PHPUNIT) should identify a general version (such as phpunit8 or phpunit9)"
