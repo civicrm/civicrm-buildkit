@@ -5,8 +5,8 @@ namespace Clippy;
 ## credits.php - Build a list of contributor names (with autocompletion, based on contributor-key.yml)
 
 #!ttl 10 years
-#!require clippy/std: ~0.3.5
-#!require symfony/yaml: ~3.0
+#!require clippy/std: ~0.5.1
+#!require symfony/yaml: "~3.0|~4.0|~5.0"
 
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Question\Question;
