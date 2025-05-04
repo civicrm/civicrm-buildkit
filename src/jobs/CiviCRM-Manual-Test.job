@@ -19,7 +19,7 @@ assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE CIVIVER SUITES
 assert_regex '^[0-9a-z\.-]*$' "$CIVICOMMIT" "Missing or invalid CIVICOMMIT"
 
 ## PATCH: Optional. URL of a pending pull-request in any `civicrm-*` repo (e.g. `https://github.com/civicrm/civicrm-packages/pull/1234`)
-assert_regex '^\(\|https://github.com/civicrm/civicrm-[a-z]*/pull/[0-9]\+/*\)$' "$PATCH" "Invalid PATCH"
+if [ -n "$PATCH" ]; then assert_common PATCH ; fi
 
 #################################################
 ## Bootstrap

@@ -20,7 +20,10 @@ assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE CIVIVER
 assert_common SUITE
 
 ## PATCH: Optional. URL of a pending pull-request in any `civicrm-*` repo (e.g. `https://github.com/civicrm/civicrm-packages/pull/1234`)
-assert_regex '^\(\|https://github.com/civicrm/civicrm-[a-z]*/pull/[0-9]\+/*\|https://github.com/totten/civix/pull/[0-9]\+/*\)$' "$PATCH" "Invalid PATCH"
+if [ -n "$PATCH" ]; then
+   assert_regex '^https://\(github.com/totten/civix/pull/[0-9]\+\|test.civicrm.org/duderino/file/github/totten/civix\)' "$PATCH" "Invalid PATCH"
+fi
+
 
 ## CIVIX_TYPE: Whether to test basic repo or to compile PHAR.
 ## (This may only matter for 'make-snapshots' testing.)

@@ -19,7 +19,9 @@ assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE CIVIVER
 assert_regex "^\(cv-std\|cv-installer\|cv-null\)$" "$SUITE"
 
 ## PATCH: Optional. URL of a pending pull-request in any `civicrm-*` repo (e.g. `https://github.com/civicrm/civicrm-packages/pull/1234`)
-assert_regex '^\(\|https://github.com/civicrm/civicrm-[a-z]*/pull/[0-9]\+/*\|https://github.com/civicrm/cv/pull/[0-9]\+/*\)$' "$PATCH" "Invalid PATCH"
+if [ -n "$PATCH" ]; then
+   assert_regex '^https://\(github.com/civicrm/cv/pull/[0-9]\+\|test.civicrm.org/duderino/file/github/civicrm/cv\)' "$PATCH" "Invalid PATCH"
+fi
 
 ## PHPUNIT: The version of PHPUnit to use
 PHPUNIT=${PHPUNIT:-phpunit9}
