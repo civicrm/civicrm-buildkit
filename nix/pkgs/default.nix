@@ -38,6 +38,7 @@ in pharDirectives // rec {
    mysql84 = dists.v2405.mysql84;
    mysql90 = dists.v2405.mysql90;
    mariadb106 = dists.v2205.mariadb;
+   # mariadb1011 = dists.v2405.mariadb; ## FIXME: provisioning script
 
    # mysql57 = makeMysqlWrapper { mysql=dists.default.mysql57; };
    # mysql80 = makeMysqlWrapper { mysql=dists.default.mysql80; };
