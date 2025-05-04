@@ -5,7 +5,7 @@ rec {
 
   ## Example: If you want to test with your own copy of nixpkgs, then setup your local source-tree:
   ##
-  ##   git clone https://EXAMPLE.COM/NIXPKGS.GIT /home/myuser/src/nixpkgs
+  ##   git clone https://EXAMPLE.COM/NIXPKGS.GIT $HOME/src/nixpkgs
   ##
   ## And set buildkit to use that, as in:
   #
