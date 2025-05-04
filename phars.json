@@ -30,8 +30,8 @@
    },
 
    "coworker":  {
-     "url": "https://download.civicrm.org/coworker/coworker-0.6.phar",
-     "sha256": "5cd8c4dd79de59478eecb260eb9c052a64b0dd47761018945543c01b61e87f6c",
+     "url": "https://download.civicrm.org/coworker/coworker-0.7.phar",
+     "sha256": "3db2c9adf8540b315607c5ef4f627d4b08c4c146fcdd59de426d7f3020865b37",
      "buildkit-path": "bin/coworker"
    },
 
@@ -93,8 +93,8 @@
    },
 
    "pogo":  {
-     "url": "https://github.com/totten/pogo/releases/download/v0.5.0/pogo-0.5.0.phar",
-     "sha256": "c070b76c5b70debc26f79ac1e551d53c6a02b9ea514d0d7776bbd674906797d8",
+     "url": "https://github.com/totten/pogo/releases/download/v0.6.0/pogo-0.6.0.phar",
+     "sha256": "7205cb663d088c233c100c1cd3e0286c04ffb7a1bbe41df1f0b305d8a0c3d830",
      "buildkit-path": "bin/pogo"
    },
 
