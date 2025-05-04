@@ -37,7 +37,6 @@ in pharDirectives // rec {
    mysql80 = dists.default.mysql80;
    mysql84 = dists.v2405.mysql84;
    mysql90 = dists.v2405.mysql90;
-   mariadb105 = if isAppleM1 then null else dists.v2105.mariadb;
    mariadb106 = dists.v2205.mariadb;
 
    # mysql57 = makeMysqlWrapper { mysql=dists.default.mysql57; };
