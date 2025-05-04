@@ -33,7 +33,6 @@ let
 
 in pharDirectives // rec {
 
-   mysql56 = ifSupported "mysql56" (!isAppleM1) ((import ./mysql56/default.nix).mysql56);
    mysql57 = dists.default.mysql57;
    mysql80 = dists.default.mysql80;
    mysql84 = dists.v2405.mysql84;
