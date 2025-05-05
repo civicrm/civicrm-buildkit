@@ -33,13 +33,12 @@ let
 
 in pharDirectives // rec {
 
-   mysql56 = ifSupported "mysql56" (!isAppleM1) ((import ./mysql56/default.nix).mysql56);
    mysql57 = dists.default.mysql57;
    mysql80 = dists.default.mysql80;
    mysql84 = dists.v2405.mysql84;
    mysql90 = dists.v2405.mysql90;
-   mariadb105 = if isAppleM1 then null else dists.v2105.mariadb;
-   mariadb106 = dists.default.mariadb;
+   mariadb106 = dists.v2205.mariadb;
+   # mariadb1011 = dists.v2405.mariadb; ## FIXME: provisioning script
 
    # mysql57 = makeMysqlWrapper { mysql=dists.default.mysql57; };
    # mysql80 = makeMysqlWrapper { mysql=dists.default.mysql80; };
@@ -60,7 +59,7 @@ in pharDirectives // rec {
    php83 = import ./php83/default.nix;
    php84 = import ./php84/default.nix;
    transifexClient = import ./transifexClient/default.nix;
-   ramdisk = callPackage (fetchTarball https://github.com/totten/ramdisk/archive/v0.1.2.tar.gz) {};
+   ramdisk = callPackage (fetchTarball "https://github.com/totten/ramdisk/archive/v0.1.2.tar.gz") {};
 
    # We don't actually modify the tzdata package, but we should have a singular pinning so that it same pkg is used in different flows.
    tzdata = pkgs.tzdata;

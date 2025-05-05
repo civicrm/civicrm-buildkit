@@ -2,9 +2,9 @@
  * v24.05
  */
 fetchTarball {
-  ## Unofficial backports circa Dec 9, 2024; totten/v2405-p84m90
-  url = "https://github.com/nixos/nixpkgs/archive/6ee466cbe0eba68005fa99742917bbe706c99bee.tar.gz";
-  sha256 = "0jg69k7y0mvsaq7g3nwwyz09lfx3hz1xmk5a2pzllc045q40zfdf";
+  ## Unofficial backports circa May 2, 2025; totten/v2405-p84m90
+  url = "https://github.com/nixos/nixpkgs/archive/1188c86a25a002a64ccade27dae6dae50adf61ca.tar.gz";
+  sha256 = "0xc3g5y1yxix4fyl6y9xjzjxyzzcwbpz427w6jnglfcr33xba8pm";
 
   ## Official backports circa Jul 23, 2024
   # url = "https://github.com/nixos/nixpkgs/archive/4027bf72e183f21cae770e24b467cbc5ce52edd1.tar.gz";
