@@ -622,7 +622,7 @@ function civicrm_download_composer_d8() {
   [ -n "$EXTRA_PATCH" ] && git scan am -N "${EXTRA_PATCH[@]}"
 
   if [ -z "$CIVI_ROOT" ]; then
-    local civicrm_version_php=$(find -name civicrm-version.php | head -n1)
+    local civicrm_version_php=$(find . -name civicrm-version.php | head -n1)
     if [ -f "$civicrm_version_php" ]; then
       CIVI_ROOT=$(dirname "$civicrm_version_php")
     else
