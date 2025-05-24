@@ -29,6 +29,7 @@ wp post delete 2
 wp rewrite structure '/%postname%/'
 wp rewrite flush --hard
 wp theme install twentythirteen --activate
+wp theme install twentytwentyone
 
 wp user create "$DEMO_USER" "$DEMO_EMAIL" --user_pass="$DEMO_PASS"
 
