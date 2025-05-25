@@ -47,7 +47,6 @@ in pharDirectives // rec {
    # mariadb105 = if isAppleM1 then null else makeMysqlWrapper { mysql=dists.v2105.mariadb; };
    # mariadb106 = makeMysqlWrapper { mysql=dists.default.mariadb; };
 
-   php72 = ifSupported "php72" (!isAppleM1) (import ./php72/default.nix);
    php73 = ifSupported "php73" (!isAppleM1) (import ./php73/default.nix);
    bknixPhpstormAdvisor = import ./bknixPhpstormAdvisor/default.nix;
    bknixProfile = import ./bknixProfile/default.nix;
