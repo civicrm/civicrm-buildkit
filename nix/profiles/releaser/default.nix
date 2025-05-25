@@ -13,6 +13,6 @@ in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
     dists.bkit.php81
     # dists.default.nodejs-16_x
     # (if isAppleM1 then dists.default.mysql80 else dists.default.mysql57)
-    dists.v2305.google-cloud-sdk
+    dists.default.google-cloud-sdk
 
 ]
