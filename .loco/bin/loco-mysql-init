@@ -1,19 +1,26 @@
 #!/usr/bin/env bash
-set -x
+set -ex
+
+loco-mysql-select
 
 mysql_version=$(mysql --no-defaults --version)
+mysql_current="$LOCO_SVC_VAR/current"
+mysql_target="$LOCO_SVC_VAR/$MYSQL_ID"
+mysql_cnf="$mysql_target/conf/my.cnf"
+mysql_datadir="$mysql_target/data"
 
-mkdir "$LOCO_SVC_VAR"/{log,tmp,run}
+mkdir -p "$mysql_current"/{conf,log,tmp,run}
 
-php "$LOCO_CFG/mysql-common/my.cnf.php" > "$LOCO_SVC_VAR"/conf/common-my.cnf
+php "$LOCO_CFG/mysql/conf/my.cnf.php" > "$mysql_cnf"
+php "$LOCO_CFG/mysql-common/my.cnf.php" > "$mysql_current/conf/common-my.cnf"
 
 ## MySQL v5.7
 if echo "$mysql_version" | grep 'Distrib 5.7' -q; then
-  mysqld --defaults-file="$LOCO_SVC_VAR/conf/my.cnf" --initialize-insecure --explicit_defaults_for_timestamp --datadir="$LOCO_SVC_VAR/data"
+  mysqld --defaults-file="$mysql_cnf" --initialize-insecure --explicit_defaults_for_timestamp --datadir="$mysql_datadir"
 
 elif echo "$mysql_version" | grep 'Ver [89].' -q; then
-  #mysqld --no-defaults --initialize-insecure --explicit_defaults_for_timestamp --datadir="$LOCO_SVC_VAR/data"
-  mysqld --defaults-file="$LOCO_SVC_VAR/conf/my.cnf" --initialize-insecure --explicit_defaults_for_timestamp --datadir="$LOCO_SVC_VAR/data"
+  #mysqld --no-defaults --initialize-insecure --explicit_defaults_for_timestamp --datadir="$mysql_datadir"
+  mysqld --defaults-file="$mysql_cnf" --initialize-insecure --explicit_defaults_for_timestamp --datadir="$mysql_datadir"
 
 ## MariaDB
 elif echo "$mysql_version" | grep 'MariaDB' -q; then
@@ -21,7 +28,7 @@ elif echo "$mysql_version" | grep 'MariaDB' -q; then
   mysql_base=$(dirname "$mysql_bin")
   pushd "$mysql_base"
     set -ex
-      mysql_install_db --datadir="$LOCO_SVC_VAR/data" --defaults-file="$LOCO_SVC_VAR/conf/my.cnf" --skip-name-resolve --auth-root-authentication-method=normal
+      mysql_install_db --datadir="$mysql_datadir" --defaults-file="$mysql_cnf" --skip-name-resolve --auth-root-authentication-method=normal
     set +ex
   popd
 
@@ -31,7 +38,7 @@ else
   mysql_base=$(dirname "$mysql_bin")
   pushd "$mysql_base"
     set -ex
-      mysql_install_db --datadir="$LOCO_SVC_VAR/data" --defaults-file="$LOCO_SVC_VAR/conf/my.cnf" --skip-name-resolve
+      mysql_install_db --datadir="$mysql_datadir" --defaults-file="$mysql_cnf" --skip-name-resolve
     set +ex
   popd
 fi

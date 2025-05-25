@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -e
+
+if [ -z "$MYSQL_ID" ]; then
+  echo >&2 "Failed to find MYSQL_ID. You probably need to update loco.yml (e.g. MYSQL_ID=\$(mysql-id))"
+  exit 2
+fi
+
+mysql_current="$LOCO_SVC_VAR/current"
+mysql_current_id=$( F="$mysql_current/loco.mysql_id" ; [ -f "$F" ] && cat "$F" || echo 'none' )
+mysql_target="$LOCO_SVC_VAR/$MYSQL_ID"
+
+if [ ! -d "$mysql_target" ]; then
+  mkdir -p "$mysql_target"
+fi
+
+if [[ "$mysql_current_id" != "$MYSQL_ID" ]]; then
+  rm -f "$mysql_current"
+  ln -s "$mysql_target" "$mysql_current"
+  echo "$MYSQL_ID" > "$mysql_current/loco.mysql_id"
+fi

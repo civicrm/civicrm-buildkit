@@ -52,6 +52,7 @@ default_environment:
  - CHROME_BIN=$(find-chrome)
  - CHROME_HOST=${LOCALHOST}
  - CHROME_PORT=9222
+ 
 
 #### Mandatory environment settings
 environment:
@@ -60,7 +61,8 @@ environment:
  - CIVIBUILD_HOME=$HTTPD_VDROOT
  - BKIT=$LOCO_PRJ
  - BKITBLD=$HTTPD_VDROOT
- - MYSQL_HOME=$LOCO_VAR/mysql/conf
+ - MYSQL_HOME=$LOCO_VAR/mysql/current/conf
+ - MYSQL_ID=$(mysql-id)
  - NODE_PATH=$BKIT/node_modules:$NODE_PATH
  - PATH=$BKIT/bin:$BKIT/node_modules/.bin:$LOCO_PRJ/.loco/bin:$PATH
  - CIVICRM_COMPOSER_ASSET=symdir
@@ -111,8 +113,8 @@ services:
     enabled: true
     init:
       - 'loco-mysql-init'
-    run: 'mysqld --defaults-file="$LOCO_SVC_VAR/conf/my.cnf" --datadir="$LOCO_SVC_VAR/data"'
-    pid_file: '$LOCO_SVC_VAR/run/mysql.pid'
+    run: 'loco-mysql-run'
+    pid_file: '$LOCO_SVC_VAR/current/run/mysql.pid'
     message: |-
       MySQL is running on "<comment>$LOCALHOST:$MYSQLD_PORT</comment>". The default credentials are user="<comment>root</comment>" and password="".
         URL: <comment>mysql://root:@$LOCALHOST:$MYSQLD_PORT</comment>
