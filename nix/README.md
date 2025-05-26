@@ -170,10 +170,6 @@ FIXME: rewrite this for master-loco branch
 
 Some of these policies/opinions can be changed, as described below ("Extended installation")
 
-## TODO/Issues
-
-* Sort out php-imap
-
 ## Tips
 
 (**Stale**: These tips should be rewritten to match the new "Quick Start" approach)
