@@ -26,7 +26,6 @@ COMPOSER_VERSION="2.8.4"
 COMPOSER_URL="https://github.com/composer/composer/releases/download/${COMPOSER_VERSION}/composer.phar"
 IS_QUIET=
 IS_FORCE=
-IS_FULL=
 
 ##################################################
 ## Parse arguments
@@ -47,8 +46,8 @@ while [ -n "$1" ] ; do
       ;;
 
     --full)
-      ## Heuristically identify/download system packages.
-      IS_FULL=1
+      echo "ERROR: Support for full-system installation (apt-get) has been removed. Please see CiviCRM Developer Guide for current options."
+      exit 2
       ;;
 
     --dir)
@@ -66,7 +65,7 @@ while [ -n "$1" ] ; do
 
     *)
       echo "Unrecognized option: $OPTION"
-      echo "Usage: $0 [-q|--quiet] [-f|--force] [--full] [--dir <path>]"
+      echo "Usage: $0 [-q|--quiet] [-f|--force] [--dir <path>]"
       ;;
   esac
 done
@@ -361,250 +360,6 @@ function install_joomlatools_console() {
   ## Mark as downloaded
   echo "$VERSION" > "$MARKER"
 }
-
-###############################################################################
-## Determine the function to handle system package installation
-function get_system_installer() {
-  if [ -n "$DISTRIB_CODENAME" ]; then
-    true
-  elif which lsb_release >/dev/null; then
-    # Debian doesn't ship with /etc/lsb-release. See
-    # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=444678
-    DISTRIB_CODENAME=$(lsb_release -cs)
-  elif [ -f "/etc/lsb-release" ]; then
-    source /etc/lsb-release
-  fi
-  case "$DISTRIB_CODENAME" in
-    stretch|buster|bullseye|bionic|focal|jammy)
-      echo "do_system_$DISTRIB_CODENAME"
-      ;;
-    *)
-      echo do_system_unknown
-      ;;
-  esac
-}
-
-###############################################################################
-
-function do_system_xenial() { # LTS Removal Oct 2021
-  set -e
-    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.3-cli php7.3-ldap php7.3-curl php7.3-mysql php7.3-intl php7.3-gd php7.3-mcrypt php7.3-bcmath php7.3-mbstring php7.3-soap php7.3-zip php7.3-xml apache2 libapache2-mod-php7.3 nodejs"
-    UBUNTU_VERSION=$(lsb_release -ds)
-    echo "Detected $UBUNTU_VERSION."
-    echo ""
-    echo "Task: $PACKAGES"
-    echo ""
-    do_php_mysql_warning
-    echo ""
-    if cvutil_confirm "Run automated installation? [Y/n] " y y; then
-      sudo add-apt-repository -y ppa:ondrej/php
-      sudo curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash - # This runs sudo apt update so there's no point running it twice.
-      sudo apt-get update
-      sudo apt-get -y install $PACKAGES
-      sudo phpenmod bcmath
-      sudo phpenmod curl
-      sudo phpenmod xml
-      sudo a2enmod rewrite
-      sudo apache2ctl restart
-    else
-      echo "Aborted" 1>&2
-      exit 1
-    fi
-  set +e
-}
-
-###############################################################################
-
-function do_system_bionic() { # LTS Removal October 2023
-  set -e
-    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.4-cli php7.4-ldap php7.4-curl php7.4-mysql php7.4-intl php7.4-gd php7.4-dev php7.4-bcmath php7.4-mbstring php7.4-soap php7.4-zip php7.4-xml apache2 libapache2-mod-php7.4 nodejs php-pear libmcrypt-dev libreadline-dev curl"
-    UBUNTU_VERSION=$(lsb_release -ds)
-    echo "Detected $UBUNTU_VERSION."
-    echo ""
-    echo "Task: $PACKAGES"
-    echo ""
-    do_php_mysql_warning
-    echo ""
-    if cvutil_confirm "Run automated installation? [Y/n] " y y; then
-      sudo add-apt-repository -y ppa:ondrej/php
-      sudo curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash - # This runs sudo apt update so there's no point running it twice.
-      sudo apt-get -y install $PACKAGES
-      sudo phpenmod bcmath
-      sudo phpenmod curl
-      sudo phpenmod xml
-      sudo a2enmod rewrite
-      sudo apache2ctl restart
-    else
-      echo "Aborted" 1>&2
-      exit 1
-    fi
-  set +e
-}
-
-###############################################################################
-
-function do_system_jammy() { # LTS Removal October 2027
-  set -e
-    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.4-cli php7.4-ldap php7.4-curl php7.4-mysql php7.4-intl php7.4-gd php7.4-dev php7.4-bcmath php7.4-mbstring php7.4-soap php7.4-zip php7.4-xml apache2 libapache2-mod-php7.4 nodejs php-pear libreadline-dev curl"
-    UBUNTU_VERSION=$(lsb_release -ds)
-    echo "Detected $UBUNTU_VERSION."
-    echo ""
-    echo "Task: $PACKAGES"
-    echo ""
-    do_php_mysql_warning
-    echo ""
-    if cvutil_confirm "Run automated installation? [Y/n] " y y; then
-      sudo add-apt-repository -y ppa:ondrej/php
-      sudo curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash - # This runs sudo apt update so there's no point running it twice.
-      sudo apt-get -y install $PACKAGES
-      sudo phpenmod bcmath
-      sudo phpenmod curl
-      sudo phpenmod xml
-      sudo a2enmod rewrite
-      sudo apache2ctl restart
-    else
-      echo "Aborted" 1>&2
-      exit 1
-    fi
-  set +e
-}
-
-###############################################################################
-
-function do_system_focal() { # LTS Removal October 2025
-  set -e
-    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.4-cli php7.4-ldap php7.4-curl php7.4-mysql php7.4-intl php7.4-gd php7.4-dev php7.4-bcmath php7.4-mbstring php7.4-soap php7.4-zip php7.4-xml apache2 libapache2-mod-php7.4 nodejs php-pear libreadline-dev curl"
-    UBUNTU_VERSION=$(lsb_release -ds)
-    echo "Detected $UBUNTU_VERSION."
-    echo ""
-    echo "Task: $PACKAGES"
-    echo ""
-    do_php_mysql_warning
-    echo ""
-    if cvutil_confirm "Run automated installation? [Y/n] " y y; then
-      sudo add-apt-repository -y ppa:ondrej/php
-      sudo curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash - # This runs sudo apt update so there's no point running it twice.
-      sudo apt-get -y install $PACKAGES
-      sudo phpenmod bcmath
-      sudo phpenmod curl
-      sudo phpenmod xml
-      sudo a2enmod rewrite
-      sudo apache2ctl restart
-    else
-      echo "Aborted" 1>&2
-      exit 1
-    fi
-  set +e
-}
-
-###############################################################################
-
-function do_system_stretch() {
-  set -e
-    PACKAGES="acl git wget unzip zip mysql-server mysql-client php7.3-cli php7.3-ldap php7.3-curl php7.3-mysql php7.3-intl php7.3-gd php7.3-dev php7.3-bcmath php7.3-mbstring php7.3-soap php7.3-zip php7.3-xml apache2 libapache2-mod-php7.3 nodejs"
-    echo "Detected \"Debian Stretch\"."
-    echo ""
-    echo "Installing nodejs Debian repository."
-    echo ""
-    echo "Recommended packages: $PACKAGES"
-    echo ""
-    do_php_mysql_warning
-    echo ""
-    if cvutil_confirm "Run automated installation? [Y/n] " y y; then
-      sudo apt-get -y install ca-certificates apt-transport-https wget
-      wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
-      sudo echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
-      wget -O- https://deb.nodesource.com/setup_14.x | sudo -E bash -
-      sudo apt-get -y install $PACKAGES
-      sudo a2enmod rewrite
-      sudo apache2ctl restart
-    else
-      echo "Aborted" 1>&2
-      exit 1
-    fi
-  set +e
-}
-
-###############################################################################
-
-function do_system_buster() {
-  set -e
-    PACKAGES="acl git wget unzip zip default-mysql-server default-mysql-client php7.4-cli php7.4-ldap php7.4-curl php7.4-mysql php7.4-intl php7.4-gd php7.4-dev php7.4-bcmath php7.4-mbstring php7.4-soap php7.4-zip php7.4-xml apache2 libapache2-mod-php7.4 nodejs php-pear"
-    echo "Detected \"Debian Buster\"."
-    echo ""
-    echo "Recommended packages: $PACKAGES"
-    echo ""
-    if cvutil_confirm "Run automated installation? [Y/n] " y y; then
-      sudo apt-get -y install ca-certificates apt-transport-https wget
-      wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
-      sudo echo "deb https://packages.sury.org/php/ buster main" | tee /etc/apt/sources.list.d/php.list
-      wget -O- https://deb.nodesource.com/setup_14.x | sudo -E bash -
-      sudo apt-get -y install $PACKAGES
-      sudo a2enmod rewrite
-      sudo apache2ctl restart
-    else
-      echo "Aborted" 1>&2
-      exit 1
-    fi
-  set +e
-}
-
-###############################################################################
-
-function do_system_bullseye() {
-  set -e
-    PACKAGES="acl git wget unzip zip default-mysql-server default-mysql-client php7.4-cli php7.4-ldap php7.4-curl php7.4-mysql php7.4-intl php7.4-gd php7.4-dev php7.4-bcmath php7.4-mbstring php7.4-soap php7.4-zip php7.4-xml apache2 libapache2-mod-php7.4 nodejs php-pear"
-    echo "Detected \"Debian Bullseye\"."
-    echo ""
-    echo "Recommended packages: $PACKAGES"
-    echo ""
-    if cvutil_confirm "Run automated installation? [Y/n] " y y; then
-      sudo apt-get -y install ca-certificates apt-transport-https wget
-      wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
-      sudo echo "deb https://packages.sury.org/php/ bullseye main" | sudo tee /etc/apt/sources.list.d/php.list
-      wget -O- https://deb.nodesource.com/setup_14.x | sudo -E bash -
-      sudo apt-get -y install $PACKAGES
-      sudo a2enmod rewrite
-      sudo apache2ctl restart
-    else
-      echo "Aborted" 1>&2
-      exit 1
-    fi
-  set +e
-}
-
-###############################################################################
-
-function do_system_unknown() {
-  echo "ERROR: Could not identify the required system packages."
-  echo ""
-  echo "System specific install steps are removed when an OS release is marked as end-of-life. (Ubuntu/Debian)"
-  echo ""
-  echo "If you want to add support for a new system, update 'get_system_installer()'"
-  echo "and add a new 'do_system_*()' function."
-  echo ""
-  echo "If you are running Debian you may need to install the lsb-release package."
-  exit 1
-}
-
-##################################################
-## Perform system installation (if requested)
-if [ -n "$IS_FULL" ]; then
-  SYSTEM_FUNC=$(get_system_installer)
-  if [[ $SYSTEM_FUNC =~ ^[a-zA-Z0-9_]+$ ]]; then
-    $SYSTEM_FUNC
-  else
-    echo "ERROR: Malformed system function: $SYSTEM_FUNC"
-    exit 2
-  fi
-
-  if [ ! -f "$PRJDIR/composer.json" ]; then
-    set -e
-      echo "[[ Clone civicrm-buildkit to $PRJDIR ]]"
-      git clone "https://github.com/civicrm/civicrm-buildkit.git" "$PRJDIR"
-    set +e
-  fi
-fi
 
 ##################################################
 ## Validation
