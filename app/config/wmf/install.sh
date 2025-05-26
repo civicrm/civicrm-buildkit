@@ -19,6 +19,7 @@ CIVI_SETTINGS="${WEB_ROOT}/private/civicrm.settings.php"
 CIVI_TEMPLATEC="${WEB_ROOT}/private/cache"
 GENCODE_CONFIG_TEMPLATE="${WEB_ROOT}/civicrm.standalone.php"
 RPOW_SETTINGS_PATH="${WEB_ROOT}/private/civicrm.settings.d/pre.d/100-civirpow.php"
+RPOW_RO_USER="civiwmfro"
 
 ## Clear out any cached container files to avoid it attempting to load
 ## the cached monolog service before the extension is installed.
@@ -39,17 +40,17 @@ popd
 
 civicrm_install_cv
 
-"${WEB_ROOT}/ext/rpow/bin/harvey-dent" --root "${WEB_ROOT}" --settings-path "${RPOW_SETTINGS_PATH}"
+"${WEB_ROOT}/ext/rpow/bin/harvey-dent" --root "${WEB_ROOT}" --settings-path "${RPOW_SETTINGS_PATH}" --user-name="${RPOW_RO_USER}"
 echo "DROP DATABASE IF EXISTS fredge"| amp sql -N civi -a
 echo "CREATE DATABASE IF NOT EXISTS fredge"| amp sql -N civi -a
 echo "CREATE DATABASE IF NOT EXISTS smashpig"| amp sql -N civi -a
 eval mysql $CIVI_DB_ARGS <<EOSQL
   GRANT ALL PRIVILEGES ON fredge.* TO $CMS_DB_USER@'%';
   GRANT SELECT ON fredge.* TO $CIVI_DB_USER@'%';
-  GRANT SELECT ON fredge.* TO civiro@'%';
+  GRANT SELECT ON fredge.* TO $RPOW_RO_USER@'%';
   GRANT ALL PRIVILEGES ON smashpig.* TO $CMS_DB_USER@'%';
   GRANT SELECT ON smashpig.* TO $CIVI_DB_USER@'%';
-  GRANT SELECT ON smashpig.* TO civiro@'%';
+  GRANT SELECT ON smashpig.* TO $RPOW_RO_USER@'%';
 EOSQL
 
 ###############################################################################
