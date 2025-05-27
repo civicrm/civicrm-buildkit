@@ -40,7 +40,7 @@ popd
 
 civicrm_install_cv
 
-"${WEB_ROOT}/ext/rpow/bin/harvey-dent" --root "${WEB_ROOT}" --settings-path "${RPOW_SETTINGS_PATH}" --user-name="${RPOW_RO_USER}"
+"${WEB_ROOT}/ext/rpow/bin/harvey-dent" --root "${WEB_ROOT}" --settings-path "${RPOW_SETTINGS_PATH}" --user-name "${RPOW_RO_USER}"
 echo "DROP DATABASE IF EXISTS fredge"| amp sql -N civi -a
 echo "CREATE DATABASE IF NOT EXISTS fredge"| amp sql -N civi -a
 echo "CREATE DATABASE IF NOT EXISTS smashpig"| amp sql -N civi -a
