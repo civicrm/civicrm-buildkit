@@ -758,8 +758,13 @@ function civicrm_install_cv() {
     installOpts+=("-m" "settings.extensionsDir=$CIVI_EXT_DIR")
     installOpts+=("-m" "settings.extensionsURL=$CIVI_EXT_URL")
   fi
-  cv core:install -vv -f --cms-base-url="$CMS_URL" --db="$CIVI_DB_DSN" -m "siteKey=$CIVI_SITE_KEY" "${installOpts[@]}"
-  local settings=$( cv ev 'echo CIVICRM_SETTINGS_PATH;' )
+  local settings;
+  # The following syntax will print output from core:install while simultaneously grepping it for the settingsPath
+  # and assigning that to the 'settings' variable. See https://serverfault.com/questions/989742/
+  { settings=$( \
+   cv core:install -vv -f --cms-base-url="$CMS_URL" --db="$CIVI_DB_DSN" -m "siteKey=$CIVI_SITE_KEY" "${installOpts[@]}" | \
+   tee /dev/fd/3 | \
+   grep -o '"settingsPath": "[^"]\+"' | cut -d'"' -f4 ); } 3>&1
   cvutil_inject_settings "$settings" "civicrm.settings.d"
   civicrm_update_domain
 
