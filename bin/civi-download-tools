@@ -21,7 +21,6 @@ PRJDIR=$(dirname "$BINDIR")
 LOCKFILE="$TMPDIR/civi-download-tools.lock"
 LOCKTIMEOUT=90
 HUB_VERSION="2.14.2"
-JOOMLATOOLS_CONSOLE_VERSION="v1.5.9"
 COMPOSER_VERSION="2.8.4"
 COMPOSER_URL="https://github.com/composer/composer/releases/download/${COMPOSER_VERSION}/composer.phar"
 IS_QUIET=
@@ -317,50 +316,6 @@ function install_composer() {
   fi
 }
 
-###############################################################################
-## Install the project 'joomlatools/console' in 'extern/joomlatools-console'
-## Note that this uses a separate folder becuase:
-##  1. Some of the dependencies don't agree with other top-level packages.
-##  2. The file structure allows writing data to funny places.
-##
-## usage: install_joomlatools_console <version-tag-branch>
-function install_joomlatools_console() {
-  local VERSION="$1"
-  local WRAPPER="$PRJDIR/bin/joomla"
-  local SRC="$PRJDIR/extern/joomlatools-console"
-  local MARKER="$PRJDIR/extern/joomlatools-console.txt"
-
-  ## Create/update wrapper script
-  ## Note: joomla was previously downloaded via other means (and gitignored). This "cp" ensures we overwrite without git conflicts.
-  if [ ! -f "$WRAPPER" -o "$PRJDIR/src/joomlatools-console.tmpl" -nt  "$WRAPPER" ]; then
-    echo "[[joomlatools-console ($WRAPPER): Generate wrapper]]"
-    cp "$PRJDIR/src/joomlatools-console.tmpl" "$WRAPPER"
-  fi
-
-  ## Do we need to download?
-  touch "$MARKER"
-  if [ -z "$IS_FORCE" -a -e "$SRC/bin/joomla" -a "$(cat $MARKER)" == "$VERSION" ]; then
-    echo_comment "[[joomla ($PRJDIR/extern/joomlatools-console) already exists. Skipping.]]"
-    return
-  fi
-  echo "[[Install joomlatools-console $VERSION]]"
-
-  ## Cleanup any previous downloads
-  [ -e "$SRC" ] && rm -rf "$SRC"
-
-  ## Download
-  git clone -b "$VERSION" --depth 1 https://github.com/joomlatools/joomlatools-console "$SRC"
-  pushd "$SRC" >> /dev/null
-    ## In 1.5.9, the lock file is pegged to libraries that aren't compatible with our env. Resolve dependencies anew.
-    rm -f composer.lock
-    "$PRJDIR/bin/composer" update --prefer-lowest
-    "$PRJDIR/bin/composer" install
-  popd >> /dev/null
-
-  ## Mark as downloaded
-  echo "$VERSION" > "$MARKER"
-}
-
 ##################################################
 ## Validation
 check_command php required
@@ -436,6 +391,8 @@ pushd $PRJDIR >> /dev/null
   [ -f "$PRJDIR/extern/wp-cli.txt" ] && rm -f "$PRJDIR/bin/wp" "$PRJDIR/extern/wp-cli.txt"
   [ -f "$PRJDIR/extern/civici.txt" ] && rm -f  "$PRJDIR/bin/civici" "$PRJDIR/extern/civici.txt"
   [ -f "$PRJDIR/extern/joomla.txt" ] && rm -f "$PRJDIR/bin/joomla" "$PRJDIR/extern/joomla.txt"
+  [ -f "$PRJDIR/extern/joomlatools-console.txt" ] && rm -f "$PRJDIR/bin/joomla" "$PRJDIR/extern/joomlatools-console.txt"
+  [ -d "$PRJDIR/extern/joomlatools-console" ] && rm -rf "$PRJDIR/extern/joomlatools-console"
   [ -f "$PRJDIR/extern/codecept-php5.txt" ] && rm -f "$PRJDIR/bin/_codecept-php5.phar" "$PRJDIR/extern/codecept-php5.txt"
   [ -f "$PRJDIR/extern/codecept-php7.txt" ] && rm -f "$PRJDIR/bin/_codecept-php7.phar" "$PRJDIR/extern/codecept-php7.txt"
   [ -f "$PRJDIR/extern/drush-lib-backdrop.txt" ] && rm -rf "$PRJDIR/extern/drush-lib/backdrop" "$PRJDIR/extern/drush-lib-backdrop.txt"
@@ -528,9 +485,6 @@ pushd $PRJDIR >> /dev/null
   make_link "$PRJDIR/bin" "../extern/phpunit8/phpunit8.phar" "phpunit8"
   make_link "$PRJDIR/bin" "../extern/phpunit9/phpunit9.phar" "phpunit9"
   make_link "$PRJDIR/bin" "../extern/phpunit10/phpunit10.phar" "phpunit10"
-
-  ## Download joomlatools-console
-  install_joomlatools_console "$JOOMLATOOLS_CONSOLE_VERSION"
 
   ## Download "hub"
   touch "$PRJDIR/extern/hub.txt"
