@@ -48,7 +48,7 @@ $c['app']->main('buildName subDomain [--vdr]', function ($buildName, $subDomain,
 
   passthruOk(cmdf('chmod u+w sites/%s', $subHostname));
 
-  $installCmd = cmdf('cd %s && cv core:install -f --hostname=%s --cms-base-url=%s', "$subdirWebRoot/sites/$subHostname", $subHostname, $subUrl);
+  $installCmd = cmdf('cd %s && cv core:install -f --hostname=%s --url=%s', "$subdirWebRoot/sites/$subHostname", $subHostname, $subUrl);
   passthruOk("$installCmd --debug-model");
   passthruOk("$installCmd");
   // Note: we set "cd %s" s.t. detected file-paths match the file-paths used by the webserver.

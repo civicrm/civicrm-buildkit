@@ -19,7 +19,7 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 #  drush8 -y updatedb
 #  drush8 -y en libraries
 
-  cv core:install -f --cms-base-url="$CMS_URL" \
+  cv core:install -f --url="$CMS_URL" \
     -m "settings.userFrameworkResourceURL=[cms.root]/libraries/civicrm" \
     -m "siteKey=$CIVI_SITE_KEY"
   #  -m "db=$CIVI_DB_DSN" ## For two DBs
