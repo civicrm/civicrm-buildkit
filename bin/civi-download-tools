@@ -20,7 +20,6 @@ PRJDIR=$(dirname "$BINDIR")
 [ -z "$CIVIBUILD_HOME" ] && TMPDIR="$PRJDIR/app/tmp" || TMPDIR="$CIVIBUILD_HOME/.civibuild/tmp"
 LOCKFILE="$TMPDIR/civi-download-tools.lock"
 LOCKTIMEOUT=90
-HUB_VERSION="2.14.2"
 COMPOSER_VERSION="2.8.4"
 COMPOSER_URL="https://github.com/composer/composer/releases/download/${COMPOSER_VERSION}/composer.phar"
 IS_QUIET=
@@ -265,42 +264,6 @@ function cvutil_confirm() {
   esac
 }
 
-###############################################################################
-## usage: get_hub_url <version>
-
-# Examples:
-# https://github.com/github/hub/releases/download/v2.2.3/hub-darwin-amd64-2.2.3.tgz
-# https://github.com/github/hub/releases/download/v2.2.3/hub-linux-386-2.2.3.tgz
-# https://github.com/github/hub/releases/download/v2.2.3/hub-linux-amd64-2.2.3.tgz
-# https://github.com/github/hub/releases/download/v2.2.3/hub-windows-386-2.2.3.zip
-# https://github.com/github/hub/releases/download/v2.2.3/hub-windows-amd64-2.2.3.zip
-
-function get_hub_url() {
-  local VERSION="$1"
-  local PLATFORM=
-  local FORMAT=
-
-  case $(uname -a) in
-    *Darwin*x86_64*)
-      PLATFORM=darwin-amd64
-      FORMAT=tgz
-      ;;
-    *Linux*x86_64*)
-      PLATFORM=linux-amd64
-      FORMAT=tgz
-      ;;
-    *Linux*i386*|*Linux*i686*)
-      PLATFORM=linux-386
-      FORMAT=tgz
-      ;;
-    *)
-      echo ""
-      return
-  esac
-
-  echo https://github.com/github/hub/releases/download/v${VERSION}/hub-${PLATFORM}-${VERSION}.${FORMAT}
-}
-
 function install_composer() {
   if [ -z "$IS_FORCE" -a -e "$PRJDIR/bin/composer" -a "$(cat $PRJDIR/extern/composer.txt)" == "$COMPOSER_VERSION" ]; then
     echo_comment "[[composer ($PRJDIR/bin/composer) already exists. Skipping.]]"
@@ -404,6 +367,8 @@ pushd $PRJDIR >> /dev/null
   [ -f "$PRJDIR/extern/phpunit4/phpunit4.phar" ] && rm -f "$PRJDIR/extern/phpunit4/phpunit4.phar"
   [ -f "$PRJDIR/extern/phpunit5/phpunit5.phar" ] && rm -f "$PRJDIR/extern/phpunit5/phpunit5.phar"
   [ -f "$PRJDIR/extern/phpunit6/phpunit6.phar" ] && rm -f "$PRJDIR/extern/phpunit6/phpunit6.phar"
+  [ -f "$PRJDIR/extern/hub.txt" ] && rm -f "$PRJDIR/bin/hub" "$PRJDIR/extern/hub.txt"
+  [ -d "$PRJDIR/extern/hub" ] && rm -rf "$PRJDIR/extern/hub"
 
   ## Cleanup misnamed files from past
   [ -f "$PRJDIR/extern/phpunit4/phpunit6.phar" ] && rm -f "$PRJDIR/extern/phpunit4/phpunit6.phar" "$PRJDIR/extern/phpunit4/phpunit6.phar"
@@ -485,43 +450,6 @@ pushd $PRJDIR >> /dev/null
   make_link "$PRJDIR/bin" "../extern/phpunit8/phpunit8.phar" "phpunit8"
   make_link "$PRJDIR/bin" "../extern/phpunit9/phpunit9.phar" "phpunit9"
   make_link "$PRJDIR/bin" "../extern/phpunit10/phpunit10.phar" "phpunit10"
-
-  ## Download "hub"
-  touch "$PRJDIR/extern/hub.txt"
-  if [ -z "$IS_FORCE" -a -e "$PRJDIR/extern/hub/bin/hub" -a -e "$PRJDIR/bin/hub" -a "$(cat $PRJDIR/extern/hub.txt)" == "$HUB_VERSION" ]; then
-    echo_comment "[[hub ($PRJDIR/extern/hub) already exists. Skipping.]]"
-  else
-    HUBURL=$(get_hub_url $HUB_VERSION)
-    if [ -z "$HUBURL" ]; then
-      echo "[[Skip hub. Could not determine binary.]]"
-    else
-      echo "[[Install hub]]"
-
-      ## Cleanup
-      [ -e app/tmp/hub ] && rm -rf app/tmp/hub
-      [ -e extern/hub ] && rm -rf extern/hub
-      [ -e "$TMPDIR/hub.tgz" ] && rm -f "$TMPDIR/hub.tgz"
-      mkdir -p app/tmp extern/hub
-
-      ## Download
-      download_url "$HUBURL" "$TMPDIR/hub.tgz"
-
-      ## Build
-      pushd extern/hub >> /dev/null
-        tar --strip-components=1 -xvzf "$TMPDIR/hub.tgz"
-      popd >> /dev/null
-
-      ## Setup a relative symlink
-      pushd bin >> /dev/null
-        [ -f hub ] && rm -f hub
-        ln -s ../extern/hub/bin/hub hub
-      popd >> /dev/null
-
-      ## Mark as downloaded
-      echo "$HUB_VERSION" > "$PRJDIR/extern/hub.txt"
-
-    fi
-  fi
 
 popd >> /dev/null
 set +e

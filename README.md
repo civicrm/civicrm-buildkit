@@ -21,7 +21,6 @@ For installation instructions and other documentation, see [CiviCRM Developer Gu
 * Source code management
     * [`git-scan`](https://github.com/totten/git-scan/) - Manage a large number of git repositories.
     * `gitify` - Convert a CiviCRM installation to a git repo.
-    * [`hub`](https://hub.github.com/) - Send commands to `github.com`.
 * Source code quality
     * `civilint` - Check the syntax of uncommitted files using `phpcs`, `jshint`, etc.
     * [`jshint`](http://jshint.com/) - Check the syntax of Javascript files.
