@@ -5,11 +5,11 @@
 ###############################################################################
 
 CMS_VERSION=${CMS_VERSION:-latest}
-CMS_ROOT="$WEB_ROOT/joomla"
 
-cvutil_mkdir "$WEB_ROOT" "$WEB_ROOT/src"
+## Joomla has strong expectation of writeable web-root -- eg can't run Civi installer otherwise. :(
+amp datadir "$WEB_ROOT" "$WEB_ROOT/web"
 
-joomla site:download joomla --release="$CMS_VERSION" --www="$WEB_ROOT"
+joomla4_download "$WEB_ROOT/web"
 
 pushd "$WEB_ROOT" >> /dev/null
   git_cache_clone civicrm/civicrm-joomla            -b "$CIVI_VERSION" src/civicrm
