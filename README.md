@@ -32,7 +32,6 @@ For installation instructions and other documentation, see [CiviCRM Developer Gu
     * [`civibuild`](https://docs.civicrm.org/dev/en/latest/tools/civibuild/) - Build a complete source tree (with CMS+Civi+addons), provision httpd/sql, etc.
     * `civihydra` - Create a series test sites for several CMSs. (Extends `civibuild`.)
     * [`drush` and `drush8`](https://www.drush.org/) - Administer a Drupal site.
-    * [`joomla`](https://www.joomlatools.com/developer/tools/console/) (joomla-console) - Administer a Joomla site.
     * [`wp`](https://wp-cli.org/) (wp-cli) - Administer a WordPress site.
 * Testing
     * [`civicrm-upgrade-test`](https://github.com/civicrm/civicrm-upgrade-test) - Scripts and data files for testing upgrades.
