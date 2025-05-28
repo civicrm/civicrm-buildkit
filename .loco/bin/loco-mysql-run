@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -e
+
+## Ensure that we put data in the distinct folder for this version of mysql
+loco-mysql-select
+
+mysql_current="$LOCO_SVC_VAR/current"
+
+if [ ! -d "$mysql_current/data" ]; then
+  echo >&2 "WARNING: There is no current data folder. This can happen if you changed MySQL versions."
+  echo >&2 "A new data folder will be auto-initialized for this version of MySQL."
+  ## The user is juggling multiple versions of MySQL...
+  loco-mysql-init
+fi
+
+## Let the real daemon take over the PID.
+exec mysqld --defaults-file="$mysql_current/conf/my.cnf" --datadir="$mysql_current/data"
