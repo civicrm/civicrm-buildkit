@@ -91,15 +91,6 @@ function echo_comment() {
 }
 
 ###############################################################################
-## usage: do_php_mysql_warning
-function do_php_mysql_warning() {
-  echo "Warning: This system will not support the php-mysql extension."
-  echo ""
-  echo "This means you will be unable to install CiviCRM version 4.7.11 or earlier (including any 4.6.x version)."
-  echo "For further details see: https://civicrm.org/blog/totten/psa-please-verify-php-extension-mysqli and https://issues.civicrm.org/jira/browse/CRM-17789"
-}
-
-###############################################################################
 ## Make a symlink... gently.
 ## usage: make_link <workdir> <from> <to>
 function make_link() {
@@ -232,36 +223,6 @@ function check_php_ext() {
       exit 4
     fi
   fi
-}
-
-###############################################################################
-## Prompt user for confirmation
-## (In automated scripts or blank response, use default)
-##
-## usage: cvutil_confirm <message> <interactive-default> <script-default>
-## example: cvutil_confirm "Are you sure? [Y/n] " y y
-function cvutil_confirm() {
-  local msg="$1"
-  local i_default="$2"
-  local s_default="$3"
-  if tty -s ; then
-    echo -n "$msg"
-    read _cvutil_confirm
-    if [ "x$_cvutil_confirm" == "x" ]; then
-      _cvutil_confirm="$i_default"
-    fi
-  else
-    echo "${msg}${s_default}"
-    _cvutil_confirm="$s_default"
-  fi
-  case "$_cvutil_confirm" in
-    y|Y|1)
-      return 0
-      ;;
-    *)
-      return 1
-      ;;
-  esac
 }
 
 function install_composer() {
