@@ -1,5 +1,5 @@
 {
-    "name": "pogo/find-stale-buildsphp",
+    "name": "civicrm/find-stale-builds",
     "autoload": {
         "files": [
             ".pogolib.php"

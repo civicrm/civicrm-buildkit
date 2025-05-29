@@ -1,5 +1,5 @@
 {
-    "name": "pogo/forkifyphp",
+    "name": "civicrm/forkify",
     "autoload": {
         "files": [
             ".pogolib.php"

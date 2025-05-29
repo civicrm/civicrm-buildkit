@@ -1,5 +1,5 @@
 {
-    "name": "pogo/import-rnphp",
+    "name": "civicrm/import-rn",
     "autoload": {
         "files": [
             ".pogolib.php"
