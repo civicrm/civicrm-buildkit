@@ -1,5 +1,10 @@
 {
     "name": "civicrm/zipdiff",
+    "config": {
+        "platform": {
+            "php": "7.4"
+         }
+    },
     "autoload": {
         "files": [
             ".pogolib.php"
@@ -11,9 +16,16 @@
             "script": "/Users/totten/bknix/src/pogo/zipdiff.php"
         }
     },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/wapmorgan/UnifiedArchive.git"
+        }
+    ],
     "require": {
-        "clippy/std": "~0.3.5",
+        "php": ">=7.4",
+        "clippy/std": "~0.5.1",
         "sebastian/diff": "~4.0.4",
-        "wapmorgan/unified-archive": "~1.1.8"
+        "wapmorgan/unified-archive": "dev-master#1965fdb341920b48e47fd026f3cf13bde63a5499 as 1.1.8"
     }
 }

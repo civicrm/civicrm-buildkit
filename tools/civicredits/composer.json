@@ -1,5 +1,10 @@
 {
     "name": "civicrm/civicredits",
+    "config": {
+        "platform": {
+            "php": "7.4"
+         }
+    },
     "autoload": {
         "files": [
             ".pogolib.php"
@@ -12,6 +17,7 @@
         }
     },
     "require": {
+        "php": ">=7.4",
         "clippy/std": "~0.5.1",
         "symfony/yaml": "~3.0|~4.0|~5.0"
     }
