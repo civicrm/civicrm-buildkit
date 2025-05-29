@@ -1,0 +1,17 @@
+{
+    "name": "pogo/import-rnphp",
+    "autoload": {
+        "files": [
+            ".pogolib.php"
+        ]
+    },
+    "extra": {
+        "pogo": {
+            "expires": 2064020702,
+            "script": "/Users/totten/bknix/src/pogo/import-rn.php"
+        }
+    },
+    "require": {
+        "clippy/std": "~0.3.5"
+    }
+}

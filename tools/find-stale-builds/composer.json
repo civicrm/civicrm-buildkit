@@ -1,0 +1,17 @@
+{
+    "name": "pogo/find-stale-buildsphp",
+    "autoload": {
+        "files": [
+            ".pogolib.php"
+        ]
+    },
+    "extra": {
+        "pogo": {
+            "expires": 2064020701,
+            "script": "/Users/totten/bknix/src/pogo/find-stale-builds.php"
+        }
+    },
+    "require": {
+        "symfony/finder": "~4.4"
+    }
+}
