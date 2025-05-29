@@ -1,0 +1,17 @@
+{
+    "name": "pogo/forkifyphp",
+    "autoload": {
+        "files": [
+            ".pogolib.php"
+        ]
+    },
+    "extra": {
+        "pogo": {
+            "expires": 2064020701,
+            "script": "/Users/totten/bknix/src/pogo/forkify.php"
+        }
+    },
+    "require": {
+        "clippy/std": "~0.5.1"
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "name": "pogo/fetch-universephp",
+    "autoload": {
+        "files": [
+            ".pogolib.php"
+        ]
+    },
+    "extra": {
+        "pogo": {
+            "expires": 2064020700,
+            "script": "/Users/totten/bknix/src/pogo/fetch-universe.php"
+        }
+    },
+    "require": {
+        "rubobaquero/phpquery": "^0.9.15"
+    }
+}

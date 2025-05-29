@@ -1,0 +1,19 @@
+{
+    "name": "pogo/zipdiffphp",
+    "autoload": {
+        "files": [
+            ".pogolib.php"
+        ]
+    },
+    "extra": {
+        "pogo": {
+            "expires": 2064020703,
+            "script": "/Users/totten/bknix/src/pogo/zipdiff.php"
+        }
+    },
+    "require": {
+        "clippy/std": "~0.3.5",
+        "sebastian/diff": "~4.0.4",
+        "wapmorgan/unified-archive": "~1.1.8"
+    }
+}

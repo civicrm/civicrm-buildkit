@@ -1,0 +1,19 @@
+{
+    "name": "pogo/bknix-ci-cleanupphp",
+    "autoload": {
+        "files": [
+            ".pogolib.php"
+        ]
+    },
+    "extra": {
+        "pogo": {
+            "expires": 2064020698,
+            "script": "/Users/totten/bknix/src/pogo/bknix-ci-cleanup.php"
+        }
+    },
+    "require": {
+        "clippy/std": "~0.3.4",
+        "symfony/var-dumper": "~3.0|~4.4",
+        "symfony/yaml": "~3.0|~4.4"
+    }
+}
