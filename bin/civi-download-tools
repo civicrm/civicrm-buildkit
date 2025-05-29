@@ -91,15 +91,6 @@ function echo_comment() {
 }
 
 ###############################################################################
-## usage: do_php_mysql_warning
-function do_php_mysql_warning() {
-  echo "Warning: This system will not support the php-mysql extension."
-  echo ""
-  echo "This means you will be unable to install CiviCRM version 4.7.11 or earlier (including any 4.6.x version)."
-  echo "For further details see: https://civicrm.org/blog/totten/psa-please-verify-php-extension-mysqli and https://issues.civicrm.org/jira/browse/CRM-17789"
-}
-
-###############################################################################
 ## Make a symlink... gently.
 ## usage: make_link <workdir> <from> <to>
 function make_link() {
