@@ -1,5 +1,5 @@
 {
-    "name": "pogo/fetch-universephp",
+    "name": "civicrm/fetch-universe",
     "autoload": {
         "files": [
             ".pogolib.php"

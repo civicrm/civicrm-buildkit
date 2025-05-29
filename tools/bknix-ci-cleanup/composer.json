@@ -1,5 +1,5 @@
 {
-    "name": "pogo/bknix-ci-cleanupphp",
+    "name": "civicrm/bknix-ci-cleanup",
     "autoload": {
         "files": [
             ".pogolib.php"
