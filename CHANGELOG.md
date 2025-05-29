@@ -5,6 +5,16 @@ are generally "drop-in" updates that don't require any special action.
 However, if a change requires special action, it should be documented in
 this changelog.
 
+### v25.04.0 => v25.05.0
+
+Breaking changes:
+
+* `civi-download-tools`: Drop support for `hub` (#941) and `joomlatools-console` (#940)
+* `civi-download-tools`: Drop support for the `--full` option (#936)
+* __Nix__: Drop ancient packages `php71`, `php72`, `mysql56`, `mariadb105` (#926)
+* __Nix__: Drop PHP's `imap` PECL (#934)
+* __Vagrant__: Drop all support (#937)
+
 ### v14.05.0 => v14.06.0
 
 In version v14.05 (and earlier), each build included two databases: one CMS
