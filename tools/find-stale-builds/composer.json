@@ -1,5 +1,10 @@
 {
     "name": "civicrm/find-stale-builds",
+    "config": {
+        "platform": {
+            "php": "7.4"
+         }
+    },
     "autoload": {
         "files": [
             ".pogolib.php"
@@ -12,6 +17,7 @@
         }
     },
     "require": {
+        "php": ">=7.4",
         "symfony/finder": "~4.4"
     }
 }

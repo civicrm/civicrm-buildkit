@@ -1,5 +1,10 @@
 {
     "name": "civicrm/bknix-ci-cleanup",
+    "config": {
+        "platform": {
+            "php": "7.4"
+         }
+    },
     "autoload": {
         "files": [
             ".pogolib.php"
@@ -12,7 +17,8 @@
         }
     },
     "require": {
-        "clippy/std": "~0.3.4",
+        "php": ">=7.4",
+        "clippy/std": "~0.5.1",
         "symfony/var-dumper": "~3.0|~4.4",
         "symfony/yaml": "~3.0|~4.4"
     }
