@@ -120,6 +120,7 @@
   HOMER_SIZE=${HOMER_SIZE:-2048m}
   HOMER_BASE_TPL="$HOMER_VAR/HOMER_ID/base"
   HOMER_HOME_TPL="$HOMER_VAR/HOMER_ID/home"
+  HOMER_INFO_TPL="$HOMER_VAR/HOMER_ID/info"
   HOMER_LOCK_TPL="$HOMER_VAR/HOMER_ID/lock"
   HOMER_NS_TPL="$HOMER_VAR/HOMER_ID/ns"
   HOMER_TEMP_TPL="$HOMER_VAR/HOMER_ID/temp"
@@ -331,7 +332,7 @@
 
     assert_ownership
 
-    $GUARD mkdir -p "$homer_base" "$homer_temp" "$homer_home" $(dirname "$homer_lock")
+    $GUARD mkdir -p "$homer_base" "$homer_temp" "$homer_home" $(dirname "$homer_lock") $(dirname "$homer_info")
 
     ## We need short-lock on the tracking file. Then we need to store pid in tracking file.
     exec {homer_lock_fd}>"${homer_lock}.flock" || exit 2
@@ -359,6 +360,9 @@
     # echo >&2 "Claim $homer_lock for $owner_pid"
     echo "$owner_pid" > "$homer_lock"
     flock -u "$homer_lock_fd"
+
+    printf 'start=%q\n' $(date -Iminutes) > "$homer_info"
+    printf 'img=%q\n' "$img" >> "$homer_info"
 
     print_h2 "Mount ($homer_base)"
     $GUARD mount -o loop "$img" "$homer_base"
@@ -807,6 +811,7 @@
   function realize_img() {
     img=$(realpath "$img")
     homer_id=$(echo "$img" |md5sum - | cut -f1 -d\  )
+    homer_info=$( echo "${HOMER_INFO_TPL}" | sed "s;HOMER_ID;${homer_id};" )
     homer_lock=$( echo "${HOMER_LOCK_TPL}" | sed "s;HOMER_ID;${homer_id};" )
     homer_base=$( echo "${HOMER_BASE_TPL}" | sed "s;HOMER_ID;${homer_id};" )
     homer_temp=$( echo "${HOMER_TEMP_TPL}" | sed "s;HOMER_ID;${homer_id};" )
