@@ -35,5 +35,4 @@ For installation instructions and other documentation, see [CiviCRM Developer Gu
 * Testing
     * [`civicrm-upgrade-test`](https://github.com/civicrm/civicrm-upgrade-test) - Scripts and data files for testing upgrades.
     * [`karma`](https://karma-runner.github.io) (w/[jasmine](https://jasmine.github.io/)) - Unit testing for Javascript.
-    * [`paratest`](https://github.com/brianium/paratest) - Parallelized version of PHPUnit.
     * [`phpunit` and `phpunit4`](https://phpunit.de/) - Unit testing for PHP (with Selenium and DB add-ons).
