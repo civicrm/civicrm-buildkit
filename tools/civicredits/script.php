@@ -1,4 +1,3 @@
-#!/usr/bin/env pogo
 <?php
 namespace Clippy;
 
