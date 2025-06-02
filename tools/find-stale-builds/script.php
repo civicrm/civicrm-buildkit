@@ -1,4 +1,3 @@
-#!/usr/bin/env pogo
 <?php
 #!ttl 10 years
 #!require symfony/finder: ~4.4

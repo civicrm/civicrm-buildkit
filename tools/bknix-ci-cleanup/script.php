@@ -1,4 +1,3 @@
-#!/usr/bin/env pogo
 <?php
 #!ttl 10 years
 #!require symfony/var-dumper: ~3.0|~4.4
@@ -170,7 +169,7 @@ $c['allTasks'] = function($createTask, $cmdr, $ymlConfig) {
  */
 $c['ymlConfig'] = function($io) {
 
-  $glob = dirname(pogo_script_dir(), 2) . '/app/bknix-ci-cleanup.d/*.yml';
+  $glob = dirname(__DIR__, 2) . '/app/bknix-ci-cleanup.d/*.yml';
   $files = (array) glob($glob);
   if (empty($files)) {
     throw new \RuntimeException("Failed to find configuration files: $glob");

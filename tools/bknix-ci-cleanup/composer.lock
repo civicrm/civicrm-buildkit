@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7c66fbbdb19474c37af8655e94a9c0a6",
+    "content-hash": "a48aa0f53cdfd5d12323e9761c583d7b",
     "packages": [
         {
             "name": "clippy/container",

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c343c171ef8c11ee7b3b776b94346780",
+    "content-hash": "1e0276c7fc44e656609d1c3665445103",
     "packages": [
         {
             "name": "rubobaquero/phpquery",
