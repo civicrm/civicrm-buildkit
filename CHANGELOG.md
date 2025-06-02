@@ -11,6 +11,7 @@ Breaking changes:
 
 * `civi-download-tools`: Drop support for `hub` (#941) and `joomlatools-console` (#940)
 * `civi-download-tools`: Drop support for the `--full` option (#936)
+* `composer.json`: Drop support for PHP 7.2. Drop unused `paratest`. (#944)
 * __Nix__: Drop ancient packages `php71`, `php72`, `mysql56`, `mariadb105` (#926)
 * __Nix__: Drop PHP's `imap` PECL (#934)
 * __Vagrant__: Drop all support (#937)
