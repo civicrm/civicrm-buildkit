@@ -43,6 +43,10 @@
         "title": "Update PHAR-based tools (<comment>phars.json</comment>)",
         "run": "@php-method \\Civi\\Buildkit\\Phars::downloadPhars",
         "phar-json": "phars.json"
+      },
+      {
+        "title": "Setup local PHP tools",
+        "run": "@php-script tools/install.php bknix-ci-cleanup civicredits fetch-universe find-stale-builds forkify import-rn zipdiff"
       }
     ],
     "compile-passthru": "always",
