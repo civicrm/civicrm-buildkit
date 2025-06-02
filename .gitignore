@@ -55,8 +55,6 @@ bin/grunt
 bin/import-rn
 bin/jshint
 bin/karma
-bin/paratest
-bin/paratest.bat
 bin/phantomjs
 bin/phive
 bin/php-symbol-diff

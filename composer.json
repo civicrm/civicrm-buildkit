@@ -35,10 +35,6 @@
     {
       "type": "git",
       "url": "https://github.com/civicrm/coder.git"
-    },
-    {
-      "type": "git",
-      "url": "https://github.com/totten/paratest.git"
     }
   ],
   "extra": {
