@@ -93,3 +93,4 @@ web/
 /nix/pkgs/result
 /nix/pkgs/result-*
 /src/demo-proxy/.loco/var/
+/tools/*/.composer.lock.last-checksum
