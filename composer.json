@@ -14,7 +14,7 @@
   },
   "config": {
     "platform": {
-      "php": "7.2"
+      "php": "7.3"
     },
     "bin-dir": "bin",
     "allow-plugins": {
@@ -23,7 +23,7 @@
     }
   },
   "require": {
-    "php": ">=7.2",
+    "php": ">=7.3",
     "totten/php-symbol-diff": "dev-master#54f869ca68a3cd75f3386f8490870369733d2c23",
     "civicrm/upgrade-test": "0.9",
     "drupal/coder": "dev-8.x-2.x-civi#e615288017c667e091b2f7d22507ad3a09227ce7",
