@@ -3,6 +3,12 @@
 ## install.sh -- Create config files and databases; fill the databases
 CMS_ROOT="$WEB_ROOT"
 CMS_VERSION="master"
+
+# Update vendor libraries.
+pushd "$WEB_ROOT"
+composer install
+popd
+
 ###############################################################################
 ## Create virtual-host and databases
 
