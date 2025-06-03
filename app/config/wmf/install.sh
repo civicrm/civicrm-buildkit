@@ -19,6 +19,7 @@ CIVI_SETTINGS="${WEB_ROOT}/private/civicrm.settings.php"
 CIVI_TEMPLATEC="${WEB_ROOT}/private/cache"
 GENCODE_CONFIG_TEMPLATE="${WEB_ROOT}/civicrm.standalone.php"
 RPOW_SETTINGS_PATH="${WEB_ROOT}/private/civicrm.settings.d/pre.d/100-civirpow.php"
+LOGGING_DSN_SETTING_PATH="${WEB_ROOT}/private/civicrm.settings.d/pre.d/120-logging-dsn.php"
 RPOW_RO_USER="civiwmfro"
 
 ## Clear out any cached container files to avoid it attempting to load
@@ -41,6 +42,15 @@ popd
 civicrm_install_cv
 
 "${WEB_ROOT}/ext/rpow/bin/harvey-dent" --root "${WEB_ROOT}" --settings-path "${RPOW_SETTINGS_PATH}" --user-name "${RPOW_RO_USER}"
+cat > "${LOGGING_DSN_SETTING_PATH}" << LOGDSNEND
+<?php
+// We use our master database for our logging.
+global \$civirpow;
+if (!empty(\$civirpow['masters'][0])) {
+  define('CIVICRM_LOGGING_DSN', \$civirpow['masters'][0]);
+}
+LOGDSNEND
+
 echo "DROP DATABASE IF EXISTS fredge"| amp sql -N civi -a
 echo "CREATE DATABASE IF NOT EXISTS fredge"| amp sql -N civi -a
 echo "CREATE DATABASE IF NOT EXISTS smashpig"| amp sql -N civi -a
