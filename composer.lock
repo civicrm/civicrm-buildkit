@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fad1e0aef1287fea580bb120a703d690",
+    "content-hash": "efaa928212052c452646c088f0330936",
     "packages": [
         {
             "name": "civicrm/composer-compile-plugin",
@@ -156,7 +156,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/civicrm/coder.git",
-                "reference": "e615288017c667e091b2f7d22507ad3a09227ce7"
+                "reference": "aa31dd918e302f6c01f6d28a495256e171abf581"
             },
             "require": {
                 "ext-mbstring": "*",
@@ -189,7 +189,7 @@
                 "issues": "https://www.drupal.org/project/issues/coder",
                 "source": "https://www.drupal.org/project/coder"
             },
-            "time": "2024-11-25T22:38:03+00:00"
+            "time": "2025-06-06T01:52:21+00:00"
         },
         {
             "name": "nikic/php-parser",
