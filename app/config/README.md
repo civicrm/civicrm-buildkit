@@ -1,7 +1,7 @@
 Each subdirectory defines a "build" -- including the download and
 installation process for a CMS+CiviCRM application.  For example, "wp-demo"
-defines a CiviCRM demo site based on WordPress, and "drupal-hrdemo" defines
-a CiviHR demo site based on Drupal.
+defines a CiviCRM demo site based on WordPress, and "standalone-clean" defines
+a site based on (non-composer) Standalone.
 
 Each directory includes the following required files:
 
