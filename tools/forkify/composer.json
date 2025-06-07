@@ -1,0 +1,12 @@
+{
+    "name": "civicrm/forkify",
+    "config": {
+        "platform": {
+            "php": "7.4"
+         }
+    },
+    "require": {
+        "php": ">=7.4",
+        "clippy/std": "~0.5.1"
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "name": "civicrm/find-stale-builds",
+    "config": {
+        "platform": {
+            "php": "7.4"
+         }
+    },
+    "require": {
+        "php": ">=7.4",
+        "symfony/finder": "~4.4"
+    }
+}
