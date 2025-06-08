@@ -175,7 +175,7 @@ function feed_labdir() {
  * @return array
  */
 function feed_static() {
-  $f = require dirname(__DIR__, 2) . '/src/universe.php';
+  $f = require __DIR__ . '/static-feed.php';
   $list = $f();
   return feed_normalize($list);
 }
