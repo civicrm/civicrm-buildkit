@@ -12,8 +12,8 @@
    },
 
    "civici":  {
-     "url": "https://download.civicrm.org/civici/civici.phar-v0.2.2",
-     "sha256": "d294874370190180c2348e7cede5985c73eb67e569f49f9039799bcf0fed061b",
+     "url": "https://download.civicrm.org/civici/civici.phar-v0.3.0",
+     "sha256": "f225445b5cd52a07ace7f5497a75a05418e33f274fcb19a6313379944aa1e164",
      "buildkit-path": "bin/civici"
    },
 
