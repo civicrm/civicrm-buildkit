@@ -8,6 +8,10 @@
             "name": "*.php",
             "exclude": ["Tests", "tests", "phpunit"],
             "in": "vendor"
+        },
+        {
+            "name": "guzzle_php81_shim.php",
+            "in": "."
         }
     ],
     "git-version": "package_version",
