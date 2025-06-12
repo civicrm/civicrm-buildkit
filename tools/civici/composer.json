@@ -9,25 +9,26 @@
         }
     ],
     "require": {
-        "php": ">=7.2.0",
+        "php": ">=7.4.0",
         "symfony/console": "~4.4",
         "symfony/process": "~4.4",
         "symfony/filesystem": "~4.4",
         "symfony/finder": "~4.4",
-        "guzzlehttp/guzzle": "~6.0",
+        "guzzlehttp/guzzle": "~6.3",
         "lesser-evil/shell-verbosity-is-evil": "^1.0"
     },
     "autoload": {
         "psr-4": {
             "Civici\\": "src/"
-         }
+         },
+         "files": ["guzzle_php81_shim.php"]
     },
     "bin": [
         "bin/civici"
     ],
     "config": {
         "platform": {
-            "php": "7.2.0"
+            "php": "7.4.0"
         },
         "bin-dir": "bin"
     }
