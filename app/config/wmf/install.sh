@@ -85,13 +85,13 @@ echo "Adding API key to admin user"
 	'{"where":[["display_name","=","Standalone Admin"]],"values":{"api_key":"'$FR_DOCKER_CIVI_API_KEY'"}}'
 
 echo "adding general wmf dev-specific settings"
-DEV_SETTINGS_FILE="${WEB_ROOT}/private/wmf_settings_developer.json"
+DEV_SETTINGS_FILE="${WEB_ROOT}/build/wmf_settings_developer.json"
 if [ -e "$DEV_SETTINGS_FILE" ]; then
   cv api3 -v --in=json setting.create < "$DEV_SETTINGS_FILE"
 fi
 
 echo "adding general wmf settings"
-WMF_SETTINGS_FILE="${WEB_ROOT}/private/wmf_settings.json"
+WMF_SETTINGS_FILE="${WEB_ROOT}/build/wmf_settings.json"
 if [ -e "$WMF_SETTINGS_FILE" ]; then
   cv api3 -v --in=json setting.create debug=1 < "$WMF_SETTINGS_FILE"
 fi
@@ -100,7 +100,7 @@ echo "adding anonymous user"
 cv api3 Contact.create first_name='Anonymous' last_name=Anonymous email=fakeemail@wikimedia.org contact_type=Individual
 
 echo "adding wmf roles"
-WMF_ROLES_FILE="${WEB_ROOT}/private/wmf_roles.sh"
+WMF_ROLES_FILE="${WEB_ROOT}/build/wmf_roles.sh"
 if [ -e "$WMF_ROLES_FILE" ]; then
    bash $WMF_ROLES_FILE
 fi
