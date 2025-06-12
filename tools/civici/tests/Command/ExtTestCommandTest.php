@@ -53,7 +53,7 @@ class ExtTestCommandTest extends \Civici\CiviciTestCase {
       if (!isset($linePatterns[$n])) {
         $this->fail("Failed to find pattern for line $n ($line)");
       }
-      $this->assertRegExp($linePatterns[$n], $line, "Line $n ($line) does not match {$linePatterns[$n]} in output: $allOutput");
+      $this->assertMatchesRegularExpression($linePatterns[$n], $line, "Line $n ($line) does not match {$linePatterns[$n]} in output: $allOutput");
     }
 
   }

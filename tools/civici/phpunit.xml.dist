@@ -1,4 +1,6 @@
-<phpunit backupGlobals="false"
+<?xml version="1.0"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         backupGlobals="false"
          backupStaticAttributes="false"
          colors="true"
          convertErrorsToExceptions="true"
@@ -8,16 +10,16 @@
          stopOnFailure="false"
          bootstrap="tests/bootstrap.php"
          cacheResult="false"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
 >
+  <coverage>
+    <include>
+      <directory suffix=".php">./src</directory>
+    </include>
+  </coverage>
   <testsuites>
     <testsuite name="Civici Test Suite">
       <directory>./tests/</directory>
     </testsuite>
   </testsuites>
-
-  <filter>
-    <whitelist>
-      <directory suffix=".php">./src</directory>
-    </whitelist>
-  </filter>
 </phpunit>

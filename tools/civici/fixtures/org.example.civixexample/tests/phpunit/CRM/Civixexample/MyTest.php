@@ -41,7 +41,7 @@ class CRM_Civixexample_MyTest extends \PHPUnit_Framework_TestCase implements Hea
    * Example: Test that a version is returned.
    */
   public function testWellFormedVersion() {
-    $this->assertRegExp('/^([0-9\.]|alpha|beta)*$/', \CRM_Utils_System::version());
+    $this->assertMatchesRegularExpression('/^([0-9\.]|alpha|beta)*$/', \CRM_Utils_System::version());
   }
 
   /**
