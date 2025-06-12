@@ -1,15 +1,9 @@
 <?php
 namespace Civici\Command;
 
-use Civici\GitRepo;
-use Civici\Util\ArrayUtil;
 use Civici\Util\Filesystem;
 use Civici\Util\JUnitLoader;
-use Civici\Util\Process as ProcessUtil;
-use Civici\Util\Process;
-use Civici\Util\ProcessBatch;
 use GuzzleHttp\Client;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -19,9 +13,9 @@ class ProbotStatusCommand extends BaseCommand {
   private $validStates = ['error', 'failure', 'pending', 'success'];
 
   /**
-   * @var Filesystem
+   * @var \Civici\Util\Filesystem
    */
-  var $fs;
+  public $fs;
 
   /**
    * @param string|NULL $name

@@ -2,6 +2,7 @@
 namespace Civici\Util;
 
 class ArrayUtil {
+
   public static  function collect($array, $index) {
     $result = array();
     foreach ($array as $item) {

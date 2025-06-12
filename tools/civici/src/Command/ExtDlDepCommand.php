@@ -1,26 +1,20 @@
 <?php
 namespace Civici\Command;
 
-use Civici\GitRepo;
-use Civici\Util\ArrayUtil;
 use Civici\Util\Filesystem;
 use Civici\Util\InfoXml;
-use Civici\Util\Process as ProcessUtil;
 use Civici\Util\Process;
 use Civici\Util\ProcessBatch;
-use Civici\Util\Xml;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-
 class ExtDlDepCommand extends BaseCommand {
 
   /**
-   * @var Filesystem
+   * @var \Civici\Util\Filesystem
    */
-  var $fs;
+  public $fs;
 
   /**
    * @param string|NULL $name
@@ -139,7 +133,7 @@ class ExtDlDepCommand extends BaseCommand {
   }
 
   /**
-   * @param InfoXml $target
+   * @param \Civici\Util\InfoXml $target
    * @param array $feed
    *   array(string $extKey => string $xml).
    * @return array

@@ -1,12 +1,17 @@
 <?php
 namespace Civici\Util;
 
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-
 class JUnitLoader {
 
-  private $tests = 0, $failures = 0, $errors = 0, $time = 0.0, $failedXml = FALSE;
+  private $tests = 0;
+
+  private $failures = 0;
+
+  private $errors = 0;
+
+  private $time = 0.0;
+
+  private $failedXml = FALSE;
 
   private $exitCode = NULL;
 
@@ -73,7 +78,8 @@ class JUnitLoader {
   protected function formatTime($total) {
     if ($total > 60) {
       $min = floor($total / 60);
-      $sec = $total - ($min * 60); // Preserve decimal
+      // Preserve decimal
+      $sec = $total - ($min * 60);
       return sprintf("%dm%.2fs", $min, $sec);
     }
     else {

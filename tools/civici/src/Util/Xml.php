@@ -12,8 +12,10 @@ class Xml {
    *   (0 => SimpleXMLElement|FALSE, 1 => errorMessage|FALSE)
    */
   public static function parse($string) {
-    $xml = FALSE; // SimpleXMLElement
-    $error = FALSE; // string
+    /** @var \SimpleXMLElement|bool $xml */
+    $xml = FALSE;
+    /** @var string|bool $error */
+    $error = FALSE;
 
     $oldLibXMLErrors = libxml_use_internal_errors();
     libxml_use_internal_errors(TRUE);

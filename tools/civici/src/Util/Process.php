@@ -1,10 +1,7 @@
 <?php
 namespace Civici\Util;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 class Process {
-
 
   /**
    * Helper which synchronously runs a command and verifies that it doesn't generate an error.
