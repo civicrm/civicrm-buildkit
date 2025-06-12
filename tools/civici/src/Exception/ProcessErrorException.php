@@ -7,7 +7,7 @@ class ProcessErrorException extends \RuntimeException {
    */
   private $process;
 
-  public function __construct(\Symfony\Component\Process\Process $process, $message = "", $code = 0, Exception $previous = NULL) {
+  public function __construct(\Symfony\Component\Process\Process $process, $message = "", $code = 0, ?\Throwable $previous = NULL) {
     $this->process = $process;
     if (empty($message)) {
       $message = $this->createReport($process);
