@@ -94,7 +94,7 @@ class ExtBuildCommand extends BaseCommand {
       if ($input->getOption('force')) {
         $batch->add(
           '<info>Destroy existing build</info> (<comment>' . $input->getOption('build') . ')</comment>',
-          new \Symfony\Component\Process\Process(
+          \Symfony\Component\Process\Process::fromShellCommandline(
             Process::interpolate('echo y | civibuild destroy @BLDNAME', [
               'BLDNAME' => $input->getOption('build'),
             ])
@@ -109,7 +109,7 @@ class ExtBuildCommand extends BaseCommand {
 
     $batch->add(
       '<info>Download main codebase</info> (<comment>build=' . $input->getOption('build') . ', type=' . $input->getOption('type') . ', civi-ver=' . $input->getOption('civi-ver') . '</comment>)',
-      new \Symfony\Component\Process\Process(
+      \Symfony\Component\Process\Process::fromShellCommandline(
         Process::interpolate('civibuild download @BLDNAME --type @TYPE --civi-ver @CIVIVER', $commonParams)
       )
     );
@@ -117,7 +117,7 @@ class ExtBuildCommand extends BaseCommand {
     if ($input->getOption('pr-url')) {
       $batch->add(
         "<info>Download extension PR</info> (<comment>$prUrl</comment>)",
-        new \Symfony\Component\Process\Process(
+        \Symfony\Component\Process\Process::fromShellCommandline(
           Process::interpolate('git clonepr --merged @PRURL @RELEXTPATH --depth 1', $commonParams),
           $myBuildRoot
         )
@@ -126,7 +126,7 @@ class ExtBuildCommand extends BaseCommand {
     elseif ($input->getOption('git-url') && $input->getOption('rev')) {
       $batch->add(
         "<info>Download extension</info> (<comment>{$input->getOption('git-url')}</comment> @ <comment>{$input->getOption('rev')}</comment>)",
-        new \Symfony\Component\Process\Process(
+        \Symfony\Component\Process\Process::fromShellCommandline(
           Process::interpolate('git clone @GITURL @RELEXTPATH --no-checkout --depth 1 && cd @RELEXTPATH && git fetch origin @SHA:@LOCALBRANCH && git checkout @LOCALBRANCH', $commonParams),
           $myBuildRoot
         )
@@ -135,7 +135,7 @@ class ExtBuildCommand extends BaseCommand {
     elseif ($input->getOption('git-url') && $input->getOption('base') && $input->getOption('head')) {
       $batch->add(
         "<info>Download extension</info> (<comment>{$input->getOption('git-url')}</comment> @ {$input->getOption('base')} + {$input->getOption('head')})",
-        new \Symfony\Component\Process\Process(
+        \Symfony\Component\Process\Process::fromShellCommandline(
           Process::interpolate('git clonebh @GITURL @RELEXTPATH @BASE_SHA @HEAD_SHA', $commonParams),
           $myBuildRoot
         )
@@ -144,7 +144,7 @@ class ExtBuildCommand extends BaseCommand {
     elseif ($input->getOption('git-url')) {
       $batch->add(
         "<info>Download extension</info> (<comment>{$input->getOption('git-url')}</comment> @ default branch)",
-        new \Symfony\Component\Process\Process(
+        \Symfony\Component\Process\Process::fromShellCommandline(
           Process::interpolate('git clone @GITURL @RELEXTPATH --depth 1', $commonParams),
           $myBuildRoot
         )
@@ -156,7 +156,7 @@ class ExtBuildCommand extends BaseCommand {
 
     $batch->add(
       '<info>Download extension dependencies</info>',
-      new \Symfony\Component\Process\Process(
+      \Symfony\Component\Process\Process::fromShellCommandline(
         Process::interpolate('civici ext:dl-dep --info=@RELEXTPATH/info.xml --feed=@FEED --to=@ABSEXTROOT', $commonParams),
         $myBuildRoot
       )
@@ -164,7 +164,7 @@ class ExtBuildCommand extends BaseCommand {
 
     $batch->add(
       '<info>Install main database</info>',
-      new \Symfony\Component\Process\Process(
+      \Symfony\Component\Process\Process::fromShellCommandline(
         Process::interpolate('civibuild install @BLDNAME', $commonParams),
         $myBuildRoot
       )
@@ -172,7 +172,7 @@ class ExtBuildCommand extends BaseCommand {
 
     //$batch->add(
     //  '<comment>Install extension</comment>',
-    //  new \Symfony\Component\Process\Process(
+    //  \Symfony\Component\Process\Process::fromShellCommandline(
     //    Process::interpolate('cv api extension.install path=@ABSEXTPATH', $commonParams),
     //    $myBuildRoot
     //  )
@@ -180,7 +180,7 @@ class ExtBuildCommand extends BaseCommand {
 
     //$batch->add(
     //  '<comment>Update database snapshot</comment>',
-    //  new \Symfony\Component\Process\Process(
+    //  \Symfony\Component\Process\Process::fromShellCommandline(
     //    Process::interpolate('civibuild snapshot @BLDNAME', $commonParams),
     //    $myBuildRoot
     //  )

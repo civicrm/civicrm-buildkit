@@ -74,7 +74,7 @@ Optional environment variables:
 
     $batch = new ProcessBatch("<info>Found extension</info> (<comment>" . $target->key . "</comment>)");
 
-    $restore = new \Symfony\Component\Process\Process(
+    $restore = \Symfony\Component\Process\Process::fromShellCommandline(
       Process::interpolate('civibuild restore && cv ext:enable @KEY', [
         'KEY' => $target->key,
       ]),
@@ -101,7 +101,7 @@ Optional environment variables:
       }
       $batch->add(
         "<info>Run PHPUnit group</info> (<comment>e2e</comment>)",
-        new \Symfony\Component\Process\Process($e2eCmd, $targetDir)
+        \Symfony\Component\Process\Process::fromShellCommandline($e2eCmd, $targetDir)
       );
 
       $batch->add("<info>Restore database</info>", $restore);
@@ -116,7 +116,7 @@ Optional environment variables:
       }
       $batch->add(
         "<info>Run PHPUnit group</info> (<comment>headless</comment>)",
-        new \Symfony\Component\Process\Process($headlessCmd, $targetDir)
+        \Symfony\Component\Process\Process::fromShellCommandline($headlessCmd, $targetDir)
       );
     }
 

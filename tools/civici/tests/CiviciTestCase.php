@@ -52,7 +52,7 @@ class CiviciTestCase extends \PHPUnit\Framework\TestCase {
    * @param string $command
    */
   protected function command($subdir, $command) {
-    $process = new \Symfony\Component\Process\Process($command);
+    $process = \Symfony\Component\Process\Process::fromShellCommandline($command);
     $process->setWorkingDirectory($subdir);
     return $process;
   }

@@ -111,7 +111,7 @@ class ExtDlDepCommand extends BaseCommand {
       }
       $batch->add(
         "<info>Download <comment>$key</comment> (<comment>$ext->downloadUrl</comment>)</info>",
-        new \Symfony\Component\Process\Process(
+        \Symfony\Component\Process\Process::fromShellCommandline(
           Process::interpolate('cv dl @MODE -b @EXPR --to=@TO', [
             'MODE' => $input->getOption('force') ? '--force' : '--keep',
             'TO' => $to,
