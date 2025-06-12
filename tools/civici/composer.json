@@ -13,7 +13,6 @@
         "symfony/console": "~4.4",
         "symfony/process": "~4.4",
         "symfony/filesystem": "~4.4",
-        "symfony/finder": "~4.4",
         "guzzlehttp/guzzle": "~6.3",
         "lesser-evil/shell-verbosity-is-evil": "^1.0"
     },
