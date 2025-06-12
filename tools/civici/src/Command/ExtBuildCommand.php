@@ -62,7 +62,7 @@ class ExtBuildCommand extends BaseCommand {
     }
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $prUrl = $input->getOption('pr-url');
     $myBuildRoot = $input->getOption('build-root') . $input->getOption('build');
 
@@ -182,6 +182,7 @@ class ExtBuildCommand extends BaseCommand {
     //);
 
     $this->runBatch($input, $output, $batch);
+    return 0;
   }
 
 }

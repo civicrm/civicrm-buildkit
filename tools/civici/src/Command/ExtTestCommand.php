@@ -53,7 +53,7 @@ Optional environment variables:
     }
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     if ($input->getOption('info')) {
       if (!file_exists($input->getOption('info'))) {
         throw new \RuntimeException("File not found: " . $input->getOption('info'));
@@ -126,6 +126,7 @@ Optional environment variables:
     }
 
     $batch->runAllOk($output, $input->getOption('dry-run'));
+    return 0;
   }
 
 }

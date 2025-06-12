@@ -57,7 +57,7 @@ class ExtDlDepCommand extends BaseCommand {
     }
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     if (!$input->getOption('feed')) {
       throw new \RuntimeException("Must specify valid --feed");
     }
@@ -116,6 +116,7 @@ class ExtDlDepCommand extends BaseCommand {
     }
 
     $batch->runAllOk($output, $input->getOption('dry-run'));
+    return 0;
   }
 
   /**

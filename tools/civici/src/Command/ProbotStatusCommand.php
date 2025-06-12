@@ -86,7 +86,7 @@ When --junit-xml is specified, the following variables are defined:
     }
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $params = [
       'statusToken' => $input->getOption('probot-token'),
       'state' => $input->getOption('state'),
@@ -107,6 +107,7 @@ When --junit-xml is specified, the following variables are defined:
       ]);
       $output->writeln($response->getBody()->getContents());
     }
+    return 0;
   }
 
 }
