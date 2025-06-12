@@ -5,9 +5,5 @@
 $_SERVER["POGO_AUTOLOAD"] = $_ENV["POGO_AUTOLOAD"] =  __DIR__ . "/vendor/autoload.php";
 putenv("POGO_AUTOLOAD=" . $_ENV["POGO_AUTOLOAD"]);
 
-unset($_SERVER["POGO_STDIN"]);
-unset($_ENV["POGO_STDIN"]);
-putenv("POGO_STDIN");
-
 require_once __DIR__ . "/vendor/autoload.php";
 require_once __DIR__ . "/script.php";
