@@ -44,21 +44,31 @@ function main(array $argv): void {
       continue;
     }
 
-    $checksumFile = "$toolDir/.composer.lock.last-checksum";
-    $currentChecksum = getFileChecksum("$toolDir/composer.json") . '-' . getFileChecksum("$toolDir/composer.lock");
-    $previousChecksum = is_file($checksumFile) ? trim(file_get_contents($checksumFile)) : '';
+    if (file_exists("$toolDir/composer.json")) {
+      $checksumFile = "$toolDir/.composer.lock.last-checksum";
+      $currentChecksum = getFileChecksum("$toolDir/composer.json") . '-' . getFileChecksum("$toolDir/composer.lock");
+      $previousChecksum = is_file($checksumFile) ? trim(file_get_contents($checksumFile)) : '';
 
-    if ($currentChecksum !== $previousChecksum || !file_exists("$toolDir/vendor/autoload.php")) {
-      $cmd1 = "cd " . escapeshellarg($toolDir) . " && composer install --no-interaction";
-      system($cmd1, $retval1);
-      if ($retval1 !== 0) {
-        fatal("Error: composer install failed for $tool\n");
+      if ($currentChecksum !== $previousChecksum || !file_exists("$toolDir/vendor/autoload.php")) {
+        $cmd1 = "cd " . escapeshellarg($toolDir) . " && composer install --no-interaction";
+        system($cmd1, $retval1);
+        if ($retval1 !== 0) {
+          fatal("Error: composer install failed for $tool\n");
+        }
+
+        file_put_contents($checksumFile, $currentChecksum);
       }
-
-      file_put_contents($checksumFile, $currentChecksum);
     }
 
-    createSymlink("$toolDir/run.php", "$binDir/$tool");
+    if (file_exists("$toolDir/run.php")) {
+      createSymlink("$toolDir/run.php", "$binDir/$tool");
+    }
+    elseif (file_exists("$toolDir/bin/$tool")) {
+      createSymlink("$toolDir/bin/$tool", "$binDir/$tool");
+    }
+    else {
+      throw new \RuntimeException("$toolDir does not contain a main script");
+    }
   }
 }
 

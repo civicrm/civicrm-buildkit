@@ -1,0 +1,6 @@
+/vendor
+/extern
+/.idea
+*~
+/bin/civici.phar
+/bin/phpunit

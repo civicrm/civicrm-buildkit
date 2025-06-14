@@ -1,0 +1,45 @@
+#!/bin/bash
+
+## This is a quick-and-dirty script to clone a repository and checkout the head+base revisions.
+##
+## TODO:
+## - Consider rewriting in a different language
+## - Rewrite option parser so ordering is more flexible
+## - Support for pool of git caches
+## - Allow multiple heads
+## - Consider leaving working-copy with three available branches: `base`, `proposed`, `merged`
+
+function show_help() {
+  echo "about: Clone a repo; checkout a base+head revision"
+  echo "usage: git clonehb <git-url> <path> <base-sha> <head-sha>"
+  echo "examples:"
+  echo "  git clone https://example.com/example/repo abcd1234 fedc4321 mydir"
+}
+
+REPO_URL="$1"
+REPO_PATH="$2"
+BASE_SHA="$3"
+HEAD_SHA="$4"
+shift 4
+
+if [ -z "$REPO_URL" -o -z "$REPO_PATH" -o -z "$BASE_SHA" -o -z "$HEAD_SHA" ]; then
+  echo "REPO_URL=[$REPO_URL] BASE_SHA=[$BASE_SHA] HEAD_SHA=[$HEAD_SHA] REPO_PATH=[$REPO_PATH]"
+  show_help
+  exit 1
+fi
+
+set -xe
+
+git clone -n "$REPO_URL" "$REPO_PATH"
+pushd "$REPO_PATH" >> /dev/null
+#  git fetch origin "$BASE_SHA":"pr-base"
+#  git fetch origin "$HEAD_SHA":"pr-head"
+#  git checkout pr-base -b pr-merged
+#  git merge pr-head
+
+   git fetch origin "$BASE_SHA" "$HEAD_SHA"
+   git checkout "$BASE_SHA" -b pr-merged
+   git merge --message "Merged $BASE_SHA and $HEAD_SHA (git clonebh)" "$HEAD_SHA"
+popd >> /dev/null
+
+echo "All done"
