@@ -1,0 +1,11 @@
+{
+    "name": "civicrm/phpunit-xml-cleanup",
+    "config": {
+        "platform": {
+            "php": "7.2"
+         }
+    },
+    "require": {
+        "php": ">=7.2"
+    }
+}

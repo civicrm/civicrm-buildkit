@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="My Test Suite" tests="38" assertions="464" errors="2" failures="3" skipped="0" time="9.849000">
+    <testsuite name="Civi\Authx\AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" tests="38" assertions="464" errors="2" failures="3" skipped="0" time="9.849000">
+      <testcase name="testAnonymous" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="98" assertions="4" time="2.050035"/>
+      <testsuite name="Civi\Authx\AllFlowsTest::testStatelessContactOnly" tests="9" assertions="69" errors="0" failures="0" skipped="0" time="1.070244">
+        <testcase name="testStatelessContactOnly with data set #0" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="118" assertions="1" time="0.014258"/>
+        <testcase name="testStatelessContactOnly with data set #1" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="118" assertions="1" time="0.013987"/>
+        <testcase name="testStatelessContactOnly with data set #2" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="118" assertions="1" time="0.013884"/>
+        <testcase name="testStatelessContactOnly with data set #3" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="118" assertions="11" time="0.466547"/>
+        <testcase name="testStatelessContactOnly with data set #4" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="118" assertions="11" time="0.136099"/>
+        <testcase name="testStatelessContactOnly with data set #5" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="118" assertions="11" time="0.125076"/>
+        <testcase name="testStatelessContactOnly with data set #6" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="118" assertions="11" time="0.110330"/>
+        <testcase name="testStatelessContactOnly with data set #7" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="118" assertions="11" time="0.094642"/>
+        <testcase name="testStatelessContactOnly with data set #8" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="118" assertions="11" time="0.095421"/>
+      </testsuite>
+      <testsuite name="Civi\Authx\AllFlowsTest::testStatelessUserContact" tests="9" assertions="99" errors="0" failures="0" skipped="0" time="1.153174">
+        <testcase name="testStatelessUserContact with data set #0" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="153" assertions="11" time="0.149969"/>
+        <testcase name="testStatelessUserContact with data set #1" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="153" assertions="11" time="0.138561"/>
+        <testcase name="testStatelessUserContact with data set #2" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="153" assertions="11" time="0.142277"/>
+        <testcase name="testStatelessUserContact with data set #3" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="153" assertions="11" time="0.155297"/>
+        <testcase name="testStatelessUserContact with data set #4" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="153" assertions="11" time="0.136453"/>
+        <testcase name="testStatelessUserContact with data set #5" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="153" assertions="11" time="0.138500"/>
+        <testcase name="testStatelessUserContact with data set #6" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="153" assertions="11" time="0.100072"/>
+        <testcase name="testStatelessUserContact with data set #7" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="153" assertions="11" time="0.096774"/>
+        <testcase name="testStatelessUserContact with data set #8" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="153" assertions="11" time="0.095271"/>
+      </testsuite>
+      <testcase name="testStatelessGuardSiteKey" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="179" assertions="20" time="0.259268"/>
+      <testsuite name="Civi\Authx\AllFlowsTest::testStatefulLoginAllowed" tests="3" assertions="48" errors="0" failures="3" skipped="0" time="1.422130">
+        <testcase name="testStatefulLoginAllowed with data set #0" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="222" assertions="16" time="1.000238">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Civi\Authx\AllFlowsTest::testStatefulLoginAllowed with data set #0 ('pass')
+Expected HTTP response 200. Received HTTP response 500.
+{
+    "request": {
+        "uri": "http://dmaster.127.0.0.1.nip.io:8001/civicrm/user",
+        "method": "GET",
+        "headers": {
+            "Host": "dmaster.127.0.0.1.nip.io:8001",
+            "User-Agent": "GuzzleHttp/6.5.4 curl/7.79.1 PHP/7.4.26",
+            "Cookie": "SESS5c4dfa8f15abfd5f38b0c6dafd2ec368=C9ZgTejIMYpRDcevsqvFx6CodYRKvl6bWJyKsgj2qkc"
+        },
+        "body": ""
+    },
+    "response": {
+        "status": "500 Internal Server Error",
+        "headers": {
+            "Date": "Wed, 20 Apr 2022 22:01:11 GMT",
+            "Server": "Apache/2.4.51 (Unix) OpenSSL/1.1.1l",
+            "X-Powered-By": "PHP/7.4.26",
+            "Expires": "Sun, 19 Nov 1978 05:00:00 GMT",
+            "Cache-Control": "no-cache, must-revalidate",
+            "X-Content-Type-Options": "nosniff",
+            "Connection": "close",
+            "Transfer-Encoding": "chunked",
+            "Content-Type": "text/html; charset=UTF-8"
+        },
+        "body": "CIVICRM_API3_EXCEPTION: \"DB ERROR: UNKNOWN ERROR\"\n\n#0\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/CRM/Contribute/Page/UserDashboard.php(25):\ncivicrm_api3(\"Contribution\", \"get\", (Array:5))\n#1\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/CRM/Contribute/Page/UserDashboard.php(170):\nCRM_Contribute_Page_UserDashboard-&gt;listContribution()\n#2\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/CRM/Contact/Page/View/UserDashBoard.php(125):\nCRM_Contribute_Page_UserDashboard-&gt;run()\n#3\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/CRM/Contact/Page/View/UserDashBoard.php(194):\nCRM_Contact_Page_View_UserDashBoard-&gt;buildUserDashBoard()\n#4\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/CRM/Core/Invoke.php(319):\nCRM_Contact_Page_View_UserDashBoard-&gt;run((Array:2), NULL)\n#5\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/CRM/Core/Invoke.php(69):\nCRM_Core_Invoke::runItem((Array:17))\n#6\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/CRM/Core/Invoke.php(36):\nCRM_Core_Invoke::_invoke((Array:2))\n#7\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/drupal/civicrm.module(471):\nCRM_Core_Invoke::invoke((Array:2))\n#8 /Users/totten/bknix/build/dmaster/web/includes/menu.inc(527):\ncivicrm_invoke(\"user\")\n#9 /Users/totten/bknix/build/dmaster/web/index.php(21):\nmenu_execute_active_handler()\n#10 {main}\n\n __ Sorry, due to an error, we are unable to fulfill your request at the\nmoment. You may want to contact your administrator or service provider with\nmore details about what action you were performing when this occurred. \nDB Error: unknown error \n\nReturn to home page. [1] \n\nLinks:\n------\n[1] http://dmaster.127.0.0.1.nip.io:8001/\n"
+    }
+}
+Failed asserting that 500 matches expected 200.
+
+/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/Civi/Test/HttpTestTrait.php:129
+/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php:638
+/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php:245
+/Users/totten/bknix/extern/phpunit8/phpunit8.phar:671
+</failure>
+        </testcase>
+        <testcase name="testStatefulLoginAllowed with data set #1" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="222" assertions="16" time="0.229533">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Civi\Authx\AllFlowsTest::testStatefulLoginAllowed with data set #1 ('api_key')
+Expected HTTP response 200. Received HTTP response 500.
+{
+    "request": {
+        "uri": "http://dmaster.127.0.0.1.nip.io:8001/civicrm/user",
+        "method": "GET",
+        "headers": {
+            "Host": "dmaster.127.0.0.1.nip.io:8001",
+            "User-Agent": "GuzzleHttp/6.5.4 curl/7.79.1 PHP/7.4.26",
+            "Cookie": "SESS5c4dfa8f15abfd5f38b0c6dafd2ec368=6tOlqvf9aGX2neeT1NEKJK0e0vwHFZc7gNoyZkyhKW0"
+        },
+        "body": ""
+    },
+    "response": {
+        "status": "500 Internal Server Error",
+        "headers": {
+            "Date": "Wed, 20 Apr 2022 22:01:12 GMT",
+            "Server": "Apache/2.4.51 (Unix) OpenSSL/1.1.1l",
+            "X-Powered-By": "PHP/7.4.26",
+            "Expires": "Sun, 19 Nov 1978 05:00:00 GMT",
+            "Cache-Control": "no-cache, must-revalidate",
+            "X-Content-Type-Options": "nosniff",
+            "Connection": "close",
+            "Transfer-Encoding": "chunked",
+            "Content-Type": "text/html; charset=UTF-8"
+        },
+        "body": "CIVICRM_API3_EXCEPTION: \"DB ERROR: UNKNOWN ERROR\"\n\n#0\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/CRM/Contribute/Page/UserDashboard.php(25):\ncivicrm_api3(\"Contribution\", \"get\", (Array:5))\n#1\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/CRM/Contribute/Page/UserDashboard.php(170):\nCRM_Contribute_Page_UserDashboard-&gt;listContribution()\n#2\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/CRM/Contact/Page/View/UserDashBoard.php(125):\nCRM_Contribute_Page_UserDashboard-&gt;run()\n#3\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/CRM/Contact/Page/View/UserDashBoard.php(194):\nCRM_Contact_Page_View_UserDashBoard-&gt;buildUserDashBoard()\n#4\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/CRM/Core/Invoke.php(319):\nCRM_Contact_Page_View_UserDashBoard-&gt;run((Array:2), NULL)\n#5\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/CRM/Core/Invoke.php(69):\nCRM_Core_Invoke::runItem((Array:17))\n#6\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/CRM/Core/Invoke.php(36):\nCRM_Core_Invoke::_invoke((Array:2))\n#7\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/drupal/civicrm.module(471):\nCRM_Core_Invoke::invoke((Array:2))\n#8 /Users/totten/bknix/build/dmaster/web/includes/menu.inc(527):\ncivicrm_invoke(\"user\")\n#9 /Users/totten/bknix/build/dmaster/web/index.php(21):\nmenu_execute_active_handler()\n#10 {main}\n\n __ Sorry, due to an error, we are unable to fulfill your request at the\nmoment. You may want to contact your administrator or service provider with\nmore details about what action you were performing when this occurred. \nDB Error: unknown error \n\nReturn to home page. [1] \n\nLinks:\n------\n[1] http://dmaster.127.0.0.1.nip.io:8001/\n"
+    }
+}
+Failed asserting that 500 matches expected 200.
+
+/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/Civi/Test/HttpTestTrait.php:129
+/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php:638
+/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php:245
+/Users/totten/bknix/extern/phpunit8/phpunit8.phar:671
+</failure>
+        </testcase>
+        <testcase name="testStatefulLoginAllowed with data set #2" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="222" assertions="16" time="0.192359">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Civi\Authx\AllFlowsTest::testStatefulLoginAllowed with data set #2 ('jwt')
+Expected HTTP response 200. Received HTTP response 500.
+{
+    "request": {
+        "uri": "http://dmaster.127.0.0.1.nip.io:8001/civicrm/user",
+        "method": "GET",
+        "headers": {
+            "Host": "dmaster.127.0.0.1.nip.io:8001",
+            "User-Agent": "GuzzleHttp/6.5.4 curl/7.79.1 PHP/7.4.26",
+            "Cookie": "SESS5c4dfa8f15abfd5f38b0c6dafd2ec368=obX_W98sAtpkcVxHBVNOM7KDdeGqKIjjrfAE1r3z8-c"
+        },
+        "body": ""
+    },
+    "response": {
+        "status": "500 Internal Server Error",
+        "headers": {
+            "Date": "Wed, 20 Apr 2022 22:01:12 GMT",
+            "Server": "Apache/2.4.51 (Unix) OpenSSL/1.1.1l",
+            "X-Powered-By": "PHP/7.4.26",
+            "Expires": "Sun, 19 Nov 1978 05:00:00 GMT",
+            "Cache-Control": "no-cache, must-revalidate",
+            "X-Content-Type-Options": "nosniff",
+            "Connection": "close",
+            "Transfer-Encoding": "chunked",
+            "Content-Type": "text/html; charset=UTF-8"
+        },
+        "body": "CIVICRM_API3_EXCEPTION: \"DB ERROR: UNKNOWN ERROR\"\n\n#0\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/CRM/Contribute/Page/UserDashboard.php(25):\ncivicrm_api3(\"Contribution\", \"get\", (Array:5))\n#1\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/CRM/Contribute/Page/UserDashboard.php(170):\nCRM_Contribute_Page_UserDashboard-&gt;listContribution()\n#2\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/CRM/Contact/Page/View/UserDashBoard.php(125):\nCRM_Contribute_Page_UserDashboard-&gt;run()\n#3\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/CRM/Contact/Page/View/UserDashBoard.php(194):\nCRM_Contact_Page_View_UserDashBoard-&gt;buildUserDashBoard()\n#4\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/CRM/Core/Invoke.php(319):\nCRM_Contact_Page_View_UserDashBoard-&gt;run((Array:2), NULL)\n#5\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/CRM/Core/Invoke.php(69):\nCRM_Core_Invoke::runItem((Array:17))\n#6\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/CRM/Core/Invoke.php(36):\nCRM_Core_Invoke::_invoke((Array:2))\n#7\n/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/drupal/civicrm.module(471):\nCRM_Core_Invoke::invoke((Array:2))\n#8 /Users/totten/bknix/build/dmaster/web/includes/menu.inc(527):\ncivicrm_invoke(\"user\")\n#9 /Users/totten/bknix/build/dmaster/web/index.php(21):\nmenu_execute_active_handler()\n#10 {main}\n\n __ Sorry, due to an error, we are unable to fulfill your request at the\nmoment. You may want to contact your administrator or service provider with\nmore details about what action you were performing when this occurred. \nDB Error: unknown error \n\nReturn to home page. [1] \n\nLinks:\n------\n[1] http://dmaster.127.0.0.1.nip.io:8001/\n"
+    }
+}
+Failed asserting that 500 matches expected 200.
+
+/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/Civi/Test/HttpTestTrait.php:129
+/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php:638
+/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php:245
+/Users/totten/bknix/extern/phpunit8/phpunit8.phar:671
+</failure>
+        </testcase>
+      </testsuite>
+      <testsuite name="Civi\Authx\AllFlowsTest::testStatefulLoginProhibited" tests="3" assertions="12" errors="0" failures="0" skipped="0" time="0.223214">
+        <testcase name="testStatefulLoginProhibited with data set #0" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="268" assertions="4" time="0.073549"/>
+        <testcase name="testStatefulLoginProhibited with data set #1" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="268" assertions="4" time="0.097179"/>
+        <testcase name="testStatefulLoginProhibited with data set #2" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="268" assertions="4" time="0.052486"/>
+      </testsuite>
+      <testsuite name="Civi\Authx\AllFlowsTest::testStatefulAutoAllowed" tests="3" assertions="24" errors="0" failures="0" skipped="0" time="0.331050">
+        <testcase name="testStatefulAutoAllowed with data set #0" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="290" assertions="8" time="0.109971"/>
+        <testcase name="testStatefulAutoAllowed with data set #1" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="290" assertions="8" time="0.133342"/>
+        <testcase name="testStatefulAutoAllowed with data set #2" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="290" assertions="8" time="0.087737"/>
+      </testsuite>
+      <testsuite name="Civi\Authx\AllFlowsTest::testStatefulAutoProhibited" tests="3" assertions="12" errors="0" failures="0" skipped="0" time="0.226341">
+        <testcase name="testStatefulAutoProhibited with data set #0" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="317" assertions="4" time="0.072992"/>
+        <testcase name="testStatefulAutoProhibited with data set #1" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="317" assertions="4" time="0.097552"/>
+        <testcase name="testStatefulAutoProhibited with data set #2" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="317" assertions="4" time="0.055797"/>
+      </testsuite>
+      <testcase name="testStatefulStatelessOverlap" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="337" assertions="24" time="0.233028"/>
+      <testcase name="testMultipleStateless" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="375" assertions="77" time="0.880577"/>
+      <testcase name="testJwtMiddleware" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="431" assertions="36" time="0.274215"/>
+      <testcase name="testCliServiceLogin" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="468" assertions="30" time="1.245899"/>
+      <testcase name="testCliPipeTrustedLogin" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="510" assertions="4" time="0.240358">
+        <error type="Civi\Pipe\JsonRpcMethodException">Civi\Authx\AllFlowsTest::testCliPipeTrustedLogin
+Civi\Pipe\JsonRpcMethodException: DB Error: unknown error
+
+/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/Civi/Pipe/BasicPipeClient.php:132
+/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php:519
+/Users/totten/bknix/extern/phpunit8/phpunit8.phar:671
+</error>
+      </testcase>
+      <testcase name="testCliPipeUntrustedLogin" class="Civi\Authx\AllFlowsTest" classname="Civi.Authx.AllFlowsTest" file="/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php" line="523" assertions="5" time="0.239468">
+        <error type="Civi\Pipe\JsonRpcMethodException">Civi\Authx\AllFlowsTest::testCliPipeUntrustedLogin
+Civi\Pipe\JsonRpcMethodException: DB Error: unknown error
+
+/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/Civi/Pipe/BasicPipeClient.php:132
+/Users/totten/bknix/build/dmaster/web/sites/all/modules/civicrm/ext/authx/tests/phpunit/Civi/Authx/AllFlowsTest.php:540
+/Users/totten/bknix/extern/phpunit8/phpunit8.phar:671
+</error>
+      </testcase>
+    </testsuite>
+  </testsuite>
+</testsuites>

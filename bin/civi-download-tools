@@ -330,6 +330,7 @@ pushd $PRJDIR >> /dev/null
   [ -f "$PRJDIR/extern/phpunit4/phpunit4.phar" ] && rm -f "$PRJDIR/extern/phpunit4/phpunit4.phar"
   [ -f "$PRJDIR/extern/phpunit5/phpunit5.phar" ] && rm -f "$PRJDIR/extern/phpunit5/phpunit5.phar"
   [ -f "$PRJDIR/extern/phpunit6/phpunit6.phar" ] && rm -f "$PRJDIR/extern/phpunit6/phpunit6.phar"
+  [ -f "$PRJDIR/extern/phpunit-xml-cleanup.php" ] && rm -f "$PRJDIR/extern/phpunit-xml-cleanup.php"
   [ -f "$PRJDIR/extern/hub.txt" ] && rm -f "$PRJDIR/bin/hub" "$PRJDIR/extern/hub.txt"
   [ -d "$PRJDIR/extern/hub" ] && rm -rf "$PRJDIR/extern/hub"
 

@@ -71,6 +71,7 @@ bin/phpunit7
 bin/phpunit8
 bin/phpunit9
 bin/phpunit10
+bin/phpunit-xml-cleanup
 bin/pogo
 bin/protractor
 bin/webdriver-manager
