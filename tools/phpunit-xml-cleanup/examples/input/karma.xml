@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<testsuite name="PhantomJS 2.1.1 (Linux x86_64)" package="" timestamp="2022-04-20T21:52:37" id="0" hostname="test-1" tests="81" errors="0" failures="0" time="0.968">
+  <properties>
+    <property name="browser.fullName" value="Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/538.1 (KHTML, like Gecko) PhantomJS/2.1.1 Safari/538.1"/>
+  </properties>
+  <testcase name="crmUiOrder crmUiOrder cycles through ascending/descending orderings on multiple clicks" time="0.036" classname="crmUiOrder"/>
+  <testcase name="crmUiOrder crmUiOrder changes primary ordering on click" time="0.011" classname="crmUiOrder"/>
+  <testcase name="crmCaseType crmEditableTabTitle when initialized hides the save and cancel button" time="0.011" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when clicked on title label hides the pen icon" time="0.006" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when clicked on title label makes the title editable" time="0.004" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when clicked on title label shows the save button" time="0.005" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when ESCAPE key is pressed while typing shows the pen icon" time="0.009" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when ESCAPE key is pressed while typing does not update the title" time="0.005" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when ESCAPE key is pressed while typing makes the title non editable" time="0.005" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when ESCAPE key is pressed while typing hides the save and cancel button" time="0.004" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when ENTER key is pressed while typing hides the save and cancel button" time="0.007" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when ENTER key is pressed while typing shows the pen icon" time="0.003" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when ENTER key is pressed while typing updates the title in angular context" time="0.003" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when ENTER key is pressed while typing makes the title non editable" time="0.005" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when SAVE button is clicked updates the title in angular context" time="0.005" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when SAVE button is clicked makes the title non editable" time="0.003" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when SAVE button is clicked hides the save and cancel button" time="0.006" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when SAVE button is clicked shows the pen icon" time="0.003" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when clicked outside of the editable area hides the save and cancel button" time="0.008" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when clicked outside of the editable area shows the pen icon" time="0.004" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when clicked outside of the editable area does not update the title in angular context" time="0.003" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when clicked outside of the editable area makes the title non editable" time="0.004" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when CANCEL button is clicked makes the title non editable" time="0.004" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when CANCEL button is clicked does not update the title in angular context" time="0.003" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when CANCEL button is clicked shows the pen icon" time="0.003" classname="crmCaseType"/>
+  <testcase name="crmCaseType crmEditableTabTitle when CANCEL button is clicked hides the save and cancel button" time="0.004" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeCtrl when clearing the activity's default assignee type values clears the default assignee contact for the activity" time="0.005" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeCtrl when clearing the activity's default assignee type values clears the default assignee relationship for the activity" time="0.003" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeCtrl should store the default assignee types" time="0.006" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeCtrl should load activity statuses" time="0.003" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeCtrl should store the default assignee types values indexed by name" time="0.002" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeCtrl when adding a role on-the-fly updates the case roles for unidirectional" time="0.004" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeCtrl when adding a role on-the-fly updates the case roles for bidirectional" time="0.003" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeCtrl should load activity types" time="0.004" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeCtrl when adding a role updates case roles when name and label are different" time="0.003" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeCtrl when adding a role doesn't add the same role twice" time="0.002" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeCtrl when adding a role updates case roles if choose non-client-perspective direction" time="0.004" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeCtrl when adding a role updates the case roles" time="0.005" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeCtrl when adding a role updates case roles non-client-perspective direction name/label different" time="0.002" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeCtrl when creating a new workflow adds an Open Case activty to the default activty set" time="0.003" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeCtrl when creating a new workflow sets default values for the case type title, name, and active status" time="0.003" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeCtrl should compute the relationship type options" time="0.003" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeCtrl addActivitySet should add an activitySet to the case type" time="0.005" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeCtrl when adding a new activity to a set adds a new Comment activity to the set" time="0.003" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeCtrl addActivitySet handles second timeline correctly" time="0.011" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeListCtrl toggleCaseType when the case is active sets the case type as inactive" time="0.003" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeListCtrl toggleCaseType when the case is inactive sets the case type as active" time="0.003" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeListCtrl showandtell to be or not to be" time="0.587" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeListCtrl deleteCaseType revertCaseType when reverting a case type resets the case type information using the api" time="0.003" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeListCtrl deleteCaseType when the case type can be deleted deletes the case from the api" time="0.002" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeListCtrl deleteCaseType when the case type can be deleted removes the case type from the list" time="0.002" classname="crmCaseType"/>
+  <testcase name="crmCaseType CaseTypeListCtrl should store an index of case types" time="0.001" classname="crmCaseType"/>
+  <testcase name="crmMailing ListMailingsCtrl should redirect to unscheduled" time="0.004" classname="crmMailing"/>
+  <testcase name="crmMailingRadioDate crmMailingRadioDate directive should update the UI after changing the model" time="0.051" classname="crmMailingRadioDate"/>
+  <testcase name="crmMailingRadioDate crmMailingRadioDate directive should update the model after changing the date and time" time="0.023" classname="crmMailingRadioDate"/>
+  <testcase name="crmJsonComparator should return false when comparing different objects" time="0.001" classname="crmJsonComparator"/>
+  <testcase name="crmJsonComparator should explain what part of the comparison failed when comparing objects" time="0.001" classname="crmJsonComparator"/>
+  <testcase name="crmJsonComparator should handle nested objects" time="0.001" classname="crmJsonComparator"/>
+  <testcase name="crmJsonComparator should return true when comparing equal objects" time="0.001" classname="crmJsonComparator"/>
+  <testcase name="crmJsonComparator should handle differences in nested objects" time="0.002" classname="crmJsonComparator"/>
+  <testcase name="crmJsonComparator should handle arrays" time="0.001" classname="crmJsonComparator"/>
+  <testcase name="crmJsonComparator should handle arrays with differences" time="0.001" classname="crmJsonComparator"/>
+  <testcase name="crmJsonComparator should handle nested arrays and objects" time="0" classname="crmJsonComparator"/>
+  <testcase name="crmJsonComparator should handle nested arrays and objects with differences" time="0.001" classname="crmJsonComparator"/>
+  <testcase name="crmJsonComparator should complain when comparing an object to an array" time="0" classname="crmJsonComparator"/>
+  <testcase name="crmJsonComparator should complain when comparing an array to an object" time="0.001" classname="crmJsonComparator"/>
+  <testcase name="crmUtil crmMetadata returns individual fields" time="0.004" classname="crmUtil"/>
+  <testcase name="crmUtil crmMetadata returns a failed promise on error" time="0.003" classname="crmUtil"/>
+  <testcase name="crmUtil crmMetadata only calls the API once" time="0.003" classname="crmUtil"/>
+  <testcase name="crmUtil crmQueue returns in order" time="0.002" classname="crmUtil"/>
+  <testcase name="crmUtil crmThrottle executes the function again" time="0.001" classname="crmUtil"/>
+  <testcase name="crmUtil crmThrottle executes the function once" time="0.001" classname="crmUtil"/>
+  <testcase name="crmUtil crmThrottle executes the first and last function" time="0.001" classname="crmUtil"/>
+  <testcase name="CRM.utils.sigfig should round while preserving significant digits" time="0.001" classname="CRM.utils.sigfig"/>
+  <testcase name="crmAutosave Autosave directive defers saving new changes when a save is already pending" time="0.009" classname="crmAutosave"/>
+  <testcase name="crmAutosave Autosave directive does not save an invalid form" time="0.005" classname="crmAutosave"/>
+  <testcase name="crmAutosave Autosave directive calls fakeCtrl.doSaveWithPromise() twice over the course of three changes" time="0.006" classname="crmAutosave"/>
+  <testcase name="crmAutosave Autosave directive calls fakeCtrl.doSave() twice over the course of three changes" time="0.004" classname="crmAutosave"/>
+  <testcase name="CRM.utils.formatDate should format 24-hr time" time="0" classname="CRM.utils.formatDate"/>
+  <testcase name="CRM.utils.formatDate should format date input" time="0.001" classname="CRM.utils.formatDate"/>
+  <testcase name="CRM.utils.formatDate should format 12-hr time" time="0" classname="CRM.utils.formatDate"/>
+  <system-out>
+    <![CDATA[PhantomJS 2.1.1 (Linux x86_64) ALERT: 'Error
+The scheduled date and time is in the past'
+,PhantomJS 2.1.1 (Linux x86_64) ALERT: 'Error
+The scheduled date and time is in the past'
+,PhantomJS 2.1.1 (Linux x86_64) ALERT: 'Error
+The scheduled date and time is in the past'
+
+]]>
+  </system-out>
+  <system-err/>
+</testsuite>
