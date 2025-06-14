@@ -7,14 +7,6 @@ They don't.
 This repository contains quick-and-dirty hacks to ensure that the various XML outputs from Civi's test suite (eg `phpunit` and `karma`)
 can be loaded consistently into Jenkins reports.
 
-## Usage
-
-```
-git clone https://github.com/civicrm/phpunit-xml-cleanup/
-cd phpunit-xml-cleanup/bin
-./phpunit-xml-cleanup /tmp/xunit/*.xml
-```
-
 ## Development
 
 * Add new example input files to `examples/input`
