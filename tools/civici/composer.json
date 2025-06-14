@@ -1,11 +1,11 @@
 {
-    "name": "totten/civici",
+    "name": "civicrm/civici",
     "description": "CLI tool for running the test-suite of a Civi extension",
     "license": "AGPL-3.0",
     "authors": [
         {
             "name": "Tim Otten",
-            "email": "totten@civicrm.org"
+            "email": "to-git@think.hm"
         }
     ],
     "require": {
