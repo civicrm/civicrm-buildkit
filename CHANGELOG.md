@@ -23,7 +23,6 @@ some overrides, customizations, forks, etc. This includes:
 
 | From | To | See also |
 | -- | -- | -- |
-| `extern/phpunit-xml-cleanup.php`   | `tools/phpunit-xml-cleanup/`  | #951 |
 | `src/pogo/bknix-ci-cleanup.php`    | `tools/bknix-ci-cleanup/`     | #948 |
 | `src/pogo/civicredits.php`         | `tools/civicredits/`          | #948 |
 | `src/pogo/fetch-universe.php`      | `tools/fetch-universe/`       | #948 |
@@ -31,6 +30,8 @@ some overrides, customizations, forks, etc. This includes:
 | `src/pogo/forkify.php`             | `tools/forkify/`              | #948 |
 | `src/pogo/import-rn.php`           | `tools/import-rn/`            | #948 |
 | `src/pogo/zipdiff.php`             | `tools/zipdiff/`              | #948 |
+| `extern/phpunit-xml-cleanup.php`   | `tools/phpunit-xml-cleanup/`  | #951 |
+| `phars.json`: `civici`             | `tools/civici/`               |      |
 
 ### v14.05.0 => v14.06.0
 
