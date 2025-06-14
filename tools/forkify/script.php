@@ -1,4 +1,3 @@
-#!/usr/bin/env pogo
 <?php
 
 ## The "forkify" command manages a series of related forks/branches across a handful of repos.

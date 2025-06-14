@@ -1,4 +1,3 @@
-#!/usr/bin/env pogo
 <?php
 
 #!ttl 10 years
@@ -176,7 +175,7 @@ function feed_labdir() {
  * @return array
  */
 function feed_static() {
-  $f = require dirname(pogo_script_dir()) . '/universe.php';
+  $f = require __DIR__ . '/static-feed.php';
   $list = $f();
   return feed_normalize($list);
 }

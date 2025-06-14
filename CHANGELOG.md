@@ -5,7 +5,7 @@ are generally "drop-in" updates that don't require any special action.
 However, if a change requires special action, it should be documented in
 this changelog.
 
-### v25.04.0 => v25.05.0
+### v25.04.0 => v25.06.0
 
 Breaking changes:
 
@@ -15,6 +15,11 @@ Breaking changes:
 * __Nix__: Drop ancient packages `php71`, `php72`, `mysql56`, `mariadb105` (#926)
 * __Nix__: Drop PHP's `imap` PECL (#934)
 * __Vagrant__: Drop all support (#937)
+
+Additionally, the scripts in `src/pogo/*` have moved to `tools/*`.  These
+scripts can still be accessed through the regular `bin/*`, so it's not a
+compatibility-break for ordinary usage.  However, it could affect some
+customizations, forks, etc.
 
 ### v14.05.0 => v14.06.0
 
