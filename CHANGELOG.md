@@ -31,7 +31,7 @@ some overrides, customizations, forks, etc. This includes:
 | `src/pogo/import-rn.php`           | `tools/import-rn/`            | #948 |
 | `src/pogo/zipdiff.php`             | `tools/zipdiff/`              | #948 |
 | `extern/phpunit-xml-cleanup.php`   | `tools/phpunit-xml-cleanup/`  | #951 |
-| `phars.json`: `civici`             | `tools/civici/`               |      |
+| `phars.json`: `civici`             | `tools/civici/`               | #953 |
 
 ### v14.05.0 => v14.06.0
 
