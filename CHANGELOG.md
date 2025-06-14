@@ -17,10 +17,20 @@ Breaking changes:
 * __Nix__: Drop PHP's `imap` PECL (#934)
 * __Vagrant__: Drop all support (#937)
 
-Additionally, the scripts in `src/pogo/*` have moved to `tools/*`.  These
-scripts can still be accessed through the regular `bin/*`, so it's not a
-compatibility-break for ordinary usage.  However, it could affect some
-customizations, forks, etc.
+Additionally, several scripts have moved to their own folders. This should
+not affect ordinary CLI usage for `buildkit/bin/`. However, it could affect
+some overrides, customizations, forks, etc. This includes:
+
+| From | To |
+| -- | -- |
+| `extern/phpunit-xml-cleanup.php`   | `tools/phpunit-xml-cleanup/`  |
+| `src/pogo/bknix-ci-cleanup.php`    | `tools/bknix-ci-cleanup/`     |
+| `src/pogo/civicredits.php`         | `tools/civicredits/`          |
+| `src/pogo/fetch-universe.php`      | `tools/fetch-universe/`       |
+| `src/pogo/find-stale-builds.php`   | `tools/find-stale-builds/`    |
+| `src/pogo/forkify.php`             | `tools/forkify/`              |
+| `src/pogo/import-rn.php`           | `tools/import-rn/`            |
+| `src/pogo/zipdiff.php`             | `tools/zipdiff/`              |
 
 ### v14.05.0 => v14.06.0
 
