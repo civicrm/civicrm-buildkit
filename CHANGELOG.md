@@ -21,16 +21,16 @@ Additionally, several scripts have moved to their own folders. This should
 not affect ordinary CLI usage for `buildkit/bin/`. However, it could affect
 some overrides, customizations, forks, etc. This includes:
 
-| From | To |
-| -- | -- |
-| `extern/phpunit-xml-cleanup.php`   | `tools/phpunit-xml-cleanup/`  |
-| `src/pogo/bknix-ci-cleanup.php`    | `tools/bknix-ci-cleanup/`     |
-| `src/pogo/civicredits.php`         | `tools/civicredits/`          |
-| `src/pogo/fetch-universe.php`      | `tools/fetch-universe/`       |
-| `src/pogo/find-stale-builds.php`   | `tools/find-stale-builds/`    |
-| `src/pogo/forkify.php`             | `tools/forkify/`              |
-| `src/pogo/import-rn.php`           | `tools/import-rn/`            |
-| `src/pogo/zipdiff.php`             | `tools/zipdiff/`              |
+| From | To | See also |
+| -- | -- | -- |
+| `extern/phpunit-xml-cleanup.php`   | `tools/phpunit-xml-cleanup/`  | #951 |
+| `src/pogo/bknix-ci-cleanup.php`    | `tools/bknix-ci-cleanup/`     | #948 |
+| `src/pogo/civicredits.php`         | `tools/civicredits/`          | #948 |
+| `src/pogo/fetch-universe.php`      | `tools/fetch-universe/`       | #948 |
+| `src/pogo/find-stale-builds.php`   | `tools/find-stale-builds/`    | #948 |
+| `src/pogo/forkify.php`             | `tools/forkify/`              | #948 |
+| `src/pogo/import-rn.php`           | `tools/import-rn/`            | #948 |
+| `src/pogo/zipdiff.php`             | `tools/zipdiff/`              | #948 |
 
 ### v14.05.0 => v14.06.0
 
