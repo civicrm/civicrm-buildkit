@@ -1,0 +1,21 @@
+{
+    "chmod": "0755",
+    "directories": [
+        "src"
+    ],
+    "finder": [
+        {
+            "name": "*.php",
+            "exclude": ["Tests", "tests", "phpunit"],
+            "in": "vendor"
+        },
+        {
+            "name": "guzzle_php81_shim.php",
+            "in": "."
+        }
+    ],
+    "git-version": "package_version",
+    "main": "bin/civici",
+    "output": "bin/civici.phar",
+    "stub": true
+}

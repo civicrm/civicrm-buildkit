@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<extension key="org.civicrm.mosaicomsgtpl" type="module">
+  <file>mosaicomsgtpl</file>
+  <name>Mosaico Message Templates (EXPERIMENTAL)</name>
+  <description>For each "Mosaico Template", automatically create "Message Templates" for use in scheduled reminders, personal emails, etc.</description>
+  <license>AGPL-3.0</license>
+  <maintainer>
+    <author>CiviCRM LLC</author>
+    <email>info@civicrm.org</email>
+  </maintainer>
+  <urls>
+    <url desc="Main Extension Page">https://github.com/civicrm/org.civicrm.mosaicomsgtpl</url>
+    <url desc="Documentation">https://github.com/civicrm/org.civicrm.mosaicomsgtpl</url>
+    <url desc="Support">http://civicrm.stackexchange.com/</url>
+    <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
+  </urls>
+  <releaseDate>2017-11-30</releaseDate>
+  <version>0.1-alpha1</version>
+  <develStage>alpha</develStage>
+  <compatibility>
+    <ver>4.7</ver>
+  </compatibility>
+  <requires>
+    <ext>uk.co.vedaconsulting.mosaico</ext>
+  </requires>
+  <comments></comments>
+  <civix>
+    <namespace>CRM/Mosaicomsgtpl</namespace>
+  </civix>
+</extension>

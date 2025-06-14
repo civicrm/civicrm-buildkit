@@ -1,0 +1,34 @@
+{
+    "name": "totten/civici",
+    "description": "CLI tool for running the test-suite of a Civi extension",
+    "license": "AGPL-3.0",
+    "authors": [
+        {
+            "name": "Tim Otten",
+            "email": "totten@civicrm.org"
+        }
+    ],
+    "require": {
+        "php": ">=7.4.0",
+        "symfony/console": "~5.4",
+        "symfony/process": "~5.4",
+        "symfony/filesystem": "~5.4",
+        "guzzlehttp/guzzle": "~6.3",
+        "lesser-evil/shell-verbosity-is-evil": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Civici\\": "src/"
+         },
+         "files": ["guzzle_php81_shim.php"]
+    },
+    "bin": [
+        "bin/civici"
+    ],
+    "config": {
+        "platform": {
+            "php": "7.4.0"
+        },
+        "bin-dir": "bin"
+    }
+}
