@@ -46,14 +46,13 @@
       },
       {
         "title": "Setup local PHP tools",
-        "run": "@php-script tools/install.php bknix-ci-cleanup civicredits fetch-universe find-stale-builds forkify import-rn zipdiff"
+        "run": "@php-script tools/install.php bknix-ci-cleanup civicredits fetch-universe find-stale-builds forkify import-rn phpunit-xml-cleanup zipdiff"
       }
     ],
     "compile-passthru": "always",
     "downloads": {
       "drush-backdrop": {"version": "1.x-1.x", "url": "https://github.com/backdrop-contrib/backdrop-drush-extension/archive/{$version}.zip", "path": "extern/drush-lib/backdrop"},
-      "drush-language": {"version": "7.x-1.5", "url": "https://ftp.drupal.org/files/projects/drush_language-{$version}.zip", "path": "extern/drush-lib/language"},
-      "phpunit-xml-cleanup": {"version": "0.2", "url": "https://raw.githubusercontent.com/civicrm/phpunit-xml-cleanup/v{$version}/bin/phpunit-xml-cleanup", "path": "extern/phpunit-xml-cleanup.php", "type": "file"}
+      "drush-language": {"version": "7.x-1.5", "url": "https://ftp.drupal.org/files/projects/drush_language-{$version}.zip", "path": "extern/drush-lib/language"}
     }
   }
 }
