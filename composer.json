@@ -1,7 +1,7 @@
 {
-  "name": "civicrm/civicrm-project",
-  "description": "A skeletal project which includes CiviCRM, Drupal, WordPress, development tools, etc",
-  "homepage": "https://github.com/civicrm/civicrm-project/",
+  "name": "civicrm/civicrm-buildkit",
+  "description": "A collection of development tools for working with CiviCRM, Drupal, WordPress, etc",
+  "homepage": "https://github.com/civicrm/civicrm-buildkit/",
   "license": "GPL-2.0+",
   "authors": [
     { "name": "Tim Otten", "email": "to-git@think.hm" }
