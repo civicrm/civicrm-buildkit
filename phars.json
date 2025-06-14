@@ -11,12 +11,6 @@
      "buildkit-path": "bin/box"
    },
 
-   "civici":  {
-     "url": "https://download.civicrm.org/civici/civici.phar-v0.3.0",
-     "sha256": "f225445b5cd52a07ace7f5497a75a05418e33f274fcb19a6313379944aa1e164",
-     "buildkit-path": "bin/civici"
-   },
-
    "civistrings":  {
      "url": "https://download.civicrm.org/civistrings/civistrings.phar-2022-08-30-c035da67",
      "sha256": "657068d8302cdbd60387e634a6bfc6052d3e38005f9f4ed7c064c8e7f8b9a15e",
