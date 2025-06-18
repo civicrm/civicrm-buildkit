@@ -153,12 +153,14 @@ function do_pick_image() {
       break ## OK
     fi
 
-    if [ -f "$img_lock" ]; then
+    if [[ -e "$img_lock" ]]; then
       #echo >&2 "consider lock $img_lock"
       local their_pid=$(cat "$img_lock")
-      if ps -p "$their_pid" > /dev/null; then
-        #echo >&2 "not $img ($img_lock)"
-        continue ## Nope, someone else still using it
+      if [[ -n "$their_pid" ]]; then
+        if ps -p "$their_pid" > /dev/null; then
+          #echo >&2 "not $img ($img_lock)"
+          continue ## Nope, someone else still using it
+        fi
       fi
     fi
 

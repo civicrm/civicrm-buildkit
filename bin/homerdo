@@ -343,9 +343,9 @@
         exit 2
       fi
     fi
-    if [ -f "$homer_lock" ]; then
+    if [[ -e "$homer_lock" ]]; then
       local lock_pid=$(cat "$homer_lock")
-      if [ -n "$lock_pid" ]; then
+      if [[ -n "$lock_pid" ]]; then
         if ps -p "$lock_pid" > /dev/null; then
           echo >&2 "Image $img already reserved. (Existing owner: $lock_pid. Rejected owner: $owner_pid.)"
           exit 2
@@ -575,8 +575,10 @@
     # print_h2 "Cleanup (${cleanup_pids[@]}) (${cleanup_files[@]})"
 
     for pid in "${cleanup_pids[@]}" ; do
-      if ps -p "$pid" > /dev/null; then
-        kill $pid
+      if [[ -n "$pid" ]]; then
+        if ps -p "$pid" > /dev/null; then
+          kill $pid
+        fi
       fi
     done
 
@@ -761,7 +763,7 @@
     fi
 
     local unshare_pid=$(cat "$homer_ns/unshare.pid")
-    if [ -z "$unshare_pid" ]; then
+    if [[ -z "$unshare_pid" ]]; then
       return
     fi
 
