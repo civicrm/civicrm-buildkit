@@ -9,14 +9,14 @@ this changelog.
 
 Breaking changes:
 
-* `civi-download-tools`: Drop support for `hub` (#941) and `joomlatools-console` (#940)
-* `civi-download-tools`: Drop support for the `--full` option (#936)
-* `composer.json`: Drop support for PHP 7.2. Drop unused `paratest`. (#944)
+* `civi-download-tools`: Drop support for `hub` ([#941](https://github.com/civicrm/civicrm-buildkit/pull/941)) and `joomlatools-console` ([#940](https://github.com/civicrm/civicrm-buildkit/pull/940))
+* `civi-download-tools`: Drop support for the `--full` option ([#936](https://github.com/civicrm/civicrm-buildkit/pull/936))
+* `composer.json`: Drop support for PHP 7.2. Drop unused `paratest`. ([#944](https://github.com/civicrm/civicrm-buildkit/pull/944))
 * `bin/securify`: Drop old script. (Deprecated circa 2019.)
-* __Nix__: Drop ancient packages `php71`, `php72`, `mysql56`, `mariadb105` (#926)
-* __Nix__: Drop PHP's `imap` PECL (#934)
-* __Nix__: Change default domain-suffix in civibuild (`*.nip.io` => `*.civi.bid`) (#954)
-* __Vagrant__: Drop all support (#937)
+* __Nix__: Drop ancient packages `php71`, `php72`, `mysql56`, `mariadb105` ([#926](https://github.com/civicrm/civicrm-buildkit/pull/926))
+* __Nix__: Drop PHP's `imap` PECL ([#934](https://github.com/civicrm/civicrm-buildkit/pull/934))
+* __Nix__: Change default domain-suffix in civibuild (`*.nip.io` => `*.civi.bid`) ([#954](https://github.com/civicrm/civicrm-buildkit/pull/954))
+* __Vagrant__: Drop all support ([#937](https://github.com/civicrm/civicrm-buildkit/pull/937))
 
 Additionally, several scripts have moved to their own folders. This should
 not affect ordinary CLI usage for `buildkit/bin/`. However, it could affect
@@ -24,16 +24,16 @@ some overrides, customizations, forks, etc. This includes:
 
 | From | To | See also |
 | -- | -- | -- |
-| `src/pogo/bknix-ci-cleanup.php`    | `tools/bknix-ci-cleanup/`     | #948 |
-| `src/pogo/civicredits.php`         | `tools/civicredits/`          | #948 |
-| `src/pogo/fetch-universe.php`      | `tools/fetch-universe/`       | #948 |
-| `src/pogo/find-stale-builds.php`   | `tools/find-stale-builds/`    | #948 |
-| `src/pogo/forkify.php`             | `tools/forkify/`              | #948 |
-| `src/pogo/import-rn.php`           | `tools/import-rn/`            | #948 |
-| `src/pogo/zipdiff.php`             | `tools/zipdiff/`              | #948 |
-| `src/releaser.php`                 | `tools/releaser/`             | #956 |
-| `extern/phpunit-xml-cleanup.php`   | `tools/phpunit-xml-cleanup/`  | #951 |
-| `phars.json`: `civici`             | `tools/civici/`               | #953 |
+| `src/pogo/bknix-ci-cleanup.php`    | `tools/bknix-ci-cleanup/`     | [#948](https://github.com/civicrm/civicrm-buildkit/pull/948) |
+| `src/pogo/civicredits.php`         | `tools/civicredits/`          | [#948](https://github.com/civicrm/civicrm-buildkit/pull/948) |
+| `src/pogo/fetch-universe.php`      | `tools/fetch-universe/`       | [#948](https://github.com/civicrm/civicrm-buildkit/pull/948) |
+| `src/pogo/find-stale-builds.php`   | `tools/find-stale-builds/`    | [#948](https://github.com/civicrm/civicrm-buildkit/pull/948) |
+| `src/pogo/forkify.php`             | `tools/forkify/`              | [#948](https://github.com/civicrm/civicrm-buildkit/pull/948) |
+| `src/pogo/import-rn.php`           | `tools/import-rn/`            | [#948](https://github.com/civicrm/civicrm-buildkit/pull/948) |
+| `src/pogo/zipdiff.php`             | `tools/zipdiff/`              | [#948](https://github.com/civicrm/civicrm-buildkit/pull/948) |
+| `src/releaser.php`                 | `tools/releaser/`             | [#956](https://github.com/civicrm/civicrm-buildkit/pull/956) |
+| `extern/phpunit-xml-cleanup.php`   | `tools/phpunit-xml-cleanup/`  | [#951](https://github.com/civicrm/civicrm-buildkit/pull/951) |
+| `phars.json`: `civici`             | `tools/civici/`               | [#953](https://github.com/civicrm/civicrm-buildkit/pull/953) |
 
 ### v14.05.0 => v14.06.0
 
