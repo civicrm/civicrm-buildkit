@@ -6,7 +6,7 @@
 ## It defines very high-level options for installing profiles for user "publisher".
 
 RAMDISKSIZE=250M
-HTTPD_DOMAIN=$(curl 'http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip' -H "Metadata-Flavor: Google").nip.io
+HTTPD_DOMAIN=$(curl 'http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip' -H "Metadata-Flavor: Google" | sed 's;\.;-;g').ip.civi.bid
 PROFILES="min"
 
 ## There is a startup script (via https://cloud.google.com/compute/docs/instances/startup-scripts/) which calls

@@ -2,4 +2,4 @@
 environment:
   ## Local-only deployments cannot be accessed on public Internet.
   ## But we still want a wildcard DNS for '{buildname}.{hostname}`.
-  - HTTPD_DOMAIN=${LOCALHOST}.nip.io
+  - HTTPD_DOMAIN=$(civi-domain "$LOCALHOST")
