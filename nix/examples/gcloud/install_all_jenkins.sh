@@ -8,7 +8,7 @@
 
 ## This ramdisk is smaller than usual because we use pre-emptible instances that don't retain data as long.
 RAMDISKSIZE=4G
-HTTPD_DOMAIN=$(curl 'http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip' -H "Metadata-Flavor: Google").nip.io
+HTTPD_DOMAIN=$(curl 'http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip' -H "Metadata-Flavor: Google" | sed 's;\.;-;g').ip.civi.bid
 PROFILES="dfl min max edge"
 
 ## There is a startup script (via https://cloud.google.com/compute/docs/instances/startup-scripts/) which calls
