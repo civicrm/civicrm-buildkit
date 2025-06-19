@@ -46,7 +46,7 @@
       },
       {
         "title": "Setup local PHP tools",
-        "run": "@php-script tools/install.php bknix-ci-cleanup civicredits civici fetch-universe find-stale-builds forkify import-rn phpunit-xml-cleanup zipdiff"
+        "run": "@php-script tools/install.php bknix-ci-cleanup civicredits civici fetch-universe find-stale-builds forkify import-rn phpunit-xml-cleanup releaser zipdiff"
       }
     ],
     "compile-passthru": "always",

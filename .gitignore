@@ -74,6 +74,7 @@ bin/phpunit10
 bin/phpunit-xml-cleanup
 bin/pogo
 bin/protractor
+bin/releaser
 bin/webdriver-manager
 bin/wp
 bin/wp.bat
