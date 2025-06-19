@@ -1,0 +1,17 @@
+{
+    "name": "pogo/releaserphp",
+    "autoload": {
+        "files": [
+            ".pogolib.php"
+        ]
+    },
+    "extra": {
+        "pogo": {
+            "expires": 1750969860,
+            "script": "/Users/totten/bknix/src/releaser.php"
+        }
+    },
+    "require": {
+        "clippy/std": "~0.4.6"
+    }
+}
