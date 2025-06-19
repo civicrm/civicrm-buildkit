@@ -242,26 +242,28 @@ function install_composer() {
 
 ##################################################
 ## Validation
-check_command php required
-check_command mysql required
-check_command mysqldump required
-check_command git required
-check_command tar required
-check_command bzip2 required
-check_command gzip required
-check_command unzip required
-check_command zip required
+if [[ -z "$IS_QUIET" ]]; then
+  check_command php required
+  check_command mysql required
+  check_command mysqldump required
+  check_command git required
+  check_command tar required
+  check_command bzip2 required
+  check_command gzip required
+  check_command unzip required
+  check_command zip required
 
-check_php_ext Phar required
-check_php_ext SimpleXML required
-check_php_ext SPL required
-check_php_ext curl required
-check_php_ext date required
-check_php_ext json required
-check_php_ext libxml required
-check_php_ext pcre required
-check_php_ext pdo_mysql required
-check_php_ext xml required
+  check_php_ext Phar required
+  check_php_ext SimpleXML required
+  check_php_ext SPL required
+  check_php_ext curl required
+  check_php_ext date required
+  check_php_ext json required
+  check_php_ext libxml required
+  check_php_ext pcre required
+  check_php_ext pdo_mysql required
+  check_php_ext xml required
+fi
 
 nodejs_debian_workaround
 
@@ -404,20 +406,22 @@ set +e
 ## Note: Non-fatal recommendations come at the end so that they appear as
 ## the last output (which is most likely to be read).
 
-check_php_ext bcmath recommended
-check_php_ext gd recommended
-check_php_ext gettext recommended
-check_php_ext hash recommended
-check_php_ext intl recommended
-check_php_ext mbstring recommended
+if [[ -z "$IS_QUIET" ]]; then
+  check_php_ext bcmath recommended
+  check_php_ext gd recommended
+  check_php_ext gettext recommended
+  check_php_ext hash recommended
+  check_php_ext intl recommended
+  check_php_ext mbstring recommended
 
-check_php_ext mysqli recommended   ## >= 4.7.12
-check_php_ext openssl recommended
-check_php_ext session recommended
-check_php_ext zip recommended
+  check_php_ext mysqli recommended   ## >= 4.7.12
+  check_php_ext openssl recommended
+  check_php_ext session recommended
+  check_php_ext zip recommended
 
-check_command node recommended "WARNING: Failed to locate command \"node\". NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
-check_command npm recommended "WARNING: Failed to locate command \"npm\". NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
+  check_command node recommended "WARNING: Failed to locate command \"node\". NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
+  check_command npm recommended "WARNING: Failed to locate command \"npm\". NodeJS (http://nodejs.org/) is required for development of CiviCRM v4.6+."
+fi
 
 ##################################################
 ## Cleanup
