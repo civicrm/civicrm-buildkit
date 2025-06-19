@@ -17,7 +17,7 @@ function absdirname() {
 
 BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
-[ -z "$CIVIBUILD_HOME" ] && TMPDIR="$PRJDIR/app/tmp" || TMPDIR="$CIVIBUILD_HOME/.civibuild/tmp"
+[[ -z "$CIVIBUILD_HOME" ]] && TMPDIR="$PRJDIR/app/tmp" || TMPDIR="$CIVIBUILD_HOME/.civibuild/tmp"
 LOCKFILE="$TMPDIR/civi-download-tools.lock"
 LOCKTIMEOUT=90
 COMPOSER_VERSION="2.8.4"
@@ -27,7 +27,7 @@ IS_FORCE=
 
 ##################################################
 ## Parse arguments
-while [ -n "$1" ] ; do
+while [[ -n "$1" ]] ; do
   OPTION="$1"
   shift
 
@@ -50,12 +50,12 @@ while [ -n "$1" ] ; do
 
     --dir)
       set -e
-        [ ! -d "$1" ] && mkdir "$1"
+        [[ ! -d "$1" ]] && mkdir "$1"
         pushd "$1" >> /dev/null
           PRJDIR=$(pwd)
         popd >> /dev/null
         BINDIR="$PRJDIR/bin"
-        [ -z "$CIVIBUILD_HOME" ] && TMPDIR="$PRJDIR/app/tmp" || TMPDIR="$CIVIBUILD_HOME/.civibuild/tmp"
+        [[ -z "$CIVIBUILD_HOME" ]] && TMPDIR="$PRJDIR/app/tmp" || TMPDIR="$CIVIBUILD_HOME/.civibuild/tmp"
         LOCKFILE="$TMPDIR/civi-download-tools.lock"
       set +e
       shift
@@ -85,7 +85,7 @@ function download_url() {
 ###############################################################################
 ## usage: echo_comment <message>
 function echo_comment() {
-  if [ -z "$IS_QUIET" ]; then
+  if [[ -z "$IS_QUIET" ]]; then
     echo "$@"
   fi
 }
@@ -98,13 +98,13 @@ function make_link() {
   local from="$2"
   local to="$3"
   pushd "$workdir" >> /dev/null
-    if [ -L "$to" ]; then
+    if [[ -L "$to" ]]; then
       local oldLink=$(readlink "$to")
       if [ -n "$oldLink" -a "$oldLink" != "$from" ]; then
         rm -f "$to"
       fi
     fi
-    if [ ! -e "$to" ]; then
+    if [[ ! -e "$to" ]]; then
       echo_comment "[[Create symlink $to in $workdir]]"
       ln -s "$from" "$to"
     fi
@@ -120,13 +120,13 @@ function make_link() {
 ## usage: check_path_ownership <dir>
 function check_datafile_ownership() {
   local tgtdir="$1"
-  if [ ! -e "$tgtdir" ]; then
+  if [[ ! -e "$tgtdir" ]]; then
     return
   fi
 
   local tgtuser=$(whoami)
   local files=$( find "$tgtdir" ! -user $tgtuser 2>&1 )
-  if [ -n "$files" ]; then
+  if [[ -n "$files" ]]; then
     echo "WARNING: The following data-files are not owned by your user, which may lead to permission issues. You may need to delete or chown them." >&2
     echo "$ find "$tgtdir" ! -user $tgtuser"
     echo "$files"
@@ -142,10 +142,10 @@ function check_command() {
   local cmd="$1"
   local requirement="$2"
   local msg="$3"
-  [ -z "$msg" ] && msg="Failed to locate command \"$cmd\". Please install it (and set the PATH appropriately)."
+  [[ -z "$msg" ]] && msg="Failed to locate command \"$cmd\". Please install it (and set the PATH appropriately)."
 
   cmdpath=$(which $cmd)
-  if [ -z "$cmdpath" ]; then
+  if [[ -z "$cmdpath" ]]; then
     echo "$msg"
     show_command "$cmd" "It is possible that you have already installed \"$cmd\" in a non-standard location. If so, please update the PATH appropriately. Possible matches were found in:"
     if [ "$requirement" = "required" ]; then
@@ -168,8 +168,8 @@ function show_command() {
       /{usr,opt}{,/local}/*/bin \
       /{usr,opt}{,/local}/lib/*/bin
     do
-      if [ -f "$altdir/$cmd" ]; then
-        if [ -n "$is_first" ]; then
+      if [[ -f "$altdir/$cmd" ]]; then
+        if [[ -n "$is_first" ]]; then
           echo $msg
           is_first=
         fi
@@ -229,7 +229,7 @@ function install_composer() {
   if [ -z "$IS_FORCE" -a -e "$PRJDIR/bin/composer" -a "$(cat $PRJDIR/extern/composer.txt)" == "$COMPOSER_VERSION" ]; then
     echo_comment "[[composer ($PRJDIR/bin/composer) already exists. Skipping.]]"
   else
-    if [ -z "$COMPOSER_URL" ]; then
+    if [[ -z "$COMPOSER_URL" ]]; then
       echo "[[Skip composer. Could not determine binary.]]"
     else
       echo "[[Download composer]]"
@@ -267,7 +267,7 @@ fi
 
 nodejs_debian_workaround
 
-if [ ! -d "$TMPDIR" ]; then
+if [[ ! -d "$TMPDIR" ]]; then
   mkdir -p "$TMPDIR"
 fi
 
@@ -293,52 +293,52 @@ pushd $PRJDIR >> /dev/null
 
   ## Check that data folders/files are writeable. Since this is expensive, only do it on new systems.
   if [ -z "$IS_QUIET" -o ! -d vendor -o ! -d node_modules ]; then
-    [ -n "$COMPOSER_CACHE_DIR" ] && check_datafile_ownership "$COMPOSER_CACHE_DIR"
-    [ -z "$COMPOSER_CACHE_DIR" ] && check_datafile_ownership "$HOME/.composer"
+    [[ -n "$COMPOSER_CACHE_DIR" ]] && check_datafile_ownership "$COMPOSER_CACHE_DIR"
+    [[ -z "$COMPOSER_CACHE_DIR" ]] && check_datafile_ownership "$HOME/.composer"
     check_datafile_ownership "$HOME/.cache"
     check_datafile_ownership "$HOME/.npm"
-    [ -n "$AMPHOME" ] && check_datafile_ownership "$AMPHOME"
-    [ -z "$AMPHOME" ] && check_datafile_ownership "$HOME/.amp/apache.d"
+    [[ -n "$AMPHOME" ]] && check_datafile_ownership "$AMPHOME"
+    [[ -z "$AMPHOME" ]] && check_datafile_ownership "$HOME/.amp/apache.d"
   fi
 
-  [ ! -d "$PRJDIR/extern" ] && mkdir "$PRJDIR/extern"
+  [[ ! -d "$PRJDIR/extern" ]] && mkdir "$PRJDIR/extern"
 
   ## Cleanup previous PHAR downloads before composer-downloads-plugin takes a crack at it.
-  [ -f "$PRJDIR/extern/_phpunit4.txt" ] && rm -f "$PRJDIR/extern/phpunit4/phpunit4.phar" "$PRJDIR/extern/_phpunit4.txt"
-  [ -f "$PRJDIR/extern/_phpunit5.txt" ] && rm -f "$PRJDIR/extern/phpunit5/phpunit5.phar" "$PRJDIR/extern/_phpunit5.txt"
-  [ -f "$PRJDIR/extern/_phpunit6.txt" ] && rm -f "$PRJDIR/extern/phpunit6/phpunit6.phar" "$PRJDIR/extern/_phpunit6.txt"
-  [ -f "$PRJDIR/extern/amp.txt" ] && rm -f "$PRJDIR/bin/amp" "$PRJDIR/extern/amp.txt"
-  [ -f "$PRJDIR/extern/box.txt" ] && rm -f "$PRJDIR/bin/box" "$PRJDIR/extern/box.txt"
-  [ -f "$PRJDIR/extern/civistrings.txt" ] && rm -f "$PRJDIR/bin/civistrings" "$PRJDIR/extern/civistrings.txt"
-  [ -f "$PRJDIR/extern/civix.txt" ] && rm -f "$PRJDIR/bin/civix" "$PRJDIR/extern/civix.txt"
-  [ -f "$PRJDIR/extern/cv.txt" ] && rm -f "$PRJDIR/bin/cv" "$PRJDIR/extern/cv.txt"
-  [ -f "$PRJDIR/extern/drush8.txt" ] && rm -f "$PRJDIR/extern/drush8.phar" "$PRJDIR/extern/drush8.txt"
-  [ -f "$PRJDIR/extern/git-scan.txt" ] && rm -f "$PRJDIR/bin/git-scan" "$PRJDIR/extern/git-scan.txt"
-  [ -f "$PRJDIR/extern/wp-cli.txt" ] && rm -f "$PRJDIR/bin/wp" "$PRJDIR/extern/wp-cli.txt"
-  [ -f "$PRJDIR/extern/civici.txt" ] && rm -f  "$PRJDIR/bin/civici" "$PRJDIR/extern/civici.txt"
-  [ -f "$PRJDIR/extern/joomla.txt" ] && rm -f "$PRJDIR/bin/joomla" "$PRJDIR/extern/joomla.txt"
-  [ -f "$PRJDIR/extern/joomlatools-console.txt" ] && rm -f "$PRJDIR/bin/joomla" "$PRJDIR/extern/joomlatools-console.txt"
-  [ -d "$PRJDIR/extern/joomlatools-console" ] && rm -rf "$PRJDIR/extern/joomlatools-console"
-  [ -f "$PRJDIR/extern/codecept-php5.txt" ] && rm -f "$PRJDIR/bin/_codecept-php5.phar" "$PRJDIR/extern/codecept-php5.txt"
-  [ -f "$PRJDIR/extern/codecept-php7.txt" ] && rm -f "$PRJDIR/bin/_codecept-php7.phar" "$PRJDIR/extern/codecept-php7.txt"
-  [ -f "$PRJDIR/extern/drush-lib-backdrop.txt" ] && rm -rf "$PRJDIR/extern/drush-lib/backdrop" "$PRJDIR/extern/drush-lib-backdrop.txt"
-  [ -f "$PRJDIR/bin/_codecept-php5.phar" ] && rm -f "$PRJDIR/bin/_codecept-php5.phar"
-  [ -f "$PRJDIR/bin/_codecept-php7.phar" ] && rm -f "$PRJDIR/bin/_codecept-php7.phar"
+  [[ -f "$PRJDIR/extern/_phpunit4.txt" ]] && rm -f "$PRJDIR/extern/phpunit4/phpunit4.phar" "$PRJDIR/extern/_phpunit4.txt"
+  [[ -f "$PRJDIR/extern/_phpunit5.txt" ]] && rm -f "$PRJDIR/extern/phpunit5/phpunit5.phar" "$PRJDIR/extern/_phpunit5.txt"
+  [[ -f "$PRJDIR/extern/_phpunit6.txt" ]] && rm -f "$PRJDIR/extern/phpunit6/phpunit6.phar" "$PRJDIR/extern/_phpunit6.txt"
+  [[ -f "$PRJDIR/extern/amp.txt" ]] && rm -f "$PRJDIR/bin/amp" "$PRJDIR/extern/amp.txt"
+  [[ -f "$PRJDIR/extern/box.txt" ]] && rm -f "$PRJDIR/bin/box" "$PRJDIR/extern/box.txt"
+  [[ -f "$PRJDIR/extern/civistrings.txt" ]] && rm -f "$PRJDIR/bin/civistrings" "$PRJDIR/extern/civistrings.txt"
+  [[ -f "$PRJDIR/extern/civix.txt" ]] && rm -f "$PRJDIR/bin/civix" "$PRJDIR/extern/civix.txt"
+  [[ -f "$PRJDIR/extern/cv.txt" ]] && rm -f "$PRJDIR/bin/cv" "$PRJDIR/extern/cv.txt"
+  [[ -f "$PRJDIR/extern/drush8.txt" ]] && rm -f "$PRJDIR/extern/drush8.phar" "$PRJDIR/extern/drush8.txt"
+  [[ -f "$PRJDIR/extern/git-scan.txt" ]] && rm -f "$PRJDIR/bin/git-scan" "$PRJDIR/extern/git-scan.txt"
+  [[ -f "$PRJDIR/extern/wp-cli.txt" ]] && rm -f "$PRJDIR/bin/wp" "$PRJDIR/extern/wp-cli.txt"
+  [[ -f "$PRJDIR/extern/civici.txt" ]] && rm -f  "$PRJDIR/bin/civici" "$PRJDIR/extern/civici.txt"
+  [[ -f "$PRJDIR/extern/joomla.txt" ]] && rm -f "$PRJDIR/bin/joomla" "$PRJDIR/extern/joomla.txt"
+  [[ -f "$PRJDIR/extern/joomlatools-console.txt" ]] && rm -f "$PRJDIR/bin/joomla" "$PRJDIR/extern/joomlatools-console.txt"
+  [[ -d "$PRJDIR/extern/joomlatools-console" ]] && rm -rf "$PRJDIR/extern/joomlatools-console"
+  [[ -f "$PRJDIR/extern/codecept-php5.txt" ]] && rm -f "$PRJDIR/bin/_codecept-php5.phar" "$PRJDIR/extern/codecept-php5.txt"
+  [[ -f "$PRJDIR/extern/codecept-php7.txt" ]] && rm -f "$PRJDIR/bin/_codecept-php7.phar" "$PRJDIR/extern/codecept-php7.txt"
+  [[ -f "$PRJDIR/extern/drush-lib-backdrop.txt" ]] && rm -rf "$PRJDIR/extern/drush-lib/backdrop" "$PRJDIR/extern/drush-lib-backdrop.txt"
+  [[ -f "$PRJDIR/bin/_codecept-php5.phar" ]] && rm -f "$PRJDIR/bin/_codecept-php5.phar"
+  [[ -f "$PRJDIR/bin/_codecept-php7.phar" ]] && rm -f "$PRJDIR/bin/_codecept-php7.phar"
   [ -f "$PRJDIR/bin/civi-test-job" -a ! -e "$PRJDIR/src/pogo/civi-test-job.php" ] && rm -f "$PRJDIR/bin/civi-test-job"
   [ -f "$PRJDIR/bin/civi-test-pr" -a ! -e "$PRJDIR/src/pogo/civi-test-pr.php" ] && rm -f "$PRJDIR/bin/civi-test-pr"
-  [ -L "$PRJDIR/bin/phpunit4" ] && rm -f "$PRJDIR/bin/phpunit4"
-  [ -L "$PRJDIR/bin/phpunit5" ] && rm -f "$PRJDIR/bin/phpunit5"
-  [ -L "$PRJDIR/bin/phpunit6" ] && rm -f "$PRJDIR/bin/phpunit6"
-  [ -f "$PRJDIR/extern/phpunit4/phpunit4.phar" ] && rm -f "$PRJDIR/extern/phpunit4/phpunit4.phar"
-  [ -f "$PRJDIR/extern/phpunit5/phpunit5.phar" ] && rm -f "$PRJDIR/extern/phpunit5/phpunit5.phar"
-  [ -f "$PRJDIR/extern/phpunit6/phpunit6.phar" ] && rm -f "$PRJDIR/extern/phpunit6/phpunit6.phar"
-  [ -f "$PRJDIR/extern/phpunit-xml-cleanup.php" ] && rm -f "$PRJDIR/extern/phpunit-xml-cleanup.php"
-  [ -f "$PRJDIR/extern/hub.txt" ] && rm -f "$PRJDIR/bin/hub" "$PRJDIR/extern/hub.txt"
-  [ -d "$PRJDIR/extern/hub" ] && rm -rf "$PRJDIR/extern/hub"
+  [[ -L "$PRJDIR/bin/phpunit4" ]] && rm -f "$PRJDIR/bin/phpunit4"
+  [[ -L "$PRJDIR/bin/phpunit5" ]] && rm -f "$PRJDIR/bin/phpunit5"
+  [[ -L "$PRJDIR/bin/phpunit6" ]] && rm -f "$PRJDIR/bin/phpunit6"
+  [[ -f "$PRJDIR/extern/phpunit4/phpunit4.phar" ]] && rm -f "$PRJDIR/extern/phpunit4/phpunit4.phar"
+  [[ -f "$PRJDIR/extern/phpunit5/phpunit5.phar" ]] && rm -f "$PRJDIR/extern/phpunit5/phpunit5.phar"
+  [[ -f "$PRJDIR/extern/phpunit6/phpunit6.phar" ]] && rm -f "$PRJDIR/extern/phpunit6/phpunit6.phar"
+  [[ -f "$PRJDIR/extern/phpunit-xml-cleanup.php" ]] && rm -f "$PRJDIR/extern/phpunit-xml-cleanup.php"
+  [[ -f "$PRJDIR/extern/hub.txt" ]] && rm -f "$PRJDIR/bin/hub" "$PRJDIR/extern/hub.txt"
+  [[ -d "$PRJDIR/extern/hub" ]] && rm -rf "$PRJDIR/extern/hub"
 
   ## Cleanup misnamed files from past
-  [ -f "$PRJDIR/extern/phpunit4/phpunit6.phar" ] && rm -f "$PRJDIR/extern/phpunit4/phpunit6.phar" "$PRJDIR/extern/phpunit4/phpunit6.phar"
-  [ -f "$PRJDIR/extern/phpunit5/phpunit6.phar" ] && rm -f "$PRJDIR/extern/phpunit5/phpunit6.phar" "$PRJDIR/extern/phpunit5/phpunit6.phar"
+  [[ -f "$PRJDIR/extern/phpunit4/phpunit6.phar" ]] && rm -f "$PRJDIR/extern/phpunit4/phpunit6.phar" "$PRJDIR/extern/phpunit4/phpunit6.phar"
+  [[ -f "$PRJDIR/extern/phpunit5/phpunit6.phar" ]] && rm -f "$PRJDIR/extern/phpunit5/phpunit6.phar" "$PRJDIR/extern/phpunit5/phpunit6.phar"
 
   ## Download "composer"
   install_composer
@@ -374,7 +374,7 @@ pushd $PRJDIR >> /dev/null
   fi
 
   ## Cleanup old civix tarballs
-  [ -d "$PRJDIR/extern/civix" ] && rm -rf "$PRJDIR/extern/civix"
+  [[ -d "$PRJDIR/extern/civix" ]] && rm -rf "$PRJDIR/extern/civix"
 
   ## Cleanup old phpunit files
   for OLDFILE in "$PRJDIR/bin/phpunit4" "$PRJDIR/bin/phpunit5" "$PRJDIR/extern/phpunit4.txt" "$PRJDIR/extern/phpunit5.txt"; do
