@@ -15,7 +15,7 @@ Breaking changes:
 * `bin/securify`: Drop old script. (Deprecated circa 2019.)
 * __Nix__: Drop ancient packages `php71`, `php72`, `mysql56`, `mariadb105` (#926)
 * __Nix__: Drop PHP's `imap` PECL (#934)
-* __Nix__: Change default domain-suffix from `X.X.X.X.nip.io` to `local.civi.bid` (or `X-X-X-X.ip.civi.bid`)
+* __Nix__: Change default domain-suffix in civibuild (`*.nip.io` => `*.civi.bid`) (#954)
 * __Vagrant__: Drop all support (#937)
 
 Additionally, several scripts have moved to their own folders. This should
