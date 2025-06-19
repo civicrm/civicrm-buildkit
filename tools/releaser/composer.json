@@ -1,17 +1,12 @@
 {
-    "name": "pogo/releaserphp",
-    "autoload": {
-        "files": [
-            ".pogolib.php"
-        ]
-    },
-    "extra": {
-        "pogo": {
-            "expires": 1750969860,
-            "script": "/Users/totten/bknix/src/releaser.php"
-        }
+    "name": "civicrm/releaser",
+    "config": {
+        "platform": {
+            "php": "7.4"
+         }
     },
     "require": {
-        "clippy/std": "~0.4.6"
+        "php": ">=7.4",
+        "clippy/std": "~0.5.1"
     }
 }
