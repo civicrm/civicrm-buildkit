@@ -5,21 +5,14 @@
  * Render any CSS rules
  */ ?>
 
-.about {
-  font-style: italic;
+body {
+    padding: 1em;
 }
 
-table, tr, td, th {
-  border: 0;
+table.site-list {
+    width: 100%;
 }
 
-th {
-  font-weight: bold;
-  text-decoration: underline;
-}
-
-td, th {
-  text-align: left;
-  vertical-align: text-top;
-  padding: 1em;
+td input {
+    width: 66%;
 }

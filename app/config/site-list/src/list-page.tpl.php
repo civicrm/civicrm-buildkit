@@ -10,7 +10,10 @@
  *   List of site definitions (from the *.sh files)
  * @param string $filter
  *   The current filter value.
- */ ?>
+ */
+
+$columns = sitelist_columns();
+?>
 <html>
 
 <head>
@@ -25,37 +28,58 @@
 
 <body>
 
-<h1><?php echo htmlentities($config['title']); ?></h1>
+<nav class="navbar navbar-default" role="navigation">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">
+        <?php echo htmlentities($config['title']); ?>
+      </a>
+    </div>
 
-<?php if (!empty($config['about'])): ?>
-  <p class="about"><?php echo $config['about'];?></p>
-<?php endif; ?>
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <?php if (!empty($config['about'])): ?>
+        <p class="navbar-text">
+          <?php echo $config['about'];?>
+        </p>
+      <?php endif; ?>
+    </div>
+  </div>
+</nav>
 
 <?php echo sitelist_render('search-form.tpl.php', [
   'config' => $config,
   'filter' => $filter,
 ]); ?>
 
-<?php if (empty($sites)): ?>
-  <p>No sites found.</p>
-<?php endif; ?>
-
-<ul class="site-list">
-  <?php foreach ($sites as $name => $site): ?>
-    <li>
-      <h2 class="site-list-title">
-        <a href="<?php echo htmlentities($site['CMS_URL']); ?>">
-          <?php echo htmlentities($name); ?>
-        </a>
-      </h2>
-      <div class="site-list-details">
-        <?php echo sitelist_render('site-details.tpl.php', [
-          'config' => $config,
-          'site' => $site
-        ]); ?>
-      </div>
-    </li>
-  <?php endforeach; ?>
-</ul>
+<table class="table table-striped table-bordered site-list">
+  <thead>
+  <tr>
+    <?php
+    foreach ($config['display'] as $displayOption) {
+      if (isset($columns[$displayOption])) {
+        $cb = $columns[$displayOption]['render'];
+        printf('<th>%s</th>', $columns[$displayOption]['title']);
+      }
+    }
+    ?>
+  </tr>
+  </thead>
+  <tbody>
+  <?php
+  foreach ($sites as $name => $site) {
+    echo '<tr>';
+    foreach ($config['display'] as $displayOption) {
+      if (isset($columns[$displayOption])) {
+        $cb = $columns[$displayOption]['render'];
+        echo '<td>';
+        $cb($site, $config);
+        echo '</td>';
+      }
+    }
+    echo '</tr>';
+  };
+  ?>
+  </tbody>
+</table>
 </body>
 </html>

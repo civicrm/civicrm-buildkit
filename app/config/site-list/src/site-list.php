@@ -178,11 +178,17 @@ function sitelist_render($_tpl_file, $_tpl_data = array()) {
 function sitelist_config($values = array()) {
   $defaults = array(
     'title' => sprintf('Site list (%s)', gethostname()),
-    'display' => ['ADMIN_USER', 'DEMO_USER', 'SITE_TYPE', 'BUILD_TIME'],
+    'display' => ['SITE_NAME', 'ADMIN_USER', 'DEMO_USER'],
     'moreSites' => [],
   );
   global $sitelist;
-  return array_merge($defaults, (array) $sitelist);
+  $config = array_merge($defaults, (array) $sitelist);
+  if (!in_array('SITE_NAME', $values['display'])) {
+    // Backward compat: in original spec, SITE_NAME wasn't an option...
+    // but it was displayed without being flagged.
+    $config['display'] = array_merge(['SITE_NAME'], $values['display']);
+  }
+  return $config;
 }
 
 /**
@@ -232,11 +238,14 @@ function sitelist_read_all($bldDir) {
     }
 
     $site = sitelist_read_sh($file);
+    $site['SITE_NAME'] = $site['SITE_NAME'] ?? $name;
+
     $domain = parse_url($site['CMS_URL'], PHP_URL_HOST);
     if ($port = parse_url($site['CMS_URL'], PHP_URL_PORT)) {
       $domain .= ':' . $port;
     }
     $sites[$domain] = $site;
+    // $sites[$name] = $site;
   }
   return $sites;
 }
@@ -318,4 +327,101 @@ function sitelist_print_script(string $url): void {
 
 function sitelist_print_style(string $url): void {
   printf("<link rel=\"stylesheet\" href=\"%s\">\n", htmlentities($url, ENT_QUOTES, 'UTF-8'));
+}
+
+function sitelist_print_value(string $value): void {
+  printf("<input type='text' disabled value='%s'>", htmlentities($value));
+}
+
+function sitelist_print_subfields(array $keyValues): void {
+  foreach ($keyValues as $key => $value) {
+    printf("<strong>%s</strong>: ", $key);
+    sitelist_print_value($value);
+    printf("<br />");
+  }
+}
+
+function sitelist_columns(): array {
+  return [
+    'SITE_NAME' => [
+      'title' => 'Site',
+      'render' => function($site, $config) {
+        printf("<h2><a href='%s'>%s</a></h2>\n",
+          htmlentities($site['CMS_URL'], ENT_QUOTES, 'UTF-8'),
+          htmlentities($site['SITE_NAME'])
+        );
+        if (in_array('SITE_TYPE', $config['display'])) {
+          printf("<small>(<code>%s</code>)</small>",
+            htmlentities($site['SITE_TYPE'])
+          );
+        }
+      },
+    ],
+    'ALL' => [
+      'title' => 'All Site Metadata',
+      'render' => function($site) {
+        printf("<pre>%s</pre>", var_export($site, 1));
+      },
+    ],
+    'ADMIN_USER' => [
+      'title' => 'Admin User',
+      'render' => function($site) {
+        sitelist_print_subfields([
+          'User' => $site['ADMIN_USER'],
+          'Pass' => $site['ADMIN_PASS'],
+        ]);
+      },
+    ],
+    'DEMO_USER' => [
+      'title' => 'Demo User',
+      'render' => function($site) {
+        sitelist_print_subfields([
+          'User' => $site['DEMO_USER'],
+          'Pass' => $site['DEMO_PASS'],
+        ]);
+      },
+    ],
+    'CMS_DB' => [
+      'title' => 'CMS DB',
+      'render' => function($site) {
+        sitelist_print_value($site['CMS_DB_DSN']);
+      },
+    ],
+    'CIVI_DB' => [
+      'title' => 'Civi DB',
+      'render' => function($site) {
+        sitelist_print_value($site['CIVI_DB_DSN']);
+      },
+    ],
+    'TEST_DB' => [
+      'title' => 'Test DB',
+      'render' => function($site) {
+        sitelist_print_value($site['TEST_DB_DSN']);
+      },
+    ],
+    'SITE_TYPE' => [
+      'title' => 'Site Build Type',
+      'render' => function($site) {
+        sitelist_print_value($site['SITE_TYPE']);
+      },
+    ],
+    'WEB_ROOT' => [
+      'title' => 'Web Root Path',
+      'render' => function($site) {
+        sitelist_print_value($site['WEB_ROOT']);
+      },
+    ],
+    'CIVI_CORE' => [
+      'title' => 'Civi Core Path',
+      'render' => function($site) {
+        sitelist_print_value($site['CIVI_CORE']);
+      },
+    ],
+    'BUILD_TIME' => [
+      'title' => 'Build Time',
+      'render' => function($site) {
+        echo date('Y-m-d H:i T', $site['BUILD_TIME']);
+      },
+    ],
+  ];
 }
