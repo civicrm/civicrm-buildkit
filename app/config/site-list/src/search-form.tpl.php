@@ -10,9 +10,10 @@
  *   The current filter value.
  */ ?>
 
-<form method="get">
-  <label>Filter
-    <input type="text" name="filter" value="<?php echo htmlentities($filter); ?>"/>
-  </label>
-  <input type="submit" value="Apply"/>
+<form class="form-inline" method="get">
+  <div class="form-group">
+    <label class="sr-only" for="filter-inline">Filter</label>
+    <input type="text" class="form-control" id="filter-inline" name="filter" value="<?php echo htmlentities($filter); ?>" placeholder="Filter">
+  </div>
+  <button type="submit" class="btn btn-default">Apply</button>
 </form>
