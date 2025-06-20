@@ -399,12 +399,13 @@ function sitelist_columns(): array {
         sitelist_print_value($site['TEST_DB_DSN']);
       },
     ],
-    'SITE_TYPE' => [
-      'title' => 'Site Build Type',
-      'render' => function($site) {
-        sitelist_print_value($site['SITE_TYPE']);
-      },
-    ],
+    // This is already embedded in the main `SITE_NAME` block...
+    // 'SITE_TYPE' => [
+    //   'title' => 'Site Build Type',
+    //   'render' => function($site) {
+    //     sitelist_print_value($site['SITE_TYPE']);
+    //   },
+    // ],
     'WEB_ROOT' => [
       'title' => 'Web Root Path',
       'render' => function($site) {
