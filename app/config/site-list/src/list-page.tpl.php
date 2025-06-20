@@ -15,6 +15,9 @@
 
 <head>
   <title><?php echo htmlentities($config['title']); ?></title>
+  <?php sitelist_print_style('lib/bootstrap/dist/css/bootstrap.min.css'); ?>
+  <?php sitelist_print_script('lib/jquery.min.js'); ?>
+  <?php sitelist_print_script('lib/bootstrap/dist/js/bootstrap.min.js'); ?>
   <style type="text/css">
     <?php echo sitelist_render('style.css.php'); ?>
   </style>

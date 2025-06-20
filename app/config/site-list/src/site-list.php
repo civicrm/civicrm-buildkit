@@ -311,3 +311,11 @@ function sitelist_send_http_post($url, $postParams) {
   curl_close($ch);
   return $json;
 }
+
+function sitelist_print_script(string $url): void {
+  printf("<script src=\"%s\"></script>\n", htmlentities($url, ENT_QUOTES, 'UTF-8'));
+}
+
+function sitelist_print_style(string $url): void {
+  printf("<link rel=\"stylesheet\" href=\"%s\">\n", htmlentities($url, ENT_QUOTES, 'UTF-8'));
+}
