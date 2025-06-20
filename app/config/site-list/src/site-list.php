@@ -346,7 +346,7 @@ function sitelist_columns(): array {
     'SITE_NAME' => [
       'title' => 'Site',
       'render' => function($site, $config) {
-        printf("<h2><a href='%s'>%s</a></h2>\n",
+        printf("<div><a href='%s'>%s</a></div>\n",
           htmlentities($site['CMS_URL'], ENT_QUOTES, 'UTF-8'),
           htmlentities($site['SITE_NAME'])
         );
