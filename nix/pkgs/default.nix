@@ -36,7 +36,8 @@ in pharDirectives // rec {
    mysql57 = dists.default.mysql57;
    mysql80 = dists.default.mysql80;
    mysql84 = dists.v2505.mysql84;
-   mysql90 = dists.v2405.mysql90;
+   mysql90 = dists.v2405.mysql90; ## Deprecated
+   mysql93 = dists.v2505.mysql93;
    mariadb106 = dists.v2205.mariadb;
    # mariadb1011 = dists.v2405.mariadb; ## FIXME: provisioning script
 
