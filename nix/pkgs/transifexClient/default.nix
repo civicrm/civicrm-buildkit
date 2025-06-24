@@ -11,7 +11,7 @@ buildGoModule rec {
     sha256 = "76mGMf70MD3aLgMCNqVyjrx8Rx5aIT+vYQGsPYjEM28=";
   };
 
-  vendorSha256 = "rcimaHr3fFeHSjZXw1w23cKISCT+9t8SgtPnY/uYGAU=";
+  vendorHash = "sha256-rcimaHr3fFeHSjZXw1w23cKISCT+9t8SgtPnY/uYGAU=";
   postBuild = ''
     mv $GOPATH/bin/cli $GOPATH/bin/tx
   '';
