@@ -33,7 +33,7 @@ let
 
 in pharDirectives // rec {
 
-   mysql57 = dists.default.mysql57;
+   mysql57 = dists.v2205.mysql57;
    mysql80 = dists.default.mysql80;
    mysql84 = dists.v2505.mysql84;
    mysql90 = dists.v2405.mysql90; ## Deprecated
