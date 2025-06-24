@@ -548,9 +548,11 @@
     assert_root_user
     assert_ownership
 
-    local pid=$(cat "$homer_ns/unshare.pid")
-    if [ -n "$pid" ]; then
-      kill "$pid"
+    if [[ -e "$homer_ns/unshare.pid" ]]; then
+      local pid=$(cat "$homer_ns/unshare.pid")
+      if [[ -n "$pid" && -e "/proc/$pid/cmdline" ]]; then
+        kill "$pid"
+      fi
     fi
     _task_unmount
   }
