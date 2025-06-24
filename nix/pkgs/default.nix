@@ -41,13 +41,6 @@ in pharDirectives // rec {
    mariadb106 = dists.v2205.mariadb;
    mariadb1011 = dists.v2505.mariadb;
 
-   # mysql57 = makeMysqlWrapper { mysql=dists.default.mysql57; };
-   # mysql80 = makeMysqlWrapper { mysql=dists.default.mysql80; };
-   # mysql84 = makeMysqlWrapper { mysql=dists.v2405.mysql84; };
-   # mysql90 = makeMysqlWrapper { mysql=dists.v2405.mysql90; };
-   # mariadb105 = if isAppleM1 then null else makeMysqlWrapper { mysql=dists.v2105.mariadb; };
-   # mariadb106 = makeMysqlWrapper { mysql=dists.default.mariadb; };
-
    php73 = ifSupported "php73" (!isAppleM1) (import ./php73/default.nix);
    bknixPhpstormAdvisor = import ./bknixPhpstormAdvisor/default.nix;
    bknixProfile = import ./bknixProfile/default.nix;
