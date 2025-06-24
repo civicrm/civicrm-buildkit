@@ -14,5 +14,5 @@ rec {
   # v2405 = import ((builtins.getEnv "HOME") + "/src/nixpkgs/default.nix") {};
 
   bkit = import ../pkgs;
-  default = v2205;
+  default = v2505;
 }
