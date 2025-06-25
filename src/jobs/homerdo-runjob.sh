@@ -122,6 +122,12 @@ function do_request() {
 ## NOTE: For concurrent invocations, run this with `flock`.
 
 function do_pick_image() {
+  ## (infra/ops#1050) If any jobs have been killed, then there maybe leftover mount-points which interfere with new jobs.
+  echo >&2 "[$USER] Auto-release any home-images"
+  for img_file in bknix-*.img ; do
+    homerdo -i "$img_file" auto-release
+  done
+
   echo >&2 "[$USER] Finding home-image in $PWD..."
   local OWNER_PID="$1"
 
