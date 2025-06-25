@@ -35,17 +35,11 @@ in pharDirectives // rec {
 
    mysql57 = dists.default.mysql57;
    mysql80 = dists.default.mysql80;
-   mysql84 = dists.v2405.mysql84;
-   mysql90 = dists.v2405.mysql90;
+   mysql84 = dists.v2505.mysql84;
+   mysql90 = dists.v2405.mysql90; ## Deprecated
+   mysql93 = dists.v2505.mysql93;
    mariadb106 = dists.v2205.mariadb;
-   # mariadb1011 = dists.v2405.mariadb; ## FIXME: provisioning script
-
-   # mysql57 = makeMysqlWrapper { mysql=dists.default.mysql57; };
-   # mysql80 = makeMysqlWrapper { mysql=dists.default.mysql80; };
-   # mysql84 = makeMysqlWrapper { mysql=dists.v2405.mysql84; };
-   # mysql90 = makeMysqlWrapper { mysql=dists.v2405.mysql90; };
-   # mariadb105 = if isAppleM1 then null else makeMysqlWrapper { mysql=dists.v2105.mariadb; };
-   # mariadb106 = makeMysqlWrapper { mysql=dists.default.mariadb; };
+   mariadb1011 = dists.v2505.mariadb;
 
    php73 = ifSupported "php73" (!isAppleM1) (import ./php73/default.nix);
    bknixPhpstormAdvisor = import ./bknixPhpstormAdvisor/default.nix;
