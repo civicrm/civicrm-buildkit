@@ -13,6 +13,7 @@ in [
     pkgs.curl
     pkgs.gettext
     pkgs.gh
+    pkgs.findutils
     pkgs.git
     pkgs.gitAndTools.hub
     pkgs.gnugrep
