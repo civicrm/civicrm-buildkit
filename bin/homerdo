@@ -169,6 +169,7 @@
     echo "  $prog [OPTIONS] enter [--] [CMD]"
     echo "  $prog [OPTIONS] status"
     echo "  $prog [OPTIONS] kill"
+    echo "  $prog [OPTIONS] auto-release"
     echo
     echo "Sysadmin actions:"
     echo "  $prog install"
@@ -558,6 +559,35 @@
   }
 
   ###########################################################################
+  ## If there is no original/parent/master process, then release all resources.
+
+  function task_auto_release() {
+    assert_valid_shares; realize_shares
+    assert_valid_img; realize_img
+
+    if [ $EUID -ne 0 ]; then
+      as_root auto-release
+      exit $?
+    fi
+
+    print_h2 "Auto-release ($homer_lock)"
+    assert_root_user
+    assert_ownership
+
+    ## Is the original requester/parent process still active?
+    if [[ -e "$homer_lock" ]]; then
+      local pid=$(cat "$homer_lock")
+      if [[ -n "$pid" && -e "/proc/$pid/cmdline" ]]; then
+        print_h2 "Skip. Found active process ($pid)."
+        exit 0
+      fi
+    fi
+
+    ## Same thing as "kill" - stop the "unshare" process and/or remove mount-points
+    task_kill
+  }
+
+  ###########################################################################
   ## Internal utility: Run a command as current user. Records its PID in a file.
   ##
   ## Example: homerdo pid-file --out-pid-file /tmp/my.pid -- do_some_work
@@ -865,7 +895,7 @@
       --timeout)    timeout="$2"      ; shift 2 ; assert_valid_timeout ; ;;
       -h|--help|help) action="usage"  ; shift 1 ; ;;
       --out-pid-file) out_pid_file="$2" ; shift 2 ; ;;
-      install|uninstall|run|enter|status|kill|create|mount|unmount|exec|enter-exec|pid-file) action="$1" ; shift ; ;;
+      install|uninstall|run|enter|status|kill|create|mount|unmount|exec|enter-exec|pid-file|auto-release) action="$1" ; shift ; ;;
       -*)           fatal "Unrecognized option $1" ; ;;
       *)            parsing=          ; ;;
     esac
@@ -887,6 +917,7 @@
   case "$action" in
     enter-exec) f=task_enter_exec ; ;;
     pid-file) f=task_pid_file ; ;;
+    auto-release) f=task_auto_release ; ;;
     *) f="task_${action}" ; ;;
   esac
   $f
