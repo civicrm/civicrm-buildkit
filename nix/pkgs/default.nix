@@ -33,13 +33,16 @@ let
 
 in pharDirectives // rec {
 
-   mysql57 = dists.default.mysql57;
+   mysql57 = dists.v2205.mysql57;
    mysql80 = dists.default.mysql80;
    mysql84 = dists.v2505.mysql84;
    mysql90 = dists.v2405.mysql90; ## Deprecated
    mysql93 = dists.v2505.mysql93;
    mariadb106 = dists.v2205.mariadb;
    mariadb1011 = dists.v2505.mariadb;
+
+   nodejs_14 = dists.v2205.nodejs-14_x;
+   nodejs_22 = dists.v2505.nodejs;
 
    php73 = ifSupported "php73" (!isAppleM1) (import ./php73/default.nix);
    bknixPhpstormAdvisor = import ./bknixPhpstormAdvisor/default.nix;
