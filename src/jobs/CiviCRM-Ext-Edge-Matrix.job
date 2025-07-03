@@ -22,9 +22,6 @@ assert_regex '^[0-9a-z\.-]\+$' "$BUILDTYPE" "Missing or invalid BUILDTYPE"
 
 assert_bknix_temporary
 
-# Set ENV for the TMPDIR so that mosaico test and mosaico build don't clobber each other
-npm config set tmp "/home/$USER/npm-tmp/"
-
 BLDNAME="build-$EXECUTOR_NUMBER"
 BLDDIR="$BKITBLD/$BLDNAME/web"
 EXTBASE="$BLDDIR/sites/all/modules/civicrm/ext"
@@ -184,7 +181,6 @@ pushd "$EXTBASE"
 popd
 
 phpunit-xml-cleanup "$WORKSPACE_JUNIT/"/*.xml
-npm config delete tmp
 
 ## Report test results
 # Jenkins should be configured to read JUnit XML from $WORKSPACE_JUNIT
