@@ -303,7 +303,7 @@ function http_download() {
   fi
 }
 
-## usage: http_cache_setup <url> <local-file> [<ttl-minutes>]
+## usage: http_cache_setup <url> <local-file> [<ttl-seconds>]
 function http_cache_setup() {
   local url="$1"
   local cachefile="$2"
