@@ -32,6 +32,12 @@
 # CIVIBUILD_PATH=
 
 ###############################################################################
+## Constants
+
+## Feed URL with a list of current version-aliases
+CIVI_VERSION_ALIASES='https://lab.civicrm.org/infra/duderino/-/raw/master/config/aliases.yaml?ref_type=heads'
+
+###############################################################################
 ## Common variables
 
 ## Should we print lots of debug info?
