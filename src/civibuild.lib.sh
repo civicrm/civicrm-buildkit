@@ -1087,11 +1087,11 @@ function civicrm_resolve_ver() {
       ;;
     ## OK, we'll do a lookup
     *)
-      http_cache_setup "$CIVI_VERSION_ALIASES" "${CACHE_DIR}/duderino/aliases.yaml" "600" >&2
+      http_cache_setup "$CIVI_VERSION_ALIASES" "${CACHE_DIR}/duderino/aliases.txt" "600" >&2
       local result=$(
-        cat "${CACHE_DIR}/duderino/aliases.yaml" \
-        | grep -i '^\s*'"$target:" \
-        | head -n1 | cut -d: -f2 | tr -d \ \"\'
+        cat "${CACHE_DIR}/duderino/aliases.txt" \
+        | grep -i ^"$target"= \
+        | head -n1 | cut -d= -f2
       )
       if [[ -n "$result" ]]; then
         echo >&2 "Resolved CiviCRM version ($target => $result)"

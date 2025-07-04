@@ -35,7 +35,7 @@
 ## Constants
 
 ## Feed URL with a list of current version-aliases
-CIVI_VERSION_ALIASES='https://lab.civicrm.org/infra/duderino/-/raw/master/config/aliases.yaml?ref_type=heads'
+CIVI_VERSION_ALIASES='https://test.civicrm.org/duderino/feed/aliases.txt'
 
 ###############################################################################
 ## Common variables
