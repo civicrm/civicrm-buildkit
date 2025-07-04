@@ -32,6 +32,12 @@
 # CIVIBUILD_PATH=
 
 ###############################################################################
+## Constants
+
+## Feed URL with a list of current version-aliases
+CIVI_VERSION_ALIASES='https://test.civicrm.org/duderino/feed/aliases.txt'
+
+###############################################################################
 ## Common variables
 
 ## Should we print lots of debug info?

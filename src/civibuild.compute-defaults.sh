@@ -80,6 +80,13 @@ elif [ -n "$CIVIBUILD_HOME" ]; then
 
 fi
 
+
+###############################################################################
+## The --civi-ver option may use aliases. We can resolve aliases now that (eg) CACHE_DIR is available.
+if [[ -n "$CIVI_VERSION" ]]; then
+  CIVI_VERSION=$(civicrm_resolve_ver "$CIVI_VERSION")
+fi
+
 ###############################################################################
 ## Wrap-up - common defaults which are derived from some other default
 

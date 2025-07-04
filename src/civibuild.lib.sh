@@ -26,7 +26,7 @@ function cvutil_assertvars() {
     var="$1"
     eval "val=\$$var"
     if [ -z "$val" ]; then
-      echo "missing variable: $var [in $context]"
+      echo >&2 "missing variable: $var [in $context]"
       exit 98
     fi
     shift
@@ -303,7 +303,7 @@ function http_download() {
   fi
 }
 
-## usage: http_cache_setup <url> <local-file> [<ttl-minutes>]
+## usage: http_cache_setup <url> <local-file> [<ttl-seconds>]
 function http_cache_setup() {
   local url="$1"
   local cachefile="$2"
@@ -1063,6 +1063,44 @@ function civicrm_check_requested_ver() {
   else
     return 1
   fi
+}
+
+###############################################################################
+## Resolve an aliased CiviCRM version, based on these rules:
+##
+## - Numerical versions ("6.4" or "6.4.1+xyz") are treated as literal branch/tag names.
+## - The names "master" and "main" are treated as literal branch/tag names.
+## - Anything else ("STABLE", "stable", "RC", "RC") will be resolved throught the current aliasing.
+##
+## If no version is identified, then raise a fatal.
+##
+## usage: CIVIVER=$(civibuild_resolve_ver <symbol>)
+## example: $(civicrm_resolve_ver RC) ==> "6.4"
+function civicrm_resolve_ver() {
+  cvutil_assertvars civicrm_resolve_ver CIVI_VERSION_ALIASES CACHE_DIR
+  local target="$1"
+  case "$target" in
+    ## Check common case first -- so we don't need to hit the network.
+    [0-9]*|master|main)
+      echo "$target"
+      return
+      ;;
+    ## OK, we'll do a lookup
+    *)
+      http_cache_setup "$CIVI_VERSION_ALIASES" "${CACHE_DIR}/duderino/aliases.txt" "600" >&2
+      local result=$(
+        cat "${CACHE_DIR}/duderino/aliases.txt" \
+        | grep -i ^"$target"= \
+        | head -n1 | cut -d= -f2
+      )
+      if [[ -n "$result" ]]; then
+        echo >&2 "Resolved CiviCRM version ($target => $result)"
+        echo "$result"
+      else
+        cvutil_fatal "Failed to resolve CiviCRM version ($target)"
+      fi
+      ;;
+  esac
 }
 
 ###############################################################################
