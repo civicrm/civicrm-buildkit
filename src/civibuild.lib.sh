@@ -26,7 +26,7 @@ function cvutil_assertvars() {
     var="$1"
     eval "val=\$$var"
     if [ -z "$val" ]; then
-      echo "missing variable: $var [in $context]"
+      echo >&2 "missing variable: $var [in $context]"
       exit 98
     fi
     shift
