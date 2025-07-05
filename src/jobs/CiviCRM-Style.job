@@ -23,7 +23,7 @@ assert_bknix_temporary
 
 #################################################
 ## Local variables
-GUARD=
+GUARD=run_command
 
 BLDNAME="build-$EXECUTOR_NUMBER"
 BLDDIR="$BKITBLD/$BLDNAME"
@@ -41,7 +41,6 @@ assert_common PATCH_REPO PATCH_PR_NUM ghprbTargetBranch
 
 #################################################
 ## Report details about the test environment
-set -x
 
 echo "TODO: check ghprbTargetBranch=($ghprbTargetBranch) PATCH_PR_NUM=($PATCH_PR_NUM)"
 
@@ -55,10 +54,10 @@ if [ -d "$BKITBLD/$BLDNAME" ]; then
 fi
 
 ## Download dependencies, apply patches
-civibuild download "$BLDNAME" --type "empty"
+$GUARD civibuild download "$BLDNAME" --type "empty"
 cloneCmd=$(printf 'git_cache_clone civicrm/%q -b %q src' "$PATCH_REPO" "$ghprbTargetBranch")
-civibuild run "$BLDNAME" --eval "$cloneCmd"
-civibuild run "$BLDNAME" --eval 'git_cache_deref_remotes "$CACHE_DIR" "$WEB_ROOT"'
+$GUARD civibuild run "$BLDNAME" --eval "$cloneCmd"
+$GUARD civibuild run "$BLDNAME" --eval 'git_cache_deref_remotes "$CACHE_DIR" "$WEB_ROOT"'
 
 pushd "$BLDDIR/web/src"
   git scan am --rebuild --passthru='--ignore-whitespace' -N "$PATCH"
