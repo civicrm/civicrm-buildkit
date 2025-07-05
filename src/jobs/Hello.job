@@ -8,6 +8,8 @@ assert_common EXECUTOR_NUMBER WORKSPACE
 assert_bknix_temporary
 init_std_workspace
 
-echo "Hello world! Did you know that HTTPD_PORT=$HTTPD_PORT?"
-which php
-php --version
+GUARD=run_command
+
+$GUARD echo "Hello world! Did you know that HTTPD_PORT=$HTTPD_PORT?"
+$GUARD which php
+$GUARD php --version

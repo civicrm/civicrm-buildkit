@@ -33,7 +33,7 @@ assert_bknix_temporary
 
 #################################################
 ## Local variables
-GUARD=
+GUARD=run_command
 
 ## Build definition
 ## Note: Suffixes are unique within a period of 180 days.
@@ -46,7 +46,6 @@ export TIME_FUNC="linear:500"
 
 #################################################
 ## Report details about the test environment
-set -x
 
 $GUARD civibuild env-info
 

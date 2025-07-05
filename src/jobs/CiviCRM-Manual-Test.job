@@ -28,7 +28,7 @@ assert_bknix_temporary
 
 #################################################
 ## Local variables
-GUARD=
+GUARD=run_command
 
 ## Build definition
 ## Note: Suffixes are unique within a period of 180 days.
@@ -41,9 +41,7 @@ export TIME_FUNC="linear:500"
 
 #################################################
 ## Report details about the test environment
-set -x
-
-civibuild env-info
+$GUARD civibuild env-info
 
 ## Reset (cleanup after previous tests)
 clean_legacy_workspace "$WORKSPACE/junit" "$WORKSPACE/civibuild-html" "$WORKSPACE/last-scan.json" "$WORKSPACE/new-scan.json"
@@ -74,11 +72,11 @@ fi
 $GUARD civibuild install "$BLDNAME"
 
 ## Report details about this build of the application
-civibuild show "$BLDNAME" \
+$GUARD civibuild show "$BLDNAME" \
   --html "$WORKSPACE_HTML" \
   --last-scan "$WORKSPACE_BUILD/last-scan.json" \
   --new-scan "$WORKSPACE_BUILD/new-scan.json"
 cp "$WORKSPACE_BUILD/new-scan.json" "$WORKSPACE_BUILD/last-scan.json"
 
 #civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" --exclude-group ornery all
-civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" $SUITES
+$GUARD civi-test-run -b "$BLDNAME" -j "$WORKSPACE_JUNIT" $SUITES

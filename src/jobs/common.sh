@@ -424,4 +424,11 @@ function create_job_script() {
   echo "}"
 }
 
+function run_command() {
+  echo >&2
+  echo >&2 "RUN [$@]"
+  echo >&2
+  "$@"
+}
+
 } ## end common.sh
