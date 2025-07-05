@@ -10,7 +10,7 @@ function env_report_cmd() {
     printf '[32mCOMMAND[0m: [33m%s[0m [31mMISSING[0m\n' "$cmd"
   else
     printf '[32mCOMMAND[0m: [33m%s[0m ([33m%s[0m)\n' "$cmd" "$fullpath"
-    $cmd "$@" 2>&1 | while read LINE ; do echo "> $LINE" ; done
+    $cmd "$@" 2>&1 | head -n1 | while read LINE ; do echo "> $LINE" ; done
   fi
   echo
 }
