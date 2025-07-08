@@ -35,6 +35,6 @@ CRM_Core_Transaction::create()->run(function () {
     ->addValue('username' , $demoUser)
     ->addValue('password' , $demoPass)
     ->addValue('contact_id' , $contactID)
-    ->addValue('roles:name', ['admin'])
+    ->addValue('roles:name', ['staff'])
     ->execute();
 });
