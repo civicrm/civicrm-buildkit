@@ -78,7 +78,13 @@ function civibuild_alias_resolve() {
     b-master)    SITE_TYPE=backdrop-demo    ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Backdrop"       ;;
 
     smaster)     SITE_TYPE=standalone-clean ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Standalone Sandbox"        ;;
-    sdmaster)    SITE_TYPE=standalone-dev   ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Standalone Sandbox"        ;;
+    # sdmaster)    SITE_TYPE=standalone-dev ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Standalone Sandbox"      ;;
+    scmaster)    SITE_TYPE=standalone-composer ; CIVI_VERSION=master ; CMS_TITLE="CiviCRM Standalone Sandbox (Composer)"        ;;
+    master)      SITE_TYPE=standalone-clean  ; CIVI_VERSION=master   ; CMS_TITLE="CiviCRM Standalone Sandbox"        ;;
+
+    stable)     SITE_TYPE=standalone-clean  ; CIVI_VERSION=stable    ; CMS_TITLE="CiviCRM Standalone Sandbox (Stable)" ;;
+    rc)         SITE_TYPE=standalone-clean  ; CIVI_VERSION=rc        ; CMS_TITLE="CiviCRM Standalone Sandbox (RC)" ;;
+    esr)        SITE_TYPE=standalone-clean  ; CIVI_VERSION=esr       ; CMS_TITLE="CiviCRM Standalone Sandbox (ESR)" ;;
 
     civihr)      SITE_TYPE=civihr           ; CIVI_VERSION=5.3.1     ; CMS_TITLE="CiviHR Sandbox"                    ; NO_SAMPLE_DATA=1       ;;
 
