@@ -195,7 +195,7 @@ function cvutil_mkurl() {
   local subsite_name="$1"
   cvutil_assertvars cvutil_mkurl URL_TEMPLATE
   if [ "%AUTO%" == "$URL_TEMPLATE" ]; then
-    echo "http://%subsite_name%.test" | sed "s;%SITE_NAME%;$subsite_name;g"
+    echo "http://%subsite_name%.local.civi.bid" | sed "s;%SITE_NAME%;$subsite_name;g"
   else
     echo "$URL_TEMPLATE" | sed "s;%SITE_NAME%;$subsite_name;g"
   fi

@@ -24,7 +24,7 @@ CIVIBUILD_PATH="$CIVIBUILD_PATH:$PRJDIR/app/config"
 if [ -z "$CMS_URL" ]; then
   if [ "%AUTO%" == "$URL_TEMPLATE" ]; then
     if [ -n "$IS_ALIAS" ]; then
-      CMS_URL=$( echo "http://%SITE_NAME%.test" | sed "s;%SITE_NAME%;$SITE_NAME;g" )
+      CMS_URL=$( echo "http://%SITE_NAME%.local.civi.bid" | sed "s;%SITE_NAME%;$SITE_NAME;g" )
     # else: leave CMS_URL empty
     fi
   else
