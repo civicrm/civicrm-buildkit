@@ -11,6 +11,7 @@ Breaking changes:
 
 * `civi-download-tools`: Drop support for `hub` ([#941](https://github.com/civicrm/civicrm-buildkit/pull/941)) and `joomlatools-console` ([#940](https://github.com/civicrm/civicrm-buildkit/pull/940))
 * `civi-download-tools`: Drop support for the `--full` option ([#936](https://github.com/civicrm/civicrm-buildkit/pull/936))
+* `civibuild`: Drop ancient aliases pegged to CiviCRM 4.x (e.g `d43` and `wp46`)
 * `composer.json`: Drop support for PHP 7.2. Drop unused `paratest`. ([#944](https://github.com/civicrm/civicrm-buildkit/pull/944))
 * `bin/securify`: Drop old script. (Deprecated circa 2019.)
 * __Nix__: Drop ancient packages `php71`, `php72`, `mysql56`, `mariadb105` ([#926](https://github.com/civicrm/civicrm-buildkit/pull/926))
