@@ -143,11 +143,12 @@ EXTRA_DLS=
 EXT_DLs=
 
 ## A template for picking the default URL (using variable "SITE_NAME").
-## Ex: "http://%SITE_NAME%.test"
+## Ex: "http://%SITE_NAME%.local.civi.bid"
+## Ex: "http://%SITE_NAME%.192-168-1-2.civi.bid"
 ## Ex: "%AUTO%"
 ##
 ## In "%AUTO%", normal sites use amp default (e.g. http://localhost:7979)
-## but aliase use "http://%SITE_NAME%.test". This is for backward compatibility.
+## but aliases use "http://%SITE_NAME%.local.civi.bid". This is for backward compatibility.
 URL_TEMPLATE='%AUTO%'
 
 ###############################################################################

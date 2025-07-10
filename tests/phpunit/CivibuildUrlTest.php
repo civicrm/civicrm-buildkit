@@ -49,7 +49,7 @@ class CivibuildUrlTest extends \Civi\Civibuild\CivibuildTestCase {
     );
     $cases[] = array(
       "civibuild create {$this->alias} --url-template '%AUTO%'",
-      "http://{$this->alias}.test",
+      "http://{$this->alias}.local.civi.bid",
     );
     $cases[] = array(
       "civibuild create {$this->alias} --url-template 'http://www.%SITE_NAME%.ex'",
