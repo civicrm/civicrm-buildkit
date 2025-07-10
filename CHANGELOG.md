@@ -5,12 +5,16 @@ are generally "drop-in" updates that don't require any special action.
 However, if a change requires special action, it should be documented in
 this changelog.
 
-### v25.04.0 => v25.06.0
+### v25.04.0 => v25.07.0
 
-Breaking changes:
+Between mid-May and early July 2025, changes were more aggressive than usual.
+This included several breaking changes (generally relating to older tools and
+flags).  They shouldn't affect most current users, but we present them for
+completeness.
 
 * `civi-download-tools`: Drop support for `hub` ([#941](https://github.com/civicrm/civicrm-buildkit/pull/941)) and `joomlatools-console` ([#940](https://github.com/civicrm/civicrm-buildkit/pull/940))
 * `civi-download-tools`: Drop support for the `--full` option ([#936](https://github.com/civicrm/civicrm-buildkit/pull/936))
+* `civibuild`: Drop ancient aliases pegged to CiviCRM 4.x (e.g `d43` and `wp46`)
 * `composer.json`: Drop support for PHP 7.2. Drop unused `paratest`. ([#944](https://github.com/civicrm/civicrm-buildkit/pull/944))
 * `bin/securify`: Drop old script. (Deprecated circa 2019.)
 * __Nix__: Drop ancient packages `php71`, `php72`, `mysql56`, `mariadb105` ([#926](https://github.com/civicrm/civicrm-buildkit/pull/926))
