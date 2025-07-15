@@ -1,5 +1,7 @@
 #!/bin/bash
 
+[ -z "$CMS_VERSION" ] && CMS_VERSION='^10'
+
 ## install.sh -- Create config files and databases; fill the databases
 [ -d "$WEB_ROOT/web" ] && CMS_ROOT="$WEB_ROOT/web"
 
