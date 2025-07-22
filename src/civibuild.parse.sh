@@ -41,9 +41,11 @@ function civibuild_parse_unnamed_params() {
     [ -z "$SITE_ID" ] && civibuild_app_usage
 
     ## Load settings based in SITE_NAME / SITE_ID
+    LOADED_BUILD_SH=
     if [ -f "${BLDDIR}/${SITE_NAME}.sh" ]; then
       echo "[[Load saved options from ${BLDDIR}/${SITE_NAME}.sh]]"
       source "${BLDDIR}/${SITE_NAME}.sh"
+      LOADED_BUILD_SH="${BLDDIR}/${SITE_NAME}.sh"
       if [ "$SITE_ID" != "default" ]; then
         IS_INSTALLED=
       fi
@@ -51,6 +53,7 @@ function civibuild_parse_unnamed_params() {
     if [ -f "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh" ]; then
       echo "[[Load saved options from ${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh]]"
       source "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh"
+      LOADED_BUILD_SH="${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh"
     fi
   fi
 }

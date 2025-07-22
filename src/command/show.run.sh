@@ -1,2 +1,2 @@
-
+civibuild_app_assert_loaded
 civibuild_app_show
