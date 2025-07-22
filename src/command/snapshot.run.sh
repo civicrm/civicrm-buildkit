@@ -1,1 +1,2 @@
+civibuild_app_assert_loaded
 amp_snapshot_create

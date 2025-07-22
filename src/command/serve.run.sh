@@ -1,4 +1,5 @@
 cvutil_assertvars serve WEB_ROOT
+civibuild_app_assert_loaded
 
 #PHP_SERVE=$( echo "$CMS_URL" | cut -f3 -d/ )
 #pushd "$CMS_ROOT"
