@@ -13,6 +13,34 @@ function civibuild_app_usage() {
 }
 
 ###############################################################################
+## Assert that the SITE_NAME is using values from "build/SITE_NAME.sh"
+## usage: civibuild_app_assert_loaded
+function civibuild_app_assert_loaded() {
+  cvutil_assertvars civibuild_app_assert_loaded SITE_NAME ACTION
+  if [[ -n "$LOADED_BUILD_SH" && -e "$LOADED_BUILD_SH" ]] ; then
+    return
+  fi
+
+  local expect=$(civibuild_app_save_file)
+
+  if [[ -n "$FORCE_INSTALL" ]]; then
+    echo >&2 "Failed to read: $expect"
+    echo >&2 ""
+    echo >&2 "The metadata for $SITE_NAME appears incomplete. However, we will proceed because the --force option is set."
+    return
+  fi
+
+  echo >&2 "Failed to read: $expect"
+  echo >&2 ""
+  echo >&2 "The metadata for $SITE_NAME appears incomplete. This suggests that the original download failed. Some possible resolutions:"
+  echo >&2 ""
+  echo >&2 "1. Delete the failed build ($WEB_ROOT) and recreate it, or..."
+  echo >&2 "2. Manually generate metadata ($expect), or..."
+  echo >&2 "3. Run \"civibuild $ACTION\" with the \"--force\" option."
+  exit 3
+}
+
+###############################################################################
 ## Run an external script (based on the site-type)
 ## usage: civibuild_app_run <script-name>
 function civibuild_app_run() {
@@ -141,10 +169,15 @@ function civibuild_app_install() {
 function civibuild_app_save() {
   cvutil_assertvars civibuild_app_save BLDDIR SITE_NAME SITE_ID PERSISTENT_VARS
 
+  local file=$(civibuild_app_save_file)
+  cvutil_save "$file" $PERSISTENT_VARS
+}
+
+function civibuild_app_save_file() {
   if [ "$SITE_ID" == "default" ]; then
-    cvutil_save "${BLDDIR}/${SITE_NAME}.sh" $PERSISTENT_VARS
+    echo "${BLDDIR}/${SITE_NAME}.sh"
   else
-    cvutil_save "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh" $PERSISTENT_VARS
+    echo "${BLDDIR}/${SITE_NAME}.${SITE_ID}.sh"
   fi
 }
 
