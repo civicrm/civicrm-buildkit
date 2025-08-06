@@ -36,15 +36,6 @@ rm -f ${CIVI_TEMPLATEC}/*.php
 ## Set site key if requested in Docker environment
 [ ! -z "$FR_DOCKER_CIVI_SITE_KEY" ] && CIVI_SITE_KEY=${FR_DOCKER_CIVI_SITE_KEY}
 
-pushd "$WEB_ROOT"
-  # If you've switched branches and triggered `reinstall`, then you need to refresh composer deps/autoloader before installing
-  # This probably adds ~1 second on new builds, but it can save umpteen minutes of confusion during triage/debugging.
-   echo "Running scaffold"
-   ./core/tools/standalone/bin/scaffold "$CMS_ROOT"
-  ## This may technically be a bit redundant with 'composer install' for new builds.
-  ## But for long-lived sites that have rebuilds, it's handy.
-popd
-
 civicrm_install_cv
 
 "${WEB_ROOT}/ext/rpow/bin/harvey-dent" --root "${WEB_ROOT}" --settings-path "${RPOW_SETTINGS_PATH}" --user-name "${RPOW_RO_USER}"
