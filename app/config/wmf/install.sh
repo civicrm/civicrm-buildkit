@@ -7,7 +7,7 @@ CMS_VERSION="master"
 # Update vendor libraries.
 
 pushd "$WEB_ROOT"
-composer install
+composer install -vv
 popd
 
 ###############################################################################
