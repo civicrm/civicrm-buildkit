@@ -20,6 +20,8 @@ function git_cache_map() {
     "civicrm/org.civicrm.module.cividiscount") echo "https://lab.civicrm.org/extensions/cividiscount.git" ; ;;
     "civicrm/org.civicrm.shoreditch")          echo "https://github.com/$1.git" ; ;;
     "civicrm/org.civicrm.styleguide")          echo "https://github.com/$1.git" ; ;;
+    "civicrm/standalone_demo")                 echo "https://lab.civicrm.org/extensions/standalone_demo.git" ; ;;
+    "civicrm/search_kit_report_starter_pack")  echo "https://lab.civicrm.org/extensions/search_kit_report_starter_pack.git" ; ;;
     "TechToThePeople/civisualize")             echo "https://lab.civicrm.org/extensions/civisualize.git" ; ;;
     *)                                         cvutil_fatal "Unrecognized cache id: $1 (See also: civibuild.caches.sh)" ; ;;
   esac

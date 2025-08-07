@@ -16,6 +16,10 @@ pushd "$WEB_ROOT/web"
   git_cache_clone civicrm/civicrm-packages                         -b "$CIVI_VERSION" core/packages
 
   civicrm_l10n_setup private
+
+  # add demo specific extensions
+  git_cache_clone civicrm/standalone_demo                         ext/standalone_demo
+  git_cache_clone civicrm/search_kit_report_starter_pack          ext/search_kit_report_starter_pack
 popd
 
 civibuild_apply_user_extras
