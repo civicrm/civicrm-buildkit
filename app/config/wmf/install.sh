@@ -66,7 +66,6 @@ EOSQL
 # Settings appropriate to a dev environment
 cv setting:set environment=Development
 cv setting:set debug_enabled=1
-civicrm_enable_riverlea_theme
 
 echo "enabling wmf-civicrm"
 cv en --ignore-missing rpow wmf-civicrm
