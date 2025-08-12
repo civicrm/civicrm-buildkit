@@ -23,18 +23,47 @@
 function civibuild_alias_resolve() {
   IS_ALIAS=1
   case "$1" in
-    dmaster)     SITE_TYPE=drupal-demo      ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal"         ; VOL_VERSION=master       ; DISC_VERSION=master   ;;
-    d7-master)   SITE_TYPE=drupal-clean     ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal 7"       ;;
+    d7)          SITE_TYPE=drupal7-demo    ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal 7"      ;;
+    d8)          SITE_TYPE=drupal8-demo    ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal 8"      ;;
+    d9)          SITE_TYPE=drupal9-demo    ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal 9"      ;;
+    d10)         SITE_TYPE=drupal10-demo   ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal 10"      ;;
+    d11)         SITE_TYPE=drupal11-demo   ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal 11"      ;;
 
+    dmaster)     SITE_TYPE=drupal-demo     ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal"         ; VOL_VERSION=master       ; DISC_VERSION=master   ;;
+    d7-master)   SITE_TYPE=drupal-clean    ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal 7"       ;;
     d8-master)   SITE_TYPE=drupal8-demo    ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal 8"       ;;
     d9-master)   SITE_TYPE=drupal9-demo    ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal 9"       ;;
     d10-master)  SITE_TYPE=drupal10-demo   ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal 10"      ;;
+    d11-master)  SITE_TYPE=drupal11-demo   ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Drupal 11"      ;;
+
+    d7-rc)       SITE_TYPE=drupal7-demo    ; CIVI_VERSION=rc        ; CMS_TITLE="CiviCRM Sandbox on Drupal 7 (RC)"  ;;
+    d8-rc)       SITE_TYPE=drupal8-demo    ; CIVI_VERSION=rc        ; CMS_TITLE="CiviCRM Sandbox on Drupal 8 (RC)"  ;;
+    d9-rc)       SITE_TYPE=drupal9-demo    ; CIVI_VERSION=rc        ; CMS_TITLE="CiviCRM Sandbox on Drupal 9 (RC)"  ;;
+    d10-rc)      SITE_TYPE=drupal10-demo   ; CIVI_VERSION=rc        ; CMS_TITLE="CiviCRM Sandbox on Drupal 10 (RC)" ;;
+    d11-rc)      SITE_TYPE=drupal11-demo   ; CIVI_VERSION=rc        ; CMS_TITLE="CiviCRM Sandbox on Drupal 11 (RC)" ;;
+
+    d7-stable)   SITE_TYPE=drupal7-demo    ; CIVI_VERSION=stable    ; CMS_TITLE="CiviCRM Sandbox on Drupal 7 (Stable)"  ;;
+    d8-stable)   SITE_TYPE=drupal8-demo    ; CIVI_VERSION=stable    ; CMS_TITLE="CiviCRM Sandbox on Drupal 8 (Stable)"  ;;
+    d9-stable)   SITE_TYPE=drupal9-demo    ; CIVI_VERSION=stable    ; CMS_TITLE="CiviCRM Sandbox on Drupal 9 (Stable)"  ;;
+    d10-stable)  SITE_TYPE=drupal10-demo   ; CIVI_VERSION=stable    ; CMS_TITLE="CiviCRM Sandbox on Drupal 10 (Stable)" ;;
+    d11-stable)  SITE_TYPE=drupal11-demo   ; CIVI_VERSION=stable    ; CMS_TITLE="CiviCRM Sandbox on Drupal 11 (Stable)" ;;
+
+    d7-esr)      SITE_TYPE=drupal7-demo    ; CIVI_VERSION=esr       ; CMS_TITLE="CiviCRM Sandbox on Drupal 7 (ESR)"     ;;
+    d8-esr)      SITE_TYPE=drupal8-demo    ; CIVI_VERSION=esr       ; CMS_TITLE="CiviCRM Sandbox on Drupal 8 (ESR)"     ;;
+    d9-esr)      SITE_TYPE=drupal9-demo    ; CIVI_VERSION=esr       ; CMS_TITLE="CiviCRM Sandbox on Drupal 9 (ESR)"     ;;
+    d10-esr)     SITE_TYPE=drupal10-demo   ; CIVI_VERSION=esr       ; CMS_TITLE="CiviCRM Sandbox on Drupal 10 (ESR)"     ;;
+    d11-esr)     SITE_TYPE=drupal11-demo   ; CIVI_VERSION=esr       ; CMS_TITLE="CiviCRM Sandbox on Drupal 11 (ESR)"     ;;
+
     dcmaster)    SITE_TYPE=drupal-clean     ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Clean Sandbox on Drupal"   ;;
     dcase)       SITE_TYPE=drupal-case      ; CIVI_VERSION=master    ; CMS_TITLE="CiviCase Sandbox on Drupal"        ;;
 
     wpcase)      SITE_TYPE=wp-case          ; CIVI_VERSION=master    ; CMS_TITLE="CiviCase Sandbox on WordPress"     ;;
+    wp)          SITE_TYPE=wp-demo          ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on WordPress"      ; VOL_VERSION=master     ;;
     wpmaster)    SITE_TYPE=wp-demo          ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on WordPress"      ; VOL_VERSION=master     ;;
     wp-master)   SITE_TYPE=wp-demo          ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on WordPress"      ; VOL_VERSION=master     ;;
+    wp-rc)       SITE_TYPE=wp-demo          ; CIVI_VERSION=rc        ; CMS_TITLE="CiviCRM Sandbox on WordPress"      ;;
+    wp-stable)   SITE_TYPE=wp-demo          ; CIVI_VERSION=stable    ; CMS_TITLE="CiviCRM Sandbox on WordPress"      ;;
+    wp-esr)      SITE_TYPE=wp-demo          ; CIVI_VERSION=esr       ; CMS_TITLE="CiviCRM Sandbox on WordPress"      ;;
 
     bcmaster)    SITE_TYPE=backdrop-clean   ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Clean Sandbox on Backdrop" ;;
     bmaster)     SITE_TYPE=backdrop-demo    ; CIVI_VERSION=master    ; CMS_TITLE="CiviCRM Sandbox on Backdrop"       ;;
@@ -48,6 +77,7 @@ function civibuild_alias_resolve() {
     stable)     SITE_TYPE=standalone-clean  ; CIVI_VERSION=stable    ; CMS_TITLE="CiviCRM Standalone Sandbox (Stable)" ;;
     rc)         SITE_TYPE=standalone-clean  ; CIVI_VERSION=rc        ; CMS_TITLE="CiviCRM Standalone Sandbox (RC)" ;;
     esr)        SITE_TYPE=standalone-clean  ; CIVI_VERSION=esr       ; CMS_TITLE="CiviCRM Standalone Sandbox (ESR)" ;;
+    dev)        SITE_TYPE=standalone-clean  ; CIVI_VERSION=dev       ; CMS_TITLE="CiviCRM Standalone Sandbox (Dev)" ;;
 
     civihr)      SITE_TYPE=civihr           ; CIVI_VERSION=5.3.1     ; CMS_TITLE="CiviHR Sandbox"                    ; NO_SAMPLE_DATA=1       ;;
 
