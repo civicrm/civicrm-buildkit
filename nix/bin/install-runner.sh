@@ -85,4 +85,7 @@ install_dispatcher
 warmup_binaries
 warmup_dispatcher_images
 
+mkdir -p /var/local/runjob
+chmod 1777 /var/local/runjob
+
 touch /var/local/bknix-ready

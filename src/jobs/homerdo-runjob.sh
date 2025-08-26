@@ -27,11 +27,13 @@ CLEANUP_FILES=() ## List of files/directories to delete
 RESPONSE=        ## Tar-formatted fifo
 MAX_IMAGES=8     ## If there are more than X copies of an image, then refuse to make more
 GLOBAL_MARKER="/etc/bknix-ci/buildkit-ts" ## If this file changes, then all caches need warmup
+SPOOL="/var/local/runjob"
 
 #####################################################################
 ## Main
 function main() {
   trap on_shutdown EXIT
+  assert_spoooldir
   case "$1" in
     all)         do_all ; ;;
     request)     do_request ; ;;
@@ -426,9 +428,26 @@ function safe_delete() {
   done
 }
 
+function assert_spoooldir() {
+  if [[ -z "$SPOOL" ]]; then
+    fatal "No SPOOL folder specified"
+  fi
+  if [[ ! -d "$SPOOL" ]]; then
+    fatal "The SPOOL ($SPOOL) does not exist"
+  fi
+  if [ ! -w "$SPOOL" ]; then
+    fatal "The SPOOL ($SPOOL) is not writable for USER ($USER)t"
+  fi
+}
+
+function fatal() {
+  echo >&2 "$@"
+  exit 2
+}
+
 function make_temp() {
   local suffix="$1"
-  local tmpfile="/tmp/run-bknix-$USER-"$(date '+%Y-%m-%d-%H-%M'-$RANDOM$RANDOM)"$suffix"
+  local tmpfile="$SPOOL/$USER-"$(date '+%Y-%m-%d-%H-%M'-$RANDOM$RANDOM)"$suffix"
   echo "$tmpfile"
 }
 

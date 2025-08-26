@@ -103,7 +103,6 @@
 ##
 ## - Allow running without any persistent images (`homerdo --temp` starts with empty tmpfs)
 ## - Allow layering multiple images (`homerdo -i base.img -i extra.img --temp`)
-## - Replace /tmp and /var/tmp. (Issue: Sharing tar fifo)
 ## - Consider adding a network namespace. Maybe make it optional (`homerdo -n`).
 ## - Use qcow2 instead of raw. (Issue: When learning/playing with qemu-nbd, it felt crashy.)
 ## - Have more flavors of "run/enter" (e.g. a start+stop flavor)
