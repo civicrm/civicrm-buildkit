@@ -103,7 +103,7 @@
 ##
 ## - Allow running without any persistent images (`homerdo --temp` starts with empty tmpfs)
 ## - Allow layering multiple images (`homerdo -i base.img -i extra.img --temp`)
-## - Replace /tmp and /var/tmp. (Issue: Sharing ssh socket and tar fifo)
+## - Replace /tmp and /var/tmp. (Issue: Sharing tar fifo)
 ## - Consider adding a network namespace. Maybe make it optional (`homerdo -n`).
 ## - Use qcow2 instead of raw. (Issue: When learning/playing with qemu-nbd, it felt crashy.)
 ## - Have more flavors of "run/enter" (e.g. a start+stop flavor)
@@ -115,6 +115,7 @@
   ## Environment
   SELF="$(realpath "$0")"
   HOMER_VAR=/var/local/homer
+  HOMER_SSH="${HOMER_VAR}-ssh"
   HOMER_USER=homer
   HOMER_GROUP=homer
   HOMER_SIZE=${HOMER_SIZE:-2048m}
@@ -217,6 +218,9 @@
       $GUARD adduser "$HOMER_USER" --gecos "Homer" --home "/home/homer" --ingroup "$HOMER_GROUP" --disabled-password
     fi
 
+    mkdir -p "$HOMER_SSH"
+    chmod 1777 "$HOMER_SSH"
+
     #print_h2 "Grant all users access to homerdo (/etc/sudoers.d/homerdo)"
     #echo -n > /etc/sudoers.d/homerdo
     #echo "ALL ALL = (root) NOPASSWD: NOSETENV: /usr/local/bin/homerdo" >> /etc/sudoers.d/homerdo
@@ -269,7 +273,7 @@
 
     local prefix_cmd=()
     if [ -n "$ssh_agent" ]; then
-      local socket="/tmp/ssh.$RANDOM$RANDOM/agent.$RANDOM$RANDOM"
+      local socket="$HOMER_SSH/ssh.$RANDOM$RANDOM/agent.$RANDOM$RANDOM"
       forward_ssh "$socket"
       if [ -e "$socket" ]; then
         prefix_cmd+=(env "SSH_AUTH_SOCK=$socket")
@@ -298,7 +302,7 @@
 
     local prefix_cmd=()
     if [ -n "$ssh_agent" ]; then
-      local socket="/tmp/ssh.$RANDOM$RANDOM/agent.$RANDOM$RANDOM"
+      local socket="$HOMER_SSH/ssh.$RANDOM$RANDOM/agent.$RANDOM$RANDOM"
       forward_ssh "$socket"
       if [ -e "$socket" ]; then
         prefix_cmd+=(env "SSH_AUTH_SOCK=$socket")
