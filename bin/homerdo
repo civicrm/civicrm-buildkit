@@ -465,6 +465,9 @@
   }
 
   function _task_exec_script() {
+    local homer_uid=$(id -u "$HOMER_USER")
+    local homer_gid=$(id -g "$HOMER_GROUP")
+
     printf "#!/usr/bin/env bash\n"
     printf "{ # https://stackoverflow.com/a/21100710\n"
     printf "function cleanup() {\n"
@@ -474,6 +477,7 @@
       printf "  umount %q/%q\n" ~homer "$rhs"
     done
     printf "  umount %q\n" /tmp
+    printf "  umount %q\n" "/run/user/$homer_uid"
     printf "  umount %q\n" ~homer
 
     printf "}\n"
@@ -487,9 +491,15 @@
       printf "mount --bind %q ~homer/%q\n" "$lhs" "$rhs"
     done
 
+    ## Setup /tmp
     printf "mkdir -p %q\n" ~homer/.tmp
     printf "chmod 1777 %q\n" ~homer/.tmp
     printf "mount --bind %q %q\n" ~homer/.tmp /tmp
+
+    ## Setup /run/user/$UID
+    printf "mkdir -p /run/user/%q\n" "$homer_uid"
+    printf "mount -t tmpfs tmpfs /run/user/%q -o rw,nosuid,nodev,relatime,mode=700,uid=%q,gid=%q,inode64\n" "$homer_uid" "$homer_uid" "$homer_gid"
+
     echo 'mount -t proc proc /proc'
 
     if [ -n "$timeout" ]; then
