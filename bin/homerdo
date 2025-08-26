@@ -467,12 +467,14 @@
 
   function _task_exec_script() {
     printf "#!/usr/bin/env bash\n"
+    printf "{ # https://stackoverflow.com/a/21100710\n"
     printf "function cleanup() {\n"
 
     for share in "${shares[@]}" ; do
       local rhs=$(echo "$share" | cut -f2 -d:)
       printf "  umount %q/%q\n" ~homer "$rhs"
     done
+    printf "  umount %q\n" /tmp
     printf "  umount %q\n" ~homer
 
     printf "}\n"
@@ -486,6 +488,9 @@
       printf "mount --bind %q ~homer/%q\n" "$lhs" "$rhs"
     done
 
+    printf "mkdir -p %q\n" ~homer/.tmp
+    printf "chmod 1777 %q\n" ~homer/.tmp
+    printf "mount --bind %q %q\n" ~homer/.tmp /tmp
     echo 'mount -t proc proc /proc'
 
     if [ -n "$timeout" ]; then
@@ -493,6 +498,7 @@
       echo -n "timeout $timeout " ## continue to next...
     fi
     echo "sudo -iu \"$HOMER_USER\" ${cmd[@]}"
+    printf "}\n"
   }
 
   ###########################################################################
