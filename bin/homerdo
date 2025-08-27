@@ -103,7 +103,6 @@
 ##
 ## - Allow running without any persistent images (`homerdo --temp` starts with empty tmpfs)
 ## - Allow layering multiple images (`homerdo -i base.img -i extra.img --temp`)
-## - Replace /tmp and /var/tmp. (Issue: Sharing ssh socket and tar fifo)
 ## - Consider adding a network namespace. Maybe make it optional (`homerdo -n`).
 ## - Use qcow2 instead of raw. (Issue: When learning/playing with qemu-nbd, it felt crashy.)
 ## - Have more flavors of "run/enter" (e.g. a start+stop flavor)
@@ -115,6 +114,7 @@
   ## Environment
   SELF="$(realpath "$0")"
   HOMER_VAR=/var/local/homer
+  HOMER_SSH="${HOMER_VAR}-ssh"
   HOMER_USER=homer
   HOMER_GROUP=homer
   HOMER_SIZE=${HOMER_SIZE:-2048m}
@@ -217,6 +217,9 @@
       $GUARD adduser "$HOMER_USER" --gecos "Homer" --home "/home/homer" --ingroup "$HOMER_GROUP" --disabled-password
     fi
 
+    mkdir -p "$HOMER_SSH"
+    chmod 1777 "$HOMER_SSH"
+
     #print_h2 "Grant all users access to homerdo (/etc/sudoers.d/homerdo)"
     #echo -n > /etc/sudoers.d/homerdo
     #echo "ALL ALL = (root) NOPASSWD: NOSETENV: /usr/local/bin/homerdo" >> /etc/sudoers.d/homerdo
@@ -269,7 +272,7 @@
 
     local prefix_cmd=()
     if [ -n "$ssh_agent" ]; then
-      local socket="/tmp/ssh.$RANDOM$RANDOM/agent.$RANDOM$RANDOM"
+      local socket="$HOMER_SSH/ssh.$RANDOM$RANDOM/agent.$RANDOM$RANDOM"
       forward_ssh "$socket"
       if [ -e "$socket" ]; then
         prefix_cmd+=(env "SSH_AUTH_SOCK=$socket")
@@ -298,7 +301,7 @@
 
     local prefix_cmd=()
     if [ -n "$ssh_agent" ]; then
-      local socket="/tmp/ssh.$RANDOM$RANDOM/agent.$RANDOM$RANDOM"
+      local socket="$HOMER_SSH/ssh.$RANDOM$RANDOM/agent.$RANDOM$RANDOM"
       forward_ssh "$socket"
       if [ -e "$socket" ]; then
         prefix_cmd+=(env "SSH_AUTH_SOCK=$socket")
@@ -462,13 +465,19 @@
   }
 
   function _task_exec_script() {
+    local homer_uid=$(id -u "$HOMER_USER")
+    local homer_gid=$(id -g "$HOMER_GROUP")
+
     printf "#!/usr/bin/env bash\n"
+    printf "{ # https://stackoverflow.com/a/21100710\n"
     printf "function cleanup() {\n"
 
     for share in "${shares[@]}" ; do
       local rhs=$(echo "$share" | cut -f2 -d:)
       printf "  umount %q/%q\n" ~homer "$rhs"
     done
+    printf "  umount %q\n" /tmp
+    printf "  umount %q\n" "/run/user/$homer_uid"
     printf "  umount %q\n" ~homer
 
     printf "}\n"
@@ -482,6 +491,15 @@
       printf "mount --bind %q ~homer/%q\n" "$lhs" "$rhs"
     done
 
+    ## Setup /tmp
+    printf "mkdir -p %q\n" ~homer/.tmp
+    printf "chmod 1777 %q\n" ~homer/.tmp
+    printf "mount --bind %q %q\n" ~homer/.tmp /tmp
+
+    ## Setup /run/user/$UID
+    printf "mkdir -p /run/user/%q\n" "$homer_uid"
+    printf "mount -t tmpfs tmpfs /run/user/%q -o rw,nosuid,nodev,relatime,mode=700,uid=%q,gid=%q,inode64\n" "$homer_uid" "$homer_uid" "$homer_gid"
+
     echo 'mount -t proc proc /proc'
 
     if [ -n "$timeout" ]; then
@@ -489,6 +507,7 @@
       echo -n "timeout $timeout " ## continue to next...
     fi
     echo "sudo -iu \"$HOMER_USER\" ${cmd[@]}"
+    printf "}\n"
   }
 
   ###########################################################################
