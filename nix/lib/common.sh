@@ -616,7 +616,9 @@ function get_nix_profile_path() {
   elif [ -e "/nix/var/nix/profiles/per-user/$USER" ]; then
     echo "/nix/var/nix/profiles/per-user/$USER/$1"
   else
-    echo >&2 "get_nix_profile_base(): Failed to determine base"
-    exit 2
+    ## The change was a while ago. If there's no evidence of existing profile,
+    ## then we're probably on a newer version...
+    mkdir -p "$HOME/.local/state/nix/profiles"
+    echo "$HOME/.local/state/nix/profiles/$1"
   fi
 }
