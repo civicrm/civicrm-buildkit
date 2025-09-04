@@ -93,5 +93,5 @@ for PARAM in "$@" ; do
   esac
 done
 
-show_grid "$VERSIONS" "backdrop:1.x- core: drupal-8: drupal:6.x- drupal:7.x- joomla: packages: wordpress:"
+show_grid "$VERSIONS" "backdrop:1.x- core: drupal-8: drupal:7.x- joomla: packages: wordpress:"
 #show_grid "$VERSIONS" "backdrop:1.x- core:"
