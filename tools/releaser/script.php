@@ -325,9 +325,9 @@ $c['task_sign()'] = function (array $versionSpec, $input, $io, $runner) {
   $sha256File = 'civicrm-' . $versionSpec['version'] . '.SHA256SUMS';
 
   $runner->exec($versionSpec['stagingDir'],
-    sprintf("md5sum *.tar.gz *.tgz *.zip *.json > %s", escapeshellarg($md5File)));
+    sprintf("md5sum *.tar.gz *.zip *.json > %s", escapeshellarg($md5File)));
   $runner->exec($versionSpec['stagingDir'],
-    sprintf("sha256sum *.tar.gz *.tgz *.zip *.json > %s", escapeshellarg($sha256File)));
+    sprintf("sha256sum *.tar.gz *.zip *.json > %s", escapeshellarg($sha256File)));
 
   $runner->exec($versionSpec['stagingDir'],
     sprintf("gpg -b --armor --pinentry-mode=loopback -u %s --sign %s",
