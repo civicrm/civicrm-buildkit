@@ -163,8 +163,6 @@ wp eval '$c=[civi_wp()->basepage->create_wp_basepage()];if (is_callable($c)) $c(
 wp civicrm api StatusPreference.create ignore_severity=critical name=checkOutboundMail
 wp civicrm api StatusPreference.create ignore_severity=critical name=checkLastCron
 
-civicrm_enable_riverlea_theme
-
 # Disable WP fatal error handler as it gets in the way of debugging.
 wp config set WP_DISABLE_FATAL_ERROR_HANDLER true --raw
 
