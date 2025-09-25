@@ -15,6 +15,15 @@ $c = clippy()->register(plugins());
 ###############################################################################
 ## Services / computed data
 
+$c['gpg'] = function(Credentials $cred): \Crypt_GPG {
+  // It's easier to sign multiple files if we use Crypt_GPG wrapper API.
+  #!require pear/crypt_gpg: ~1.6.4
+  $gpg = new \Crypt_GPG(['binary' => trim(`which gpg`)]);
+  $gpg->addSignKey($cred->get('GPG_KEY'), $cred->get('GPG_PASSPHRASE'));
+  return $gpg;
+};
+
+
 $c['versionSpec'] = function (InputInterface $input) {
   $stagingBaseDir = getenv('RELEASE_TMPDIR');
   assertThat($stagingBaseDir && file_exists($stagingBaseDir), 'Environment variable RELEASE_TMPDIR should reference a local data dir');
@@ -182,7 +191,7 @@ $c['gitlabClient()'] = function($url, Credentials $cred, HandlerStack $guzzleHan
   list ($scheme, , $host, $owner, $repo) = explode('/', $url);
 
   static $credCache = [];
-  $credCache[$host] = $credCache[$host] ?? $cred->get('PRIVATE_TOKEN', $host);
+  $credCache[$host] = $credCache[$host] ?? $cred->get('LAB_TOKEN', $host);
 
   $client = new \GuzzleHttp\Client([
     'base_uri' => "{$scheme}//{$host}/api/v4/projects/{$owner}%2F{$repo}/",
@@ -313,13 +322,8 @@ $c['task_get()'] = function (array $versionSpec, $input, $io, $gsutil) {
  * @param \Symfony\Component\Console\Input\InputInterface $input
  * @param \Symfony\Component\Console\Style\SymfonyStyle $io
  */
-$c['task_sign()'] = function (array $versionSpec, $input, $io, $runner) {
+$c['task_sign()'] = function (array $versionSpec, $input, $io, $runner, \Crypt_GPG $gpg) {
   $io->section('Generate checksum and GPG signature');
-  $gpgKey = $input->getOption('gpg-key');
-
-  //  $passphrase = getenv('RELEASE_PASS');
-  //  if (empty($passphrase)) {throw new \Exception("Cannot generate signatures. Please set RELEASE_PASS.");}
-  //  $command = sprintf("echo %s | gpg -b --armor --batch --passphrase-fd 0 -u %s --sign %s");
 
   $md5File = 'civicrm-' . $versionSpec['version'] . '.MD5SUMS';
   $sha256File = 'civicrm-' . $versionSpec['version'] . '.SHA256SUMS';
@@ -329,12 +333,13 @@ $c['task_sign()'] = function (array $versionSpec, $input, $io, $runner) {
   $runner->exec($versionSpec['stagingDir'],
     sprintf("sha256sum *.tar.gz *.zip *.json > %s", escapeshellarg($sha256File)));
 
-  $runner->exec($versionSpec['stagingDir'],
-    sprintf("gpg -b --armor --pinentry-mode=loopback -u %s --sign %s",
-      escapeshellarg($gpgKey), escapeshellarg($md5File)));
-  $runner->exec($versionSpec['stagingDir'],
-    sprintf("gpg -b --armor --pinentry-mode=loopback -u %s --sign %s",
-      escapeshellarg($gpgKey), escapeshellarg($sha256File)));
+  if (!$input->getOption('dry-run')) {
+    $base = $versionSpec['stagingDir'];
+    foreach (["$base/$md5File", "$base/$sha256File"] as $file) {
+      $gpg->signFile("$file", "$file.asc", \Crypt_GPG::SIGN_MODE_DETACHED);
+      assertThat(!empty($gpg->verifyFile($file, file_get_contents("$file.asc"))), "$file should have valid signature");
+    }
+  }
 };
 
 /**
@@ -377,14 +382,12 @@ $c['task_esr_tag()'] = function (array $versionSpec, $input, $io, $gitTag) {
  * @param \Symfony\Component\Console\Input\InputInterface $input
  * @param \Symfony\Component\Console\Style\SymfonyStyle $io
  */
-$c['task_publish()'] = function (array $versionSpec, $input, $io, $runner) {
+$c['task_publish()'] = function (array $versionSpec, $input, $io, $runner, Credentials $cred) {
   $io->section('Publish tarballs to primary download service');
 
   // Get missing info before doing anything
   $io->writeln('This will be uploaded to sf.net. To mark it as the default download on sf.net, one needs an api_key. (To skip, leave blank.)');
-  $sfApiKey = $io->askHidden('Enter sf.net api_key: ', function($pass) {
-    return $pass;
-  });
+  $sfApiKey = $cred->get('FORGE_TOKEN');
   if (empty($sfApiKey)) {
     $io->warning('No api_key specified. Will not update default download on sourceforge.net.');
   }
@@ -496,8 +499,8 @@ $c['task_debug()'] = function(array $versionSpec, $io) use ($c) {
 ## Main
 // FIXME: Help should show an example, echo "example: releaser gs://civicrm-build/4.7.19-rc/civicrm-4.7.19-201705020430.json --get --sign\n";
 // FIXME: Help should show a task list
-$c['app']->main('[-f|--force] [-N|--dry-run] [--git-remote=] [--gpg-key=] json-url tasks*', function($tasks, InputInterface $input) use ($c) {
-  $defaults = ['git-remote' => 'origin', 'gpg-key' => '7A1E75CB'];
+$c['app']->main('[-f|--force] [-N|--dry-run] [--git-remote=] json-url tasks*', function($tasks, InputInterface $input, SymfonyStyle $io) use ($c) {
+  $defaults = ['git-remote' => 'origin'];
   foreach ($defaults as $option => $value) {
     if (!$input->getOption($option)) {
       $input->setOption($option, $value);
@@ -510,6 +513,17 @@ $c['app']->main('[-f|--force] [-N|--dry-run] [--git-remote=] [--gpg-key=] json-u
 
   foreach ($tasks as $task) {
     assertThat($c->has('task_' . $task), "Unrecognized task: $task");
+  }
+
+  if (!empty($tasks)) {
+    if ($vars = $io->askHidden('(Optional) Paste a batch list of secrets (KEY1=VALUE1 KEY2=VALUE2...)')) {
+      assertThat(!preg_match(';[\'\\"];', $vars), "Sorry, not clever enough to handle meta-characters.");
+      foreach (explode(' ', $vars) as $keyValue) {
+        [$key, $value] = explode('=', $keyValue, 2);
+        putenv($keyValue);
+        $_ENV[$key] = $_SERVER[$key] = $value;
+      }
+    }
   }
 
   foreach ($tasks as $task) {

@@ -7,6 +7,7 @@
     },
     "require": {
         "php": ">=7.4",
-        "clippy/std": "~0.5.1"
+        "clippy/std": "~0.5.1",
+        "pear/crypt_gpg": "~1.6.4"
     }
 }
