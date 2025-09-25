@@ -517,6 +517,17 @@ $c['app']->main('[-f|--force] [-N|--dry-run] [--git-remote=] json-url tasks*', f
     assertThat($c->has('task_' . $task), "Unrecognized task: $task");
   }
 
+  if (!empty($tasks)) {
+    if ($vars = $io->askHidden('(Optional) Paste a batch list of secrets (KEY1=VALUE1 KEY2=VALUE2...)')) {
+      assertThat(!preg_match(';[\'\\"];', $vars), "Sorry, not clever enough to handle meta-characters.");
+      foreach (explode(' ', $vars) as $keyValue) {
+        [$key, $value] = explode('=', $keyValue, 2);
+        putenv($keyValue);
+        $_ENV[$key] = $_SERVER[$key] = $value;
+      }
+    }
+  }
+
   foreach ($tasks as $task) {
     $c['task_' . $task]();
   }
