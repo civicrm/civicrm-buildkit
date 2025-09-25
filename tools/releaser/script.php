@@ -191,7 +191,7 @@ $c['gitlabClient()'] = function($url, Credentials $cred, HandlerStack $guzzleHan
   list ($scheme, , $host, $owner, $repo) = explode('/', $url);
 
   static $credCache = [];
-  $credCache[$host] = $credCache[$host] ?? $cred->get('PRIVATE_TOKEN', $host);
+  $credCache[$host] = $credCache[$host] ?? $cred->get('LAB_TOKEN', $host);
 
   $client = new \GuzzleHttp\Client([
     'base_uri' => "{$scheme}//{$host}/api/v4/projects/{$owner}%2F{$repo}/",
@@ -382,14 +382,12 @@ $c['task_esr_tag()'] = function (array $versionSpec, $input, $io, $gitTag) {
  * @param \Symfony\Component\Console\Input\InputInterface $input
  * @param \Symfony\Component\Console\Style\SymfonyStyle $io
  */
-$c['task_publish()'] = function (array $versionSpec, $input, $io, $runner) {
+$c['task_publish()'] = function (array $versionSpec, $input, $io, $runner, Credentials $cred) {
   $io->section('Publish tarballs to primary download service');
 
   // Get missing info before doing anything
   $io->writeln('This will be uploaded to sf.net. To mark it as the default download on sf.net, one needs an api_key. (To skip, leave blank.)');
-  $sfApiKey = $io->askHidden('Enter sf.net api_key: ', function($pass) {
-    return $pass;
-  });
+  $sfApiKey = $cred->get('FORGE_TOKEN');
   if (empty($sfApiKey)) {
     $io->warning('No api_key specified. Will not update default download on sourceforge.net.');
   }
