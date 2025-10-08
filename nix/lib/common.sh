@@ -507,9 +507,9 @@ function warmup_binaries() {
       rm -f ./result*
     set -e
 
-    nix-build -E 'let p=import ./profiles; in builtins.attrValues p' | sort -u
-    nix-instantiate default.nix | sort -u
-    nix-store -r $( ( for PRF in old min dfl max edge; do nix-instantiate -A profiles.$PRF default.nix ; done ) | sort -u )
+    #nix-build -E 'let p=import ./profiles; in builtins.attrValues p' | sort -u
+    #nix-instantiate default.nix | sort -u
+    nix-store -r $( ( for PRF in $PROFILES ; do nix-instantiate -A profiles.$PRF default.nix ; done ) | sort -u )
 
     ## the extra "./result*" files are messy, but we'll leave them to prevent GC
     ## from hitting frequently-used packages
@@ -520,7 +520,7 @@ function warmup_binaries() {
 ## Repeat for {min,dfl,max,edge} and numbers {1,2}.
 function warmup_dispatcher_images() {
   local images="/home/${DISPATCH_USER}/images"
-  for prf in min dfl max alt edge ; do
+  for prf in $PROFILES ; do
     for destnum in 1 2 ; do
       local src="$images/bknix-$prf-0.img"
       local dest="$images/bknix-$prf-$destnum.img"
