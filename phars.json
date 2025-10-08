@@ -47,8 +47,8 @@
    },
 
    "gitscan":  {
-     "url": "https://github.com/totten/git-scan/releases/download/2025-04-30/git-scan-2025-04-30.phar",
-     "sha256": "f740bdf06b75b8d24cf88042df6c6ee9ee3fb25339ddff68b32ef204f6bfab28",
+     "url": "https://github.com/totten/git-scan/releases/download/2025-10-07/git-scan-2025-10-07.phar",
+     "sha256": "b4995e1b6db310083c7b0c39604edca3c781905623143dde6cd33e03935cbb35",
      "buildkit-path": "bin/git-scan"
    },
 
