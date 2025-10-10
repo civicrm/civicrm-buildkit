@@ -29,8 +29,11 @@
 #   - Register systemd services for php/mysql/etc. (These run transactionally.)
 #   - Build specific homer images. (This are created as-needed by `run-bknix-job`.)
 #
-# Example: Install (or upgrade) all the profiles
+# Example: Install (or upgrade). Only warmup minimal binaries.
 #   ./bin/install-runner.sh
+#
+# Example: Install (or upgrade). Warmup specific profiles
+#   PROFILES='php82m80 php83m57' ./bin/install-runner.sh
 #
 # Example: Install (or upgrade) all the profiles, overwriting any local config files
 #   FORCE_INIT=-f ./bin/install-runner.sh
@@ -49,6 +52,7 @@ source "$BINDIR/../lib/common.sh"
 ## Main
 
 BKNIX_CI_TEMPLATE="runner"
+PROFILES=${PROFILES:-base mgmt}
 
 assert_root_user
 check_reqs
@@ -57,6 +61,7 @@ if [ -f "/var/local/bknix-ready" ]; then
 fi
 
 install_cachix
+type rsync >> /dev/null || apt-get install -y rsync
 init_folder "$BKNIXSRC/examples/$BKNIX_CI_TEMPLATE" /etc/bknix-ci
 touch /etc/bknix-ci/is-runner
 install_bin "$BKNIXSRC/../bin/homerdo"      /usr/local/bin/homerdo
@@ -82,8 +87,10 @@ esac
 
 apt-get install -y qemu-utils acl psmisc && homerdo install
 install_dispatcher
-warmup_binaries
-warmup_dispatcher_images
+if [[ -n "$PROFILES" ]]; then
+  warmup_binaries
+  warmup_dispatcher_images
+fi
 
 mkdir -p /var/local/runjob
 chmod 1777 /var/local/runjob
