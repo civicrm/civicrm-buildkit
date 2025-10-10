@@ -139,7 +139,6 @@ EOPERM
   ## Demo sites always disable email and often disable cron
   drush cvapi StatusPreference.create ignore_severity=critical name=checkOutboundMail
   drush cvapi StatusPreference.create ignore_severity=critical name=checkLastCron
-  civicrm_enable_riverlea_theme
   ## Setup CiviCRM dashboards
   INSTALL_DASHBOARD_USERS="$ADMIN_USER;$DEMO_USER" drush scr "$SITE_CONFIG_DIR/install-dashboard.php"
 
