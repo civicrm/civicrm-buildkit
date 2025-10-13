@@ -18,7 +18,16 @@
  * Additionally, there are aliases like `min`, `max`, `php81`, etc.
  */
 let
-  phpXXmXX = import ./phpXXmXX/default.nix;
+
+  /**
+   * ***************************************************
+   * (Prelude) Import general information and utilities
+   * ***************************************************
+   *
+   * In this section, we obtain the list of all PHP+DBMS
+   * versions.
+   */
+
   dists = import ../pins;
 
   ## Some older packages aren't buildable on Apple M1, so we use closest match.
@@ -37,6 +46,14 @@ let
           key;
     in attrsets.mapAttrs' (k: v: { name=(rekey k); value=v; }) record;
 
+  isValidProfile = x: (builtins.tryEval x).success;
+
+  /**
+   * ******************************
+   * Import PHP and DBMS defintions
+   * ******************************
+   */
+
   ## phpVersions = { php73=PKG, php80=PKG, ... }
   phpVersions = (attrsets.filterAttrs (name: value: builtins.match "php[0-9]+" name != null) dists.bkit);
 
@@ -49,6 +66,16 @@ let
   ## dbmsVersions = { m57=PKG, m80=PKG, r105=PKG, r106=PKG, ...}
   dbmsVersions = (rekeyRecord "mysql" "m" mysqlVersions) // (rekeyRecord "mariadb" "r" mariadbVersions);
 
+  /**
+   * ***************************************
+   * Prepare all combinations of PHP x DBMS
+   * ***************************************
+   */
+
+  ## Based on some PHP vX.X and some DBMS vX.X., make a full profile.
+  ## function( php, dbms ) => full-package-list
+  phpXXmXX = import ./phpXXmXX/default.nix;
+
   combinations = builtins.foldl' (acc: phpVersion:
     builtins.foldl' (innerAcc: dbmsVersion:
       innerAcc // {
@@ -57,19 +84,12 @@ let
     ) acc (builtins.attrNames dbmsVersions)
   ) {} (builtins.attrNames phpVersions);
 
-  allProfiles = combinations // rec {
-
-   /* ---------- Partial profiles; building-blocks ---------- */
-
-   /**
-    * Common CLI utilities shared by all other profiles
-    */
-   base = import ./base/default.nix;
-
-   /**
-    * bknix-specific management utilities
-    */
-   mgmt = import ./mgmt/default.nix;
+  /**
+   * **********************
+   * Prepare alias profiles
+   * **********************
+   */
+  aliasProfiles = rec {
 
    /**
     * These aliases represent the current minimum/maximum, as viewed from
@@ -101,6 +121,24 @@ let
    php83 = combinations.php83m80;
    php84 = combinations.php84m80;
 
+  };
+
+  /**
+   * ********************************************
+   * Misc profiles. For downstream customization.
+   * ********************************************
+   */
+  helperProfiles = rec {
+   /**
+    * Common CLI utilities shared by all other profiles
+    */
+   base = import ./base/default.nix;
+
+   /**
+    * bknix-specific management utilities
+    */
+   mgmt = import ./mgmt/default.nix;
+
    /**
     * Tool-chain used during releases
     */
@@ -108,10 +146,7 @@ let
 
   };
 
-  isValidProfile = x: (builtins.tryEval x).success;
-
-#in allProfiles
-in attrsets.filterAttrs (k: v: isValidProfile v) allProfiles
+in attrsets.filterAttrs (k: v: isValidProfile v) (helperProfiles // combinations // aliasProfiles)
 
 ## FIXME: It might be nicer to return the full list.  This would mean that
 ## commands like `nix-shell -A phpXXmXX` would raise slightly more precise
