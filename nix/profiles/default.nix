@@ -1,9 +1,12 @@
 /**
- * This folder aims to help users setup _profiles_ which include a long
- * all the recommended development tools. Each item returned here is a
- * list of packages that can be installed in (one of) your profile(s).
+ * This folder aims to help users setup _profiles_ which include all
+ * the recommended development tools. Each profile is a list of
+ * packages that can be installed in (one of) your profile(s).
  *
- * The main list is built as the Cartesian product of PHP versions and DBMS versions, ie
+ * All profiles include common tools, such as bzip2 and MailHog.
+ * The key differentiators are the PHP versions and DBMS versions.
+ *
+ * You can choose any combination of PHP x DBMS, as in this table:
  *
  *   php73m57 php73m80 php73m84 php73r105 php73r106
  *   php74m57 php74m80 php74m84 php74r105 php74r106
