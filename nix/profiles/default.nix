@@ -1,21 +1,30 @@
 /**
- * This folder aims to help users setup _profiles_ which include all
- * the recommended development tools. Each profile is a list of
- * packages that can be installed in (one of) your profile(s).
+ * A _profile_ provides a list of recommended packages (such as PHP and bzip2).
  *
- * All profiles include common tools, such as bzip2 and MailHog.
- * The key differentiators are the PHP versions and DBMS versions.
+ * This script defines many profiles, including these three groups:
  *
- * You can choose any combination of PHP x DBMS, as in this table:
+ * - "combinations": Cartesian product of PHP x DBMS. Each of these is a profile:
  *
- *   php73m57 php73m80 php73m84 php73r105 php73r106
- *   php74m57 php74m80 php74m84 php74r105 php74r106
- *   php80m57 php80m80 php80m84 php80r105 php80r106
- *   php81m57 php81m80 php81m84 php81r105 php81r106
- *   php82m57 php82m80 php82m84 php82r105 php82r106
- *   php83m57 php83m80 php83m84 php83r105 php83r106
+ *     php73m57 php73m80 php73m84 php73r105 php73r106
+ *     php74m57 php74m80 php74m84 php74r105 php74r106
+ *     php80m57 php80m80 php80m84 php80r105 php80r106
+ *     php81m57 php81m80 php81m84 php81r105 php81r106
+ *     php82m57 php82m80 php82m84 php82r105 php82r106
+ *     php83m57 php83m80 php83m84 php83r105 php83r106
  *
- * Additionally, there are aliases like `min`, `max`, `php81`, etc.
+ *     These are named for PHP+DBMS. However, the profiles also include
+ *     many shared utilities (such as bzip2 and MailHog).
+ *
+ * - "aliasProfiles": These are convenience aliases. A few examples:
+ *
+ *     "min" (lowest supported version of PHP+MySQL; ex: "min=php80m57")
+ *     "max" (highest supported version of PHP+MySQL; ex: "max=php84m84")
+ *     "php80" (PHP 8.0 with some arbitrary DBMS; ex: "php80=php80m57")
+ *
+ *     The actual "aliasProfiles" are defined further down.
+ *
+ * - "helperProfiles": These oddballs can be used if one
+ *   needs to build a similar/custom profile.
  */
 let
 
@@ -129,6 +138,7 @@ let
    * ********************************************
    */
   helperProfiles = rec {
+
    /**
     * Common CLI utilities shared by all other profiles
     */
