@@ -253,13 +253,13 @@ function sshd_run() {
 function proxy_start() {
   local BKPROF="max"
   local BKIT="$HOME/bknix-$BKPROF"
-  ( cd "$BKIT/src/demo-proxy" && nix-shell --run "loco start" )
+  ( cd "$BKIT/tools/demo-proxy" && nix-shell --run "loco start" )
 }
 
 function proxy_stop() {
   local BKPROF="max"
   local BKIT="$HOME/bknix-$BKPROF"
-  ( cd "$BKIT/src/demo-proxy" && nix-shell --run "loco stop" )
+  ( cd "$BKIT/tools/demo-proxy" && nix-shell --run "loco stop" )
 }
 
 #####################################################################

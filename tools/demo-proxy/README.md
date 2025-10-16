@@ -16,6 +16,6 @@ Example: Suppose the demo-proxy receives request for `http://FOOBAR.example.com`
 ### Usage
 
 ```
-cd src/demo-proxy
+cd tools/demo-proxy
 nix-shell --run 'loco run'
 ```
