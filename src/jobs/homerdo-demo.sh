@@ -24,7 +24,7 @@ CLEANUP_CALLS=()         ## List of functions to call during shutdown
 CLEANUP_FILES=()         ## List of files/directories to delete
 
 ## How big should make the data-storage?
-SIZE=40g
+SIZE=50g
 # SIZE=10g
 
 ## List of buildkit profiles to enable
@@ -33,8 +33,8 @@ SIZE=40g
 ALL_PROFILES=(min dfl max alt edge)
 
 ## List of buildkit types for which we want warm caches
-WARMUP_TYPES=(drupal-demo)
-#WARMUP_TYPES=(drupal-demo wp-demo)
+WARMUP_TYPES=(standalone-clean)
+#WARMUP_TYPES=(standalone-clean drupal-demo wp-demo)
 
 ## How frequently should we bake-in cache updates?
 TTL_TOOLS=120            ## During setup, refresh 'civi-download-tools' (if >120 minutes old)
