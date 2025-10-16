@@ -61,6 +61,7 @@ services:
     run: 'php-fpm -y "$LOCO_SVC_VAR/php-fpm.conf" --nodaemonize'
     pid_file: '$LOCO_SVC_VAR/php-fpm.pid'
     message: 'PHP-FPM is running on "<comment>$LOCALHOST:$PHPFPM_PORT</comment>"'
+    io_mode: close-output
 
   # To enable in CI, need to either set LOCALHOST to a public IP, or setup some kind of reverse proxy.
   #mailcatcher:
