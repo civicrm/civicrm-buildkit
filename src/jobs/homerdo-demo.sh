@@ -23,14 +23,20 @@ SELF="$0"                ## Path to the current script
 CLEANUP_CALLS=()         ## List of functions to call during shutdown
 CLEANUP_FILES=()         ## List of files/directories to delete
 
+IMAGE_FILE="demo.img"
+
 ## How big should make the data-storage?
 SIZE=50g
 # SIZE=10g
 
 ## List of buildkit profiles to enable
-#ALL_PROFILES=(min max)
+ALL_PROFILES=(min max)
 #ALL_PROFILES=(min dfl max)
-ALL_PROFILES=(min dfl max alt edge)
+#ALL_PROFILES=(min dfl max alt edge)
+
+## Which profile to use for basic plumbing, like site-list.
+## MUST be included in ALL_PROFILES
+BASIC_PROFILE=min
 
 ## List of buildkit types for which we want warm caches
 WARMUP_TYPES=(standalone-clean)
@@ -48,6 +54,15 @@ BKIT_REPO="https://github.com/civicrm/civicrm-buildkit"
 BKIT_BRANCH="master"
 #BKIT_REPO="https://github.com/totten/civicrm-buildkit"
 #BKIT_BRANCH="master-demo-2"
+
+## When launching "homerdo-demo.sh exec" subprocess, should we pass any flags?
+## Ex: Pass --temp to run services on tmpfs.
+EXEC_FLAGS="--temp"
+
+## Allow local overrides
+if [ -f /etc/bknix-ci/homerdo-demo.conf.sh ]; then
+  source /etc/bknix-ci/homerdo-demo.conf.sh
+fi
 
 #####################################################################
 ## Main
@@ -74,18 +89,12 @@ function on_shutdown() {
 ## USER: (anyone)
 ## EXAMPLE: `JOB_NAME=FooBar BKPROF=min homer-do-task.sh`
 function do_all() {
-  local imageDir="$HOME/images"
-
-  if [ ! -d "$imageDir" ]; then
-    mkdir -p "$imageDir"
-  fi
-
-  local img="$imageDir/demo.img"
+  local img=$(image_file)
   echo >&2 "[$USER] Chose home-image $img"
 
   set -e
   homerdo --size "$SIZE" -i "$img" -- "$SELF" setup
-  homerdo --size "$SIZE" -i "$img" --temp -- "$SELF" exec
+  homerdo --size "$SIZE" -i "$img" $EXEC_FLAGS -- "$SELF" exec
 }
 
 #####################################################################
@@ -121,7 +130,7 @@ function do_setup() {
 #####################################################################
 ## TASK: Execute job
 ## USER: "homer"
-## HOME FILE MODE: "Temp"
+## HOME FILE MODE: "Temp" (by default)
 ## EXAMPLE: `homerdo-task.sh exec > /tmp/my-log.txt`
 ##
 ## Use this to launch the various daemons. In particular:
@@ -146,7 +155,9 @@ function do_exec() {
   proxy_start
   CLEANUP_CALLS+=( proxy_stop )
 
-  use-bknix min -r civibuild create site-list
+  if [ ! -d "$HOME/bknix-$BASIC_PROFILE/build/site-list" ]; then
+    use-bknix "$BASIC_PROFILE" -r civibuild create site-list
+  fi
   ## TIP: Put extra config in /etc/site-list.settings.d/post.d/demo.php. Ex:
   ##   $GLOBALS['civibuild']['SITE_TOKEN'] = 'mYrAnDoM';
   ##   $GLOBALS['sitelist']['bldDirs'] = glob(getenv('HOME') . '/bknix*/build');
@@ -156,6 +167,27 @@ function do_exec() {
 
   # echo "EXEC: Start post-run shell. Press Ctrl-D to finish post-run shell." && bash
   sshd_run
+}
+
+#####################################################################
+
+## Locate the image file
+function image_file() {
+  if [[ "$USER" = "homer" ]]; then
+    fatal "This step must not run as homer"
+  fi
+  local imageDir="$HOME/images"
+
+  if [ ! -d "$imageDir" ]; then
+    mkdir -p "$imageDir"
+  fi
+
+  echo "$imageDir/$IMAGE_FILE"
+}
+
+function fatal {
+  echo "$@" >&2
+  exit 1
 }
 
 #####################################################################
