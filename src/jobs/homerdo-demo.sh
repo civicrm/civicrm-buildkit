@@ -255,6 +255,14 @@ function profile_setup() {
     (cd "$BKIT" && nix-shell nix/bare.nix -A "$BKPROF" --run './bin/civi-download-tools && ./bin/civibuild cache-warmup')
     touch "$BKIT/.ttl-tools"
   fi
+
+  find "$BKIT/.loco/var" "$BKIT/tools/demo-proxy/.loco/var" -name '*.pid' -delete
+  #if [[ -d "$BKIT/.loco/var" ]]; then
+  #  rm -rf "$BKIT/.loco/var"
+  #fi
+  #if [[ -d "$BKIT/tools/demo-proxy/.loco/var" ]]; then
+  #  rm -rf "$BKIT/tools/demo-proxy/.loco/var"
+  #fi
 }
 
 ## usage: profile_warmup <BKPROF> [BLDTYPES...]
