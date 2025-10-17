@@ -72,7 +72,8 @@ function main() {
     all)         do_all ; ;;
     setup)       do_setup ; ;;
     exec)        do_exec ; ;;
-    *)           echo >&2 "usage: $0 <all|setup|exec>" ; exit 1;
+    prune)       do_prune ; ;;
+    *)           echo >&2 "usage: $0 <all|setup|exec|prune>" ; exit 1;
   esac
 }
 
@@ -95,6 +96,32 @@ function do_all() {
   set -e
   homerdo --size "$SIZE" -i "$img" -- "$SELF" setup
   homerdo --size "$SIZE" -i "$img" $EXEC_FLAGS -- "$SELF" exec
+}
+
+#####################################################################
+## TASK: Prune
+## USER: (any) or "homer"
+## HOME FILE MODE: (varies)
+## EXAMPLE: `homerdo-task.sh prune`
+##
+## Run the cleanup job to prune old builds.
+
+function do_prune() {
+  if [[ "$USER" != "homer" ]]; then
+    if systemctl is-active --quiet demo.service ; then
+      local img=$(image_file)
+      echo >&2 "[$USER] Chose home-image $img"
+      homerdo -i "$img" $EXEC_FLAGS enter -- "$SELF" prune
+    else
+      echo >&2 "[$USER] Demo service is offline. Skip cleanup."
+    fi
+  else
+    DAYS=30
+    find "$HOME"/bknix-*/build/.civibuild/snapshot -name \*gz -ctime +${DAYS} -delete
+    find "$HOME"/_bknix/ramdisk/worker-*amp/my.cnf.d -name my.cnf-\* -ctime +${DAYS} -delete
+    /opt/buildkit/bin/bknix-cleanup-builds --partition=/home/homer
+    find /tmp -user "$USER" -mtime +${DAYS} -delete 2>&1 | grep -v "Permission denied" || echo "WARNING: Some tmp files could not be inspected."
+  fi
 }
 
 #####################################################################

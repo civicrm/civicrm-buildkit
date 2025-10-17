@@ -1,0 +1,316 @@
+#!/usr/bin/perl
+
+###########################################################
+
+# We have a test server that periodically creates new builds. We want to write
+# a pruning script in Perl. The script aims to keep available disk-capacity
+# within certain boundaries.
+#
+# Builds can be found in the user's home directory, with this pattern:
+#
+# * `bknix-{PROFILE}/build/{NAME}-{ID}-{REVISION}/` (build folder)
+# * `bknix-{PROFILE}/build/{NAME}-{ID}-{REVISION}.sh` (build metadata file)
+#
+# To delete a build, delete both the folder and the metadata file. Then call `use-bknix {PROFILE} -r amp cleanup`.
+#
+# The method `findStaleBuilds($expireThreshold, $redundantThreshold)` will identify old builds based on two criteria:
+#
+# * If a build is older than `$expireThreshold`, then it is stale.
+# * If a build is older than `$redundantThreshold`, and if there is a newer {REVISION} for the same {NAME}-{ID}, then the older revision is stale.
+#
+# The goal is keep disk-usage (for the `/home` partitiion) under a certain threshold, based on %blocks and %inodes.
+#
+# ```
+# df $PARTITION --output=ipcent | tail -n1 | sed 's/[^0-9]//g'
+# df $PARTITION --output=pcent | tail -n1 | sed 's/[^0-9]//g'
+# ```
+#
+# When performing the cleanup process, we run a series of increasingly aggressive tasks -- until we satisfy the disk-capacity goals.
+#
+# * Level 0: `findStaleBuilds(expire=>'5 days', redundant=>'8 hours')` (*unconditionally executed*)
+# * Level 1: `findStaleBuilds(expire=>'4 days', redundant=>'4 hours')` (*if needed*)
+# * Level 2: `findStaleBuilds(expire=>'3 days', redundant=>'3 hours')` (*if needed*)
+# * Level 3: `findStaleBuilds(expire=>'2 days', redundant=>'2 hours')` (*if needed*)
+# * Level 4: `findStaleBuilds(expire=>'12 hours', redundant=>'30 min')` (*if needed*)
+#
+# This script should be written in Perl so that it runs on Debian Linux with minimal dependencies.
+
+###########################################################
+
+use strict;
+use warnings;
+use File::Path qw(remove_tree);
+use File::Basename;
+use POSIX qw(strftime);
+# autodie is useful for external commands, but qx() is used here for control
+# over error codes, so we'll handle command status manually.
+use Getopt::Long;
+
+# --- CONFIGURATION ---
+# Target Disk Usage Thresholds (for /home partition)
+my $MAX_BLOCK_PERCENT = 85; # Target maximum block usage %
+my $MAX_INODE_PERCENT = 80; # Target maximum inode usage %
+my $PARTITION = '/home';
+my $USE_BKNIX_CMD = 'use-bknix'; # The command to execute after deletion
+
+# Cleanup levels and their respective thresholds (duration strings)
+# Levels run in order: 0 (least aggressive) to 4 (most aggressive)
+my @CLEANUP_LEVELS = (
+    { expire => '10 days',    redundant => '10 hours' }, # Level 0
+    { expire => '7 days',     redundant => '7 hours' }, # Level 1
+    { expire => '4 days',     redundant => '4 hours' }, # Level 2
+    { expire => '2 days',     redundant => '2 hours' }, # Level 3
+    { expire => '12 hours',   redundant => '30 min'  }, # Level 4
+    { expire => '6 hours',    redundant => '15 min'  }, # Level 5
+);
+
+# --- ARGUMENT PARSING ---
+
+my $threshold_arg;
+my $partition_arg;
+
+# Parse command line options. 'i' is integer, 's' is string.
+GetOptions(
+    "threshold=i" => \$threshold_arg,
+    "partition=s" => \$partition_arg,
+) or die "Usage: $0 [--threshold=PERCENT] [--partition=PATH]\n";
+
+# 1. Handle --partition argument
+if (defined $partition_arg && $partition_arg ne '') {
+    $PARTITION = $partition_arg;
+}
+
+# 2. Handle --threshold argument (overrides both block and inode defaults)
+if (defined $threshold_arg) {
+    if ($threshold_arg < 0 || $threshold_arg > 100) {
+        die "Threshold percentage must be between 0 and 100.\n";
+    }
+    $MAX_BLOCK_PERCENT = $threshold_arg;
+    $MAX_INODE_PERCENT = $threshold_arg;
+}
+
+# --- UTILITY FUNCTIONS ---
+
+# Parses a duration string (e.g., '5 days', '30 min') into seconds
+sub parse_duration {
+    my ($duration_str) = @_;
+    if ($duration_str =~ /^(\d+)\s+(min|hour|day)s?$/i) {
+        my ($value, $unit) = (int($1), lc($2));
+        if ($unit eq 'min')   { return $value * 60; }
+        if ($unit eq 'hour')  { return $value * 60 * 60; }
+        if ($unit eq 'day')   { return $value * 60 * 60 * 24; }
+    }
+    # Fallback to 0 if parsing fails (shouldn't happen with defined levels)
+    warn "Invalid duration format: $duration_str. Defaulting to 0 seconds.\n";
+    return 0;
+}
+
+# Checks current disk usage for blocks and inodes using df
+sub check_disk_usage {
+    my $partition = shift;
+
+    # df /home --output=ipcent | tail -n1 | sed 's/[^0-9]//g' -> Inode %
+    my $inode_percent = qx(df $partition --output=ipcent 2>/dev/null | tail -n1 | sed 's/[^0-9]//g');
+    chomp $inode_percent;
+
+    # df /home --output=pcent | tail -n1 | sed 's/[^0-9]//g' -> Block %
+    my $block_percent = qx(df $partition --output=pcent 2>/dev/null | tail -n1 | sed 's/[^0-9]//g');
+    chomp $block_percent;
+
+    # Basic input validation
+    if ($inode_percent !~ /^\d+$/ || $block_percent !~ /^\d+$/) {
+        warn "Could not reliably determine disk usage for $partition. df output was not numeric.\n";
+        return (0, 0);
+    }
+
+    return (int($block_percent), int($inode_percent));
+}
+
+# Finds builds to prune based on age and redundancy thresholds
+sub findStaleBuilds {
+    my (%thresholds) = @_;
+    my $expire_sec = parse_duration($thresholds{expire});
+    my $redundant_sec = parse_duration($thresholds{redundant});
+    my $now = time();
+
+    print "--- Find Stale Builds: Expire >= $thresholds{expire}, Redundant >= $thresholds{redundant} ---\n";
+
+    my @all_builds;
+    # Key: PROFILE:NAME-ID -> Value: { mtime, revision } of the LATEST build in this group
+    my %latest_mtime = ();
+
+    my $home_dir = $ENV{HOME} // die "HOME environment variable not set. Cannot proceed.\n";
+
+    # Find all build directories matching the pattern: $HOME/bknix-*/build/*/{REVISION}/
+    # Note: the final '/*' matches the {NAME}-{ID}-{REVISION} part, assuming {REVISION} is usually numeric or a timestamp
+    my @build_dirs = glob("$home_dir/bknix-*/build/*/");
+
+    foreach my $dir_path (@build_dirs) {
+        chomp $dir_path;
+
+        # 1. Check for companion .sh file
+        my $sh_path = $dir_path;
+        $sh_path =~ s/\/$//; # Remove trailing slash to append .sh
+        $sh_path .= '.sh';
+
+        unless (-d $dir_path && -f $sh_path) {
+             # Skip builds where the folder or script is missing (potential orphans)
+             next;
+        }
+
+        # 2. Extract components: bknix-{PROFILE}/build/{NAME}-{ID}-{REVISION}/
+        # {NAME}-{ID} is captured as $name_id, {REVISION} as $revision
+        if ($dir_path =~ m{bknix-([^/]+)/build/([^-]+-\d+)-([a-z0-9]+)/$}) {
+            my ($profile, $name_id, $revision) = ($1, $2, $3);
+            my $key = "$profile:$name_id";
+
+            my $mtime = (stat $dir_path)[9];
+
+            my $build = {
+                dir_path  => $dir_path,
+                sh_path   => $sh_path,
+                profile   => $profile,
+                name_id   => $name_id,
+                revision  => $revision,
+                mtime     => $mtime,
+                timestamp => strftime("%Y-%m-%d %H:%M:%S", localtime($mtime)),
+            };
+
+            push @all_builds, $build;
+
+            # Update tracking for the latest revision in this NAME-ID group
+            if (!exists $latest_mtime{$key} || $mtime > $latest_mtime{$key}->{mtime}) {
+                $latest_mtime{$key} = { mtime => $mtime, revision => $revision };
+            }
+
+        } else {
+            # Log any folder that doesn't fit the expected naming convention
+            #warn "Skipping non-conforming path: $dir_path\n";
+        }
+    }
+
+    my @stale_builds;
+
+    # Apply the two-part staleness criteria
+    foreach my $build (@all_builds) {
+        my $key = "$build->{profile}:$build->{name_id}";
+        my $latest_revision_in_group = $latest_mtime{$key}->{revision};
+
+        my $is_stale = 0;
+        my $reason = 'None';
+
+        # Criteria 1: Absolute Expiration
+        if ($build->{mtime} < $now - $expire_sec) {
+            $is_stale = 1;
+            $reason = "Expired (older than $thresholds{expire})";
+        }
+
+        # Criteria 2: Redundancy (older than $redundantThreshold AND NOT the newest revision)
+        if (!$is_stale &&
+            $build->{mtime} < $now - $redundant_sec &&
+            $build->{revision} ne $latest_revision_in_group
+        ) {
+            $is_stale = 1;
+            $reason = "Redundant (older than $thresholds{redundant} AND not $latest_revision_in_group)";
+        }
+
+        if ($is_stale) {
+            $build->{reason} = $reason;
+            push @stale_builds, $build;
+        }
+    }
+
+    # Sort the builds by oldest modification time first
+    @stale_builds = sort { $a->{mtime} <=> $b->{mtime} } @stale_builds;
+
+    return \@stale_builds;
+}
+
+# Executes the deletion and post-deletion command for a list of builds
+sub perform_cleanup {
+    my ($stale_builds) = @_;
+    my $deleted_count = 0;
+
+    foreach my $build (@$stale_builds) {
+        print "\nPRUNING: $build->{dir_path}\n";
+        print "  Reason: $build->{reason} (Modified: $build->{timestamp})\n";
+
+        # 1. Delete the folder
+        if (remove_tree($build->{dir_path}, { safe => 1, keep_root => 0 })) {
+            print "  [OK] Deleted directory: $build->{dir_path}\n";
+        } else {
+            warn "  [FAIL] Could not delete directory: $build->{dir_path}. Skipping cleanup command.\n";
+            next;
+        }
+
+        # 2. Delete the metadata file
+        if (unlink $build->{sh_path}) {
+            print "  [OK] Deleted metadata file: $build->{sh_path}\n";
+        } else {
+            warn "  [FAIL] Could not delete metadata file: $build->{sh_path}. (Already removed?). Skipping cleanup command.\n";
+            next;
+        }
+
+        # 3. Run the post-deletion cleanup command
+        my $cleanup_cmd = "$USE_BKNIX_CMD $build->{profile} -r amp cleanup 2>&1";
+        print "  [CMD] Running: $cleanup_cmd\n";
+
+        # Execute command and capture output/exit status
+        my $output = qx($cleanup_cmd);
+        my $exit_code = $? >> 8;
+
+        if ($exit_code == 0) {
+            print "  [OK] use-bknix cleanup successful.\n";
+        } else {
+            # Print command output on failure for debugging
+            warn "  [FAIL] use-bknix cleanup failed (Exit Code $exit_code).\nOutput:\n$output";
+        }
+
+        $deleted_count++;
+    }
+
+    print "\n--- Cleanup Finished: $deleted_count builds deleted ---\n";
+    return $deleted_count;
+}
+
+# --- MAIN SCRIPT EXECUTION ---
+
+print "Starting build pruning script...\n";
+print "Target Partition: $PARTITION. Max Blocks: $MAX_BLOCK_PERCENT%, Max Inodes: $MAX_INODE_PERCENT%\n";
+
+my ($current_blocks, $current_inodes) = check_disk_usage($PARTITION);
+print "Current Disk Usage: Blocks=$current_blocks%, Inodes=$current_inodes%\n";
+
+# Loop through cleanup levels until disk goals are met
+for my $level (0 .. $#CLEANUP_LEVELS) {
+    my $exp = $CLEANUP_LEVELS[$level]->{expire};
+    my $red = $CLEANUP_LEVELS[$level]->{redundant};
+
+    print "\n======================================================\n";
+    print "Beginning Cleanup Level $level (Thresholds: Exp=$exp, Red=$red)\n";
+    print "======================================================\n";
+
+    # 1. Find builds to delete
+    my $stale_builds_ref = findStaleBuilds(%{$CLEANUP_LEVELS[$level]});
+
+    # 2. Perform deletion and cleanup command
+    if (scalar @$stale_builds_ref > 0) {
+        perform_cleanup($stale_builds_ref);
+    }
+
+    # 3. Re-check disk usage after cleanup
+    ($current_blocks, $current_inodes) = check_disk_usage($PARTITION);
+    print "\nPost-Level $level Disk Usage: Blocks=$current_blocks%, Inodes=$current_inodes%\n";
+
+    if ($current_blocks <= $MAX_BLOCK_PERCENT && $current_inodes <= $MAX_INODE_PERCENT) {
+        print "\nSUCCESS: Disk capacity goals met. Stopping cleanup.\n";
+        last; # Stop the loop if goals are met
+    }
+}
+
+if ($current_blocks > $MAX_BLOCK_PERCENT || $current_inodes > $MAX_INODE_PERCENT) {
+    print "\nALERT: Finished all cleanup levels (Level 4 was the last) and disk usage is still too high!\n";
+    exit 1;
+}
+
+exit 0;
