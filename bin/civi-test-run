@@ -196,6 +196,11 @@ function test_core_extenions() {
 function test_afform_extensions() {
   DIR="$1"
   pushd "$DIR"
+    if [ -f "$DIR/admin/phpunit.xml.dist" ]; then
+       task_phpunit_core_extension "$(basename $DIR)/admin" "afform-admin"
+       $GUARD civibuild restore "$BLDNAME"
+       $GUARD cv flush --cwd="$CIVI_CORE" ## This is smelly. It begs the question of "what is leaking between tests".
+    fi
     task_phpunit_core_extension "$(basename $DIR)/core" "afform-core"
     $GUARD civibuild restore "$BLDNAME"
     $GUARD cv flush --cwd="$CIVI_CORE" ## This is smelly. It begs the question of "what is leaking between tests".
