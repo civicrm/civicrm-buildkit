@@ -153,7 +153,7 @@ sub findStaleBuilds {
         $sh_path =~ s/\/$//; # Remove trailing slash to append .sh
         $sh_path .= '.sh';
 
-        unless (-d $dir_path && -f $sh_path) {
+        unless (-d $dir_path) {
              # Skip builds where the folder or script is missing (potential orphans)
              next;
         }
@@ -236,7 +236,7 @@ sub perform_cleanup {
         print "  Reason: $build->{reason} (Modified: $build->{timestamp})\n";
 
         # 1. Delete the folder
-        if (remove_tree($build->{dir_path}, { safe => 1, keep_root => 0 })) {
+        if (remove_tree($build->{dir_path}, { safe => 0, keep_root => 0 })) {
             print "  [OK] Deleted directory: $build->{dir_path}\n";
         } else {
             warn "  [FAIL] Could not delete directory: $build->{dir_path}. Skipping cleanup command.\n";

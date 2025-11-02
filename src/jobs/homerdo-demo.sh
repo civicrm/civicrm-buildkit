@@ -118,6 +118,7 @@ function do_prune() {
   else
     DAYS=30
     find "$HOME"/bknix-*/build/.civibuild/snapshot -name \*gz -ctime +${DAYS} -delete
+    find "$HOME"/bknix-*/build/.civibuild/tmp -name \*gz -ctime +${DAYS} -delete
     find "$HOME"/_bknix/ramdisk/worker-*amp/my.cnf.d -name my.cnf-\* -ctime +${DAYS} -delete
     /opt/buildkit/bin/bknix-cleanup-builds --partition=/home/homer
     find /tmp -user "$USER" -mtime +${DAYS} -delete 2>&1 | grep -v "Permission denied" || echo "WARNING: Some tmp files could not be inspected."
