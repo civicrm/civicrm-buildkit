@@ -2007,7 +2007,7 @@ function civibuild_apply_user_extras() {
 
   if [ -n "$EXTRA_DLS" ]; then
     pushd "$WEB_ROOT" >> /dev/null
-      if ! extract-url -v -d '|' "$EXTRA_DLS" ; then
+      if ! extract-url -d '|' "$EXTRA_DLS" ; then
         echo "Failed to extract extra archives"
         exit 94
       fi
