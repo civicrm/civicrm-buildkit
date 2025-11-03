@@ -14,6 +14,9 @@ environment:
  - HTTPD_VDROOT=$BKIT/build
  - HTTPD_VISIBILITY=all
 
+ ## HTTPD_PROXY: Specify whether we sit behind an HTTP(S) proxy. (Either "none" or "local")
+ - HTTPD_PROXY=local
+
  ## *_PORT: Most daemons run on auxiliary/non-standard TCP/UDP ports.
  - MAIL_SMTP_PORT=$(portname smtp "$BKPROF")
  - MAIL_HTTP_PORT=$(portname webmail "$BKPROF")
