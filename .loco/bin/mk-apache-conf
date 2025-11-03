@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+if [[ -z "$LOCO_SVC_CFG" ]]; then
+  echo >&2 "Missing variable: LOCO_SVC_CFG"
+  exit 1
+fi
+if [[ -z "$LOCO_SVC_VAR" ]]; then
+  echo >&2 "Missing variable: LOCO_SVC_VAR"
+  exit 1
+fi
+
+if [[ ! -d "$LOCO_SVC_VAR/conf" ]]; then
+  mkdir "$LOCO_SVC_VAR/conf"
+fi
+
+cp "$LOCO_SVC_CFG"/conf/magic "$LOCO_SVC_CFG"/conf/mime.types "$LOCO_SVC_VAR/conf"
+
+php "$LOCO_SVC_CFG"/conf/httpd.conf.php > "$LOCO_SVC_VAR/conf/httpd.conf"

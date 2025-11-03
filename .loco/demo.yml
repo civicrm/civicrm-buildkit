@@ -14,6 +14,9 @@ environment:
  - HTTPD_VDROOT=$BKIT/build
  - HTTPD_VISIBILITY=all
 
+ ## HTTPD_PROXY: Specify whether we sit behind an HTTP(S) proxy. (Either "none" or "local")
+ - HTTPD_PROXY=local
+
  ## *_PORT: Most daemons run on auxiliary/non-standard TCP/UDP ports.
  - MAIL_SMTP_PORT=$(portname smtp "$BKPROF")
  - MAIL_HTTP_PORT=$(portname webmail "$BKPROF")
@@ -73,7 +76,7 @@ services:
   ## Ex: "http://foobar.bknix:8001/" <==> "./build/foobar/"
   apache-vdr:
     init:
-      - cp "$LOCO_SVC_CFG"/conf/magic "$LOCO_SVC_CFG"/conf/mime.types "$LOCO_SVC_VAR/conf"
+      - mk-apache-conf
       - mk-apache-links
       - 'if [ ! -d "$HTTPD_VDROOT" ]; then mkdir "$HTTPD_VDROOT"; fi'
     run: 'apachectl -d "$LOCO_SVC_VAR" -DFOREGROUND'
