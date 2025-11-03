@@ -132,6 +132,18 @@ Timeout 600
     UseCanonicalName    Off
     VirtualDocumentRoot "<?php echo getenv('HTTPD_VDROOT'); ?>/%1/web"
 
+    <?php
+    if (getenv('HTTPD_SSL_CERT') xor getenv('HTTPD_SSL_KEY')) :
+      fprintf(STDERR, "ERROR: The variables HTTPD_SSL_CERT and HTTPD_SSL_KEY must be provided as a pair.\n");
+      fprintf(STDERR, "Please fix the variables, then cleanup Apache (loco clean apache-vdr) and restart.\n");
+      exit(1);
+    elseif (getenv('HTTPD_SSL_CERT') && getenv('HTTPD_SSL_KEY')) :
+    ?>
+    SSLEngine             on
+    SSLCertificateFile    <?php echo getenv('HTTPD_SSL_CERT'); echo "\n"; ?>
+    SSLCertificateKeyFile <?php echo getenv('HTTPD_SSL_KEY'); echo "\n"; ?>
+    <?php endif; ?>
+
     <?php if (getenv('HTTPD_PROXY') === 'local') : ?>
     ## Set HTTPS=on for proxied requests. Ideally, you trust X-Forwarded-Proto ONLY IF
     ## the X-Forwarded-For policy has been satisifed. However, I can't find a good way

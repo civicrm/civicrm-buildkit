@@ -25,6 +25,10 @@ default_environment:
  ## HTTPD_PROXY: Specify whether we sit behind an HTTP(S) proxy. (Either "none" or "local")
  - HTTPD_PROXY=none
 
+ ## If you have a suitable certificate (e.g. wildcard or SNI), add it here.
+ # - HTTPD_SSL_CERT=/etc/letsencrypt/live/example.com/fullchain.pem
+ # - HTTPD_SSL_KEY=/etc/letsencrypt/live/example.com/privkey.pem
+
  ## *_PORT: Most daemons run on auxiliary/non-standard TCP/UDP ports.
  - MAIL_SMTP_PORT=1025
  - MAIL_HTTP_PORT=1080
