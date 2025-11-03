@@ -16,6 +16,7 @@ LoadModule mime_module modules/mod_mime.so
 LoadModule log_config_module modules/mod_log_config.so
 LoadModule env_module modules/mod_env.so
 LoadModule headers_module modules/mod_headers.so
+LoadModule remoteip_module modules/mod_remoteip.so
 LoadModule setenvif_module modules/mod_setenvif.so
 LoadModule version_module modules/mod_version.so
 LoadModule unixd_module modules/mod_unixd.so
@@ -99,6 +100,12 @@ Timeout 600
 #  ProxySet timeout=600
 #</Proxy>
 
+## CF-Connecting-IP might be better for complicated topologies. X-Forwarded-For might be better for portability.
+RemoteIPHeader CF-Connecting-IP
+# RemoteIPHeader X-Forwarded-For
+RemoteIPTrustedProxy 127.0.0.1
+RemoteIPTrustedProxy ::1
+
 <VirtualHost *:{{HTTPD_PORT}}>
     ServerAdmin webmaster@{{HTTPD_DOMAIN}}
     ServerName {{HTTPD_DOMAIN}}
@@ -119,10 +126,10 @@ Timeout 600
     # Act as an HTTP reverse-proxy. Forward requests to the appropriate HTTPD.
 
     # [loco.yml]      If $HOME/bknix/build/$VHOST/web            ===> forward to http://localhost:8001/$1
-    # [demo.yml:dfl]  If $HOME/bknix/build-dfl/build/$VHOST/web  ===> forward to http://localhost:8001/$1
-    # [demo.yml:min]  If $HOME/bknix/build-min/build/$VHOST/web  ===> forward to http://localhost:8002/$1
-    # [demo.yml:max]  If $HOME/bknix/build-max/build/$VHOST/web  ===> forward to http://localhost:8003/$1
-    # [demo.yml:edge] If $HOME/bknix/build-edge/build/$VHOST/web ===> forward to http://localhost:8007/$1
+    # [demo.yml:dfl]  If $HOME/bknix-dfl/build/$VHOST/web        ===> forward to http://localhost:8001/$1
+    # [demo.yml:min]  If $HOME/bknix-min/build/$VHOST/web        ===> forward to http://localhost:8002/$1
+    # [demo.yml:max]  If $HOME/bknix-max/build/$VHOST/web        ===> forward to http://localhost:8003/$1
+    # [demo.yml:edge] If $HOME/bknix-edge/build/$VHOST/web       ===> forward to http://localhost:8007/$1
 
     RewriteCond "%{ENV:HOME}/bknix/build/%{ENV:BKIT_VHOST}/web" -d
     RewriteRule ^ - [L,E=BACKEND_URL:{{LOCALHOST}}:8001]
@@ -141,6 +148,9 @@ Timeout 600
 
     ProxyPassInterpolateEnv On
     ProxyPreserveHost On
+    RequestHeader set X-Forwarded-Proto "https"
+    RequestHeader set X-Forwarded-Port "443"
+
     ProxyPass / http://${BACKEND_URL}/ interpolate
     ProxyPassReverse / http://${BACKEND_URL}/ interpolate
 
