@@ -3,9 +3,9 @@
  */
 fetchTarball {
 
-  ## Unofficial backports circa June 25, 2025; totten/pkgs2505-addenda; update icuXX
-  url = "https://github.com/nixos/nixpkgs/archive/7444fba07bd1988c5203bf198c3241afcf1a16e1.tar.gz";
-  sha256 = "19ypdda8vlc230lqjr9q7gs633mdry8i58mi864zdiqi66v3nwhh";
+  ## Unofficial backports circa Oct 7, 2025; totten/pkgs2505-addenda; update icuXX; php8x; redis
+  url = "https://github.com/nixos/nixpkgs/archive/6ad50925d2f2ce6de52e675186a81b522e8f60d2.tar.gz";
+  sha256 = "1z41nvj453zbagp1dznbfmdc8j9jfhq8vq41jhsv2fj8a1g0d363";
 
   ## Unofficial backports circa June 24, 2025; totten/pkgs2505-addenda; mysql93
   # url = "https://github.com/nixos/nixpkgs/archive/dad9999266b41da929ca8b9837e856d6db669298.tar.gz";
