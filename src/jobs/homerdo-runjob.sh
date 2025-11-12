@@ -25,7 +25,7 @@ TTL_BLDTYPE=180  ## During setup, warmup 'bldtype' (if >3 hours since last)
 TTL_EXEC=180m    ## 3h is really too long, but it is actually happening. We need to investigate why. See: dev/core#5597
 CLEANUP_FILES=() ## List of files/directories to delete
 RESPONSE=        ## Tar-formatted fifo
-MAX_IMAGES=8     ## If there are more than X copies of an image, then refuse to make more
+MAX_IMAGES=15    ## If there are more than X copies of an image, then refuse to make more. Sanity check to prevent run-away bugs.
 GLOBAL_MARKER="/etc/bknix-ci/buildkit-ts" ## If this file changes, then all caches need warmup
 SPOOL="/var/local/runjob"
 
