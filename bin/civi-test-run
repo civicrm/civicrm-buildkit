@@ -150,12 +150,13 @@ function task_phpunit_find() {
   rm -f "$WORK_DIR/phpunit.xml.tmp"
 }
 
-## usage: task_phpunit_core_extension <extension-dirname> <junit-name>
+## usage: task_phpunit_core_extension <parent> <extension-dirname> <junit-name>
 function task_phpunit_core_extension() {
-  EXTENSION="$1"
-  JUNIT_NAME=${2:-$EXTENSION}
+  PARENT="$1"
+  EXTENSION="$2"
+  JUNIT_NAME=${3:-$EXTENSION}
 
-  pushd "$CIVI_CORE/ext/$EXTENSION"
+  pushd "$CIVI_CORE/$PARENT/$EXTENSION"
     for GROUP in headless e2e ; do
       if ! $GUARD $TIMER $(getPhpunitVer) --log-junit="$JUNITDIR/junit-${JUNIT_NAME}-${GROUP}.xml" --group "$GROUP" ; then
        EXITCODES="$EXITCODES $EXTENSION-$GROUP"
@@ -181,12 +182,20 @@ function task_mixin() {
 }
 
 function test_core_extenions() {
+  for DIR in $CIVI_CORE/tests/extensions/*/
+  do
+    if [ -f "$DIR/phpunit.xml.dist" -a -f "$DIR/info.xml" ]; then
+      task_phpunit_core_extension tests/extensions "$(basename $DIR)"
+      $GUARD civibuild restore "$BLDNAME"
+      $GUARD cv flush --cwd="$CIVI_CORE" ## This is smelly. It begs the question of "what is leaking between tests".
+    fi
+  done
   for DIR in $CIVI_CORE/ext/*/
   do
     if [ "$(basename $DIR)" = "afform" ]; then
       test_afform_extensions $DIR
     elif [ -f "$DIR/phpunit.xml.dist" ]; then
-      task_phpunit_core_extension "$(basename $DIR)"
+      task_phpunit_core_extension ext "$(basename $DIR)"
       $GUARD civibuild restore "$BLDNAME"
       $GUARD cv flush --cwd="$CIVI_CORE" ## This is smelly. It begs the question of "what is leaking between tests".
     fi
@@ -197,16 +206,16 @@ function test_afform_extensions() {
   DIR="$1"
   pushd "$DIR"
     if [ -f "$DIR/admin/phpunit.xml.dist" ]; then
-       task_phpunit_core_extension "$(basename $DIR)/admin" "afform-admin"
+       task_phpunit_core_extension ext "$(basename $DIR)/admin" "afform-admin"
        $GUARD civibuild restore "$BLDNAME"
        $GUARD cv flush --cwd="$CIVI_CORE" ## This is smelly. It begs the question of "what is leaking between tests".
     fi
-    task_phpunit_core_extension "$(basename $DIR)/core" "afform-core"
+    task_phpunit_core_extension ext "$(basename $DIR)/core" "afform-core"
     $GUARD civibuild restore "$BLDNAME"
     $GUARD cv flush --cwd="$CIVI_CORE" ## This is smelly. It begs the question of "what is leaking between tests".
     cv en afform
     cv en --ignore-missing authx
-    task_phpunit_core_extension "$(basename $DIR)/mock" "afform-mock"
+    task_phpunit_core_extension ext "$(basename $DIR)/mock" "afform-mock"
     $GUARD civibuild restore "$BLDNAME"
     $GUARD cv flush --cwd="$CIVI_CORE" ## This is smelly. It begs the question of "what is leaking between tests".
   popd
@@ -472,13 +481,13 @@ for TESTTYPE in $SUITES ; do
     phpunit-drupal)    task_phpunit_drupal ;;
     phpunit-wordpress) task_phpunit_wordpress ;;
     phpunit-backdrop)  task_phpunit_backdrop ;;
-    phpunit-creditnotes) task_phpunit_core_extension sequentialcreditnotes ;;
-    phpunit-flexmailer) task_phpunit_core_extension flexmailer ;;
-    phpunit-financialacls) task_phpunit_core_extension financialacls ;;
-    phpunit-eway) task_phpunit_core_extension ewaysingle ;;
+    phpunit-creditnotes) task_phpunit_core_extension ext sequentialcreditnotes ;;
+    phpunit-flexmailer) task_phpunit_core_extension ext flexmailer ;;
+    phpunit-financialacls) task_phpunit_core_extension ext financialacls ;;
+    phpunit-eway) task_phpunit_core_extension ext ewaysingle ;;
     phpunit-afform) test_afform_extensions "$CIVI_CORE/ext/afform" ;;
-    phpunit-authx) task_phpunit_core_extension authx ;;
-    phpunit-searchkit) task_phpunit_core_extension search_kit ;;
+    phpunit-authx) task_phpunit_core_extension ext authx ;;
+    phpunit-searchkit) task_phpunit_core_extension ext search_kit ;;
     phpunit-core-exts) test_core_extenions ;;
     *) echo "unrecognized suite: $TESTTYPE"; exit 2 ;;
   esac
