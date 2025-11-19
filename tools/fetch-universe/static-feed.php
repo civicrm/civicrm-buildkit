@@ -122,7 +122,6 @@ return function() {
     'https://github.com/MegaphoneJon/habitat' => 'ext',
     'https://github.com/MegaphoneJon/nosmsurltracking' => 'ext',
     'https://github.com/MegaphoneJon/org.ujc.requiredduration' => 'ext',
-    'https://github.com/Project60/cbb-be-coda2' => 'ext',
     'https://github.com/Project60/org.project60.banking' => 'ext',
     'https://github.com/Project60/org.project60.bankingboilerplate' => 'ext',
     'https://github.com/Project60/org.project60.coda' => 'ext',
