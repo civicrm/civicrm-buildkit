@@ -636,19 +636,6 @@ function civicrm_download_composer_d8() {
 }
 
 ###############################################################################
-## Enable RiverLea (and one of its sub-themes) -- if available
-##
-## usage: civicrm_enable_riverlea_theme
-## todo: Add support for indicating preferred subtheme(s)
-function civicrm_enable_riverlea_theme() {
-  cvutil_assertvars civicrm_enable_riverlea_theme CIVI_VERSION CMS_VERSION
-  if civicrm_check_ver '>' 5.80.alpha1 ; then
-    cv en --ignore-missing riverlea
-    cv vset theme_backend=minetta
-  fi
-}
-
-###############################################################################
 ## Setup CiviCRM l10n data folder
 ##
 ## usage: civicrm_l10n_setup [<TARGET_DIR>]

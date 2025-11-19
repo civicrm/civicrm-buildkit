@@ -37,7 +37,6 @@ civicrm_install_cv
 # Settings appropriate to a dev environment
 cv setting:set environment=Development
 cv setting:set debug_enabled=1
-civicrm_enable_riverlea_theme
 
 env DEMO_USER="$DEMO_USER" DEMO_PASS="$DEMO_PASS" DEMO_EMAIL="$DEMO_EMAIL" \
   cv scr "$SITE_CONFIG_DIR/demo-user.php"
