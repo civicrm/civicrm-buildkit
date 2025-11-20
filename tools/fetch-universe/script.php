@@ -96,13 +96,12 @@ function parse_args(array $args, array $all_feeds): array {
  * @return array
  */
 function feed_extdir() {
-  $extdirUrl = 'https://civicrm.org/extension-git-urls';
-  // $extdirUrl = '/tmp/feed.html';
+  $extdirUrl = 'https://civicrm.org/extension-git-json';
   errprintf("Fetch URL (%s)\n", $extdirUrl);
-  $raw = file_get_contents($extdirUrl);
 
-  phpQuery::newDocumentHTML($raw);
-  $repos = [];
+  $raw = file_get_contents($extdirUrl);
+  $repos = json_decode($raw, TRUE);
+
   $types = [
     'CiviCRM Extension' => 'ext',
     'Backdrop' => 'backdrop-module',
@@ -111,25 +110,18 @@ function feed_extdir() {
     'Joomla' => 'joomla-ext',
     'WordPress' => 'wp-plugin',
   ];
-  foreach (pq('.egu-extension') as $row) {
-    $key = trim(pq($row)->children('.egu-key')->text());
-    $type = trim(pq($row)->children('.egu-type')->text());
-    $url = trim(pq($row)->children('.egu-url')->text());
-    if (empty($key) || empty($type) || empty($url)) {
-      errprintf("Skip malformed item (key=%s, type=%s, url=%s)\n", $key, $type, $url);
+
+  foreach ($repos as $idx => &$repo) {
+    if (empty($repo['key']) || !isset($types[$repo['type']]) || empty($repo['git_url'])) {
+      errprintf("Skip malformed item (key=%s, type=%s, url=%s)\n", $repo['key'], $repo['type'], $repo['git_url']);
+      unset($repos[$idx]);
       continue;
     }
-    if (!isset($types[$type])) {
-      throw new \Exception("Received malformed type ($type)");
-    }
-    $repos[$key] = [
-      'title' => trim(pq($row)->children('.egu-title')->text()),
-      'git_url' => $url,
-      'type' => $types[$type],
-    ];
+    $repo['type'] = $types[$repo['type']];
   }
 
-  return feed_normalize($repos, ['type' => 'ext']);
+  $repos = array_column($repos, NULL, 'key');
+  return feed_normalize($repos);
 }
 
 /**
