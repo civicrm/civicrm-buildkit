@@ -1,7 +1,6 @@
 <?php
 
 #!ttl 10 years
-#!require rubobaquero/phpquery: '^0.9.15'
 
 ########################################################################################
 ## General utilities
