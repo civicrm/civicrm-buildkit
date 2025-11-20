@@ -2,11 +2,10 @@
     "name": "civicrm/fetch-universe",
     "config": {
         "platform": {
-            "php": "7.4"
+            "php": "8.0"
          }
     },
     "require": {
-        "php": ">=7.4",
-        "rubobaquero/phpquery": "^0.9.15"
+        "php": ">=8.0"
     }
 }
