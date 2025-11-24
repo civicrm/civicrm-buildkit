@@ -75,7 +75,6 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   cv api StatusPreference.create ignore_severity=critical name=checkOutboundMail
   cv api StatusPreference.create ignore_severity=critical name=checkLastCron
 
-  civicrm_enable_riverlea_theme
   export SITE_CONFIG_DIR
   ## Install theem and blocks
   drush8 scr "$SITE_CONFIG_DIR/install-theme.php"
