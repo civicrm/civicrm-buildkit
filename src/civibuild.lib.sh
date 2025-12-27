@@ -1500,6 +1500,7 @@ function _drupalx_po_download() {
     for TARGET in "$@" ; do
 
       ## Download PO files. Retain in a cache. Install to the $SPOOL dir.
+      ## ex: devel-7.x-1.x     ==>  https://download.civicrm.org/mirror/drupal-l10n/7.x/devel/devel-7.x-1.x.fr.po                ==>  SPOOL/devel-7.x-1.x.fr.po
       ## ex: devel-7.x-1.x     ==>  https://ftp.drupal.org/files/translations/7.x/devel/devel-7.x-1.x.fr.po                      ==>  SPOOL/devel-7.x-1.x.fr.po
       ## ex: devel-5.0.x       ==>  https://ftp.drupal.org/files/translations/all/devel/devel-5.0.x.fr.po                        ==>  SPOOL/devel-5.0.x.fr.po
       ## ex: drupal-7.x        ==>  https://ftp.drupal.org/files/translations/7.x/drupal/drupal-7.x.fr.po                        ==>  SPOOL/drupal-7.x.fr.po
@@ -1510,9 +1511,9 @@ function _drupalx_po_download() {
         local VERSION="${BASH_REMATCH[2]}"
 
         local PO_SET=$( [[ "$VERSION" == *"7.x"* ]] && echo 7.x || echo all )
-        local PO_URL="https://ftp.drupal.org/files/translations/${PO_SET}/${PROJECT}/${TARGET}.${NEW_LOCALE}.po"
+        local PO_URL="https://download.civicrm.org/mirror/drupal-l10n/${PO_SET}/${PROJECT}/${TARGET}.${NEW_LOCALE}.po"
         if [ "$PROJECT" = "backdropcms" ]; then
-          PO_URL="https://localize.backdropcms.org/files/l10n_packager/all/backdropcms/backdropcms-${VERSION}.${NEW_LOCALE}.po"
+          PO_URL="download.civicrm.org/mirror/backdrop-l10n/all/backdropcms/backdropcms-${VERSION}.${NEW_LOCALE}.po"
         fi
 
         http_cache_setup "$PO_URL" "${CACHE_DIR}/drupal/translations/${TARGET}.${NEW_LOCALE}.po" "$TTL"
