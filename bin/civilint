@@ -20,6 +20,13 @@ FILELIST=
 EXITCODE=
 TMP=
 
+## civilint is most likely to be called during CiviCRM development (when
+## XDebug is meant for CiviCRM), but some parts of civilint (esp `phpcs`)
+## also use PHP -- and get caught-up in XDebug..  It's extremely unlikely
+## that you're trying to debug `phpcs`.  (If you really want that, call
+## `phpcs` directly -- it'll give a cleaner devloop.)
+export XDEBUG_MODE=off XDEBUG_PORT=
+
 ###############################################################################
 ## Function library
 
