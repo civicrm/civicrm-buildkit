@@ -111,9 +111,9 @@ let
     *   - alt: An alternative version. Basically, with MariaDB and middle-of-the-road PHP.
     */
    old = combinations.php74m57;
-   min = combinations.php80m57;
+   min = combinations.php81m57;
    dfl = combinations.php82m57; /* Test suites run faster on MySQL 5.7 */
-   alt = combinations.php80r106;
+   alt = combinations.php81r106;
    max = combinations.php83m80;
    edge = combinations.php84m80;
 
