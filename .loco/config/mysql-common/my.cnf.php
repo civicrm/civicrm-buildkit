@@ -2,7 +2,7 @@
 function ver() {
   static $ver = NULL;
   if ($ver === NULL) {
-    $ver = getenv('FORCE_MY_CNF_VERSION') ?: `mysqld --no-defaults --version`;
+    $ver = getenv('FORCE_MY_CNF_VERSION') ?: shell_exec('mysqld --no-defaults --version');
   }
   return $ver;
 }

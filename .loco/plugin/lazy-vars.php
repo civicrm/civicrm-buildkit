@@ -18,11 +18,11 @@ use Loco\Loco;
 // Define list of lazy variables
 
 $GLOBALS['lazyVars']['HOSTNAME'] = function() {
-  return trim(`hostname`);
+  return trim(shell_exec('hostname'));
 };
 
 $GLOBALS['lazyVars']['HOSTNAME_FQDN'] = function() {
-  return trim(`hostname -f`);
+  return trim(shell_exec('hostname -f'));
 };
 
 $GLOBALS['lazyVars']['FAKE_IP'] = function () {
