@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "clippy/container",
-            "version": "v1.4.2",
+            "version": "v1.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/clippy-php/container.git",
-                "reference": "a5d2cc17f7192465997ea6651a39fac508c77e80"
+                "reference": "a966d42c5ecb6c92fe3c76bfe38b79c19d4c8b54"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/clippy-php/container/zipball/a5d2cc17f7192465997ea6651a39fac508c77e80",
-                "reference": "a5d2cc17f7192465997ea6651a39fac508c77e80",
+                "url": "https://api.github.com/repos/clippy-php/container/zipball/a966d42c5ecb6c92fe3c76bfe38b79c19d4c8b54",
+                "reference": "a966d42c5ecb6c92fe3c76bfe38b79c19d4c8b54",
                 "shasum": ""
             },
             "require": {
@@ -46,9 +46,9 @@
             "description": "Dependency-injection container inspired by Pimple and PHP-DI Invoker",
             "support": {
                 "issues": "https://github.com/clippy-php/container/issues",
-                "source": "https://github.com/clippy-php/container/tree/v1.4.2"
+                "source": "https://github.com/clippy-php/container/tree/v1.4.3"
             },
-            "time": "2022-12-08T04:23:05+00:00"
+            "time": "2026-01-16T01:43:51+00:00"
         },
         {
             "name": "clippy/std",
@@ -1939,5 +1939,5 @@
     "platform-overrides": {
         "php": "7.4"
     },
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
