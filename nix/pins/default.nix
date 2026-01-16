@@ -1,5 +1,4 @@
 rec {
-  v2105 = import (import  ./21.05.nix) {};
   v2205 = import (import  ./22.05.nix) {};
   v2405 = import (import  ./24.05.nix) {};
   v2505 = import (import  ./25.05.nix) {};

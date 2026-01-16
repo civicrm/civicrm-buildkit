@@ -44,7 +44,6 @@ in pharDirectives // rec {
    nodejs_14 = dists.v2205.nodejs-14_x;
    nodejs_22 = dists.v2505.nodejs;
 
-   php73 = ifSupported "php73" (!isAppleM1) (import ./php73/default.nix);
    bknixPhpstormAdvisor = import ./bknixPhpstormAdvisor/default.nix;
    bknixProfile = import ./bknixProfile/default.nix;
    php74 = import ./php74/default.nix;
