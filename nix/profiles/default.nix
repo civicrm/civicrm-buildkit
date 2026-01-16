@@ -5,7 +5,6 @@
  *
  * - "combinations": Cartesian product of PHP x DBMS. Each of these is a profile:
  *
- *     php73m57 php73m80 php73m84 php73r105 php73r106
  *     php74m57 php74m80 php74m84 php74r105 php74r106
  *     php80m57 php80m80 php80m84 php80r105 php80r106
  *     php81m57 php81m80 php81m84 php81r105 php81r106
@@ -63,7 +62,7 @@ let
    * ******************************
    */
 
-  ## phpVersions = { php73=PKG, php80=PKG, ... }
+  ## phpVersions = { php74=PKG, php80=PKG, ... }
   phpVersions = (attrsets.filterAttrs (name: value: builtins.match "php[0-9]+" name != null) dists.bkit);
 
   ## mysqlVersions = { mysql57=PKG, mysql80=PKG, ... }
@@ -122,7 +121,6 @@ let
     * where you shold probably consider mysql versions more intentionally.
     * But they may be useful for quick/local hacking.
     */
-   php73 = combinations.php73m80;
    php74 = combinations.php74m80;
    php80 = combinations.php80m80;
    php81 = combinations.php81m80;
