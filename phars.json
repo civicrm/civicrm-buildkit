@@ -36,8 +36,8 @@
    },
 
    "composer":  {
-     "url": "https://github.com/composer/composer/releases/download/2.3.10/composer.phar",
-     "sha256": "d808272f284fa8e0f8b470703e1438ac8f362030bbc9d12e29530277d767aff0"
+     "url": "https://github.com/composer/composer/releases/download/2.9.3/composer.phar",
+     "sha256": "3b3f9503a2d46590170e45edd29734197e797cea545b396d0b2823cac8ef4643"
    },
 
    "drush8":  {

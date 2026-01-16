@@ -20,7 +20,7 @@ PRJDIR=$(dirname "$BINDIR")
 [[ -z "$CIVIBUILD_HOME" ]] && TMPDIR="$PRJDIR/app/tmp" || TMPDIR="$CIVIBUILD_HOME/.civibuild/tmp"
 LOCKFILE="$TMPDIR/civi-download-tools.lock"
 LOCKTIMEOUT=90
-COMPOSER_VERSION="2.8.4"
+COMPOSER_VERSION="2.9.3"
 COMPOSER_URL="https://github.com/composer/composer/releases/download/${COMPOSER_VERSION}/composer.phar"
 IS_QUIET=
 IS_FORCE=
