@@ -36,8 +36,8 @@
    },
 
    "composer":  {
-     "url": "https://github.com/composer/composer/releases/download/2.3.10/composer.phar",
-     "sha256": "d808272f284fa8e0f8b470703e1438ac8f362030bbc9d12e29530277d767aff0"
+     "url": "https://github.com/composer/composer/releases/download/2.9.3/composer.phar",
+     "sha256": "3b3f9503a2d46590170e45edd29734197e797cea545b396d0b2823cac8ef4643"
    },
 
    "drush8":  {
@@ -75,8 +75,8 @@
    },
 
    "phpunit9":  {
-     "url": "https://phar.phpunit.de/phpunit-9.6.22.phar",
-     "sha256": "9618d52015c9b06b4979a8e481ca9567be6be20e711e98926c61378a400e1f2e",
+     "url": "https://phar.phpunit.de/phpunit-9.6.31.phar",
+     "sha256": "4c871cbeb9b9d9f8f14208e2c4fbad1cceaaec1b78c771cb13170bc6d6350360",
      "buildkit-path": "extern/phpunit9/phpunit9.phar"
    },
 
