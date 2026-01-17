@@ -41,8 +41,8 @@
    },
 
    "drush8":  {
-     "url": "https://download.civicrm.org/cv/drush.phar-8.4.12",
-     "sha256": "cc19dd738bfb8a6324bc89de5f801a24a758f20c659d66990b881324d29f8922",
+     "url": "https://github.com/drush-ops/drush/releases/download/8.5.0/drush.phar",
+     "sha256": "d814ec11c9990f2f95fc6e91be77ec6f5deb71d1980142c3f8ce3ad651fd1bae",
      "buildkit-path": "extern/drush8.phar"
    },
 
