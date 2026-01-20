@@ -99,35 +99,35 @@ let
    */
   aliasProfiles = let defaultDbms = "m80"; in rec {
 
-   /**
-    * These aliases represent the current minimum/maximum, as viewed from
-    * the perspective of dev/master. In particular:
-    *   - min: The oldest supported+runnable version
-    *   - max: the newest supported+runnable version
-    *   - edge: The bleeding-edge. Not yet supported. Partially runnable.
-    *   - old: A recent/older version
-    *   - dfl: A typical default. Corresponds to PR testing.
-    *   - alt: An alternative version. Basically, with MariaDB and middle-of-the-road PHP.
-    */
-   old = combinations.php74m57;
-   min = combinations.php81m57;
-   dfl = combinations.php83m57; /* Test suites run faster on MySQL 5.7 */
-   alt = combinations.php81r106;
-   max = combinations.php84m80;
-   edge = combinations.php85m80;
+    /**
+     * These aliases represent the current minimum/maximum, as viewed from
+     * the perspective of dev/master. In particular:
+     *   - min: The oldest supported+runnable version
+     *   - max: the newest supported+runnable version
+     *   - edge: The bleeding-edge. Not yet supported. Partially runnable.
+     *   - old: A recent/older version
+     *   - dfl: A typical default. Corresponds to PR testing.
+     *   - alt: An alternative version. Basically, with MariaDB and middle-of-the-road PHP.
+     */
+    old = combinations.php74m57;
+    min = combinations.php81m57;
+    dfl = combinations.php83m57; /* Test suites run faster on MySQL 5.7 */
+    alt = combinations.php81r106;
+    max = combinations.php84m80;
+    edge = combinations.php85m80;
 
-   /**
-    * These aliases are short-hand. They're not intended for CI testing,
-    * where you shold probably consider mysql versions more intentionally.
-    * But they may be useful for quick/local hacking.
-    */
-   php74 = combinations."php74${defaultDbms}";
-   php80 = combinations."php80${defaultDbms}";
-   php81 = combinations."php81${defaultDbms}";
-   php82 = combinations."php82${defaultDbms}";
-   php83 = combinations."php83${defaultDbms}";
-   php84 = combinations."php84${defaultDbms}";
-   php85 = combinations."php85${defaultDbms}";
+    /**
+     * These aliases are short-hand. They're not intended for CI testing,
+     * where you shold probably consider mysql versions more intentionally.
+     * But they may be useful for quick/local hacking.
+     */
+    php74 = combinations."php74${defaultDbms}";
+    php80 = combinations."php80${defaultDbms}";
+    php81 = combinations."php81${defaultDbms}";
+    php82 = combinations."php82${defaultDbms}";
+    php83 = combinations."php83${defaultDbms}";
+    php84 = combinations."php84${defaultDbms}";
+    php85 = combinations."php85${defaultDbms}";
 
   };
 
