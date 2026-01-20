@@ -97,7 +97,7 @@ let
    * Prepare alias profiles
    * **********************
    */
-  aliasProfiles = rec {
+  aliasProfiles = let defaultDbms = "m80"; in rec {
 
    /**
     * These aliases represent the current minimum/maximum, as viewed from
@@ -121,13 +121,13 @@ let
     * where you shold probably consider mysql versions more intentionally.
     * But they may be useful for quick/local hacking.
     */
-   php74 = combinations.php74m80;
-   php80 = combinations.php80m80;
-   php81 = combinations.php81m80;
-   php82 = combinations.php82m80;
-   php83 = combinations.php83m80;
-   php84 = combinations.php84m80;
-   php85 = combinations.php85m80;
+   php74 = combinations."php74${defaultDbms}";
+   php80 = combinations."php80${defaultDbms}";
+   php81 = combinations."php81${defaultDbms}";
+   php82 = combinations."php82${defaultDbms}";
+   php83 = combinations."php83${defaultDbms}";
+   php84 = combinations."php84${defaultDbms}";
+   php85 = combinations."php85${defaultDbms}";
 
   };
 
