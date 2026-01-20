@@ -684,6 +684,8 @@ function civicrm_install() {
   civicrm_make_setup_conf
   civicrm_make_test_settings_php
 
+  _civicrm_composer_force_update_compile_plugin
+
   pushd "$CIVI_CORE" >> /dev/null
     ## Does this build include development support (eg git or tarball-based)?
     if [ -e "xml" -a -e "bin/setup.sh" -a -n "$NO_SAMPLE_DATA" ]; then
@@ -727,14 +729,16 @@ function civicrm_install_transitional() {
 ## usage: civicrm_composer_install
 function civicrm_composer_install() {
   cvutil_assertvars civicrm_install CIVI_CORE
+  _civicrm_composer_force_update_compile_plugin
+  (cd  "$CIVI_CORE" &&  composer install)
+}
 
-  ## Newer versions of `composer` (2.9+) complain with older versions of `composer-compile-plugin` (<0.22).
+## Newer versions of `composer` (2.9+) complain with older versions of `composer-compile-plugin` (<0.22).
+function _civicrm_composer_force_update_compile_plugin() {
   if civicrm_check_ver '<' 6.9.beta1 ; then
     echo "[[ civicrm_composer_install: Force update for composer-compile-plugin ]]"
     (cd "$CIVI_CORE" && composer update civicrm/composer-compile-plugin)
   fi
-
-  (cd  "$CIVI_CORE" &&  composer install)
 }
 
 ###############################################################################
