@@ -590,6 +590,8 @@ function civicrm_download_composer_d8() {
   ## Ensure that we compile all our js as necessary
   composer config extra.compile-mode all
   composer config minimum-stability dev
+  composer config audit.block-insecure false
+  ## Ensure that we can test against older releases
 
   local CIVI_ROOT="$1"
   local CIVI_VERSION_COMP=$(civicrm_composer_ver "$CIVI_VERSION")
