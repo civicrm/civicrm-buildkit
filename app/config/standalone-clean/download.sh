@@ -19,6 +19,4 @@ pushd "$WEB_ROOT/web"
 popd
 
 civibuild_apply_user_extras
-pushd "$WEB_ROOT/web/core"
-  composer install
-popd
+CIVI_CORE="$WEB_ROOT/web/core" civicrm_composer_install

@@ -590,6 +590,8 @@ function civicrm_download_composer_d8() {
   ## Ensure that we compile all our js as necessary
   composer config extra.compile-mode all
   composer config minimum-stability dev
+  composer config audit.block-insecure false
+  ## Ensure that we can test against older releases
 
   local CIVI_ROOT="$1"
   local CIVI_VERSION_COMP=$(civicrm_composer_ver "$CIVI_VERSION")
@@ -714,12 +716,25 @@ function civicrm_install_transitional() {
   ## Newer versions should use 'cv core:install' to match regular web-installer
 
   # If you've switched branches and triggered `reinstall`, then you need to refresh composer deps/autoloader before installing
-  (cd "$CIVI_CORE" && composer install)
+  civicrm_composer_install
 
   civicrm_install_cv
 
   ## Generating `civicrm.config.php` is necessary for `extern/*.php` and its E2E tests
   (cd "$CIVI_CORE" && ./bin/setup.sh -g)
+}
+
+## usage: civicrm_composer_install
+function civicrm_composer_install() {
+  cvutil_assertvars civicrm_install CIVI_CORE
+
+  ## Newer versions of `composer` (2.9+) complain with older versions of `composer-compile-plugin` (<0.22).
+  if civicrm_check_ver '<' 6.9.beta1 ; then
+    echo "[[ civicrm_composer_install: Force update for composer-compile-plugin ]]"
+    (cd "$CIVI_CORE" && composer update civicrm/composer-compile-plugin)
+  fi
+
+  (cd  "$CIVI_CORE" &&  composer install)
 }
 
 ###############################################################################
