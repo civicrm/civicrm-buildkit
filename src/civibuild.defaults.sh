@@ -90,6 +90,9 @@ CACHE_LOCK_WAIT=120
 ## When checking out or updating git/svn, wait up to X seconds for process to complete
 SCM_TIMEOUT=3600
 
+## When updating git-caches, should we optimize the file-storage?
+GIT_CACHE_OPTIMIZE=0
+
 ###############################################################################
 ## "create" variables defined by civibuild
 
