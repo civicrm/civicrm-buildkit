@@ -21,9 +21,7 @@ pushd "$WEB_ROOT/web"
     civicrm_l10n_setup civicrm
 
     civibuild_apply_user_extras
-    pushd civicrm
-      composer install
-    popd
+    CIVI_CORE="$PWD/civicrm" civicrm_composer_install
   popd
 
 popd

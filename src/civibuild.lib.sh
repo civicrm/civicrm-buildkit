@@ -716,12 +716,18 @@ function civicrm_install_transitional() {
   ## Newer versions should use 'cv core:install' to match regular web-installer
 
   # If you've switched branches and triggered `reinstall`, then you need to refresh composer deps/autoloader before installing
-  (cd "$CIVI_CORE" && composer install)
+  civicrm_composer_install
 
   civicrm_install_cv
 
   ## Generating `civicrm.config.php` is necessary for `extern/*.php` and its E2E tests
   (cd "$CIVI_CORE" && ./bin/setup.sh -g)
+}
+
+## usage: civicrm_composer_install
+function civicrm_composer_install() {
+  cvutil_assertvars civicrm_install CIVI_CORE
+  (cd  "$CIVI_CORE" &&  composer install)
 }
 
 ###############################################################################
