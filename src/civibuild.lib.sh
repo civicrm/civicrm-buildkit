@@ -727,6 +727,13 @@ function civicrm_install_transitional() {
 ## usage: civicrm_composer_install
 function civicrm_composer_install() {
   cvutil_assertvars civicrm_install CIVI_CORE
+
+  ## Newer versions of `composer` (2.9+) complain with older versions of `composer-compile-plugin` (<0.22).
+  if civicrm_check_ver '<' 6.9.beta1 ; then
+    echo "[[ civicrm_composer_install: Force update for composer-compile-plugin ]]"
+    (cd "$CIVI_CORE" && composer update civicrm/composer-compile-plugin)
+  fi
+
   (cd  "$CIVI_CORE" &&  composer install)
 }
 
