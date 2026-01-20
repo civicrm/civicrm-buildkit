@@ -1707,6 +1707,11 @@ function git_cache_setup() {
         pushd "$cachedir" >> /dev/null
           git remote set-url origin "$url"
           timeout.php $SCM_TIMEOUT git fetch origin +refs/heads/*:refs/heads/* -u
+          if [ $GIT_CACHE_OPTIMIZE -eq 1 ]; then
+            echo "[[ Optimize $cachedir ]]"
+            timeout.php $SCM_TIMEOUT git prune
+            timeout.php $SCM_TIMEOUT git repack -a -d --depth=50 --window=50
+          fi
         popd >> /dev/null
       else
         echo "[[Offline mode. Skip cache update: $cachedir]]"
