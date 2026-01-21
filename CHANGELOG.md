@@ -5,6 +5,16 @@ are generally "drop-in" updates that don't require any special action.
 However, if a change requires special action, it should be documented in
 this changelog.
 
+### v25.12.0 => v26.01.0
+
+Breaking changes:
+
+* `civi-download-tools`: Drop support for `bower`, `protractor`, `grunt` ([1007](https://github.com/civicrm/civicrm-buildkit/pull/1007))
+* `composer`: Update to v2.9.3. (This fixes PHP 8.5 support but conflicts with plugins on older CiviCRM builds. To compensate, `civibuild` will force-update `composer-compile-plugin` on old builds.)
+    ([1001](https://github.com/civicrm/civicrm-buildkit/pull/1001), [1004](https://github.com/civicrm/civicrm-buildkit/pull/1004))
+* __Nix__: Drop `php73` and `nixpkgs` v21.05. Add `php85`. Update intermediate PHP versions.
+* __Nix__: Change PHP versions for aliased profiles. (`old`: php80; `min`: php81, `dfl`: php83, `max`: php84, `edge`: php85)
+
 ### v25.04.0 => v25.07.0
 
 Between mid-May and early July 2025, changes were more aggressive than usual.
