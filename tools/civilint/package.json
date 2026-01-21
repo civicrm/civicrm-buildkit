@@ -1,0 +1,9 @@
+{
+  "description": "civilint",
+  "license": "MIT",
+  "name": "civilint",
+  "version": "0.1.0",
+  "devDependencies": {
+    "jshint": "^2.10.2"
+  }
+}

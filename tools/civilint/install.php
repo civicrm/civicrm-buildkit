@@ -13,13 +13,17 @@ function renderStub(string $tool, string $toolDir): string {
   $escapedDir = escapeshellarg(rtrim($toolDir, '/'));
   return <<<FILE
 #!/usr/bin/env bash
-export PATH={$escapedDir}/bin:"\$PATH"
+export PATH={$escapedDir}/bin:{$escapedDir}/node_modules/.bin/:"\$PATH"
 exec $tool "\$@"
 FILE;
 }
 
 function createStub(string $file, string $content): void {
   printf("Create %s\n", $file);
+  if (\is_link($file)) {
+    unlink($file);
+  }
+
   if (!is_dir(dirname($file))) {
     mkdir(dirname($file), 0777, TRUE);
   }
@@ -27,6 +31,13 @@ function createStub(string $file, string $content): void {
   chmod($file, 0755);
 }
 
+printf("civilint: Run \"npm install\"\n");
+system("npm install", $exitCode);
+if ($exitCode !== 0) {
+  throw new \RuntimeException("civilint: Failed to fetch npm");
+}
+
 createStub("$binDir/civilint", renderStub('civilint', $toolDir));
 createStub("$binDir/phpcs-civi", renderStub('phpcs-civi', $toolDir));
 createStub("$binDir/phpcbf-civi", renderStub('phpcbf-civi', $toolDir));
+createStub("$binDir/jshint", renderStub('jshint', $toolDir));
