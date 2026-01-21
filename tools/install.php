@@ -1,6 +1,8 @@
 #!/usr/bin/env php
 <?php
 
+namespace Civi\Buildkit\Tools;
+
 function usage() {
   global $argv;
   echo "Usage: {$argv[0]}  [toolnames...]\n";
