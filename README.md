@@ -17,7 +17,6 @@ For installation instructions and other documentation, see [CiviCRM Developer Gu
     * [`cv`](https://github.com/civicrm/cv) - Administer a Civi DB. Execute custom PHP in Civi.
 * Dependency management
     * [`composer`](https://getcomposer.org/) - Manage dependencies for PHP code.
-    * [`bower`](https://bower.io/) - Manage dependencies for Javascript code.
 * Source code management
     * [`git-scan`](https://github.com/totten/git-scan/) - Manage a large number of git repositories.
     * `gitify` - Convert a CiviCRM installation to a git repo.

@@ -9,9 +9,7 @@
     "url": "git://github.com/civicrm/civicrm-buildkit.git"
   },
   "devDependencies": {
-    "bower": "^1.8.8",
     "civicrm-cv": "^0.1.2",
-    "grunt-cli": "^1.2.0",
     "jasmine-core": "~3.3.0",
     "jshint": "^2.10.2",
     "watch": "^0.13.0"
@@ -22,7 +20,6 @@
     "karma-jasmine": "~2.0.1",
     "karma-junit-reporter": "~1.2.0",
     "karma-ng-html2js-preprocessor": "~1.0.0",
-    "karma-phantomjs-launcher": "~1.0.2",
-    "protractor": "^7.0.0"
+    "karma-phantomjs-launcher": "~1.0.2"
   }
 }
