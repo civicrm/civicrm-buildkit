@@ -28,6 +28,7 @@ bin/civicredits
 bin/civicrm-upgrade-examples
 bin/civicrm-upgrade-test
 bin/civicrm-upgrade-test.bat
+bin/civilint
 bin/civistrings
 bin/civistrings.bat
 bin/civix
@@ -60,8 +61,10 @@ bin/phive
 bin/php-symbol-diff
 bin/phpcbf
 bin/phpcbf.bat
+bin/phpcbf-civi
 bin/phpcs
 bin/phpcs.bat
+bin/phpcs-civi
 bin/phpunit
 bin/phpunit.bat
 bin/phpunit4
