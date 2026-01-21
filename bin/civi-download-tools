@@ -363,7 +363,7 @@ pushd $PRJDIR >> /dev/null
       npm install
       cat package.json | php -r 'echo md5(file_get_contents("php://stdin"));' > "$TMPDIR/package-data.md5"
     fi
-    for f in node_modules/bower/bin/bower node_modules/karma/bin/karma node_modules/jshint/bin/jshint node_modules/karma-phantomjs-launcher/node_modules/phantomjs/bin/phantomjs node_modules/protractor/bin/protractor node_modules/protractor/node_modules/webdriver-manager/bin/webdriver-manager node_modules/grunt-cli/bin/grunt ; do
+    for f in node_modules/karma/bin/karma node_modules/jshint/bin/jshint node_modules/karma-phantomjs-launcher/node_modules/phantomjs/bin/phantomjs ; do
       pushd "$PRJDIR/bin" >> /dev/null
         toolname=$(basename $f)
         if [ -f "../$f" -a ! -L "$toolname" ]; then
@@ -372,6 +372,13 @@ pushd $PRJDIR >> /dev/null
       popd >> /dev/null
     done
   fi
+
+  ## Cleanup old npm stubs
+  for f in bin/bower bin/grunt bin/protractor bin/webdriver-manager ; do
+    if [ -L "$f" ]; then
+      rm -f "$f"
+    fi
+  done
 
   ## Cleanup old civix tarballs
   [[ -d "$PRJDIR/extern/civix" ]] && rm -rf "$PRJDIR/extern/civix"
