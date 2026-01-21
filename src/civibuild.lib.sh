@@ -1264,8 +1264,30 @@ function backdrop_download() {
 function drupal_download() {
   cvutil_assertvars drupal_download WEB_ROOT CMS_VERSION PRJDIR
   mkdir "$WEB_ROOT"
-  drush8 -y dl drupal-${CMS_VERSION} --destination="$WEB_ROOT" --drupal-project-rename
-  mv "$WEB_ROOT/drupal" "$WEB_ROOT/web"
+
+  local tgz_url
+  case "$CMS_VERSION" in
+    7|7.x)
+      tgz_url=$(gitlab-release ls "https://gitlab.com/tag1consulting/public/drupal" 'drupal-7.*-*.tar.gz' | head -n1)
+      ;;
+    7.*)
+      local minor_version=${CMS_VERSION#*.}
+      if [ "$minor_version" -le 103 ]; then
+        tgz_url="https://ftp.drupal.org/files/projects/drupal-${CMS_VERSION}.tar.gz"
+      else
+        tgz_url=$(gitlab-release ls "https://gitlab.com/tag1consulting/public/drupal" "drupal-${CMS_VERSION}-*.tar.gz" | head -n1)
+      fi
+      ;;
+  esac
+
+  if [ -z "$tgz_url" ]; then
+    cvutil_fatal "Failed to find download URL for Drupal (CMS_VERSION=$CMS_VERSION)."
+  fi
+
+  local extract_dir="$WEB_ROOT/tmp.$RANDOM"
+  extract-url --cache-ttl 172800 "$extract_dir=$tgz_url"
+  mv "$extract_dir/drupal"* "$WEB_ROOT/web"
+  rmdir "$extract_dir"
 
   case $CMS_VERSION in
     7*)
