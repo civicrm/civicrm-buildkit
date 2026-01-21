@@ -109,7 +109,7 @@ let
      *   - dfl: A typical default. Corresponds to PR testing.
      *   - alt: An alternative version. Basically, with MariaDB and middle-of-the-road PHP.
      */
-    old = combinations.php74m57;
+    old = combinations.php80m57;
     min = combinations.php81m57;
     dfl = combinations.php83m57; /* Test suites run faster on MySQL 5.7 */
     alt = combinations.php81r106;
