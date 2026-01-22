@@ -25,6 +25,6 @@ in if (isValidPackage php) && (isValidPackage dbms)
     dists.default.redis
     dists.bkit.transifexClient
 
-  ] ++ (if isApple then [] else [dists.default.chromium])
+  ] ++ (if isApple then [] else [dists.default.chromium dists.default.wkhtmltopdf])
 
   else throw "Unsupported: Some dependencies for this combination of PHP/MySQL are not available in this environment."
