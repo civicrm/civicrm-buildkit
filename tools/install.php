@@ -1,6 +1,8 @@
 #!/usr/bin/env php
 <?php
 
+namespace Civi\Buildkit\Tools;
+
 function usage() {
   global $argv;
   echo "Usage: {$argv[0]}  [toolnames...]\n";
@@ -60,7 +62,13 @@ function main(array $argv): void {
       }
     }
 
-    if (file_exists("$toolDir/run.php")) {
+    if (file_exists("$toolDir/install.php")) {
+      runScript("$toolDir/install.php", [
+        'binDir' => $binDir,
+        'toolDir' => $toolDir,
+      ]);
+    }
+    elseif (file_exists("$toolDir/run.php")) {
       createSymlink("$toolDir/run.php", "$binDir/$tool");
     }
     elseif (file_exists("$toolDir/bin/$tool")) {
@@ -82,6 +90,12 @@ function createSymlink(string $target, string $link): void {
   }
 
   symlink($target, $link);
+}
+
+
+function runScript(string $_file, array $_args) {
+  extract($_args);
+  include $_file;
 }
 
 main($argv);

@@ -1,0 +1,20 @@
+{
+    "name": "civicrm/civilint",
+    "config": {
+        "bin-dir": "bin",
+        "platform": {
+            "php": "7.4"
+         }
+    },
+    "require": {
+        "php": ">=7.4",
+        "squizlabs/php_codesniffer": "~3.7.1",
+        "drupal/coder": "dev-8.x-2.x-civi#aa31dd918e302f6c01f6d28a495256e171abf581"
+    },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/civicrm/coder.git"
+        }
+    ]
+}
