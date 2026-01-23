@@ -9,6 +9,7 @@ in [
     pkgs.ansi2html
     pkgs.bzip2
     dists.bkit.bknixProfile
+    pkgs.crudini
     pkgs.coreutils
     pkgs.curl
     pkgs.gettext
