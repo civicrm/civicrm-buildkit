@@ -1,0 +1,33 @@
+commit d795e3701a147abeb69ccf868b2a9154348019da
+Author: Tim Otten <totten@civicrm.org>
+Date:   Thu Jan 22 22:27:17 2026 -0800
+
+    connect_to_database() - Support db.port
+
+diff --git a/scripts/common_funcs.php b/scripts/common_funcs.php
+index dfef2cc5e..c02e3c012 100644
+--- a/scripts/common_funcs.php
++++ b/scripts/common_funcs.php
+@@ -62,16 +62,20 @@ function connect_to_database($bbcfg, $dbtype, $driver = DRIVER_MYSQL)
+   }
+ 
+   if ($driver == DRIVER_MYSQL) {
+-    $dsn = "mysql:host=${bbcfg['db.host']};dbname=$dbname";
++    $dsn = "mysql:host={$bbcfg['db.host']};dbname=$dbname";
+   }
+   else if ($driver == DRIVER_PGSQL) {
+-    $dsn = "pgsql:host=${bbcfg['db.host']};dbname=$dbname";
++    $dsn = "pgsql:host={$bbcfg['db.host']};dbname=$dbname";
+   }
+   else {
+     echo "Invalid database driver specified\n";
+     return null;
+   }
+ 
++  if (!empty($bbcfg['db.port'])) {
++    $dsn .= ';port=' . $bbcfg['db.port'];
++  }
++
+   try {
+     $dbh = new PDO($dsn, $bbcfg['db.user'], $bbcfg['db.pass']);
+     return $dbh;
