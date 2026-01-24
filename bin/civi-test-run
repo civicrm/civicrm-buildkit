@@ -177,7 +177,7 @@ function task_phpunit_core_extension() {
   pushd "$CIVI_CORE/$PARENT/$EXTENSION" >> /dev/null
     amendPhpunitXml "path:$PARENT/$EXTENSION"
     for GROUP in headless e2e ; do
-      if ! $GUARD $TIMER $(getPhpunitVer) --log-junit="$JUNITDIR/junit-${JUNIT_NAME}-${GROUP}.xml" --group "$GROUP" ; then
+      if ! $GUARD $TIMER $(getPhpunitVer) --log-junit="$JUNITDIR/junit-${JUNIT_NAME}-${GROUP}.xml" --group "$GROUP" ${PHPUNIT_ARGS[@]} ; then
        EXITCODES="$EXITCODES $EXTENSION-$GROUP"
      fi
      echo "Found EXITCODES=\"$EXITCODES\""
