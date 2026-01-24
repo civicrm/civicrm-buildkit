@@ -241,7 +241,7 @@ function test_afform_extensions() {
 }
 
 function task_karma() {
-  $GUARD pushd "$CIVI_CORE" >> dev/nul
+  $GUARD pushd "$CIVI_CORE" >> dev/null
     ## Work-around: ensure pradmin user has sa contact
     ADMIN_USER=$(cv ev 'echo $GLOBALS["_CV"]["ADMIN_USER"];')
     cv api -U "$ADMIN_USER" contact.get id=user_contact_id
