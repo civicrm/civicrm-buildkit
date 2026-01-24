@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+{
+
 set -e
 TIMER=vtime
 
@@ -37,6 +39,21 @@ function getPhpunitVer() {
   else
     echo 'phpunit5 --tap'
   fi
+}
+
+## Determine whether any amendments are required for phpunit.xml.
+##
+## ex: amendPhpunitXml "path:ext/elavon"
+## ex: amendPhpunitXml "suite:xyz"
+function amendPhpunitXml() {
+  case "$1" in
+    "path:ext/elavon"|"path:ext/ewaysingle"|"path:ext/oauth-client"|"path:ext/payflowpro")
+      if [[ "$REAL_UF" == "Drupal8" && $PHP_VERSION == 8.1.* ]]; then
+        echo "## [$1] Suppress Guzzle 6 deprecation warnings on PHP 8.1"
+        phpunit-config set convertDeprecationsToExceptions=false
+      fi
+      ;;
+  esac
 }
 
 #################################################
@@ -119,12 +136,13 @@ function task_phpunit_expr() {
 
   [ ! -d "$JUNITDIR" ] && mkdir -p "$JUNITDIR"
 
-  pushd "$WORK_DIR"
+  pushd "$WORK_DIR" >> /dev/null
+    amendPhpunitXml "suite:$SUITE_NAME"
     if ! $GUARD $TIMER $PHPUNIT_BASE ${PHPUNIT_ARGS[@]} --log-junit "$JUNITDIR/$SUITE_NAME.xml" "$@" ; then
       EXITCODES="$EXITCODES $SUITE_NAME"
     fi
     echo "Found EXITCODES=\"$EXITCODES\""
-  popd
+  popd >> /dev/null
 
   $GUARD phpunit-xml-cleanup "$JUNITDIR/$SUITE_NAME.xml"
 }
@@ -138,13 +156,13 @@ function task_phpunit_find() {
   local WORK_DIR="$2"
   shift 2
 
-  pushd "$WORK_DIR"
+  pushd "$WORK_DIR" >> /dev/null
     local DIRS=$( find "$@" -type d )
     if [ ! -f phpunit.xml.dist ]; then
       fatal "($WORK_DIR) Cannot generate local phpunit.xml for $SUITE_NAME. The template phpunit.xml.dist is missing."
     fi
     php "$PRJDIR/src/phpunit-add-suite.php" "$SUITE_NAME" $( find "$@" | sort ) < phpunit.xml.dist > phpunit.xml.tmp
-  popd
+  popd >> /dev/null
 
   task_phpunit_expr "$SUITE_NAME" "$WORK_DIR" -c phpunit.xml.tmp --testsuite "$SUITE_NAME"
   rm -f "$WORK_DIR/phpunit.xml.tmp"
@@ -156,20 +174,21 @@ function task_phpunit_core_extension() {
   EXTENSION="$2"
   JUNIT_NAME=${3:-$EXTENSION}
 
-  pushd "$CIVI_CORE/$PARENT/$EXTENSION"
+  pushd "$CIVI_CORE/$PARENT/$EXTENSION" >> /dev/null
+    amendPhpunitXml "path:$PARENT/$EXTENSION"
     for GROUP in headless e2e ; do
-      if ! $GUARD $TIMER $(getPhpunitVer) --log-junit="$JUNITDIR/junit-${JUNIT_NAME}-${GROUP}.xml" --group "$GROUP" ; then
+      if ! $GUARD $TIMER $(getPhpunitVer) --log-junit="$JUNITDIR/junit-${JUNIT_NAME}-${GROUP}.xml" --group "$GROUP" ${PHPUNIT_ARGS[@]} ; then
        EXITCODES="$EXITCODES $EXTENSION-$GROUP"
      fi
      echo "Found EXITCODES=\"$EXITCODES\""
    done
-  popd
+  popd >> /dev/null
 
   $GUARD phpunit-xml-cleanup "$JUNITDIR"/*.xml
 }
 
 function task_mixin() {
-  pushd "$CIVI_CORE"
+  pushd "$CIVI_CORE" >> /dev/null
     if [ -f tools/mixin/bin/test-all ]; then
       if ! $GUARD $TIMER ./tools/mixin/bin/test-all "$JUNITDIR" ; then
         EXITCODES="$EXITCODES mixin"
@@ -178,7 +197,7 @@ function task_mixin() {
     else
       junit_placeholder
     fi
-  popd
+  popd >> /dev/null
 }
 
 function test_core_extenions() {
@@ -204,7 +223,7 @@ function test_core_extenions() {
 
 function test_afform_extensions() {
   DIR="$1"
-  pushd "$DIR"
+  pushd "$DIR" >> /dev/null
     if [ -f "$DIR/admin/phpunit.xml.dist" ]; then
        task_phpunit_core_extension ext "$(basename $DIR)/admin" "afform-admin"
        $GUARD civibuild restore "$BLDNAME"
@@ -218,11 +237,11 @@ function test_afform_extensions() {
     task_phpunit_core_extension ext "$(basename $DIR)/mock" "afform-mock"
     $GUARD civibuild restore "$BLDNAME"
     $GUARD cv flush --cwd="$CIVI_CORE" ## This is smelly. It begs the question of "what is leaking between tests".
-  popd
+  popd >> /dev/null
 }
 
 function task_karma() {
-  $GUARD pushd "$CIVI_CORE"
+  $GUARD pushd "$CIVI_CORE" >> dev/nul
     ## Work-around: ensure pradmin user has sa contact
     ADMIN_USER=$(cv ev 'echo $GLOBALS["_CV"]["ADMIN_USER"];')
     cv api -U "$ADMIN_USER" contact.get id=user_contact_id
@@ -233,7 +252,7 @@ function task_karma() {
       echo "Found EXITCODES=\"$EXITCODES\""
       $GUARD cp tests/output/karma.xml "$JUNITDIR/"
     fi
-  $GUARD popd
+  $GUARD popd >> /dev/null
 }
 
 ## Execute the upgrade test suite (via 'phpunit' or 'civicrm-upgrade-test' or whatever is available).
@@ -278,8 +297,8 @@ function task_upgrade_legacy() {
 #################################################
 ## Cleanup left-overs from previous test-runs
 function junit_cleanup() {
-  [ -d "$JUNITDIR" ] && $GUARD rm -rf "$JUNITDIR"
-  [ ! -d "$JUNITDIR" ] && $GUARD mkdir "$JUNITDIR"
+  [ -d "$JUNITDIR" ] && rm -rf "$JUNITDIR"
+  [ ! -d "$JUNITDIR" ] && mkdir "$JUNITDIR"
 }
 
 #################################################
@@ -291,50 +310,49 @@ function junit_placeholder() {
 }
 
 function task_phpunit_uf() {
-  $GUARD pushd "$CIVI_CORE"
+  $GUARD pushd "$CIVI_CORE" >> /dev/null
     $GUARD civibuild restore "$BLDNAME"
     $GUARD cv flush --cwd="$CIVI_CORE"
-    local uf=$(cv ev 'echo CIVICRM_UF;')
-    case "$uf" in
+    case "$REAL_UF" in
       Backdrop) task_phpunit_backdrop ;;
       Drupal) task_phpunit_drupal ;;
       WordPress) task_phpunit_wordpress ;;
       *) echo "Skipped phpunit-uf. No suites known for CIVICRM_UF=[$uf]" ;;
     esac
-  $GUARD popd
+  $GUARD popd >> /dev/null
 }
 
 function task_phpunit_drupal() {
-  $GUARD pushd "$CIVI_CORE/drupal"
+  $GUARD pushd "$CIVI_CORE/drupal" >> /dev/null
   if ! $GUARD $(getPhpunitVer) --log-junit "$JUNITDIR/phpunit_drupal.xml" ${PHPUNIT_ARGS[@]} ; then
     EXITCODES="$EXITCODES phpunit-drupal"
   fi
   echo "Found EXITCODES=\"$EXITCODES\""
 
   $GUARD phpunit-xml-cleanup "$JUNITDIR"/*.xml
-  $GUARD popd
+  $GUARD popd >> /dev/null
 }
 
 function task_phpunit_wordpress() {
-  $GUARD pushd "$CIVI_CORE/.."
+  $GUARD pushd "$CIVI_CORE/.." >> /dev/null
   if ! $GUARD $(getPhpunitVer) --log-junit "$JUNITDIR/phpunit_wordpress.xml" ${PHPUNIT_ARGS[@]} ; then
     EXITCODES="$EXITCODES phpunit-wordpress"
   fi
   echo "Found EXITCODES=\"$EXITCODES\""
 
   $GUARD phpunit-xml-cleanup "$JUNITDIR"/*.xml
-  $GUARD popd
+  $GUARD popd >> /dev/null
 }
 
 function task_phpunit_backdrop() {
-  $GUARD pushd "$CIVI_CORE/backdrop"
+  $GUARD pushd "$CIVI_CORE/backdrop" >> /dev/null
   if ! $GUARD $(getPhpunitVer) --log-junit "$JUNITDIR/phpunit_backdrop.xml" ${PHPUNIT_ARGS[@]} ; then
     EXITCODES="$EXITCODES phpunit-backdrop"
   fi
   echo "Found EXITCODES=\"$EXITCODES\""
 
   $GUARD phpunit-xml-cleanup "$JUNITDIR"/*.xml
-  $GUARD popd
+  $GUARD popd >> /dev/null
 }
 
 ## Determine the absolute path of the directory with the file
@@ -353,7 +371,6 @@ EXITCODES=
 SUITES=
 PHPUNIT_ARGS=()
 GUARD=
-
 
 [ -f "$PRJDIR/app/civibuild.conf" ] && source "$PRJDIR/app/civibuild.conf"
 
@@ -456,6 +473,9 @@ else
 fi
 export TIME_FUNC
 
+REAL_UF=$(cv ev --cwd="$CIVI_CORE" 'echo CIVICRM_UF;')
+PHP_VERSION=$(php -r 'echo phpversion();')
+
 ## Main
 for TESTTYPE in $SUITES ; do
   case "$TESTTYPE" in
@@ -538,3 +558,5 @@ for TESTTYPE in $SUITES ; do
 done
 [ -n "$EXITCODES" ] && fatal "At least one command failed abnormally [$EXITCODES]"
 echo "Exit normally"
+exit 0
+}
