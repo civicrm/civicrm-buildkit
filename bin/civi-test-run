@@ -41,6 +41,21 @@ function getPhpunitVer() {
   fi
 }
 
+## Determine whether any amendments are required for phpunit.xml.
+##
+## ex: amendPhpunitXml "path:ext/elavon"
+## ex: amendPhpunitXml "suite:xyz"
+function amendPhpunitXml() {
+  case "$1" in
+    "path:ext/elavon"|"path:ext/ewaysingle"|"path:ext/oauth-client"|"path:ext/payflowpro")
+      if [[ "$REAL_UF" == "Drupal8" && $PHP_VERSION == 8.1.* ]]; then
+        echo "## [$1] Suppress Guzzle 6 deprecation warnings on PHP 8.1"
+        phpunit-config set convertDeprecationsToExceptions=false
+      fi
+      ;;
+  esac
+}
+
 #################################################
 ## Helpers
 function fatal() {
@@ -122,6 +137,7 @@ function task_phpunit_expr() {
   [ ! -d "$JUNITDIR" ] && mkdir -p "$JUNITDIR"
 
   pushd "$WORK_DIR" >> /dev/null
+    amendPhpunitXml "suite:$SUITE_NAME"
     if ! $GUARD $TIMER $PHPUNIT_BASE ${PHPUNIT_ARGS[@]} --log-junit "$JUNITDIR/$SUITE_NAME.xml" "$@" ; then
       EXITCODES="$EXITCODES $SUITE_NAME"
     fi
@@ -159,6 +175,7 @@ function task_phpunit_core_extension() {
   JUNIT_NAME=${3:-$EXTENSION}
 
   pushd "$CIVI_CORE/$PARENT/$EXTENSION" >> /dev/null
+    amendPhpunitXml "path:$PARENT/$EXTENSION"
     for GROUP in headless e2e ; do
       if ! $GUARD $TIMER $(getPhpunitVer) --log-junit="$JUNITDIR/junit-${JUNIT_NAME}-${GROUP}.xml" --group "$GROUP" ; then
        EXITCODES="$EXITCODES $EXTENSION-$GROUP"
@@ -296,8 +313,7 @@ function task_phpunit_uf() {
   $GUARD pushd "$CIVI_CORE" >> /dev/null
     $GUARD civibuild restore "$BLDNAME"
     $GUARD cv flush --cwd="$CIVI_CORE"
-    local uf=$(cv ev 'echo CIVICRM_UF;')
-    case "$uf" in
+    case "$REAL_UF" in
       Backdrop) task_phpunit_backdrop ;;
       Drupal) task_phpunit_drupal ;;
       WordPress) task_phpunit_wordpress ;;
@@ -456,6 +472,9 @@ else
   echo "(Clock simulation) No TIME_FUNC was specified. Using TIME_FUNC=$TIME_FUNC"
 fi
 export TIME_FUNC
+
+REAL_UF=$(cv ev --cwd="$CIVI_CORE" 'echo CIVICRM_UF;')
+PHP_VERSION=$(php -r 'echo phpversion();')
 
 ## Main
 for TESTTYPE in $SUITES ; do
