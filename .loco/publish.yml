@@ -1,0 +1,60 @@
+format: 'loco-0.1'
+
+## The "worker-n" configuration is used to setup N-many parallel workers, each with a fully separate stack.
+
+environment:
+ ## HOSTS_TYPE: When creating an HTTP service, should we register the hostname in "/etc/hosts" ('file') or not ('none')?
+ - HOSTS_TYPE=none
+
+ ## HTTPD_*: Determine how a local folder (eg "./build/dmaster") relates to a local HTTP service (eg "http://dmaster.bknix:8001").
+ - HTTPD_DOMAIN=bknix
+ - HTTPD_PORT=8001
+ - HTTPD_VDROOT=$BKIT/build
+ - HTTPD_VISIBILITY=all
+
+ ## HTTPD_PROXY: Specify whether we sit behind an HTTP(S) proxy. (Either "none" or "local")
+ - HTTPD_PROXY=none
+
+ ## *_PORT: Most daemons run on auxiliary/non-standard TCP/UDP ports.
+ - MAIL_SMTP_PORT=1025
+ - MAIL_HTTP_PORT=1080
+ - MEMCACHED_PORT=12221
+ - MYSQLD_PORT=3306 ## Debian MySQL
+ - PHPFPM_PORT=9009
+ - REDIS_PORT=6380
+
+ ## XDEBUG_*: Enable or disable main XDebug options
+ - XDEBUG_MODE=off
+ #- XDEBUG_PORT=9003
+ #- XDEBUG_CONFIG=...
+
+ ## CIVIBUILD_ADMIN_PASS: When creating an administrative user, set the default password.
+ # - CIVIBUILD_ADMIN_PASS=admin
+
+ ## LOCALHOST: Bind services to a local IP address.
+ - LOCALHOST=127.0.0.1
+
+ # CLI applications should use our stuff
+ - AMPHOME=$HOME/_bknix/ramdisk/worker-$BKPROF-amp
+ - CIVIBUILD_HOME=$HTTPD_VDROOT
+ - "CIVIBUILD_URL_TEMPLATE=http://%SITE_NAME%.$HTTPD_DOMAIN" ## Omit port#
+ - BKIT=$LOCO_PRJ
+ - BKITBLD=$HTTPD_VDROOT
+ #- MYSQL_HOME=$LOCO_VAR/mysql/conf
+ - NODE_PATH=$BKIT/node_modules:$NODE_PATH
+ - PATH=$BKIT/bin:$BKIT/node_modules/.bin:$LOCO_PRJ/.loco/bin:$PATH
+
+#### Functional service definitions
+services:
+
+  #mysetup:
+  #  enabled: false
+  #  init:
+  #    - 'loco-mysql-wait 300'
+  #    - 'loco-buildkit-init'
+  #    - 'mysql_tzinfo_to_sql "$TZDIR" | mysql mysql'
+  #  message: 'Buildkit (<comment>$BKIT</comment>) is configured to use these services. It produces builds in "<comment>$HTTPD_VDROOT</comment>".'
+
+## Configure the loco=>systemd export
+export:
+  include_env: '/^(PATH|NIX_SSL_.*|LOCALE_ARCHIVE|TZDIR)$/'
