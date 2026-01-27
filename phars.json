@@ -69,20 +69,20 @@
    },
 
    "phpunit8":  {
-     "url": "https://phar.phpunit.de/phpunit-8.5.41.phar",
-     "sha256": "df3a284a28ef7eee387707b6cfd6e569f27698c557281c440addaee165c64c16",
+     "url": "https://phar.phpunit.de/phpunit-8.5.52.phar",
+     "sha256": "7b10b6056780081a338dd8975566c2a8d29fb24ce402601845c88d3b310b3b15",
      "buildkit-path": "extern/phpunit8/phpunit8.phar"
    },
 
    "phpunit9":  {
-     "url": "https://phar.phpunit.de/phpunit-9.6.31.phar",
-     "sha256": "4c871cbeb9b9d9f8f14208e2c4fbad1cceaaec1b78c771cb13170bc6d6350360",
+     "url": "https://phar.phpunit.de/phpunit-9.6.33.phar",
+     "sha256": "7d30bffe898faa1cb459096355cefccce90afcd92de5492d6981804aa6c5dd9b",
      "buildkit-path": "extern/phpunit9/phpunit9.phar"
    },
 
    "phpunit10":  {
-     "url": "https://phar.phpunit.de/phpunit-10.5.39.phar",
-     "sha256": "8fc2fc1b23d35d4d8ab6ea5cbea9a4c47d118e3f2d6e9881f497ba856f4b7cc4",
+     "url": "https://phar.phpunit.de/phpunit-10.5.62.phar",
+     "sha256": "5e9a7c98681630a1198bc93e2f85fe05d524a64ee1560e68edfc4c24818d5513",
      "buildkit-path": "extern/phpunit10/phpunit10.phar"
    },
 
