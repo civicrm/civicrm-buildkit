@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8e4b83c0ca8f30b2381ea0daf70015ab",
+    "content-hash": "ac5a8fa970f861d1a3faa0fd323aeafc",
     "packages": [
         {
             "name": "civicrm/composer-compile-plugin",
@@ -604,17 +604,17 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "drupal/coder": 20,
-        "totten/php-symbol-diff": 20
+        "totten/php-symbol-diff": 20,
+        "drupal/coder": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=7.4"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "platform-overrides": {
         "php": "7.4"
     },
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }
