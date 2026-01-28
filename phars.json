@@ -1,7 +1,7 @@
 {
    "amp":  {
-     "url": "https://download.civicrm.org/amp/amp.phar-0.8.0",
-     "sha256": "bbf4cc342d7c5593b8fcb5102908b675f9f7c6f6b7f37ff94e7e3b32e9a380a9",
+     "url": "https://download.civicrm.org/amp/amp.phar-0.8.1",
+     "sha256": "56727fff717eaac477af97ca07b2e16d3cdc52b912cbacc60a5ce09b58b62ff8",
      "buildkit-path": "bin/amp"
    },
 
