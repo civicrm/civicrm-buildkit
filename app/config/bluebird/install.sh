@@ -99,16 +99,30 @@ pushd "$WEB_ROOT" >> /dev/null
     FLUSH PRIVILEGES;
 EOSQL
 
+  ## In a few moments, we'll have weakly-escaped reference to ADMIN_USER.
+  cvutil_assert_regex '^[0-9a-z][0-9a-z_]*$' "$ADMIN_USER" "ADMIN_USER must be a basic word"
+
   ## Populate databases
   (
     echo "CONNECT senate_c_$SITE_NAME;"
-    cat templates/sql/cividb_template.sql | fix_definer
+    #cat templates/sql/cividb_template.sql | fix_definer
+    cat templates/sql/senate_test_c_template.sql | fix_definer
+    cat civicrm/custom/ext/gov.nysenate.dedupe/sql/shadow_func.sql
 
     echo "CONNECT senate_d_$SITE_NAME;"
-    cat templates/sql/drupdb_template.sql | fix_definer
+    #cat templates/sql/drupdb_template.sql | fix_definer
+    cat templates/sql/senate_test_d_template.sql | fix_definer
+
+    ## FIXME: Various work-arounds
+    # echo 'update `system` set status = 0 where name like "%rules%";'
+    echo 'update `users` set name = "'$ADMIN_USER'" where uid=1;'
+    echo 'update `system` set status = 0 where name like "%ldap%";'
+    echo "truncate cache; truncate cache_apachesolr; truncate cache_block; truncate cache_bootstrap; truncate cache_field; truncate cache_filter; truncate cache_form;"
+    echo "truncate cache_menu; truncate cache_page; truncate cache_path; truncate cache_rules; truncate cache_update;"
 
     echo "CONNECT senate_l_$SITE_NAME;"
-    cat templates/sql/logdb_template.sql | fix_definer
+    #cat templates/sql/logdb_template.sql | fix_definer
+    cat templates/sql/senate_test_l_template.sql | fix_definer
 
     ## Override some settings via SQL.
     ## FIXME: This could probably be done declaratively in civicrm.settings.php...
@@ -118,5 +132,9 @@ EOSQL
   ) | amp sql -a
 
   ( cd scripts && php manageCiviConfig.php "$SITE_NAME" update def )
+
+  ./scripts/drush.sh bluebird -y upwd "$ADMIN_USER" --password="$ADMIN_PASS"
+  ## FIXME: ADMIN_EMAIL
+  ./scripts/drush.sh bluebird -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
 
 popd >> /dev/null
