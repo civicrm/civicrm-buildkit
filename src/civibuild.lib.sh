@@ -37,6 +37,23 @@ function cvutil_assertvars() {
 }
 
 ###############################################################################
+## Assert that some value matches a pattern
+##
+## usage: cvutil_assert_regex <grep-style-regex> <value> [<error-message>]
+function cvutil_assert_regex() {
+  local regex="$1"
+  local value="$2"
+  local error="$3"
+  if ! echo "$value" | grep -q "$regex" > /dev/null ; then
+    if [ -z "$error" ]; then
+      cvutil_fatal "Error: Value ($value) does not match regex ($regex)"
+    else
+      cvutil_fatal "$error"
+    fi
+  fi
+}
+
+###############################################################################
 ## Run a PHP program and explicitly disable debugging.
 ## usage: cvutil_php_nodbg <program-name> [<args>...]
 ## usage: cvutil_php_nodbg <relative-path> [<args>...]
