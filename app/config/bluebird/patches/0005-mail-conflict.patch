@@ -1,0 +1,59 @@
+commit 39437d4a31c13bcfea64069285e3d6cf39b2be54
+Author: Tim Otten <totten@civicrm.org>
+Date:   Wed Jan 28 15:34:31 2026 -0800
+
+    Mail.php / mail.php - Work-around for include-path conflict on macOS
+
+diff --git a/civicrm/custom/php/CRM/Mailing/BAO/MailingJob.php b/civicrm/custom/php/CRM/Mailing/BAO/MailingJob.php
+index e3c0ba5a1..6a8f57891 100644
+--- a/civicrm/custom/php/CRM/Mailing/BAO/MailingJob.php
++++ b/civicrm/custom/php/CRM/Mailing/BAO/MailingJob.php
+@@ -19,7 +19,7 @@ use Civi\FlexMailer\FlexMailer;
+  * @copyright CiviCRM LLC https://civicrm.org/licensing
+  */
+ 
+-require_once 'Mail.php';
++// require_once 'Mail.php';
+ 
+ /**
+  * Class CRM_Mailing_BAO_MailingJob
+diff --git a/civicrm/scripts/signup_reports/email.php b/civicrm/scripts/signup_reports/email.php
+index fb2a082af..62a3fd83d 100755
+--- a/civicrm/scripts/signup_reports/email.php
++++ b/civicrm/scripts/signup_reports/email.php
+@@ -75,7 +75,7 @@ $msg->addAttachment($attachment, 'application/vnd.ms-excel');
+ 
+ 
+ // Create our mailer
+-require_once 'Mail.php';
++// require_once 'Mail.php';
+ $mailer = Mail::Factory('smtp', array(
+   'host' => $bbcfg['smtp.host'],
+   'port' => $bbcfg['smtp.port'],
+diff --git a/modules/civicrm/CRM/Core/Config.php b/modules/civicrm/CRM/Core/Config.php
+index 888bad4d9..a0697f4c5 100644
+--- a/modules/civicrm/CRM/Core/Config.php
++++ b/modules/civicrm/CRM/Core/Config.php
+@@ -20,7 +20,8 @@
+  */
+ 
+ require_once 'Log.php';
+-require_once 'Mail.php';
++// require_once 'Mail.php';
++require_once 'PEAR.php';
+ 
+ require_once 'api/api.php';
+ 
+diff --git a/modules/civicrm/CRM/Mailing/BAO/MailingJob.php b/modules/civicrm/CRM/Mailing/BAO/MailingJob.php
+index e9eb9ea94..e395a5ed2 100644
+--- a/modules/civicrm/CRM/Mailing/BAO/MailingJob.php
++++ b/modules/civicrm/CRM/Mailing/BAO/MailingJob.php
+@@ -19,7 +19,7 @@ use Civi\FlexMailer\FlexMailer;
+  * @copyright CiviCRM LLC https://civicrm.org/licensing
+  */
+ 
+-require_once 'Mail.php';
++// require_once 'Mail.php';
+ 
+ /**
+  * Class CRM_Mailing_BAO_MailingJob
