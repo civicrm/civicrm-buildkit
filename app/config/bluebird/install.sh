@@ -23,10 +23,17 @@ function fix_definer() {
   sed "s/DEFINER=\`[^\`]*\`@\`[^\`]*\`/DEFINER=\`$CIVI_DB_USER\`@\`localhost\`/g"
 }
 
+## usage: parse_url <URL> <COMPONENT>
+## example: HTTP_PORT=$(parse_url "$CMS_URL" port)
+function parse_url() {
+  php -r 'echo parse_url($argv[1])[$argv[2]] . "\n";' "$@"
+}
+
 ###############################################################################
 ## Create virtual-host and databases
 
 amp_install
+bluebird_http_port=$(parse_url "$CMS_URL" port)
 
 ###############################################################################
 ## Setup Bluebird
@@ -44,6 +51,10 @@ pushd "$WEB_ROOT" >> /dev/null
   bluecfg globals drupal.rootdir "$WEB_ROOT/drupal"
   bluecfg globals import.rootdir "$WEB_ROOT/local/import"
   bluecfg globals site.key "$CIVI_SITE_KEY"
+
+  if [ -n "$bluebird_http_port" ]; then
+    bluecfg globals http.port "$bluebird_http_port"
+  fi
 
   if [ -n "$MAIL_SMTP_PORT" ]; then
     bluecfg globals smtp.host "${LOCALHOST:-127.0.0.1}"
