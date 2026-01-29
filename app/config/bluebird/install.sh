@@ -41,13 +41,13 @@ bluebird_http_port=$(parse_url "$CMS_URL" port)
 pushd "$WEB_ROOT" >> /dev/null
   ## Make some folder for local data
   mkdir -p local
-  amp data local/data local/import
+  amp data drupal/data local/import
 
   ## Build the main INI file
   cp -f templates/bluebird.cfg bluebird.cfg
 
   bluecfg globals app.rootdir "$WEB_ROOT"
-  bluecfg globals data.rootdir "$WEB_ROOT/local/data"
+  bluecfg globals data.rootdir "$WEB_ROOT/drupal/data"
   bluecfg globals drupal.rootdir "$WEB_ROOT/drupal"
   bluecfg globals import.rootdir "$WEB_ROOT/local/import"
   bluecfg globals site.key "$CIVI_SITE_KEY"
