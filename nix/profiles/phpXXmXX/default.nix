@@ -25,6 +25,13 @@ in if (isValidPackage php) && (isValidPackage dbms)
     dists.default.redis
     dists.bkit.transifexClient
 
-  ] ++ (if isApple then [] else [dists.default.chromium dists.default.wkhtmltopdf])
+  ] ++ (if isApple then [] else [
+    dists.default.chromium
+    dists.default.wkhtmltopdf
+    # error with typesense package for Apple on 25.05
+    # it works on 25.11 - so move this to list above
+    # once dist.default is bumped up
+    dists.default.typesense
+  ])
 
   else throw "Unsupported: Some dependencies for this combination of PHP/MySQL are not available in this environment."
