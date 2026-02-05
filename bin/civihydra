@@ -127,6 +127,13 @@ function hydra_create() {
         subsite_dl="web/tmp=$TARFILE"
         ;;
 
+      civicrm-*-joomla5bc.zip|civicrm-*-joomla5bc-*.zip)
+        subsite_name="${HYDRA_PREFIX}joomla5"
+        subsite_type="joomla5-empty"
+        subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}joomla5")
+        subsite_dl="web/tmp=$TARFILE"
+        ;;
+
       civicrm-*-standalone.tar.gz|civicrm-*-standalone-*.tar.gz)
         subsite_name="${HYDRA_PREFIX}sa"
         subsite_type="empty"
@@ -203,6 +210,13 @@ function hydra_show() {
 
       *-joomla)
         subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}joomla")
+        login_url="$subsite_url/administrator/"
+        install_url="$subsite_url/administrator/index.php?option=com_installer"
+        install_blurb="Choose 'Install from Folder' and enter $BLDDIR/$subsite_name/web/tmp/com_civicrm"
+        ;;
+
+      *-joomla5)
+        subsite_url=$(cvutil_mkurl "${HYDRA_PREFIX}joomla5")
         login_url="$subsite_url/administrator/"
         install_url="$subsite_url/administrator/index.php?option=com_installer"
         install_blurb="Choose 'Install from Folder' and enter $BLDDIR/$subsite_name/web/tmp/com_civicrm"
