@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+## Parse the git log and extract a list of pull-requests
+## FIXME: Hard-coded to `civicrm-core`
+
+git log --format=%s --merges "$@"   | grep 'Merge pull request' | cut -f4 -d\  | sed 's;#;https://github.com/civicrm/civicrm-core/pull/;'
