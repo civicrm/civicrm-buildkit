@@ -63,6 +63,10 @@ default_environment:
  - CHROME_HOST=${LOCALHOST}
  - CHROME_PORT=9222
 
+ # TYPESENSE
+ - TYPESENSE_API_KEY=xyz
+ - TYPESENSE_PORT=8108
+
 #### Mandatory environment settings
 environment:
  # CLI applications should use our stuff
@@ -159,3 +163,10 @@ services:
     run: 'loco-pid-file "$LOCO_SVC_VAR/chrome-headless.pid" -- "$CHROME_BIN" --disable-gpu --headless --remote-debugging-address="$CHROME_HOST" --remote-debugging-port="$CHROME_PORT"'
     pid_file : '$LOCO_SVC_VAR/chrome-headless.pid'
     message: 'Chrome (headless) is running on "<comment>http://$CHROME_HOST:$CHROME_PORT</comment>" to support automated testing.'
+
+  # FIXME: process fails if we dont create the data dir manually
+  typesense:
+    enabled: false
+    run: 'loco-pid-file "$LOCO_SVC_VAR/typesense.pid" -- typesense-server --data-dir="$LOCO_SVC_VAR/data" --api-address="$LOCALHOST" --api-port="$TYPESENSE_PORT" --api-key="$TYPESENSE_API_KEY"' #--enable-cors'
+    pid_file : '$LOCO_SVC_VAR/typesense.pid'
+    message: 'Typesense Server is running on "<comment>http://$LOCALHOST:$TYPESENSE_PORT</comment>".'
