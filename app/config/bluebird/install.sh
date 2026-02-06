@@ -137,4 +137,8 @@ EOSQL
   ## FIXME: ADMIN_EMAIL
   ./scripts/drush.sh bluebird -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
 
+  chmod u+w drupal/sites/default/settings.php drupal/sites/default/civicrm.settings.php
+  cvutil_inject_settings "drupal/sites/default/civicrm.settings.php" "civicrm.settings.d"
+  cvutil_inject_settings "drupal/sites/default/settings.php" "drupal.settings.d"
+
 popd >> /dev/null
