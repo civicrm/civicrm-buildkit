@@ -133,9 +133,9 @@ EOSQL
 
   ( cd scripts && php manageCiviConfig.php "$SITE_NAME" update def )
 
-  ./scripts/drush.sh bluebird -y upwd "$ADMIN_USER" --password="$ADMIN_PASS"
+  ./scripts/drush.sh "$SITE_NAME" -y upwd "$ADMIN_USER" --password="$ADMIN_PASS"
   ## FIXME: ADMIN_EMAIL
-  ./scripts/drush.sh bluebird -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
+  ./scripts/drush.sh "$SITE_NAME" -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
 
   chmod u+w drupal/sites/default/settings.php drupal/sites/default/civicrm.settings.php
   cvutil_inject_settings "drupal/sites/default/civicrm.settings.php" "civicrm.settings.d"
