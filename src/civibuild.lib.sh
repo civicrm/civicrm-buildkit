@@ -252,13 +252,20 @@ function cvutil_inject_settings() {
   cvutil_assertvars cvutil_inject_settings PRJDIR CIVI_CRED_KEY CIVI_SIGN_KEY SITE_NAME SITE_TYPE SITE_CONFIG_DIR SITE_ID SITE_TOKEN PRIVATE_ROOT FILE NAME
   # Note: CMS_VERSION ought to be defined for use in $civibuild['CMS_VERSION'], but it hasn't always been, and for most build-types its absence would be non-fatal.
 
+  if grep -q '\[civibuild_header' "$FILE" ; then
+    ## Already present. Not clever enough to reconcile any small discrepancies, so we'll stick with what we have.
+    echo >&2 "[[Inject $NAME for $FILE -- Skip]]"
+    return
+  fi
+  echo >&2 "[[Inject $NAME for $FILE]]"
+
   ## Prepare temp file
   local TMPFILE="${TMPDIR}/${SITE_TYPE}/${SITE_NAME}/${SITE_ID}.settings.tmp"
   cvutil_makeparent "$TMPFILE"
 
   cat > "$TMPFILE" << EOF
 <?php
-    #### If deployed via civibuild, include any "pre" scripts
+    #### [civibuild_header] If deployed via civibuild, include any "pre" scripts
     global \$civibuild;
     \$civibuild['PRJDIR'] = '$PRJDIR';
     \$civibuild['SITE_CONFIG_DIR'] = '$SITE_CONFIG_DIR';
