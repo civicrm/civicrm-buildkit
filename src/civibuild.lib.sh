@@ -1111,7 +1111,7 @@ function civicrm_resolve_ver() {
   local target="$1"
   case "$target" in
     ## Check common case first -- so we don't need to hit the network.
-    [0-9]*|master|main)
+    [0-9]*|master|main|*/*)
       echo "$target"
       return
       ;;
@@ -1145,6 +1145,11 @@ function civicrm_ext_download_bare() {
 ## example: civicrm_composer_ver master ==> "dev-master"
 function civicrm_composer_ver() {
   local branchTag="$1"
+
+  if [[ "$branchTag" == *"/"* ]]; then
+    branchTag=$(basename "$branchTag")
+  fi
+
   if [[ "$branchTag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     ## Specific tag versions don't need to be changed.
     echo "$branchTag"
@@ -1827,6 +1832,32 @@ function git_cache_deref_remotes() {
   done
 
   set -${_shellopt}
+}
+
+###############################################################################
+## Git checkout, with extra support for Github forks
+##
+## usage: git_checkout [fork/]branch
+## example: git_checkout 6.10
+## example: git_checkout bob/6.10-foo
+function git_checkout() {
+  local target="$1"
+
+  if [[ "$target" == *"/"* ]]; then
+    local git_repo=$(basename $(git remote get-url origin) | sed 's;\.git$;;')
+    local git_owner=$(dirname "$target")
+    local git_branch=$(basename "$target")
+    git remote add "$git_owner" "https://github.com/${git_owner}/${git_repo}.git"
+    git fetch "$git_owner" "$git_branch"
+    local current_branch=$(git rev-parse --abbrev-ref HEAD)
+    if [[ "$git_branch" == "$current_branch" ]]; then
+      ## This branch wasn't really used - it was just that 'git clone' coincidentally chose an eponymous branch from origin.
+      git branch -m "$current_branch" "backup-$current_branch-$RANDOM$RANDOM"
+    fi
+    git checkout "$target" -b "$git_branch"
+  else
+    git checkout "$target"
+  fi
 }
 
 ###############################################################################
