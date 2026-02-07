@@ -18,17 +18,15 @@ amp data "$WEB_ROOT"
 
 ## Checkout the git repos
 git_cache_setup "https://github.com/nysenate/Bluebird-CRM.git" "$CACHE_DIR/nysenate/Bluebird-CRM.git"
-git clone -b "$CMS_VERSION" "$CACHE_DIR/nysenate/Bluebird-CRM.git" "$WEB_ROOT"
+git clone "$CACHE_DIR/nysenate/Bluebird-CRM.git" "$WEB_ROOT"
 
 pushd "$WEB_ROOT"
+  git_checkout "$CMS_VERSION"
+
+  # FIXME: cp $HOME/Downloads/bluebird/senate_test_*sql templates/sql/
 
   ## Work-around: In buildkit-nix, Apache config has strong prefercence for "web/" folder.
   ln -sf drupal web
-
-  ## Apply a few small patches. When we have a bit more confidence, send upstream.
-  ls "$SITE_CONFIG_DIR"/patches/*.patch | sort | while read PATCH ; do
-    patch -p1 < "$PATCH"
-  done
 
   ## It looks like this might be necessary for the 'Old' subdir.
   ## But the main scripts are already 755.
