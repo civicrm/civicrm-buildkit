@@ -37,6 +37,23 @@ function cvutil_assertvars() {
 }
 
 ###############################################################################
+## Assert that some value matches a pattern
+##
+## usage: cvutil_assert_regex <grep-style-regex> <value> [<error-message>]
+function cvutil_assert_regex() {
+  local regex="$1"
+  local value="$2"
+  local error="$3"
+  if ! echo "$value" | grep -q "$regex" > /dev/null ; then
+    if [ -z "$error" ]; then
+      cvutil_fatal "Error: Value ($value) does not match regex ($regex)"
+    else
+      cvutil_fatal "$error"
+    fi
+  fi
+}
+
+###############################################################################
 ## Run a PHP program and explicitly disable debugging.
 ## usage: cvutil_php_nodbg <program-name> [<args>...]
 ## usage: cvutil_php_nodbg <relative-path> [<args>...]
@@ -235,13 +252,20 @@ function cvutil_inject_settings() {
   cvutil_assertvars cvutil_inject_settings PRJDIR CIVI_CRED_KEY CIVI_SIGN_KEY SITE_NAME SITE_TYPE SITE_CONFIG_DIR SITE_ID SITE_TOKEN PRIVATE_ROOT FILE NAME
   # Note: CMS_VERSION ought to be defined for use in $civibuild['CMS_VERSION'], but it hasn't always been, and for most build-types its absence would be non-fatal.
 
+  if grep -q '\[civibuild_header' "$FILE" ; then
+    ## Already present. Not clever enough to reconcile any small discrepancies, so we'll stick with what we have.
+    echo >&2 "[[Inject $NAME for $FILE -- Skip]]"
+    return
+  fi
+  echo >&2 "[[Inject $NAME for $FILE]]"
+
   ## Prepare temp file
   local TMPFILE="${TMPDIR}/${SITE_TYPE}/${SITE_NAME}/${SITE_ID}.settings.tmp"
   cvutil_makeparent "$TMPFILE"
 
   cat > "$TMPFILE" << EOF
 <?php
-    #### If deployed via civibuild, include any "pre" scripts
+    #### [civibuild_header] If deployed via civibuild, include any "pre" scripts
     global \$civibuild;
     \$civibuild['PRJDIR'] = '$PRJDIR';
     \$civibuild['SITE_CONFIG_DIR'] = '$SITE_CONFIG_DIR';
@@ -1087,7 +1111,7 @@ function civicrm_resolve_ver() {
   local target="$1"
   case "$target" in
     ## Check common case first -- so we don't need to hit the network.
-    [0-9]*|master|main)
+    [0-9]*|master|main|*/*)
       echo "$target"
       return
       ;;
@@ -1121,6 +1145,11 @@ function civicrm_ext_download_bare() {
 ## example: civicrm_composer_ver master ==> "dev-master"
 function civicrm_composer_ver() {
   local branchTag="$1"
+
+  if [[ "$branchTag" == *"/"* ]]; then
+    branchTag=$(basename "$branchTag")
+  fi
+
   if [[ "$branchTag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     ## Specific tag versions don't need to be changed.
     echo "$branchTag"
@@ -1803,6 +1832,32 @@ function git_cache_deref_remotes() {
   done
 
   set -${_shellopt}
+}
+
+###############################################################################
+## Git checkout, with extra support for Github forks
+##
+## usage: git_checkout [fork/]branch
+## example: git_checkout 6.10
+## example: git_checkout bob/6.10-foo
+function git_checkout() {
+  local target="$1"
+
+  if [[ "$target" == *"/"* ]]; then
+    local git_repo=$(basename $(git remote get-url origin) | sed 's;\.git$;;')
+    local git_owner=$(dirname "$target")
+    local git_branch=$(basename "$target")
+    git remote add "$git_owner" "https://github.com/${git_owner}/${git_repo}.git"
+    git fetch "$git_owner" "$git_branch"
+    local current_branch=$(git rev-parse --abbrev-ref HEAD)
+    if [[ "$git_branch" == "$current_branch" ]]; then
+      ## This branch wasn't really used - it was just that 'git clone' coincidentally chose an eponymous branch from origin.
+      git branch -m "$current_branch" "backup-$current_branch-$RANDOM$RANDOM"
+    fi
+    git checkout "$target" -b "$git_branch"
+  else
+    git checkout "$target"
+  fi
 }
 
 ###############################################################################

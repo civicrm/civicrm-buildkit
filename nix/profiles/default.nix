@@ -71,8 +71,11 @@ let
   ## mariadbVersions = { mariadb105=PKG, mariadb106=PKG, ...}
   mariadbVersions = (attrsets.filterAttrs (name: value: builtins.match "mariadb[0-9]+" name != null) dists.bkit);
 
+  ## perconaVersions = { percona105=PKG, percona106=PKG, ...}
+  perconaVersions = (attrsets.filterAttrs (name: value: builtins.match "percona[0-9]+" name != null) dists.bkit);
+
   ## dbmsVersions = { m57=PKG, m80=PKG, r105=PKG, r106=PKG, ...}
-  dbmsVersions = (rekeyRecord "mysql" "m" mysqlVersions) // (rekeyRecord "mariadb" "r" mariadbVersions);
+  dbmsVersions = (rekeyRecord "mysql" "m" mysqlVersions) // (rekeyRecord "mariadb" "r" mariadbVersions) // (rekeyRecord "percona" "p" perconaVersions);
 
   /**
    * ***************************************
