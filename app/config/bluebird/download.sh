@@ -9,6 +9,11 @@
 ## "WEB_ROOT" here...)
 
 ###############################################################################
+## FIXME: Work-around incorrect SQL files
+source "$SITE_CONFIG_DIR/check-sql-override.sh"
+
+###############################################################################
+## Main download
 
 [ -z "$CMS_VERSION" ] && CMS_VERSION=dev
 
@@ -22,8 +27,6 @@ git clone "$CACHE_DIR/nysenate/Bluebird-CRM.git" "$WEB_ROOT"
 
 pushd "$WEB_ROOT"
   git_checkout "$CMS_VERSION"
-
-  # FIXME: cp $HOME/Downloads/bluebird/senate_test_*sql templates/sql/
 
   ## Work-around: In buildkit-nix, Apache config has strong prefercence for "web/" folder.
   ln -sf drupal web
