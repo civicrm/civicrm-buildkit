@@ -5,6 +5,10 @@
 CMS_ROOT="$WEB_ROOT/web"
 
 ###############################################################################
+## FIXME: Work-around incorrect SQL files
+source "$SITE_CONFIG_DIR/check-sql-override.sh"
+
+###############################################################################
 ## Helper functions
 
 ## Update items in the `bluebird.cfg` file.
@@ -105,13 +109,13 @@ EOSQL
   ## Populate databases
   (
     echo "CONNECT senate_c_$SITE_NAME;"
-    #cat templates/sql/cividb_template.sql | fix_definer
-    cat templates/sql/senate_test_c_template.sql | fix_definer
+    ## FIXME: cat templates/sql/cividb_template.sql | fix_definer
+    cat "$SITE_CONFIG_DIR/sql/senate_test_c_template.sql" | fix_definer
     cat civicrm/custom/ext/gov.nysenate.dedupe/sql/shadow_func.sql
 
     echo "CONNECT senate_d_$SITE_NAME;"
-    #cat templates/sql/drupdb_template.sql | fix_definer
-    cat templates/sql/senate_test_d_template.sql | fix_definer
+    ## FIXME: cat templates/sql/drupdb_template.sql | fix_definer
+    cat "$SITE_CONFIG_DIR/sql/senate_test_d_template.sql" | fix_definer
 
     ## FIXME: Various work-arounds
     # echo 'update `system` set status = 0 where name like "%rules%";'
@@ -121,8 +125,8 @@ EOSQL
     echo "truncate cache_menu; truncate cache_page; truncate cache_path; truncate cache_rules; truncate cache_update;"
 
     echo "CONNECT senate_l_$SITE_NAME;"
-    #cat templates/sql/logdb_template.sql | fix_definer
-    cat templates/sql/senate_test_l_template.sql | fix_definer
+    ## FIXME: cat templates/sql/logdb_template.sql | fix_definer
+    cat "$SITE_CONFIG_DIR/sql/senate_test_l_template.sql" | fix_definer
 
     ## Override some settings via SQL.
     ## FIXME: This could probably be done declaratively in civicrm.settings.php...
@@ -136,6 +140,7 @@ EOSQL
   ./scripts/drush.sh "$SITE_NAME" -y upwd "$ADMIN_USER" --password="$ADMIN_PASS"
   ## FIXME: ADMIN_EMAIL
   ./scripts/drush.sh "$SITE_NAME" -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
+  ## FIXME: Grant some role to $DEMO_USER
 
   chmod u+w drupal/sites/default/settings.php drupal/sites/default/civicrm.settings.php
   cvutil_inject_settings "drupal/sites/default/civicrm.settings.php" "civicrm.settings.d"
