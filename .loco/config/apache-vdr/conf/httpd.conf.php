@@ -5,6 +5,7 @@ $defaults = [
   'HTTPD_PORT'   => 8080,
   'HTTPD_DOMAIN' => 'localhost',
   'HTTPD_PROXY'    => 'none',
+  'HTTPD_VISIBILITY' => 'local',
   'LOCALHOST'    => '127.0.0.1',
   'PHPFPM_PORT'  => 9000,
   'HTTPD_VDROOT' => '/var/www/vhosts',
@@ -18,7 +19,11 @@ foreach ($defaults as $key => $val) {
 
 ?>
 ServerRoot "<?php echo getenv('LOCO_SVC_VAR'); ?>"
+<?php if (getenv('HTTPD_VISIBILITY') === 'all'): ?>
 Listen <?php echo getenv('HTTPD_PORT'); echo "\n"; ?>
+<? else: ?>
+Listen <?php echo getenv('LOCALHOST') . ':' . getenv('HTTPD_PORT'); echo "\n"; ?>
+<? endif; ?>
 PidFile <?php echo getenv('LOCO_SVC_VAR'); ?>/httpd.pid
 LoadModule mpm_event_module modules/mod_mpm_event.so
 LoadModule authn_file_module modules/mod_authn_file.so
