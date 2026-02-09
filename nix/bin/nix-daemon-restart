@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -eu
+
+restart_with_systemd() {
+  if command -v systemctl >/dev/null 2>&1; then
+    if systemctl list-unit-files | grep -q '^nix-daemon\.service'; then
+      echo "Restarting nix-daemon via systemd..."
+      sudo systemctl restart nix-daemon.service
+      return 0
+    fi
+  fi
+  return 1
+}
+
+restart_with_launchctl() {
+  if command -v launchctl >/dev/null 2>&1; then
+    # Common label used by multi-user Nix installs on macOS
+    local label="org.nixos.nix-daemon"
+    if launchctl list | grep -q "$label"; then
+      echo "Restarting nix-daemon via launchctl..."
+      sudo launchctl kickstart -k "system/$label"
+      return 0
+    fi
+  fi
+  return 1
+}
+
+main() {
+  if restart_with_systemd; then
+    exit 0
+  fi
+
+  if restart_with_launchctl; then
+    exit 0
+  fi
+
+  echo "nix-daemon not found or not running (possibly single-user mode). Nothing to restart."
+}
+
+main "$@"
