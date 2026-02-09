@@ -2,10 +2,11 @@
 
 ###########################################################
 
-# Current v2.2.1 suffers https://github.com/NixOS/nix/issues/2633 (eg on Debain Stretch/gcloud). Use v2.0.4.
-# But 2.0.4 may not be working on macOS Mojave. Blerg.
-NIX_INSTALLER_URL="https://nixos.org/releases/nix/nix-2.0.4/install"
-# NIX_INSTALLER_URL="https://nixos.org/releases/nix/nix-2.2.1/install"
+BK_NIX_DEFAULT_INSTALLER="https://nixos.org/nix/install"
+# BK_NIX_DEFAULT_INSTALLER="https://nixos.org/releases/nix/nix-2.0.4/install"
+# BK_NIX_DEFAULT_INSTALLER="https://nixos.org/releases/nix/nix-2.2.1/install"
+
+BK_NIX_DEFAULT_OPT="--daemon"
 
 DISPATCH_USER=dispatcher
 
@@ -17,6 +18,9 @@ function install_nix_interactive() {
     echo "The /nix folder is already installed."
     return
   fi
+
+  trap "_install_nix_reminder" EXIT
+  _install_nix_finished=
 
   if [ -z "$(which curl)" ]; then
     echo "Missing required program: curl" >&2
@@ -47,41 +51,53 @@ function install_nix_interactive() {
   echo "- Tip: At time of writing, install-developer.sh and install-ci.sh have issues with nix 2.14+"
   ## Specifically, "/nix/var/nix/profiles/per-user/$USER" doesn't seem to be available anymore. Needs update to support new layout.
   echo ""
-  echo "Which version of \"nix\" would you like to install?"
+  echo "Which version of \"nix\" would you like to install? (blank for default)"
   read -p '> ' BK_NIX_VERSION
 
   if [ -n "$BK_NIX_VERSION" ]; then
     BK_NIX_URL="https://nixos.org/releases/nix/nix-${BK_NIX_VERSION}/install"
   else
-    BK_NIX_URL=https://nixos.org/nix/install
+    BK_NIX_URL="$BK_NIX_DEFAULT_INSTALLER"
   fi
 
   echo ""
   echo "== Installation Flags"
   echo
-  echo "- Tip: If you leave this blank, the installer will make its own guesses."
   echo "- Tip: Some versions and host environments may require specific flags."
+  echo "- Default: \"$BK_NIX_DEFAULT_OPT\""
   echo "- Example: \"--daemon\""
   echo "- Example: \"--no-daemon\""
-  echo "- Example: \"--no-daemon --darwin-use-unencrypted-nix-store-volume\""
   echo "- Tip: For full-time servers, \"--daemon\" is strongly preferred."
-  echo "- Docs: https://nixos.org/manual/nix/stable/installation/installation.html"
   echo ""
-  echo "Please enter any installation-flags (or leave blank):"
+  echo "Please enter any installation-flags (blank for default):"
   read -p'> ' BK_NIX_OPT
+  if [ -z "$BK_NIX_OPT" ]; then
+    BK_NIX_OPT="$BK_NIX_DEFAULT_OPT"
+  fi
 
   echo
   ## Quirky "" prevents execution...
-  echo "Running: sh <""(""curl -L $BK_NIX_URL"") $BK_NIX_OPT"
-  sh <(curl -L $BK_NIX_URL) $BK_NIX_OPT
+  echo "Running: sh <""(""curl --proto '=https' --tlsv1.2 -L $BK_NIX_URL"") $BK_NIX_OPT"
+  sh <(curl --proto '=https' --tlsv1.2 -L $BK_NIX_URL) $BK_NIX_OPT
+  _install_nix_finished=1
 
   if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
+    echo "Load nix into shell ($HOME/.nix-profile/etc/profile.d/nix.sh)"
     . "$HOME/.nix-profile/etc/profile.d/nix.sh"
   elif [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+    echo "Load nix into shell ('/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh)"
     . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
   else
     echo "ERROR: Failed to find nix console script. Perhaps it has a different name now-a-days? You may need to restart console before continuing with any commands." 1>&2
     exit 1
+  fi
+}
+
+function _install_nix_reminder() {
+  if [ -n "$_install_nix_finished" ]; then
+    echo >&2
+    echo >&2 "REMINDER: Nix is newly installed. To work with nix commands, you must restart any/all open shells."
+    echo >&2
   fi
 }
 
