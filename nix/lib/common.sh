@@ -88,14 +88,21 @@ function install_nix_interactive() {
 function install_cachix() {
   if [ -f /etc/nix/nix.conf ]; then
     if grep -q bknix.cachix.org /etc/nix/nix.conf ; then
+      echo "Cachix already configured"
       return
     fi
   fi
   echo "Setup binary cache (cachix)"
-  local SUDO
-  is_my_file /nix/store && SUDO='' || SUDO='sudo -i'
-  $SUDO nix-env -iA cachix -f https://cachix.org/api/v1/install
-  $SUDO cachix use bknix
+  if is_my_file /nix/store; then
+    ## Single user mode
+    nix-env -iA cachix -f https://cachix.org/api/v1/install
+    cachix use bknix
+  else
+    ## Multi user mode
+    sudo -i nix-env -iA cachix -f https://cachix.org/api/v1/install
+    sudo -i cachix use bknix
+    "$BINDIR/nix-daemon-restart"
+  fi
 }
 
 ## Setup all services for user "jenkins"
