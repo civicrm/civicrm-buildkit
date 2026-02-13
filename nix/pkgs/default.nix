@@ -41,7 +41,6 @@ in pharDirectives // rec {
    mariadb106 = dists.v2205.mariadb;
    mariadb1011 = dists.v2505.mariadb;
 
-   nodejs_14 = dists.v2205.nodejs-14_x;
    nodejs_22 = dists.v2505.nodejs;
 
    bknixPhpstormAdvisor = import ./bknixPhpstormAdvisor/default.nix;

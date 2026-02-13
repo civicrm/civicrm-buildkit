@@ -17,7 +17,6 @@ in if (isValidPackage php) && (isValidPackage dbms)
   then (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
 
     php
-    # dists.bkit.nodejs_14
     dists.bkit.nodejs_22
     dists.default.apacheHttpd
     dists.default.mailhog
