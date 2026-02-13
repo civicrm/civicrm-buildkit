@@ -38,6 +38,8 @@ in pharDirectives // rec {
    mysql93 = dists.v2505.mysql93;
    mariadb106 = dists.v2205.mariadb;
    mariadb1011 = dists.v2505.mariadb;
+   percona80 = ifSupported "percona80" stdenv.isLinux dists.v2505.percona-server_8_0;
+   percona84 = dists.v2505.percona-server;
 
    nodejs_22 = dists.v2505.nodejs;
 
