@@ -15,8 +15,8 @@ let
 
 in pkgs.php85.buildEnv {
 
-  ## EVALUATE: apcu_bc apcu phpExtras.xdebug34
-  extensions = { all, enabled }: with all; enabled++ [ tidy yaml memcached imagick opcache redis ];
+  ## EVALUATE: apcu_bc apcu
+  extensions = { all, enabled }: with all; enabled++ [ tidy yaml memcached imagick opcache redis xdebug ];
   extraConfig = phpIniSnippet1 + phpIniSnippet2;
 
 }
