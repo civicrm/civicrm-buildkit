@@ -21,8 +21,6 @@ let
   };
   pharDirectives = (mapAttrs jsonToPhar jsonContent);
 
-  makeMysqlWrapper = import ./mysqlXX/default.nix;
-
   callPackage = path: overrides:
     let f = import path;
     in f ((builtins.intersectAttrs (builtins.functionArgs f) pkgs) // overrides);
