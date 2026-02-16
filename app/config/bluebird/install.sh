@@ -48,6 +48,7 @@ pushd "$WEB_ROOT" >> /dev/null
   amp data drupal/data local/import
 
   ## Build the main INI file
+  echo "[[ Prepare bluebird.cfg ]]"
   cp -f templates/bluebird.cfg bluebird.cfg
 
   bluecfg globals app.rootdir "$WEB_ROOT"
@@ -87,6 +88,12 @@ pushd "$WEB_ROOT" >> /dev/null
   bluecfg globals email.extras.whitelist_text 'FIXME email.extras.whitelist_text'
 
   ## Create databases. Grant access to them.
+  echo "[[ Prepare Bluebird databases ]]"
+
+  ## In a few moments, dynamic SQL will reference some variables that are hard to escape. Make sure they're safe.
+  cvutil_assert_regex '^[0-9a-z][0-9a-z_]*$' "$SITE_NAME" "SITE_NAME must be a basic word"
+  cvutil_assert_regex '^[0-9a-z][0-9a-z_]*$' "$ADMIN_USER" "ADMIN_USER must be a basic word"
+
   SITE_NAME="$SITE_NAME" CIVI_DB_USER="$CIVI_DB_USER" amp sql -ae <<EOSQL
     DROP DATABASE IF EXISTS senate_c_!ENV[SITE_NAME];
     DROP DATABASE IF EXISTS senate_d_!ENV[SITE_NAME];
@@ -102,9 +109,6 @@ pushd "$WEB_ROOT" >> /dev/null
     GRANT SUPER on *.* to  @ENV[CIVI_DB_USER]@'localhost';
     FLUSH PRIVILEGES;
 EOSQL
-
-  ## In a few moments, we'll have weakly-escaped reference to ADMIN_USER.
-  cvutil_assert_regex '^[0-9a-z][0-9a-z_]*$' "$ADMIN_USER" "ADMIN_USER must be a basic word"
 
   ## Populate databases
   (
@@ -135,15 +139,19 @@ EOSQL
     cat scripts/setCiviDirs.sql
   ) | amp sql -a
 
-  ( cd scripts && php manageCiviConfig.php "$SITE_NAME" update def )
-
-  ./scripts/drush.sh "$SITE_NAME" -y upwd "$ADMIN_USER" --password="$ADMIN_PASS"
-  ## FIXME: ADMIN_EMAIL
-  ./scripts/drush.sh "$SITE_NAME" -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
-  ## FIXME: Grant some role to $DEMO_USER
+  echo ""
 
   chmod u+w drupal/sites/default/settings.php drupal/sites/default/civicrm.settings.php
   cvutil_inject_settings "drupal/sites/default/civicrm.settings.php" "civicrm.settings.d"
   cvutil_inject_settings "drupal/sites/default/settings.php" "drupal.settings.d"
+
+  echo "[[ Run Bluebird setup commands ]]"
+  ( cd scripts && php manageCiviConfig.php "$SITE_NAME" update def )
+  ./scripts/cv.sh bluebird --no-interaction updb
+  ./scripts/drush.sh bluebird -y updb
+  ./scripts/drush.sh "$SITE_NAME" -y upwd "$ADMIN_USER" --password="$ADMIN_PASS"
+  ## FIXME: ADMIN_EMAIL
+  ./scripts/drush.sh "$SITE_NAME" -y user-create --password="$DEMO_PASS" --mail="$DEMO_EMAIL" "$DEMO_USER"
+  ## FIXME: Grant some role to $DEMO_USER
 
 popd >> /dev/null
