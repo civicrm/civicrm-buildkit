@@ -55,6 +55,7 @@ pushd "$WEB_ROOT" >> /dev/null
   bluecfg globals data.rootdir "$WEB_ROOT/drupal/data"
   bluecfg globals drupal.rootdir "$WEB_ROOT/drupal"
   bluecfg globals import.rootdir "$WEB_ROOT/local/import"
+  bluecfg globals tmp.rootdir "$WEB_ROOT/local/tmp"
   bluecfg globals site.key "$CIVI_SITE_KEY"
 
   if [ -n "$bluebird_http_port" ]; then
