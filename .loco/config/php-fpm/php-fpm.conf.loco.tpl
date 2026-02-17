@@ -21,3 +21,7 @@ env[NIX_SSL_CERT_FILE] = $NIX_SSL_CERT_FILE
 env[XDEBUG_MODE] = $XDEBUG_MODE
 env[XDEBUG_PORT] = $XDEBUG_PORT
 env[XDEBUG_CONFIG] = $XDEBUG_CONFIG
+
+; EX: In Bluebird, web UI for self-backup calls `mysqldump` without specifying real DSN.
+; This works as long as you have the matching my.cnf config.
+env[MYSQL_HOME] = $MYSQL_HOME
