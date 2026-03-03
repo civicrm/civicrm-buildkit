@@ -335,7 +335,7 @@ function http_cache_setup() {
   local lastrun="${cachefile}.lastrun"
   local ttl=${3:-$CACHE_TTL}
 
-  if [ -f "$cachefile" -a -f "$lastrun" ]; then
+  if [ -f "$cachefile" -a -f "$lastrun" -a -s "$cachefile" ]; then
     if php -r 'exit($argv[1] + file_get_contents($argv[2]) < time() ? 1 : 0);' -- "$ttl" "$lastrun" ; then
       echo "SKIP: http_cache_setup '$url' $cachefile' (recently updated; ttl=$ttl)"
       return
@@ -1561,7 +1561,7 @@ function _drupalx_po_download() {
         local PO_SET=$( [[ "$VERSION" == *"7.x"* ]] && echo 7.x || echo all )
         local PO_URL="https://download.civicrm.org/mirror/drupal-l10n/${PO_SET}/${PROJECT}/${TARGET}.${NEW_LOCALE}.po"
         if [ "$PROJECT" = "backdropcms" ]; then
-          PO_URL="download.civicrm.org/mirror/backdrop-l10n/all/backdropcms/backdropcms-${VERSION}.${NEW_LOCALE}.po"
+          PO_URL="https://download.civicrm.org/mirror/backdrop-l10n/all/backdropcms/backdropcms-${VERSION}.${NEW_LOCALE}.po"
         fi
 
         http_cache_setup "$PO_URL" "${CACHE_DIR}/drupal/translations/${TARGET}.${NEW_LOCALE}.po" "$TTL"
