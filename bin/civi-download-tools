@@ -356,7 +356,7 @@ pushd $PRJDIR >> /dev/null
     echo_comment "[[composer dependencies already installed. Skipping.]]"
   else
     "$PRJDIR/bin/composer" install
-    cat composer.json composer.lock phars.json | php -r 'echo md5(file_get_contents("php://stdin"));' > "$TMPDIR/composer-data.md5"
+    echo "$COMPOSER_MD5" > "$TMPDIR/composer-data.md5"
   fi
 
   ## Download dependencies (via npm)
