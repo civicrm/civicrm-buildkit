@@ -40,11 +40,12 @@ class ExtBuildCommand extends BaseCommand {
     --build=pr123 --build-root=/srv/buildkit/build
       ')
       ->useOptions(['build', 'build-root', 'civi-ver', 'dry-run', 'ext-dir', 'force', 'feed', 'keep', 'timeout', 'type'])
-      ->addOption('pr-url', NULL, InputOption::VALUE_REQUIRED, 'The local base path to search')
+      ->addOption('key', 'k', InputOption::VALUE_REQUIRED, 'Identify target extension by its key. Consult the relevant feed.')
+      ->addOption('pr-url', NULL, InputOption::VALUE_REQUIRED, 'Identify target extension based on a pull-request URL.')
+      ->addOption('git-url', NULL, InputOption::VALUE_REQUIRED, 'Identify target extension by git URL. May be full URL or "hub:USER/REPO" or "lab:USER/REPO"')
       ->addOption('rev', NULL, InputOption::VALUE_REQUIRED, 'Git SHA/branch/tag')
       ->addOption('base', NULL, InputOption::VALUE_REQUIRED, 'Base revision -- Git SHA/branch/tag; Combine with --head')
-      ->addOption('head', NULL, InputOption::VALUE_REQUIRED, 'Head revision -- Git SHA/branch/tag; Combine with --base')
-      ->addOption('git-url', NULL, InputOption::VALUE_REQUIRED, 'Remote repo to download. May be full URL or "hub:USER/REPO" or "lab:USER/REPO"');
+      ->addOption('head', NULL, InputOption::VALUE_REQUIRED, 'Head revision -- Git SHA/branch/tag; Combine with --base');
   }
 
   protected function initialize(InputInterface $input, OutputInterface $output) {
@@ -82,6 +83,7 @@ class ExtBuildCommand extends BaseCommand {
       'RELEXTPATH' => $input->getOption('ext-dir') . "/target",
       'ABSEXTPATH' => "$myBuildRoot/" . $input->getOption('ext-dir') . "/target",
       'FEED' => $input->getOption('feed'),
+      'KEY' => $input->getOption('key'),
     ];
 
     $batch = new ProcessBatch();
@@ -146,8 +148,20 @@ class ExtBuildCommand extends BaseCommand {
         )
       );
     }
+    elseif ($input->getOption('key')) {
+      $extraParams = [
+        'KEY_FEED' => preg_replace(';/single$;', '/' . $input->getOption('key') . '.xml', $commonParams['FEED']),
+      ];
+      $batch->add(
+        "<info>Download extension from feed</info> (<comment>{$extraParams['KEY_FEED']}</comment>)",
+        \Symfony\Component\Process\Process::fromShellCommandline(
+          Process::interpolate('cv dl -b @@KEY_FEED --to=@ABSEXTPATH', $commonParams + $extraParams),
+          $myBuildRoot
+        )
+      );
+    }
     else {
-      throw new \RuntimeException("Must specify --pr-url or --git-url");
+      throw new \RuntimeException("Must specify --pr-url or --git-url or --key");
     }
 
     $batch->add(

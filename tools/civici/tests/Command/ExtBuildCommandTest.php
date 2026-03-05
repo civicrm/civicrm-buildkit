@@ -121,6 +121,56 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
   /**
    * Simulate creation of an extension test-build using a Git URL and SHA.
    */
+  public function testCreateByKey() {
+    $commandTester = $this->createCommandTester(array(
+      'command' => 'ext:build',
+      '--dry-run' => TRUE,
+      '--build' => 'foobar',
+      '--build-root' => '/srv/buildkit/build',
+      '--key' => 'org.civicrm.module.cividiscount',
+      '--feed' => '*auto-stable*',
+    ), ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]);
+
+    $linePatterns = [
+      '%Download main codebase \(build=foobar, type=drupal-clean, civi-ver=master\)%',
+      '%\$ cd \'.*\'%',
+      '%\$ civibuild download \'foobar\' --type \'drupal-clean\' --civi-ver \'master\'%',
+      '%^\s*$%',
+
+      '%Download extension from feed \(https://civicrm.org/extdir/ver=5.40.0\|uf=Bare/org.civicrm.module.cividiscount.xml\)%',
+      '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      '%\$ cv dl -b \@\'https://civicrm.org/extdir/ver=5.40.0\|uf=Bare/org.civicrm.module.cividiscount.xml\' --to=\'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext/target\'%',
+      '%^\s*$%',
+
+      '%Download extension dependencies%',
+      '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      '%\$ civici ext:dl-dep --info=\'web/sites/default/files/civicrm/ext/target\'/info.xml --feed=\'https://civicrm.org/extdir/ver=5.40.0\|uf=Bare/single\' --to=\'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext\'$%',
+      '%^\s*$%',
+
+      '%Install main database%',
+      '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      '%civibuild install \'foobar\'%',
+      '%^\s*$%',
+
+      // '%Install extension%',
+      // '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      // '%cv api extension.install path=\'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext/target\'%',
+
+      // '%Update database snapshot%',
+      // '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      // '%civibuild snapshot \'foobar\'%',
+
+      '%Done%',
+      '%%',
+    ];
+
+    $allOutput = $commandTester->getDisplay(FALSE);
+    $this->assertLinePatterns($linePatterns, $allOutput);
+  }
+
+  /**
+   * Simulate creation of an extension test-build using a Git URL and SHA.
+   */
   public function testCreateByBaseAndHead() {
     $commandTester = $this->createCommandTester(array(
       'command' => 'ext:build',
