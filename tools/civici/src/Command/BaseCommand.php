@@ -1,6 +1,7 @@
 <?php
 namespace Civici\Command;
 
+use Civici\DefaultExtPaths;
 use Civici\Util\CacheDir;
 use Symfony\Component\Console\Command\Command;
 use Civici\Util\ProcessBatch;
@@ -39,7 +40,7 @@ class BaseCommand extends Command {
           break;
 
         case 'ext-dir':
-          $this->addOption('ext-dir', NULL, InputOption::VALUE_REQUIRED, 'Relative path to the extension dir', 'web/sites/default/files/civicrm/ext');
+          $this->addOption('ext-dir', NULL, InputOption::VALUE_REQUIRED, 'Relative path to the extension dir', 'DEFAULT');
           break;
 
         case 'feed':
@@ -69,6 +70,10 @@ class BaseCommand extends Command {
 
   protected function initialize(InputInterface $input, OutputInterface $output) {
     $def = $this->getDefinition();
+
+    if ($input->hasOption('ext-dir') && $input->getOption('ext-dir') === 'DEFAULT') {
+      $input->setOption('ext-dir', DefaultExtPaths::pick($input->getOption('type')));
+    }
 
     if ($def->hasOption('build')) {
       if (!$input->getOption('build')) {
