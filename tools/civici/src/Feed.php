@@ -41,6 +41,10 @@ class Feed {
    *   Array(string $extKey => InfoXml $info).
    */
   public function resolveAllRequirements($target) {
+    if (empty($target->requires)) {
+      return [];
+    }
+
     $feed = $this->getAll();
 
     $todos = $target->requires;
