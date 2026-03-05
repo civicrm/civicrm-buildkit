@@ -17,7 +17,7 @@ BLDTYPE="standalone-clean"
 assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE
 
 ## GIT_BASE: Current revision of the mainline code (base)
-assert_regex '^\(stable\|dev\|lab\|hub\):[0-9a-zA-Z\.:/_-]\+$' "$EXT" "Missing or invalid EXT"
+assert_regex '^\(stable\|dev\|lab\|hub\):[0-9a-zA-Z\.:/_-]\+$' "$EXT" "Missing or invalid EXT ($EXT)"
 
 ## Note: `CIVIVER` doesn't match the conventional `CIVIVER` from other jobs. But, if it changes, then you probably need a parallel update to probot.
 assert_regex '^[0-9a-z\.-]\+$' "$CIVIVER" "Missing or invalid CIVIVER"
