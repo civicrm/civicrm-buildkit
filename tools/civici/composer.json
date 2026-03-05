@@ -14,7 +14,7 @@
         "symfony/console": "~5.4",
         "symfony/process": "~5.4",
         "symfony/filesystem": "~5.4",
-        "guzzlehttp/guzzle": "~6.3",
+        "guzzlehttp/guzzle": "^7.8",
         "lesser-evil/shell-verbosity-is-evil": "^1.0"
     },
     "autoload": {
