@@ -1,6 +1,7 @@
 <?php
 namespace Civici\Command;
 
+use Civici\Feed;
 use Civici\Util\Filesystem;
 use Civici\Util\InfoXml;
 use Civici\Util\Process;
@@ -63,7 +64,7 @@ class ExtDlDepCommand extends BaseCommand {
     }
 
     $output->writeln("<info>Parse extension feed \"<comment>" . $input->getOption('feed') . "</comment>\"</info>");
-    $feed = $this->fetchFeed($input->getOption('feed'));
+    $feed = new Feed($input->getOption('feed'));
 
     if ($input->getOption('info') && $input->getOption('key')) {
       throw new \RuntimeException("Must specify only one of these options: --info or --key");
@@ -76,16 +77,17 @@ class ExtDlDepCommand extends BaseCommand {
       $target = InfoXml::loadFromString(file_get_contents($input->getOption('info')));
     }
     elseif ($input->getOption('key')) {
-      if (!isset($feed[$input->getOption('key')])) {
+      $infoStr = $feed->getInfo($input->getOption('key'));
+      if (!$infoStr) {
         throw new \Exception("Cannot find information about target ({$input->getOption('key')}). Perhaps you should try a different feed?");
       }
-      $target = InfoXml::loadFromString($feed[$input->getOption('key')]);
+      $target = InfoXml::loadFromString($infoStr);
     }
     else {
       throw new \RuntimeException("Must specify --info or --key");
     }
 
-    $requirements = $this->resolveAllRequirements($target, $feed);
+    $requirements = $feed->resolveAllRequirements($target);
 
     if (empty($requirements)) {
       $output->writeln("<info>No requirements found</info>");
@@ -117,50 +119,6 @@ class ExtDlDepCommand extends BaseCommand {
 
     $batch->runAllOk($output, $input->getOption('dry-run'));
     return 0;
-  }
-
-  /**
-   * @param string $feedUrl
-   * @return mixed|null
-   * @throws \Exception
-   */
-  protected function fetchFeed($feedUrl) {
-    $json = file_get_contents($feedUrl);
-    $feed = $json ? json_decode($json, 1) : NULL;
-    if (empty($json) || empty($feed)) {
-      throw new \Exception("Feed URL does not return a valid feed: " . $feedUrl);
-    }
-    return $feed;
-  }
-
-  /**
-   * @param \Civici\Util\InfoXml $target
-   * @param array $feed
-   *   array(string $extKey => string $xml).
-   * @return array
-   *   Array(string $extKey => InfoXml $info).
-   */
-  protected function resolveAllRequirements($target, $feed) {
-    $todos = $target->requires;
-    $visited = [$target->key => 1];
-
-    while (count($todos)) {
-      $requiredKey = array_shift($todos);
-      if (isset($visited[$requiredKey])) {
-        continue;
-      }
-
-      if (!isset($feed[$requiredKey])) {
-        throw new \Exception("Cannot find information about requirement ($requiredKey). Perhaps you should try a different feed?");
-      }
-
-      $ext = InfoXml::loadFromString($feed[$requiredKey]);
-      $todos = array_merge($todos, $ext->requires);
-      $visited[$requiredKey] = $ext;
-    }
-    unset($visited[$target->key]);
-    ksort($visited);
-    return $visited;
   }
 
 }

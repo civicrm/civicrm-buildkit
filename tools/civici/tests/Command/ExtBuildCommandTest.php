@@ -65,13 +65,7 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
     ];
 
     $allOutput = $commandTester->getDisplay(FALSE);
-    $lines = explode("\n", $allOutput);
-    foreach ($lines as $n => $line) {
-      if (!isset($linePatterns[$n])) {
-        $this->fail("Failed to find pattern for line $n ($line)");
-      }
-      $this->assertMatchesRegularExpression($linePatterns[$n], $line, "Line $n ($line) does not match {$linePatterns[$n]} in output: $allOutput");
-    }
+    $this->assertLinePatterns($linePatterns, $allOutput);
   }
 
   /**
@@ -83,7 +77,7 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
       '--dry-run' => TRUE,
       '--build' => 'foobar',
       '--build-root' => '/srv/buildkit/build',
-      '--git-url' => 'https://github.com/civicrm/org.civicrm.api4',
+      '--git-url' => 'hub:civicrm/org.civicrm.api4',
       '--rev' => 'abcd1234abcd1234',
     ), ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]);
 
@@ -93,9 +87,9 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
       '%\$ civibuild download \'foobar\' --type \'drupal-clean\' --civi-ver \'master\'%',
       '%^\w*$%',
 
-      '%Download extension \(https://github.com/civicrm/org.civicrm.api4 @ abcd1234abcd1234\)%',
+      '%Download extension \(hub:civicrm/org.civicrm.api4 @ abcd1234abcd1234\)%',
       '%\$ cd \'/srv/buildkit/build/foobar\'%',
-      '%\$ git clone \'https://github.com/civicrm/org.civicrm.api4\' \'web/sites/default/files/civicrm/ext/target\' --no-checkout --depth 1 && cd \'web/sites/default/files/civicrm/ext/target\' && git fetch origin \'abcd1234abcd1234\':\'target\' && git checkout \'target\'%',
+      '%\$ git clone \'https://github.com/civicrm/org.civicrm.api4.git\' \'web/sites/default/files/civicrm/ext/target\' --no-checkout --depth 1 && cd \'web/sites/default/files/civicrm/ext/target\' && git fetch origin \'abcd1234abcd1234\':\'target\' && git checkout \'target\'%',
       '%^\w*$%',
 
       '%Download extension dependencies%',
@@ -121,14 +115,108 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
     ];
 
     $allOutput = $commandTester->getDisplay(FALSE);
-    $lines = explode("\n", $allOutput);
-    foreach ($lines as $n => $line) {
-      if (!isset($linePatterns[$n])) {
-        $this->fail("Failed to find pattern for line $n ($line)");
-      }
-      $this->assertMatchesRegularExpression($linePatterns[$n], $line, "Line $n ($line) does not match {$linePatterns[$n]} in output: $allOutput");
-    }
+    $this->assertLinePatterns($linePatterns, $allOutput);
   }
+
+  /**
+   * Simulate creation of an extension test-build using a Git URL and SHA.
+   */
+  public function testCreateByKey() {
+    $commandTester = $this->createCommandTester(array(
+      'command' => 'ext:build',
+      '--dry-run' => TRUE,
+      '--build' => 'foobar',
+      '--build-root' => '/srv/buildkit/build',
+      '--key' => 'org.civicrm.module.cividiscount',
+      '--feed' => 'STABLE',
+    ), ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]);
+
+    $linePatterns = [
+      '%Download main codebase \(build=foobar, type=drupal-clean, civi-ver=master\)%',
+      '%\$ cd \'.*\'%',
+      '%\$ civibuild download \'foobar\' --type \'drupal-clean\' --civi-ver \'master\'%',
+      '%^\s*$%',
+
+      '%Download extension from feed \(https://civicrm.org/extdir/ver=5.40.0\|uf=Bare/org.civicrm.module.cividiscount.xml\)%',
+      '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      '%\$ cv dl -b \@\'https://civicrm.org/extdir/ver=5.40.0\|uf=Bare/org.civicrm.module.cividiscount.xml\' --to=\'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext/target\'%',
+      '%^\s*$%',
+
+      '%Download extension dependencies%',
+      '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      '%\$ civici ext:dl-dep --info=\'web/sites/default/files/civicrm/ext/target\'/info.xml --feed=\'https://civicrm.org/extdir/ver=5.40.0\|uf=Bare/single\' --to=\'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext\'$%',
+      '%^\s*$%',
+
+      '%Install main database%',
+      '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      '%civibuild install \'foobar\'%',
+      '%^\s*$%',
+
+      // '%Install extension%',
+      // '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      // '%cv api extension.install path=\'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext/target\'%',
+
+      // '%Update database snapshot%',
+      // '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      // '%civibuild snapshot \'foobar\'%',
+
+      '%Done%',
+      '%%',
+    ];
+
+    $allOutput = $commandTester->getDisplay(FALSE);
+    $this->assertLinePatterns($linePatterns, $allOutput);
+  }
+
+  /**
+   * Simulate creation of an extension test-build using a Git URL and SHA.
+   */
+  public function testCreateByTargetKey() {
+    $commandTester = $this->createCommandTester(array(
+      'command' => 'ext:build',
+      '--dry-run' => TRUE,
+      '--build' => 'foobar',
+      '--build-root' => '/srv/buildkit/build',
+      '--target' => 'dev:org.civicrm.module.cividiscount',
+    ), ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]);
+
+    $linePatterns = [
+      '%Download main codebase \(build=foobar, type=drupal-clean, civi-ver=master\)%',
+      '%\$ cd \'.*\'%',
+      '%\$ civibuild download \'foobar\' --type \'drupal-clean\' --civi-ver \'master\'%',
+      '%^\s*$%',
+
+      '%Download extension from feed \(https://civicrm.org/extdir/ver=5.40.0\|uf=Bare\|status=\|ready=/org.civicrm.module.cividiscount.xml\)%',
+      '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      '%\$ cv dl -b \@\'https://civicrm.org/extdir/ver=5.40.0\|uf=Bare\|status=\|ready=/org.civicrm.module.cividiscount.xml\' --to=\'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext/target\'%',
+      '%^\s*$%',
+
+      '%Download extension dependencies%',
+      '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      '%\$ civici ext:dl-dep --info=\'web/sites/default/files/civicrm/ext/target\'/info.xml --feed=\'https://civicrm.org/extdir/ver=5.40.0\|uf=Bare\|status=\|ready=/single\' --to=\'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext\'$%',
+      '%^\s*$%',
+
+      '%Install main database%',
+      '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      '%civibuild install \'foobar\'%',
+      '%^\s*$%',
+
+      // '%Install extension%',
+      // '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      // '%cv api extension.install path=\'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext/target\'%',
+
+      // '%Update database snapshot%',
+      // '%\$ cd \'/srv/buildkit/build/foobar\'%',
+      // '%civibuild snapshot \'foobar\'%',
+
+      '%Done%',
+      '%%',
+    ];
+
+    $allOutput = $commandTester->getDisplay(FALSE);
+    $this->assertLinePatterns($linePatterns, $allOutput);
+  }
+
 
   /**
    * Simulate creation of an extension test-build using a Git URL and SHA.
@@ -180,12 +268,21 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
     ];
 
     $allOutput = $commandTester->getDisplay(FALSE);
+    $this->assertLinePatterns($linePatterns, $allOutput);
+  }
+
+  /**
+   * @param array $expectLinePatterns
+   * @param string $allOutput
+   * @return void
+   */
+  private function assertLinePatterns(array $expectLinePatterns, string $allOutput): void {
     $lines = explode("\n", $allOutput);
     foreach ($lines as $n => $line) {
-      if (!isset($linePatterns[$n])) {
+      if (!isset($expectLinePatterns[$n])) {
         $this->fail("Failed to find pattern for line $n ($line)");
       }
-      $this->assertMatchesRegularExpression($linePatterns[$n], $line, "Line $n ($line) does not match {$linePatterns[$n]} in output: $allOutput");
+      $this->assertMatchesRegularExpression($expectLinePatterns[$n], $line, "Line $n ($line) does not match {$expectLinePatterns[$n]} in output: $allOutput");
     }
   }
 

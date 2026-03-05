@@ -1,9 +1,11 @@
 <?php
 namespace Civici\Command;
 
+use Civici\GitUrl;
 use Civici\Util\Filesystem;
 use Civici\Util\Process;
 use Civici\Util\ProcessBatch;
+use Civici\Util\TargetParser;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -37,16 +39,32 @@ class ExtBuildCommand extends BaseCommand {
   
   Example: civici ext:build --pr-url=https://github.com/civicrm/org.civicrm.api4/pull/123 \
     --build=pr123 --build-root=/srv/buildkit/build
+
+  Example: civici ext:build --build-root=/srv/buildkit/build --target=stable:org.civicrm.module.cividiscount
+  Example: civici ext:build --build-root=/srv/buildkit/build --target=dev:org.civicrm.module.cividiscount
+  Example: civici ext:build --build-root=/srv/buildkit/build --target=lab:extensions/cividiscount
+  Example: civici ext:build --build-root=/srv/buildkit/build --target=lab:extensions/cividiscount?rev=SHA
+  Example: civici ext:build --build-root=/srv/buildkit/build --target=lab:extensions/cividiscount?base=SHA&head=SHA
+
       ')
       ->useOptions(['build', 'build-root', 'civi-ver', 'dry-run', 'ext-dir', 'force', 'feed', 'keep', 'timeout', 'type'])
-      ->addOption('pr-url', NULL, InputOption::VALUE_REQUIRED, 'The local base path to search')
+      ->addOption('target', NULL, InputOption::VALUE_REQUIRED, 'Identify target by unified name ("stable:KEY", "dev:KEY", "hub:OWNER/REPO", "lab:OWNER/REPO")')
+      ->addOption('key', 'k', InputOption::VALUE_REQUIRED, 'Identify target extension by its key. Consult the relevant feed.')
+      ->addOption('pr-url', NULL, InputOption::VALUE_REQUIRED, 'Identify target extension based on a pull-request URL.')
+      ->addOption('git-url', NULL, InputOption::VALUE_REQUIRED, 'Identify target extension by git URL. May be full URL or "hub:OWNER/REPO" or "lab:OWNER/REPO"')
       ->addOption('rev', NULL, InputOption::VALUE_REQUIRED, 'Git SHA/branch/tag')
       ->addOption('base', NULL, InputOption::VALUE_REQUIRED, 'Base revision -- Git SHA/branch/tag; Combine with --head')
-      ->addOption('head', NULL, InputOption::VALUE_REQUIRED, 'Head revision -- Git SHA/branch/tag; Combine with --base')
-      ->addOption('git-url', NULL, InputOption::VALUE_REQUIRED, 'The local base path to search');
+      ->addOption('head', NULL, InputOption::VALUE_REQUIRED, 'Head revision -- Git SHA/branch/tag; Combine with --base');
   }
 
   protected function initialize(InputInterface $input, OutputInterface $output) {
+    if ($input->getOption('target')) {
+      $parsed = (new TargetParser())->parse($input->getOption('target'));
+      foreach ($parsed as $key => $value) {
+        $input->setOption($key, $value);
+      }
+    }
+
     parent::initialize($input, $output);
 
     $impliedRequirements = [
@@ -72,7 +90,7 @@ class ExtBuildCommand extends BaseCommand {
       'CIVIVER' => $input->getOption('civi-ver'),
       'TYPE' => $input->getOption('type'),
       'PRURL' => $prUrl,
-      'GITURL' => $input->getOption('git-url'),
+      'GITURL' => GitUrl::normalize($input->getOption('git-url')),
       'SHA' => $input->getOption('rev'),
       'BASE_SHA' => $input->getOption('base'),
       'HEAD_SHA' => $input->getOption('head'),
@@ -81,6 +99,7 @@ class ExtBuildCommand extends BaseCommand {
       'RELEXTPATH' => $input->getOption('ext-dir') . "/target",
       'ABSEXTPATH' => "$myBuildRoot/" . $input->getOption('ext-dir') . "/target",
       'FEED' => $input->getOption('feed'),
+      'KEY' => $input->getOption('key'),
     ];
 
     $batch = new ProcessBatch();
@@ -145,8 +164,20 @@ class ExtBuildCommand extends BaseCommand {
         )
       );
     }
+    elseif ($input->getOption('key')) {
+      $extraParams = [
+        'KEY_FEED' => preg_replace(';/single$;', '/' . $input->getOption('key') . '.xml', $commonParams['FEED']),
+      ];
+      $batch->add(
+        "<info>Download extension from feed</info> (<comment>{$extraParams['KEY_FEED']}</comment>)",
+        \Symfony\Component\Process\Process::fromShellCommandline(
+          Process::interpolate('cv dl -b @@KEY_FEED --to=@ABSEXTPATH', $commonParams + $extraParams),
+          $myBuildRoot
+        )
+      );
+    }
     else {
-      throw new \RuntimeException("Must specify --pr-url or --git-url");
+      throw new \RuntimeException("Must specify --target, --pr-url, --git-url, or --key");
     }
 
     $batch->add(

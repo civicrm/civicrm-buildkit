@@ -1,6 +1,7 @@
 <?php
 namespace Civici\Command;
 
+use Civici\DefaultExtPaths;
 use Civici\Util\CacheDir;
 use Symfony\Component\Console\Command\Command;
 use Civici\Util\ProcessBatch;
@@ -39,11 +40,11 @@ class BaseCommand extends Command {
           break;
 
         case 'ext-dir':
-          $this->addOption('ext-dir', NULL, InputOption::VALUE_REQUIRED, 'Relative path to the extension dir', 'web/sites/default/files/civicrm/ext');
+          $this->addOption('ext-dir', NULL, InputOption::VALUE_REQUIRED, 'Relative path to the extension dir', 'DEFAULT');
           break;
 
         case 'feed':
-          $this->addOption('feed', NULL, InputOption::VALUE_REQUIRED, 'The URL which provides available downloads. Ex: \'https://civicrm.org/extdir/ver=5.3.0|cms=Drupal/single\', \'*auto-stable*\', \'*auto-dev*\'', '*auto-dev*');
+          $this->addOption('feed', NULL, InputOption::VALUE_REQUIRED, 'The URL which provides available downloads. Ex: \'https://civicrm.org/extdir/ver=5.3.0|cms=Drupal/single\', \'STABLE\', \'DEV\'', 'DEV');
           break;
 
         case 'force':
@@ -70,6 +71,10 @@ class BaseCommand extends Command {
   protected function initialize(InputInterface $input, OutputInterface $output) {
     $def = $this->getDefinition();
 
+    if ($input->hasOption('ext-dir') && $input->getOption('ext-dir') === 'DEFAULT') {
+      $input->setOption('ext-dir', DefaultExtPaths::pick($input->getOption('type')));
+    }
+
     if ($def->hasOption('build')) {
       if (!$input->getOption('build')) {
         $input->setOption('build', 'ext-' . uniqid());
@@ -95,11 +100,13 @@ class BaseCommand extends Command {
       switch ($feed) {
         case '':
         case '*auto-stable*':
+        case 'STABLE':
           $feed = $this->detectFeedUrl($input->getOption('civi-ver'), FALSE);
           $input->setOption('feed', $feed);
           break;
 
         case '*auto-dev*':
+        case 'DEV':
           $feed = $this->detectFeedUrl($input->getOption('civi-ver'), TRUE);
           $input->setOption('feed', $feed);
           break;

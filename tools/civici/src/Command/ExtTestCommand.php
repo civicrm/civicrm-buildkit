@@ -39,17 +39,27 @@ Optional environment variables:
 
   PHPUNIT_BIN (Name of the phpunit binary; default: phpunit8)
 ')
-      ->addOption('dry-run', 'N', InputOption::VALUE_NONE, 'Do not execute')
-      ->addOption('info', NULL, InputOption::VALUE_REQUIRED, 'Path of the XML file for the desired extension', getenv('PWD') . DIRECTORY_SEPARATOR . 'info.xml')
+      ->useOptions(['build', 'build-root', 'dry-run', 'ext-dir', 'type'])
+      ->addOption('info', NULL, InputOption::VALUE_REQUIRED, 'Path of the XML file for the desired extension. (Default: "EXTDIR/target/info.xml")')
       ->addOption('junit-dir', NULL, InputOption::VALUE_REQUIRED, 'Folder into which JUnit XML files should be placed')
       ->addOption('timeout', NULL, InputOption::VALUE_REQUIRED, 'Max number of seconds to spend on any individual task', 600);
   }
 
   protected function initialize(InputInterface $input, OutputInterface $output) {
+    parent::initialize($input, $output);
     $junitDir = $input->getOption('junit-dir');
     if ($junitDir && $junitDir[strlen($junitDir) - 1] !== DIRECTORY_SEPARATOR) {
       $junitDir .= DIRECTORY_SEPARATOR;
       $input->setOption('junit-dir', $junitDir);
+    }
+    if (empty($input->getOption('info')) && $input->hasOption('ext-dir')) {
+      $input->setOption('info', $input->getOption('ext-dir') . '/target/info.xml');
+    }
+    $fs = new Filesystem();
+    if (!$fs->isAbsolutePath($input->getOption('info')) && !empty($input->getOption('build-root')) && !empty($input->getOption('build'))) {
+      $workDir = $input->getOption('build-root') . $input->getOption('build');
+      $output->writeln("<info>Use build as working-directory</info> (<comment>$workDir</comment>)q");
+      chdir($workDir);
     }
   }
 
