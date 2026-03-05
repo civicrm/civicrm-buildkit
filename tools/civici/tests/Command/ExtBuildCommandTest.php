@@ -128,7 +128,7 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
       '--build' => 'foobar',
       '--build-root' => '/srv/buildkit/build',
       '--key' => 'org.civicrm.module.cividiscount',
-      '--feed' => '*auto-stable*',
+      '--feed' => 'STABLE',
     ), ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]);
 
     $linePatterns = [

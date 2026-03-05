@@ -43,7 +43,7 @@ class BaseCommand extends Command {
           break;
 
         case 'feed':
-          $this->addOption('feed', NULL, InputOption::VALUE_REQUIRED, 'The URL which provides available downloads. Ex: \'https://civicrm.org/extdir/ver=5.3.0|cms=Drupal/single\', \'*auto-stable*\', \'*auto-dev*\'', '*auto-dev*');
+          $this->addOption('feed', NULL, InputOption::VALUE_REQUIRED, 'The URL which provides available downloads. Ex: \'https://civicrm.org/extdir/ver=5.3.0|cms=Drupal/single\', \'STABLE\', \'DEV\'', 'DEV');
           break;
 
         case 'force':
@@ -95,11 +95,13 @@ class BaseCommand extends Command {
       switch ($feed) {
         case '':
         case '*auto-stable*':
+        case 'STABLE':
           $feed = $this->detectFeedUrl($input->getOption('civi-ver'), FALSE);
           $input->setOption('feed', $feed);
           break;
 
         case '*auto-dev*':
+        case 'DEV':
           $feed = $this->detectFeedUrl($input->getOption('civi-ver'), TRUE);
           $input->setOption('feed', $feed);
           break;
