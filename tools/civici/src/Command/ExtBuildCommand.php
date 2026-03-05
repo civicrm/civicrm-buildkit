@@ -5,6 +5,7 @@ use Civici\GitUrl;
 use Civici\Util\Filesystem;
 use Civici\Util\Process;
 use Civici\Util\ProcessBatch;
+use Civici\Util\TargetParser;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -40,15 +41,23 @@ class ExtBuildCommand extends BaseCommand {
     --build=pr123 --build-root=/srv/buildkit/build
       ')
       ->useOptions(['build', 'build-root', 'civi-ver', 'dry-run', 'ext-dir', 'force', 'feed', 'keep', 'timeout', 'type'])
+      ->addOption('target', NULL, InputOption::VALUE_REQUIRED, 'Identify target by unified name ("stable:KEY", "dev:KEY", "hub:OWNER/REPO", "lab:OWNER/REPO")')
       ->addOption('key', 'k', InputOption::VALUE_REQUIRED, 'Identify target extension by its key. Consult the relevant feed.')
       ->addOption('pr-url', NULL, InputOption::VALUE_REQUIRED, 'Identify target extension based on a pull-request URL.')
-      ->addOption('git-url', NULL, InputOption::VALUE_REQUIRED, 'Identify target extension by git URL. May be full URL or "hub:USER/REPO" or "lab:USER/REPO"')
+      ->addOption('git-url', NULL, InputOption::VALUE_REQUIRED, 'Identify target extension by git URL. May be full URL or "hub:OWNER/REPO" or "lab:OWNER/REPO"')
       ->addOption('rev', NULL, InputOption::VALUE_REQUIRED, 'Git SHA/branch/tag')
       ->addOption('base', NULL, InputOption::VALUE_REQUIRED, 'Base revision -- Git SHA/branch/tag; Combine with --head')
       ->addOption('head', NULL, InputOption::VALUE_REQUIRED, 'Head revision -- Git SHA/branch/tag; Combine with --base');
   }
 
   protected function initialize(InputInterface $input, OutputInterface $output) {
+    if ($input->getOption('target')) {
+      $parsed = (new TargetParser())->parse($input->getOption('target'));
+      foreach ($parsed as $key => $value) {
+        $input->setOption($key, $value);
+      }
+    }
+
     parent::initialize($input, $output);
 
     $impliedRequirements = [
@@ -161,7 +170,7 @@ class ExtBuildCommand extends BaseCommand {
       );
     }
     else {
-      throw new \RuntimeException("Must specify --pr-url or --git-url or --key");
+      throw new \RuntimeException("Must specify --target, --pr-url, --git-url, or --key");
     }
 
     $batch->add(
