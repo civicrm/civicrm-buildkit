@@ -65,13 +65,7 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
     ];
 
     $allOutput = $commandTester->getDisplay(FALSE);
-    $lines = explode("\n", $allOutput);
-    foreach ($lines as $n => $line) {
-      if (!isset($linePatterns[$n])) {
-        $this->fail("Failed to find pattern for line $n ($line)");
-      }
-      $this->assertMatchesRegularExpression($linePatterns[$n], $line, "Line $n ($line) does not match {$linePatterns[$n]} in output: $allOutput");
-    }
+    $this->assertLinePatterns($linePatterns, $allOutput);
   }
 
   /**
@@ -121,13 +115,7 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
     ];
 
     $allOutput = $commandTester->getDisplay(FALSE);
-    $lines = explode("\n", $allOutput);
-    foreach ($lines as $n => $line) {
-      if (!isset($linePatterns[$n])) {
-        $this->fail("Failed to find pattern for line $n ($line)");
-      }
-      $this->assertMatchesRegularExpression($linePatterns[$n], $line, "Line $n ($line) does not match {$linePatterns[$n]} in output: $allOutput");
-    }
+    $this->assertLinePatterns($linePatterns, $allOutput);
   }
 
   /**
@@ -180,12 +168,21 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
     ];
 
     $allOutput = $commandTester->getDisplay(FALSE);
+    $this->assertLinePatterns($linePatterns, $allOutput);
+  }
+
+  /**
+   * @param array $expectLinePatterns
+   * @param string $allOutput
+   * @return void
+   */
+  private function assertLinePatterns(array $expectLinePatterns, string $allOutput): void {
     $lines = explode("\n", $allOutput);
     foreach ($lines as $n => $line) {
-      if (!isset($linePatterns[$n])) {
+      if (!isset($expectLinePatterns[$n])) {
         $this->fail("Failed to find pattern for line $n ($line)");
       }
-      $this->assertMatchesRegularExpression($linePatterns[$n], $line, "Line $n ($line) does not match {$linePatterns[$n]} in output: $allOutput");
+      $this->assertMatchesRegularExpression($expectLinePatterns[$n], $line, "Line $n ($line) does not match {$expectLinePatterns[$n]} in output: $allOutput");
     }
   }
 
