@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+set -e
+
+## Example usage:
+##
+## $ env CIVIVER=master EXT=hub:eileenmcnaughton/nz.co.fuzion.extendedreport \
+##     run-bknix-job --mock max Extension-Test
+
+#################################################
+## Environment variables
+
+## BLDTYPE: The type of site/cms/file-layout to use
+BLDTYPE="standalone-clean"
+
+## EXECUTOR_NUMBER: The number of this concurrent process
+## WORKSPACE: The path where Jenkins stores data for this job
+assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE
+
+## GIT_BASE: Current revision of the mainline code (base)
+assert_regex '^\(stable\|dev\|lab\|hub\):[0-9a-zA-Z\.:/_-]\+$' "$EXT" "Missing or invalid EXT"
+
+## Note: `CIVIVER` doesn't match the conventional `CIVIVER` from other jobs. But, if it changes, then you probably need a parallel update to probot.
+assert_regex '^[0-9a-z\.-]\+$' "$CIVIVER" "Missing or invalid CIVIVER"
+
+## DRY_RUN: Don't actually execute things
+#DRYRUN="-N"
+DRYRUN=
+
+# BLDNAME="ext-$EXECUTOR_NUMBER"
+BLDNAME="build-$EXECUTOR_NUMBER"
+
+#export OFFLINE=1
+#export PHPUNIT_BIN=phpunit6
+
+#################################################
+
+function h1() {
+  echo
+  echo "================================================================================"
+  echo "== $@"
+}
+
+#################################################
+## Main
+
+## TODO: rethink this env-var. for the moment, setting it duplicates the behavior of "use_bknix_tmp"
+export CIVI_TEST_MODE=
+assert_bknix_temporary
+
+## Report details about the test environment
+civibuild env-info
+
+h1 "Clean workspace"
+clean_legacy_workspace "$WORKSPACE/junit"
+init_std_workspace
+if [ -d "$BKITBLD/$BLDNAME" ]; then
+  echo y | civibuild destroy "$BLDNAME"
+fi
+
+h1 "Build test site"
+civici ext:build -v -f $DRYRUN \
+  --target="$EXT" \
+  --build="$BLDNAME" \
+  --build-root="$BKITBLD" \
+  --civi-ver="$CIVIVER" \
+  --type="$BLDTYPE"
+
+h1 "Execute tests"
+civici ext:test -vv $DRYRUN \
+  --build="$BLDNAME" \
+  --build-root="$BKITBLD" \
+  --type="$BLDTYPE" \
+  --junit-dir="$WORKSPACE_JUNIT"
+
+h1 "Cleanup JUnit XML"
+phpunit-xml-cleanup "$WORKSPACE_JUNIT"/*.xml
+
+exit $EXITCODE
