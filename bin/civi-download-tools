@@ -344,7 +344,13 @@ pushd $PRJDIR >> /dev/null
   install_composer
 
   ## Download dependencies (via composer)
-  COMPOSER_MD5=$(cat composer.json composer.lock phars.json | php -r 'echo md5(file_get_contents("php://stdin"));')
+  function composer_critical_files() {
+    echo composer.json
+    echo composer.lock
+    echo phars.json
+    ls -1 tools/*/composer.json tools/*/composer.lock | sort
+  }
+  COMPOSER_MD5=$(cat $(composer_critical_files) | php -r 'echo md5(file_get_contents("php://stdin"));')
   touch "$TMPDIR/composer-data.md5"
   if [ -z "$IS_FORCE" -a "$(cat $TMPDIR/composer-data.md5)" == "$COMPOSER_MD5" ]; then
     echo_comment "[[composer dependencies already installed. Skipping.]]"
