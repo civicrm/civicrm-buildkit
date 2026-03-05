@@ -1,6 +1,7 @@
 <?php
 namespace Civici\Command;
 
+use Civici\GitUrl;
 use Civici\Util\Filesystem;
 use Civici\Util\Process;
 use Civici\Util\ProcessBatch;
@@ -43,7 +44,7 @@ class ExtBuildCommand extends BaseCommand {
       ->addOption('rev', NULL, InputOption::VALUE_REQUIRED, 'Git SHA/branch/tag')
       ->addOption('base', NULL, InputOption::VALUE_REQUIRED, 'Base revision -- Git SHA/branch/tag; Combine with --head')
       ->addOption('head', NULL, InputOption::VALUE_REQUIRED, 'Head revision -- Git SHA/branch/tag; Combine with --base')
-      ->addOption('git-url', NULL, InputOption::VALUE_REQUIRED, 'The local base path to search');
+      ->addOption('git-url', NULL, InputOption::VALUE_REQUIRED, 'Remote repo to download. May be full URL or "hub:USER/REPO" or "lab:USER/REPO"');
   }
 
   protected function initialize(InputInterface $input, OutputInterface $output) {
@@ -72,7 +73,7 @@ class ExtBuildCommand extends BaseCommand {
       'CIVIVER' => $input->getOption('civi-ver'),
       'TYPE' => $input->getOption('type'),
       'PRURL' => $prUrl,
-      'GITURL' => $input->getOption('git-url'),
+      'GITURL' => GitUrl::normalize($input->getOption('git-url')),
       'SHA' => $input->getOption('rev'),
       'BASE_SHA' => $input->getOption('base'),
       'HEAD_SHA' => $input->getOption('head'),

@@ -77,7 +77,7 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
       '--dry-run' => TRUE,
       '--build' => 'foobar',
       '--build-root' => '/srv/buildkit/build',
-      '--git-url' => 'https://github.com/civicrm/org.civicrm.api4',
+      '--git-url' => 'hub:civicrm/org.civicrm.api4',
       '--rev' => 'abcd1234abcd1234',
     ), ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]);
 
@@ -87,9 +87,9 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
       '%\$ civibuild download \'foobar\' --type \'drupal-clean\' --civi-ver \'master\'%',
       '%^\w*$%',
 
-      '%Download extension \(https://github.com/civicrm/org.civicrm.api4 @ abcd1234abcd1234\)%',
+      '%Download extension \(hub:civicrm/org.civicrm.api4 @ abcd1234abcd1234\)%',
       '%\$ cd \'/srv/buildkit/build/foobar\'%',
-      '%\$ git clone \'https://github.com/civicrm/org.civicrm.api4\' \'web/sites/default/files/civicrm/ext/target\' --no-checkout --depth 1 && cd \'web/sites/default/files/civicrm/ext/target\' && git fetch origin \'abcd1234abcd1234\':\'target\' && git checkout \'target\'%',
+      '%\$ git clone \'https://github.com/civicrm/org.civicrm.api4.git\' \'web/sites/default/files/civicrm/ext/target\' --no-checkout --depth 1 && cd \'web/sites/default/files/civicrm/ext/target\' && git fetch origin \'abcd1234abcd1234\':\'target\' && git checkout \'target\'%',
       '%^\w*$%',
 
       '%Download extension dependencies%',
