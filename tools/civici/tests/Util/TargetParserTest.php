@@ -11,8 +11,10 @@ class TargetParserTest extends \Civici\CiviciTestCase {
     $exs[] = ['stable:org.example.foo', ['key' => 'org.example.foo', 'feed' => 'STABLE']];
     $exs[] = ['dev:org.example.foo', ['key' => 'org.example.foo', 'feed' => 'DEV']];
     $exs[] = ['git:https://example/foobar.git', ['git-url' => 'https://example/foobar.git']];
+    $exs[] = ['git:https://example/foobar.git?rev=abcd1234', ['git-url' => 'https://example/foobar.git', 'rev' => 'abcd1234']];
     $exs[] = ['hub:owner/project', ['git-url' => 'hub:owner/project']];
     $exs[] = ['lab:owner/project', ['git-url' => 'lab:owner/project']];
+    $exs[] = ['lab:owner/project?base=xyz&head=123', ['git-url' => 'lab:owner/project', 'base' => 'xyz', 'head' => '123']];
     return $exs;
   }
 

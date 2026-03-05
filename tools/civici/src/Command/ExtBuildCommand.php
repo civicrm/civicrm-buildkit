@@ -39,6 +39,13 @@ class ExtBuildCommand extends BaseCommand {
   
   Example: civici ext:build --pr-url=https://github.com/civicrm/org.civicrm.api4/pull/123 \
     --build=pr123 --build-root=/srv/buildkit/build
+
+  Example: civici ext:build --build-root=/srv/buildkit/build --target=stable:org.civicrm.module.cividiscount
+  Example: civici ext:build --build-root=/srv/buildkit/build --target=dev:org.civicrm.module.cividiscount
+  Example: civici ext:build --build-root=/srv/buildkit/build --target=lab:extensions/cividiscount
+  Example: civici ext:build --build-root=/srv/buildkit/build --target=lab:extensions/cividiscount?rev=SHA
+  Example: civici ext:build --build-root=/srv/buildkit/build --target=lab:extensions/cividiscount?base=SHA&head=SHA
+
       ')
       ->useOptions(['build', 'build-root', 'civi-ver', 'dry-run', 'ext-dir', 'force', 'feed', 'keep', 'timeout', 'type'])
       ->addOption('target', NULL, InputOption::VALUE_REQUIRED, 'Identify target by unified name ("stable:KEY", "dev:KEY", "hub:OWNER/REPO", "lab:OWNER/REPO")')
