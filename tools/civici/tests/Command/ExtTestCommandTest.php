@@ -15,6 +15,7 @@ class ExtTestCommandTest extends \Civici\CiviciTestCase {
     $commandTester = $this->createCommandTester(array(
       'command' => 'ext:test',
       '--dry-run' => TRUE,
+      '--build-root' => sys_get_temp_dir() . '/fake-build',
       '--info' => dirname(dirname(__DIR__)) . '/fixtures/org.example.civixexample/info.xml',
       '--junit-dir' => '/tmp/myjunit',
     ), ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]);
