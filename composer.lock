@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ac5a8fa970f861d1a3faa0fd323aeafc",
+    "content-hash": "0fd112b1bbc2a399d90a6b5d94112059",
     "packages": [
         {
             "name": "civicrm/composer-compile-plugin",
@@ -151,16 +151,16 @@
         },
         {
             "name": "civicrm/upgrade-test",
-            "version": "0.9",
+            "version": "0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/civicrm/civicrm-upgrade-test.git",
-                "reference": "d582d0b451b847e01c05ee13a2ab8acf9facfffb"
+                "reference": "83c84dbe077c40371e6f0359af0cf1d1a4cdc635"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/d582d0b451b847e01c05ee13a2ab8acf9facfffb",
-                "reference": "d582d0b451b847e01c05ee13a2ab8acf9facfffb",
+                "url": "https://api.github.com/repos/civicrm/civicrm-upgrade-test/zipball/83c84dbe077c40371e6f0359af0cf1d1a4cdc635",
+                "reference": "83c84dbe077c40371e6f0359af0cf1d1a4cdc635",
                 "shasum": ""
             },
             "bin": [
@@ -186,9 +186,9 @@
             "description": "Collection of scripts and data-files for testing CiviCRM upgrades",
             "homepage": "https://github.com/civicrm/civicrm-upgrade-test",
             "support": {
-                "source": "https://github.com/civicrm/civicrm-upgrade-test/tree/0.9"
+                "source": "https://github.com/civicrm/civicrm-upgrade-test/tree/0.10"
             },
-            "time": "2025-04-23T06:02:22+00:00"
+            "time": "2026-03-16T20:34:43+00:00"
         },
         {
             "name": "drupal/coder",
@@ -604,15 +604,15 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "totten/php-symbol-diff": 20,
-        "drupal/coder": 20
+        "drupal/coder": 20,
+        "totten/php-symbol-diff": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=7.4"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "platform-overrides": {
         "php": "7.4"
     },
