@@ -186,6 +186,26 @@ function parse_patch_url() {
   esac
 }
 
+## Read string "PATCH" and output array "$PATCH_ARGS"
+##  - PATCH is a whitespace-delimited list of URLs
+##  - PATCH_ARGS is a bash-array to pass-through to `civibuild` ("--patch" "url_1" "--patch" "url_2" ...)
+function build_patch_args() {
+  local regex='^https://\(github.com/civicrm/civicrm-[a-z0-9-]*/pull/[0-9]\+\|test.civicrm.org/duderino/file/github/civicrm/civicrm-[a-z0-9-]*\)'
+
+  PATCH_ARGS=()
+  local patch_url
+
+  while IFS= read -r patch_url; do
+    [[ -z "$patch_url" ]] && continue
+
+    assert_regex "$regex" "$patch_url" "Invalid or missing PATCH: $patch_url"
+    PATCH_ARGS+=(--patch "$patch_url")
+  done < <(
+    printf '%s\n' "$PATCH" | tr -s '[:space:]' '\n'
+    # printf '%s\n' "$PATCH_LIST" | tr -s '[:space:]' '\n'
+  )
+}
+
 function is_bknix_temporary() {
   # return 0        ## Force true (dev)
   case "$USER" in
