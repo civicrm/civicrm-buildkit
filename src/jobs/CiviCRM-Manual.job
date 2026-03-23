@@ -18,8 +18,8 @@ assert_common EXECUTOR_NUMBER WORKSPACE BUILD_NUMBER CIVIVER BLDTYPE
 ## EXTNAMES: List of extension names. Space-delimited.
 assert_regex '^[0-9a-zA-Z\._ -]*$' "$EXTNAMES"
 
-## PATCH: Optional. URL of a pending pull-request in any `civicrm-*` repo (e.g. `https://github.com/civicrm/civicrm-packages/pull/1234`)
-assert_regex '^\(\|https://github.com/civicrm/civicrm-[a-z]*/pull/[0-9]\+/*\)$' "$PATCH"
+## PATCH: Optional. List of URL(s) of pending pull-request(s) in any `civicrm-*` repo (e.g. `https://github.com/civicrm/civicrm-packages/pull/1234`)
+## (validated via build_patch_args)
 
 #################################################
 ## Main
@@ -30,14 +30,14 @@ assert_bknix_durable
 ## Note: Suffixes are unique within a period of 180 days.
 BLDNAME="demo-$BUILD_NUMBER-$(php -r 'echo base_convert(time()%(180*24*60*60), 10, 36);')"
 BLDDIR="$BKITBLD/$BLDNAME"
-[ -n "$PATCH" ] && PATCHARGS="--patch $PATCH" || PATCHARGS=""
+build_patch_args ## Convert PATCH to PATCH_ARGS array
 
 #################################################
 ## Report details about the test environment
 civibuild env-info
 
 ## Download dependencies, apply patches, and perform fresh DB installation
-civibuild create "$BLDNAME" --type "$BLDTYPE" --civi-ver "$CIVIVER" $PATCHARGS
+civibuild create "$BLDNAME" --type "$BLDTYPE" --civi-ver "$CIVIVER" "${PATCH_ARGS[@]}"
 
 pushd "$BLDDIR/web" >> /dev/null
   if [ -n "$EXTNAMES" ]; then

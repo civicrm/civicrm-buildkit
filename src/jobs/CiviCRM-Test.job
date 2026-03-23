@@ -20,8 +20,8 @@ assert_common EXECUTOR_NUMBER WORKSPACE BLDTYPE CIVIVER SUITE
 ## CIVICOMMIT: Optional. Override the the `civicrm-core` version with specific commit. Can help with debugging/manual bisection.
 assert_regex '^[0-9a-z\.-]*$' "$CIVICOMMIT" "Missing or invalid CIVICOMMIT"
 
-## PATCH: Optional. URL of a pending pull-request in any `civicrm-*` repo (e.g. `https://github.com/civicrm/civicrm-packages/pull/1234`)
-if [ -n "$PATCH" ]; then assert_common PATCH ; fi
+## PATCH: Optional. List of URL(s) of pending pull-request(s) in any `civicrm-*` repo (e.g. `https://github.com/civicrm/civicrm-packages/pull/1234`)
+## (validated via build_patch_args)
 
 ORNERY=${ORNERY:-disable}
 assert_regex '^\(disable\|enable\)$' "$ORNERY" "Invalid ORNERY flag"
@@ -39,7 +39,7 @@ GUARD=run_command
 ## Note: Suffixes are unique within a period of 180 days.
 BLDNAME="build-$EXECUTOR_NUMBER"
 BLDDIR="$BKITBLD/$BLDNAME"
-[ -n "$PATCH" ] && PATCHARGS="--patch $PATCH" || PATCHARGS=""
+build_patch_args ## Convert PATCH to PATCH_ARGS array
 EXITCODES=""
 
 export TIME_FUNC="linear:500"
@@ -56,7 +56,7 @@ if [ -d "$BKITBLD/$BLDNAME" ]; then
 fi
 
 ## Download dependencies, apply, and perform fresh DB installation
-$GUARD civibuild download "$BLDNAME" --type "$BLDTYPE" --civi-ver "$CIVIVER" $PATCHARGS
+$GUARD civibuild download "$BLDNAME" --type "$BLDTYPE" --civi-ver "$CIVIVER" "${PATCH_ARGS[@]}"
 $GUARD civibuild install "$BLDNAME"
 
 if [ "$ORNERY" = "disable" ]; then
