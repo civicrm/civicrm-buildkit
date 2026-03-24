@@ -70,10 +70,6 @@ cv setting:set debug_enabled=1
 echo "enabling wmf-civicrm"
 cv en --ignore-missing rpow wmf-civicrm
 
-echo "Adding API key to admin user"
-[ ! -z "$FR_DOCKER_CIVI_API_KEY" ] && cv api4 Contact.update \
-	'{"where":[["display_name","=","Standalone Admin"]],"values":{"api_key":"'$FR_DOCKER_CIVI_API_KEY'"}}'
-
 echo "adding general wmf dev-specific settings"
 DEV_SETTINGS_FILE="${WEB_ROOT}/build/wmf_settings_developer.json"
 if [ -e "$DEV_SETTINGS_FILE" ]; then
@@ -93,6 +89,12 @@ echo "adding wmf roles"
 WMF_ROLES_FILE="${WEB_ROOT}/build/wmf_roles.sh"
 if [ -e "$WMF_ROLES_FILE" ]; then
    bash $WMF_ROLES_FILE
+fi
+
+if [ ! -z "$FR_DOCKER_CIVI_API_KEY" ]; then
+    echo "Creating CiviProxy user with API key and role"
+    id=$(cv api3 Contact.create display_name='CiviProxy' api_key="$FR_DOCKER_CIVI_API_KEY" email=civiproxy@localhost.co contact_type=Individual | jq -r ".id")
+    cv api4 User.create '{"values":{"roles:label":["authenticated_user","CiviProxy"],"contact_id":'$id',"username":"civiproxy"}}'
 fi
 
 # Create directories and settings for audit file processing
