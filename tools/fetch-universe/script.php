@@ -33,7 +33,7 @@ function errdump(...$args) {
 }
 
 function app_usage() {
-  errprintf("usage: fetch-universe <base-dir> [--dry-run] [--feeds=lab,extdir,static] [--no-deps]\n");
+  errprintf("usage: fetch-universe <base-dir> [--dry-run] [--feeds=lab,extdir,static] [--install]\n");
 }
 
 function parse_args(array $args, array $all_feeds): array {
@@ -42,7 +42,7 @@ function parse_args(array $args, array $all_feeds): array {
     'dryRun' => FALSE,
     'basedir' => NULL,
     'feeds' => array_keys($all_feeds),
-    'deps' => TRUE,
+    'deps' => FALSE,
   ];
   while (!empty($args)) {
     $arg = array_shift($args);
@@ -53,8 +53,8 @@ function parse_args(array $args, array $all_feeds): array {
           $options['dryRun'] = TRUE;
           break;
 
-        case 'no-deps':
-          $options['deps'] = FALSE;
+        case 'install':
+          $options['deps'] = TRUE;
           break;
 
         case 'feeds':
