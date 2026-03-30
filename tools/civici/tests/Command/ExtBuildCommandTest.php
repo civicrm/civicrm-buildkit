@@ -45,6 +45,11 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
       '%\$ civici ext:dl-dep --info=\'web/sites/default/files/civicrm/ext/target\'/info.xml --feed=\'https://civicrm.org/extdir/ver=5.40.0\|uf=Bare\|status=\|ready=/single\' --to=\'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext\'$%',
       '%^\w*$%',
 
+      '%Run setup script%',
+      '%cd \'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext/target\'%',
+      '%\$ if.*bin/setup.sh%',
+      '%^\s*$%',
+
       '%Install main database%',
       '%\$ cd \'/srv/buildkit/build/foobar\'%',
       '%civibuild install \'foobar\'%',
@@ -97,6 +102,11 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
       '%\$ civici ext:dl-dep --info=\'web/sites/default/files/civicrm/ext/target\'/info.xml --feed=\'https://civicrm.org/extdir/ver=5.40.0\|uf=Bare\|status=\|ready=/single\' --to=\'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext\'$%',
       '%^\w*$%',
 
+      '%Run setup script%',
+      '%cd \'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext/target\'%',
+      '%\$ if.*bin/setup.sh%',
+      '%^\s*$%',
+
       '%Install main database%',
       '%\$ cd \'/srv/buildkit/build/foobar\'%',
       '%civibuild install \'foobar\'%',
@@ -147,6 +157,11 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
       '%\$ civici ext:dl-dep --info=\'web/sites/default/files/civicrm/ext/target\'/info.xml --feed=\'https://civicrm.org/extdir/ver=5.40.0\|uf=Bare/single\' --to=\'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext\'$%',
       '%^\s*$%',
 
+      '%Run setup script%',
+      '%cd \'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext/target\'%',
+      '%\$ if.*bin/setup.sh%',
+      '%^\s*$%',
+
       '%Install main database%',
       '%\$ cd \'/srv/buildkit/build/foobar\'%',
       '%civibuild install \'foobar\'%',
@@ -194,6 +209,11 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
       '%Download extension dependencies%',
       '%\$ cd \'/srv/buildkit/build/foobar\'%',
       '%\$ civici ext:dl-dep --info=\'web/sites/default/files/civicrm/ext/target\'/info.xml --feed=\'https://civicrm.org/extdir/ver=5.40.0\|uf=Bare\|status=\|ready=/single\' --to=\'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext\'$%',
+      '%^\s*$%',
+
+      '%Run setup script%',
+      '%cd \'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext/target\'%',
+      '%\$ if.*bin/setup.sh%',
       '%^\s*$%',
 
       '%Install main database%',
@@ -247,6 +267,11 @@ class ExtBuildCommandTest extends \Civici\CiviciTestCase {
       '%\$ cd \'/srv/buildkit/build/foobar\'%',
       '%\$ civici ext:dl-dep --info=\'web/sites/default/files/civicrm/ext/target\'/info.xml --feed=\'https://civicrm.org/extdir/ver=5.40.0\|uf=Bare\|status=\|ready=/single\' --to=\'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext\'$%',
       '%^\w*$%',
+
+      '%Run setup script%',
+      '%cd \'/srv/buildkit/build/foobar/web/sites/default/files/civicrm/ext/target\'%',
+      '%\$ if.*bin/setup.sh%',
+      '%^\s*$%',
 
       '%Install main database%',
       '%\$ cd \'/srv/buildkit/build/foobar\'%',
