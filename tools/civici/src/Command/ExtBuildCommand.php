@@ -189,6 +189,14 @@ class ExtBuildCommand extends BaseCommand {
     );
 
     $batch->add(
+      '<info>Run setup script (if applicable)</info>',
+      \Symfony\Component\Process\Process::fromShellCommandline(
+        Process::interpolate('if [ -f ./bin/setup.sh ]; then ./bin/setup.sh -D ; fi', $commonParams),
+        $commonParams['ABSEXTPATH']
+      )
+    );
+
+    $batch->add(
       '<info>Install main database</info>',
       \Symfony\Component\Process\Process::fromShellCommandline(
         Process::interpolate('civibuild install @BLDNAME', $commonParams),
