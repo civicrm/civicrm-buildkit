@@ -191,7 +191,7 @@ class ExtBuildCommand extends BaseCommand {
     $batch->add(
       '<info>Run setup script (if applicable)</info>',
       \Symfony\Component\Process\Process::fromShellCommandline(
-        Process::interpolate('if [ -f ./bin/setup.sh ]; then ./bin/setup.sh -D ; fi', $commonParams),
+        Process::interpolate('if [ -e .git -a -f ./bin/setup.sh ]; then ./bin/setup.sh -D ; fi', $commonParams),
         $commonParams['ABSEXTPATH']
       )
     );
