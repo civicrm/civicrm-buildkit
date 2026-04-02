@@ -24,6 +24,7 @@ in if (isValidPackage php) && (isValidPackage dbms)
     dbms
     dists.default.redis
     dists.bkit.transifexClient
+    dists.default.typesense
 
   ] ++ (if isApple then [] else [dists.default.chromium dists.default.wkhtmltopdf])
 
