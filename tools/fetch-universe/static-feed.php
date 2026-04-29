@@ -110,8 +110,6 @@ return function() {
     'https://develop.tadpole.cc/plugins/civicrm-groups-sync' => 'wp-plugin',
 
      // Some random exts that don't appear in the feeds.
-    'https://github.com/3sd/civicrm-pinpoint' => 'ext',
-    'https://github.com/3sd/civicrm-recurring-mail' => 'ext',
     'https://github.com/MegaphoneJon/agbucontributiontab' => 'ext',
     'https://github.com/MegaphoneJon/com.megaphonetech.monitoring' => 'ext',
     'https://github.com/MegaphoneJon/com.megaphonetech.msumfields' => 'ext',
