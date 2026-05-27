@@ -13,7 +13,7 @@
 
    "civistrings":  {
      "url": "https://download.civicrm.org/civistrings/civistrings.phar-2026-01-28-08687561",
-     "sha256": "08687561799aab42079ca4c373fa60ab33c6eeb9",
+     "sha256": "2ce3cd6ffb1c415db841a70418b49c4220362bfadd0813f904bedf5b9511d106",
      "buildkit-path": "bin/civistrings"
    },
 
