@@ -12,8 +12,8 @@
    },
 
    "civistrings":  {
-     "url": "https://download.civicrm.org/civistrings/civistrings.phar-2026-01-28-08687561",
-     "sha256": "2ce3cd6ffb1c415db841a70418b49c4220362bfadd0813f904bedf5b9511d106",
+     "url": "https://download.civicrm.org/civistrings/civistrings.phar-2026-05-28-0ce9333d",
+     "sha256": "d2e6f6621bcbbfda28b9a1335119e19c5ef7fb03d801ab7f02e617672ecf709c",
      "buildkit-path": "bin/civistrings"
    },
 
