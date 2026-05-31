@@ -24,7 +24,7 @@ assert_bknix_temporary
 
 BLDNAME="build-$EXECUTOR_NUMBER"
 BLDDIR="$BKITBLD/$BLDNAME/web"
-EXTBASE="$BLDDIR/sites/all/modules/civicrm/ext"
+EXTBASE="$BLDDIR/ext"
 EXITCODE=0
 
 ##################################################
@@ -91,9 +91,9 @@ civibuild env-info
 ## Download application (with civibuild)
 civibuild download "$BLDNAME" \
   --civi-ver "$CIVIVER" \
-  --type "drupal-clean"
+  --type "standalone-clean"
 mkdir -p "$EXTBASE"
-pushd "$BLDDIR/sites/all/modules/civicrm"
+pushd "$BLDDIR/core"
 EXTCIVIVER=$( php -r '$x=simplexml_load_file("xml/version.xml"); echo $x->version_no;' )
 popd
 pushd "$EXTBASE"
