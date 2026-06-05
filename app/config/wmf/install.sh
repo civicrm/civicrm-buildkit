@@ -68,7 +68,7 @@ cv setting:set environment=Development
 cv setting:set debug_enabled=1
 
 echo "enabling wmf-civicrm"
-cv en --ignore-missing rpow wmf-civicrm
+cv en -vvv --ignore-missing rpow wmf-civicrm
 
 echo "adding general wmf dev-specific settings"
 DEV_SETTINGS_FILE="${WEB_ROOT}/build/wmf_settings_developer.json"
