@@ -31,7 +31,11 @@ export XDEBUG_MODE=off XDEBUG_PORT=
 ## Function library
 
 function show_help() {
-  echo "usage: civilint [--checkstyle <output-dir>] [file1 file2...]"
+  echo "usage: civilint [--fix] [--checkstyle <output-dir>] [file1 file2...]"
+  echo
+  echo "Options:"
+  echo "  --fix                      Autofix PHP and CSS files (using phpcbf)."
+  echo "  --checkstyle <output-dir>  Output reports in checkstyle XML format."
   echo
   echo "If \"files\" is omitted, scan any uncommitted changes from git."
   echo "If \"files\" is \"-\", scan any files listed on STDIN"
@@ -137,11 +141,23 @@ function show_files() {
 
 trap cleanup 0
 
-## Determine output mode
-if [ "$1" == "--checkstyle" ]; then
-  CHECKSTYLE_OUT="$2"
-  shift 2
-fi
+## Determine output/fixing mode
+FIX_MODE=0
+while [ -n "$1" ]; do
+  case "$1" in
+    --checkstyle)
+      CHECKSTYLE_OUT="$2"
+      shift 2
+      ;;
+    --fix)
+      FIX_MODE=1
+      shift
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
 
 ## Capture the list of files
 TMP=$(mktempdir)
@@ -186,6 +202,11 @@ if grep -q . "$TMP/php.txt" ; then
     cat "$TMP/php-check.log"
   fi
 
+  if [ $PHPL_EXIT == 0 -a "$FIX_MODE" == 1 ]; then
+    echo "==============================[ phpcbf  ]==============================="
+    xargs $BINDIR/phpcbf --standard="$PHPCS_STD" < "$TMP/php.txt"
+  fi
+
   echo "===============================[ phpcs  ]==============================="
   if [ $PHPL_EXIT != 0 ]; then
     echo "Skipping style check. There are files with hard syntax errors."
@@ -203,6 +224,11 @@ fi
 ## Run PHPCS (CSS files)
 PHPCS_CSS_EXIT=0
 if grep -q . "$TMP/css.txt" ; then
+  if [ "$FIX_MODE" == 1 ]; then
+    echo "============================[ phpcbf (css) ]============================"
+    xargs $BINDIR/phpcbf --standard="$PHPCS_STD" < "$TMP/css.txt"
+  fi
+
   echo "=============================[ phpcs (css) ]============================"
   if [ -n "$CHECKSTYLE_OUT" ]; then
     xargs $BINDIR/phpcs --standard="$PHPCS_STD" --report=checkstyle < "$TMP/css.txt" > "$CHECKSTYLE_OUT/checkstyle-phpcs-css.xml"
