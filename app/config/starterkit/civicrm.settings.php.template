@@ -224,6 +224,16 @@ define( 'CIVICRM_DB_CACHE_HOST', 'localhost' );
 define( 'CIVICRM_DB_CACHE_PORT', 11211 );
 
 /**
+ * If you are using a cache via a Unix socket, add the path to it here.
+ *
+ * Currently only works with Redis.
+ * For example: `/home/youruser/tmp/redis.sock`
+ *
+ * Note that if a socket is specified, then host and port will be ignored.
+ */
+define('CIVICRM_DB_CACHE_SOCKET', '');
+
+/**
  * Items in cache will expire after the number of seconds specified here.
  * Default value is 3600 (i.e., after an hour)
  */
