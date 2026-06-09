@@ -36,7 +36,9 @@ rm -f ${CIVI_TEMPLATEC}/*.php
 ## Set site key if requested in Docker environment
 [ ! -z "$FR_DOCKER_CIVI_SITE_KEY" ] && CIVI_SITE_KEY=${FR_DOCKER_CIVI_SITE_KEY}
 
+echo "Starting civicrm_install_cv"
 civicrm_install_cv
+echo "Finished civicrm_install_cv"
 
 "${WEB_ROOT}/ext/rpow/bin/harvey-dent" --root "${WEB_ROOT}" --settings-path "${RPOW_SETTINGS_PATH}" --user-name "${RPOW_RO_USER}"
 cat > "${LOGGING_DSN_SETTING_PATH}" << LOGDSNEND
@@ -64,6 +66,7 @@ EOSQL
 ## Extra configuration
 
 # Settings appropriate to a dev environment
+echo "setting debug settings"
 cv setting:set environment=Development
 cv setting:set debug_enabled=1
 
