@@ -9,6 +9,6 @@
         "php": ">=7.4",
         "clippy/std": "~0.5.1",
         "symfony/var-dumper": "~3.0|~4.4",
-        "symfony/yaml": "~3.0|~4.4"
+        "symfony/yaml": "^5.4.52"
     }
 }
