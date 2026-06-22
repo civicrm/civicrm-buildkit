@@ -70,6 +70,9 @@ echo "setting debug settings"
 cv setting:set environment=Development
 cv setting:set debug_enabled=1
 
+# Set theme to match prod
+cv setting:set theme_backend=walbrook
+
 echo "enabling wmf-civicrm"
 cv en -vvv --ignore-missing rpow wmf-civicrm
 
