@@ -47,7 +47,7 @@ case "$EXTKEY" in
     EXTS="org.civicrm.shoreditch org.civicrm.api4"
     ;;
   uk.co.vedaconsulting.mosaico)
-    EXTGITS="https://github.com/veda-consulting/uk.co.vedaconsulting.mosaico"
+    EXTGITS="https://lab.civicrm.org/extensions/mosaico.git"
     EXTS="uk.co.vedaconsulting.mosaico"
     ;;
   org.civicoop.civirules)
