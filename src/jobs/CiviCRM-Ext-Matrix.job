@@ -53,7 +53,7 @@ case "$EXTKEY" in
     EXTS="org.civicrm.angularprofiles org.civicrm.volunteer"
     ;;
   uk.co.vedaconsulting.mosaico)
-    EXTGITS="https://lab.civicrm.org/extensions/mosaico.git"
+    EXTGITS="https://lab.civicrm.org/extensions/mosaico"
     EXTS="uk.co.vedaconsulting.mosaico"
     ;;
   org.civicoop.civirules)
