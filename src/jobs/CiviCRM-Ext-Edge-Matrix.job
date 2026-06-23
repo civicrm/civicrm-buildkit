@@ -8,7 +8,7 @@ set -e
 #################################################
 ## Environment variables
 
-PHPUNIT=${PHPUNIT:-phpunit8}
+PHPUNIT=${PHPUNIT:-phpunit9}
 assert_common EXECUTOR_NUMBER WORKSPACE CIVIVER PHPUNIT
 
 ## EXTKEY: The name of the extension to test. Ex: uk.co.vedaconsulting.mosaico
