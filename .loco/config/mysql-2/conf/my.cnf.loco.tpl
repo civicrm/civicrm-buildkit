@@ -16,6 +16,9 @@ pid_file        = {{LOCO_SVC_VAR}}/run/mysql.pid
 tmpdir          = {{LOCO_SVC_VAR}}/tmp
 log-bin		= {{LOCO_SVC_VAR}}/log/mysql-bin
 
+binlog_format	= row
+sync_binlog	= 1
+
 read_only       = 1
 
 # Replication Slave (comment out master section to use this)

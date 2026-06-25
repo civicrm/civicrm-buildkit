@@ -15,6 +15,9 @@ socket		= {{LOCO_SVC_VAR}}/run/mysql.sock
 pid_file        = {{LOCO_SVC_VAR}}/run/mysql.pid
 tmpdir          = {{LOCO_SVC_VAR}}/tmp
 
+## On MySQL 8/9, you must explicitly opt-out of binary logging.
+disable-log-bin
+
 # Uncomment the following if you are using InnoDB tables
 #innodb_data_home_dir = /var/lib/mysql
 #innodb_data_file_path = ibdata1:10M:autoextend

@@ -17,6 +17,8 @@ tmpdir          = {{LOCO_SVC_VAR}}/tmp
 log-bin		= {{LOCO_SVC_VAR}}/log/mysql-bin
 
 expire_logs_days = 10
+binlog_format	= row
+sync_binlog	= 1
 
 # Uncomment the following if you are using InnoDB tables
 #innodb_data_home_dir = /var/lib/mysql
