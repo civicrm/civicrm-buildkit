@@ -112,3 +112,5 @@ for processor in adyen amazon braintree dlocal fundraiseup gravy chariot trustly
 done;
 mkdir -p ${WEB_ROOT}/private/prometheus/
 cv setting:set metrics_reporting_prometheus_path="${CMS_ROOT}/private/prometheus/"
+cv setting:set wmf_audit_directory_audit="${WEB_ROOT}/private/wmf_audit/"
+cv setting:set wmf_audit_directory_payments_log="${WEB_ROOT}/private/wmf_audit/logs/"
