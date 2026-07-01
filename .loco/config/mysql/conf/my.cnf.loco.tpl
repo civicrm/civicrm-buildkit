@@ -22,3 +22,8 @@ disable-log-bin
 #innodb_data_home_dir = /var/lib/mysql
 #innodb_data_file_path = ibdata1:10M:autoextend
 #innodb_log_group_home_dir = /var/lib/mysql
+
+## In MariaDB, you have to opt-in to enable ARCHIVE engine.
+## This is used when (eg) testing CiviCRM's detailed logging.
+[mariadb]
+plugin_load_add = ha_archive
