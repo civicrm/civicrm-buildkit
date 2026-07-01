@@ -105,7 +105,7 @@ fi
 
 # Create directories and settings for audit file processing
 mkdir -p ${WEB_ROOT}/private/wmf_audit/logs
-for processor in adyen amazon braintree dlocal fundraiseup gravy; do
+for processor in adyen amazon braintree dlocal fundraiseup gravy chariot trustly; do
   mkdir -p ${WEB_ROOT}/private/wmf_audit/$processor/incoming
   mkdir -p ${WEB_ROOT}/private/wmf_audit/$processor/completed
   mkdir -p ${WEB_ROOT}/private/wmf_audit/$processor/logs
