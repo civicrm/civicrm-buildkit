@@ -19,7 +19,8 @@
     "bin-dir": "bin",
     "allow-plugins": {
       "civicrm/composer-downloads-plugin": true,
-      "civicrm/composer-compile-plugin": true
+      "civicrm/composer-compile-plugin": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true
     }
   },
   "require": {
@@ -29,7 +30,8 @@
     "drupal/coder": "dev-8.x-2.x-civi#aa31dd918e302f6c01f6d28a495256e171abf581",
     "civicrm/composer-downloads-plugin": "^4.0",
     "civicrm/composer-compile-plugin": "~0.20",
-    "squizlabs/php_codesniffer": ">=2.7 <4.0"
+    "squizlabs/php_codesniffer": ">=2.7 <4.0",
+    "phpcompatibility/php-compatibility": "10.0.0-alpha2"
   },
   "repositories": [
     {
