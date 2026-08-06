@@ -79,6 +79,7 @@ bin/releaser
 bin/webdriver-manager
 bin/wp
 bin/wp.bat
+bin/yaml-lint
 bin/zipdiff
 build/
 extern/
