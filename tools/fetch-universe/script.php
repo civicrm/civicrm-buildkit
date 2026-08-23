@@ -133,14 +133,14 @@ function feed_labdir() {
   $page = 1;
   $pageSize = 100;
   do {
-    $laburl = "https://lab.civicrm.org/api/v4/groups/58/projects?page={$page}&per_page={$pageSize}";
+    $laburl = "https://lab.civicrm.org/api/v4/groups/58/projects?archived=false&page={$page}&per_page={$pageSize}";
     errprintf("Fetch URL (%s)\n", $laburl);
 
     $validProjectsInPage = 0;
     $projects = json_decode(file_get_contents($laburl), 1);
     foreach ($projects as $project) {
       // Have we gotten generally sensible data?
-      if (empty($project['path_with_namespace'])) {
+      if (empty($project['path_with_namespace']) || !empty($project['archived'])) {
         continue;
       }
 
