@@ -6,8 +6,8 @@
    },
 
    "box":  {
-     "url": "https://github.com/box-project/box/releases/download/4.6.10/box.phar",
-     "sha256": "f98cf885a7c07c84df66e33888f1d93f063298598e0a5f41ca322aeb9683179b",
+     "url": "https://github.com/box-project/box/releases/download/4.7.0/box.phar",
+     "sha256": "3d390eeaec33288098fe83f8a54c60cc575cb6be295f38ff4482b4b4f26f8d52",
      "buildkit-path": "bin/box"
    },
 
