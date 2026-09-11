@@ -15,3 +15,4 @@ if (empty($argv[1])) {
   $len = $argv[1];
 }
 print createRandom($len, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789');
+print "\n";
