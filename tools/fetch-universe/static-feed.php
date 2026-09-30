@@ -118,10 +118,7 @@ return function() {
     'https://github.com/MegaphoneJon/fastactionpdf' => 'ext',
     'https://github.com/MegaphoneJon/fieldlookup' => 'ext',
     'https://github.com/MegaphoneJon/habitat' => 'ext',
-    'https://github.com/MegaphoneJon/org.ujc.requiredduration' => 'ext',
     'https://github.com/Project60/org.project60.banking' => 'ext',
-    'https://github.com/Project60/org.project60.bankingboilerplate' => 'ext',
-    'https://github.com/Project60/org.project60.coda' => 'ext',
     'https://github.com/aghstrategies/com.aghstrategies.citystatetoken' => 'ext',
     'https://github.com/aghstrategies/com.aghstrategies.confirmbuttons' => 'ext',
     'https://github.com/aghstrategies/com.aghstrategies.customcivistylesui' => 'ext',
@@ -168,8 +165,6 @@ return function() {
     'https://github.com/twomice/com.joineryhq.cpreports' => 'ext',
     'https://github.com/twomice/com.joineryhq.groupreg' => 'ext',
     'https://github.com/twomice/com.joineryhq.metrotweaks' => 'ext',
-    'https://github.com/twomice/org.osltoday.osltweaks' => 'ext',
-    'https://github.com/veda-consulting-company/uk.co.vedaconsulting.module.wordmailmerge' => 'ext',
   ];
   foreach ($gitUrls as $gitUrlExpr => $type) {
     $gitUrlParts = explode('#', $gitUrlExpr);
