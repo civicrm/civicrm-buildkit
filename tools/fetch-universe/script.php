@@ -272,8 +272,8 @@ $basedir = $options['basedir'];
 ########################################################################################
 ## Main data loading
 
-$statuses = array(); /* array(string $key => int $code) */
-$deprecated = array('civicrm-drupal', 'civicrm-org-site', 'api4', 'civicrm-setup', 'civicrm-org-platform');
+$statuses = []; /* [string $key => int $code] */
+$deprecated = ['civicrm-drupal', 'civicrm-org-site', 'api4', 'civicrm-setup', 'civicrm-org-platform'];
 
 $feeds = [];
 foreach ($all_feeds as $feed_name => $feed_func) {
@@ -283,7 +283,7 @@ foreach ($all_feeds as $feed_name => $feed_func) {
 }
 $repos = feed_merge($feeds);
 $taskList = new TaskList();
-$msgs = array();
+$msgs = [];
 
 foreach ($repos as $key => $ext) {
   $dir = "$basedir/" . $ext['type'] . "/$key";
@@ -361,9 +361,9 @@ $err = array_keys(array_filter($statuses, function($val) {
   return ($val != 0);
 }));
 
-print_r(array(
+print_r([
   'ok' => $ok,
   'err' => $err,
   'msgs' => $msgs,
-));
+]);
 exit(array_sum($statuses));
