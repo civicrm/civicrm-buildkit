@@ -124,6 +124,23 @@ function feed_extdir() {
 }
 
 /**
+ * Get the list of unsupported extensions from civicrm.org.
+ */
+function feed_extdir_unsupported(): array {
+  $url = 'https://civicrm.org/extension-git-json/unsupported';
+  errprintf("Fetch URL (%s)\n", $url);
+
+  $raw = file_get_contents($url);
+  $repos = json_decode($raw, TRUE);
+  if (!is_array($repos)) {
+    errprintf("Warning: could not fetch unsupported extensions list from %s\n", $url);
+    return [];
+  }
+
+  return array_column($repos, 'key', 'key');
+}
+
+/**
  * Get the list of semi-published extensions from lab.civicrm.org.
  *
  * @return array
@@ -209,15 +226,26 @@ function feed_normalize($feed, $defaults = []) {
  * given to the first instance.
  *
  * @param array $feeds
+ * @param array $blockedKeys  Set of extension keys to exclude.
  * @return array
  */
-function feed_merge($feeds) {
+function feed_merge($feeds, $blockedKeys = []) {
   $all = [];
   $srcIds = []; /* Flag git URLs/branches that have been visited already. */
   foreach ($feeds as $feed) {
     foreach ($feed as $key => $repo) {
       $srcId = ($repo['git_url'] ?? '') . ($repo['svn_url'] ?? '') . '#' . ($repo['git_branch'] ?? 'DEFAULT');
-      if (isset($all[$key])) {
+
+      // Exclude Unsupported extensions.
+      if (isset($blockedKeys[$key])) {
+        errprintf("skip unsupported extension (%s) from (%s)\n", $key, $srcId);
+        continue;
+      }
+
+      // Dedupe by short key
+      $shortKey = ltrim(strrchr(".$key", '.'), '.');
+
+      if (isset($all[$shortKey])) {
         errprintf("skip duplicate key (%s) from (%s)\n", $key, $srcId);
         continue;
       }
@@ -226,7 +254,7 @@ function feed_merge($feeds) {
         continue;
       }
 
-      $all[$key] = $repo;
+      $all[$shortKey] = $repo;
       $srcIds[$srcId] = 1;
     }
   }
@@ -272,8 +300,8 @@ $basedir = $options['basedir'];
 ########################################################################################
 ## Main data loading
 
-$statuses = array(); /* array(string $key => int $code) */
-$deprecated = array('civicrm-drupal', 'civicrm-org-site', 'api4', 'civicrm-setup', 'civicrm-org-platform');
+$statuses = []; /* [string $key => int $code] */
+$deprecated = ['civicrm-drupal', 'civicrm-org-site', 'api4', 'civicrm-setup', 'civicrm-org-platform'];
 
 $feeds = [];
 foreach ($all_feeds as $feed_name => $feed_func) {
@@ -281,9 +309,13 @@ foreach ($all_feeds as $feed_name => $feed_func) {
     $feeds[] = $feed_func();
   }
 }
-$repos = feed_merge($feeds);
+
+// Fetch the list of "Unsupported" extensions from civicrm.org
+$blockedKeys = feed_extdir_unsupported();
+
+$repos = feed_merge($feeds, $blockedKeys);
 $taskList = new TaskList();
-$msgs = array();
+$msgs = [];
 
 foreach ($repos as $key => $ext) {
   $dir = "$basedir/" . $ext['type'] . "/$key";
@@ -361,9 +393,9 @@ $err = array_keys(array_filter($statuses, function($val) {
   return ($val != 0);
 }));
 
-print_r(array(
+print_r([
   'ok' => $ok,
   'err' => $err,
   'msgs' => $msgs,
-));
+]);
 exit(array_sum($statuses));
