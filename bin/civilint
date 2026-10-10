@@ -34,7 +34,7 @@ function show_help() {
   echo "usage: civilint [--fix] [--checkstyle <output-dir>] [file1 file2...]"
   echo
   echo "Options:"
-  echo "  --fix                      Autofix PHP and CSS files (using phpcbf)."
+  echo "  --fix                      Autofix PHP files (using phpcbf)."
   echo "  --checkstyle <output-dir>  Output reports in checkstyle XML format."
   echo
   echo "If \"files\" is omitted, scan any uncommitted changes from git."
@@ -47,17 +47,16 @@ function git_default_files() {
   git diff --name-only --cached
 }
 
-## Split files into categories (PHP-files, JS-files, CSS-files, skip-files).
-## usage: cat file-list.txt | split_files phpfiles.txt jsfiles.txt cssfiles.txt skipfiles.txt
+## Split files into categories (PHP-files, JS-files, skip-files).
+## usage: cat file-list.txt | split_files phpfiles.txt jsfiles.txt skipfiles.txt
 function split_files() {
   local phpfiles="$1"
   local jsfiles="$2"
-  local cssfiles="$3"
-  local skipfiles="$4"
+  local skipfiles="$3"
 
   local check_traits=$(php -r 'echo version_compare(PHP_VERSION, "5.4.0", ">=") ? "1" : "0";')
 
-  touch "$phpfiles" "$jsfiles" "$cssfiles" "$skipfiles"
+  touch "$phpfiles" "$jsfiles" "$skipfiles"
 
   while read -r file; do
     if [[ "$file" =~ ^- ]] || [ ! -e "$file" ]; then
@@ -84,7 +83,7 @@ function split_files() {
       printf '%s\n' "$file" >> "$jsfiles"
 
     elif [[ "$file" =~ \.css$ ]]; then
-      printf '%s\n' "$file" >> "$cssfiles"
+      printf '%s\n' "$file" >> "$skipfiles"
 
     elif [[ "$file" =~ \.tpl$ ]]; then
       printf '%s\n' "$file" >> "$skipfiles"
@@ -196,20 +195,19 @@ if [ "${#FILES[@]}" -eq 0 ]; then
     show_help >&2
     exit 2
   fi
-  git_default_files | split_files "$TMP/php.txt" "$TMP/js.txt" "$TMP/css.txt" "$TMP/skip.txt"
+  git_default_files | split_files "$TMP/php.txt" "$TMP/js.txt" "$TMP/skip.txt"
 elif [ "${#FILES[@]}" -eq 1 -a "${FILES[0]}" == "-" ]; then
-  split_files "$TMP/php.txt" "$TMP/js.txt" "$TMP/css.txt" "$TMP/skip.txt"
+  split_files "$TMP/php.txt" "$TMP/js.txt" "$TMP/skip.txt"
 else
   for f in "${FILES[@]}" ; do
     printf '%s\n' "$f"
-  done | split_files "$TMP/php.txt" "$TMP/js.txt" "$TMP/css.txt" "$TMP/skip.txt"
+  done | split_files "$TMP/php.txt" "$TMP/js.txt" "$TMP/skip.txt"
 fi
 
-if cat "$TMP/php.txt" "$TMP/js.txt" "$TMP/css.txt" "$TMP/skip.txt" | grep -q  . ;then
+if cat "$TMP/php.txt" "$TMP/js.txt" "$TMP/skip.txt" | grep -q  . ;then
   echo "===========================[ Identify Files ]==========================="
   show_files "PHP Files:" "$TMP/php.txt"
   show_files "Javascript Files:" "$TMP/js.txt"
-  show_files "CSS Files:" "$TMP/css.txt"
   show_files "Skip Files:" "$TMP/skip.txt"
 fi
 
@@ -243,24 +241,6 @@ if grep -q . "$TMP/php.txt" ; then
   fi
 fi
 
-## Run PHPCS (CSS files)
-PHPCS_CSS_EXIT=0
-if grep -q . "$TMP/css.txt" ; then
-  if [ "$FIX_MODE" == 1 ]; then
-    echo "============================[ phpcbf (css) ]============================"
-    xargs $BINDIR/phpcbf --standard="$PHPCS_STD" -- < "$TMP/css.txt"
-  fi
-
-  echo "=============================[ phpcs (css) ]============================"
-  if [ -n "$CHECKSTYLE_OUT" ]; then
-    xargs $BINDIR/phpcs --standard="$PHPCS_STD" --report=checkstyle -- < "$TMP/css.txt" > "$CHECKSTYLE_OUT/checkstyle-phpcs-css.xml"
-    PHPCS_CSS_EXIT=$?
-  else
-    xargs $BINDIR/phpcs --standard="$PHPCS_STD" -- < "$TMP/css.txt"
-    PHPCS_CSS_EXIT=$?
-  fi
-fi
-
 ## Run jshint
 JSHINT_EXIT=0
 if grep -q . "$TMP/js.txt" ; then
@@ -278,12 +258,9 @@ fi
 if [ "$PHPCS_EXIT" -gt 0 -o "$PHPL_EXIT" -gt 0 ]; then
   echo >&2 "Found PHP errors"
 fi
-if [ "$PHPCS_CSS_EXIT" -gt 0 ]; then
-  echo >&2 "Found CSS errors"
-fi
 if [ "$JSHINT_EXIT" -gt 0 ]; then
   echo >&2 "Found JS errors"
 fi
-if [ "$PHPCS_EXIT" -gt 0 -o "$PHPL_EXIT" -gt 0 -o "$PHPCS_CSS_EXIT" -gt 0 -o "$JSHINT_EXIT" -gt 0 ]; then
+if [ "$PHPCS_EXIT" -gt 0 -o "$PHPL_EXIT" -gt 0 -o "$JSHINT_EXIT" -gt 0 ]; then
   exit 1
 fi
