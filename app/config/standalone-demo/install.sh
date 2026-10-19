@@ -42,7 +42,7 @@ cv setting:set debug_enabled=1
 cv ext:enable standalone_demo
 
 # enable other extensions relevant to demo
-cv ext:enable civicrm_admin_ui civicrm_search_ui chart_kit search_kit_report_starter_pack
+cv ext:enable civicrm_admin_ui civicrm_search_ui chart_kit search_kit_report_starter_pack dresscode
 
 env DEMO_USER="$DEMO_USER" DEMO_PASS="$DEMO_PASS" DEMO_EMAIL="$DEMO_EMAIL" \
   cv scr "$SITE_CONFIG_DIR/demo-user.php"
