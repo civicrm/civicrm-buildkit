@@ -28,7 +28,6 @@ pushd "$WEB_ROOT/web/wp-content/plugins" >> /dev/null
   api4_download_conditional civicrm/civicrm                                              civicrm/civicrm/ext/api4
   git_cache_clone civicrm/civicrm-demo-wp                          -b master          civicrm-demo-wp
   git_cache_clone civicrm/org.civicoop.civirules                   -b master          civicrm/civicrm/tools/extensions/org.civicoop.civirules
-  git_cache_clone TechToThePeople/civisualize                      -b master          civicrm/civicrm/tools/extensions/civisualize
   git_cache_clone civicrm/org.civicrm.module.cividiscount          -b master          civicrm/civicrm/tools/extensions/cividiscount
   git_cache_clone civicrm/org.civicrm.contactlayout                -b master          civicrm/civicrm/tools/extensions/org.civicrm.contactlayout
 

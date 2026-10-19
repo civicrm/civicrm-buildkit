@@ -22,7 +22,6 @@ pushd "$WEB_ROOT/web"
     git_cache_clone "civicrm/civicrm-packages"                            -b "$CIVI_VERSION"      civicrm/packages
     api4_download_conditional civicrm                                                                civicrm/ext/api4
     git_cache_clone "civicrm/org.civicoop.civirules"                      -b "$RULES_VERSION"     civicrm/tools/extensions/org.civicoop.civirules
-    git_cache_clone "TechToThePeople/civisualize"                         -b "master"             civicrm/tools/extensions/civisualize
     git_cache_clone "civicrm/org.civicrm.module.cividiscount"             -b "$DISC_VERSION"      civicrm/tools/extensions/cividiscount
     git_cache_clone "civicrm/org.civicrm.contactlayout"                   -b "master"             civicrm/tools/extensions/org.civicrm.contactlayout
     civicrm_l10n_setup civicrm
