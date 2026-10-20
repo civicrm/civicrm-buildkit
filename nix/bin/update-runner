@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+## Perform a light update to the "runner" system. Specifically:
+##
+## - Pull in git updates for `/opt/buildkit`. (In case there are revisions to the job-definitions.)
+## - Update `buildkit-ts`. This means that everything in `/home/dispatcher/bknix-*.img` is dirty and should refresh on next use.
+##
+## NOTE: "install-runner" and "update-runner" are both types of updates, but they differ:
+## - LIGHT UPDATE: Use `update-runner` for most day-to-day updates. The user `dispatcher` can call `sudo update-runner`.
+## - HEAVY UPDATE: Use `install-runner` to update buildkit's system utilities (like `/usr/local/bin/homerdo`, `/usr/local/bin/update-runner`, or `/etc/sudoers.d/dispatcher`).
+##   This cannot be done by `dispatcher`. You should connect over SSH run `install-runner` as root.
+{
+  function fatal() {
+    echo "$@" >& 2
+    exit 1
+  }
+
+  set -e
+
+  # GUARD=echo
+  GUARD=
+  if [ "$USER" != "root" ]; then
+    echo "This command must run with sudo!" 1>&2
+    exit 1
+  fi
+
+  echo "## Update job defintions (/opt/buildkit)"
+  cd /opt/buildkit
+  $GUARD git pull
+
+  ## Whenever we load another *.img file, it should do a self-update. See homerdo-runjob.sh and GLOBAL_MARKER.
+  echo "## Raise minimum timestamp for all other working-copies of buildkit"
+  $GUARD touch /etc/bknix-ci/buildkit-ts
+
+  echo "## Done"
+  exit 0
+}

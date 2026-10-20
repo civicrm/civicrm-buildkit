@@ -70,6 +70,7 @@ install_bin "$BKNIXSRC/../bin/ssh-socket-forward" /usr/local/bin/ssh-socket-forw
 #install_bin "$BINDIR"/use-bknix             /usr/local/bin/use-bknix
 install_bin "$BINDIR"/await-bknix.flag-file /usr/local/bin/await-bknix
 install_bin "$BINDIR"/run-bknix-job         /usr/local/bin/run-bknix-job
+install_bin "$BINDIR"/update-runner         /usr/local/bin/update-runner
 
 # `util-linux` on Ubuntu Jammy and Debian Bullseye is v2.37. There was a regression in handling POSIX signals (introduced ~v2.36; fixed ~v2.38) which
 # impacts children processes (incl homerdo). The regression interferes with using `kill`, `Ctrl-C`, `systemctl stop`, etc. To
