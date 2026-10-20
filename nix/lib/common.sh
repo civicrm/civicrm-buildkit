@@ -390,6 +390,8 @@ function install_dispatcher() {
   #echo "Defaults:${DISPATCH_USER} env_keep+=SSH_AUTH_SOCK" >> /etc/sudoers.d/dispatcher
   echo "${DISPATCH_USER} ALL = (root) NOPASSWD: NOSETENV: /usr/local/bin/homerdo" >> /etc/sudoers.d/dispatcher
   echo "${DISPATCH_USER} ALL = (root) NOPASSWD: NOSETENV: /usr/local/bin/slotdo" >> /etc/sudoers.d/dispatcher
+  echo "${DISPATCH_USER} ALL = (root) NOPASSWD: NOSETENV: /usr/local/bin/update-runner \"\"" >> /etc/sudoers.d/dispatcher
+  ## update-runner does not accept arguments. It is a limited utility, allowing "dispatcher" to request updates.
 }
 
 ## Initialize a copy of buildkit.
