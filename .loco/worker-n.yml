@@ -119,7 +119,7 @@ services:
     message: 'Buildkit (<comment>$BKIT</comment>) is configured to use these services. It produces builds in "<comment>$HTTPD_VDROOT</comment>".'
 
   chrome-headless:
-    run: 'loco-pid-file "$LOCO_SVC_VAR/chrome-headless.pid" -- "$CHROME_BIN" --disable-gpu --headless --remote-debugging-address="$CHROME_HOST" --remote-debugging-port="$CHROME_PORT"'
+    run: 'loco-pid-file "$LOCO_SVC_VAR/chrome-headless.pid" -- "$CHROME_BIN" --disable-gpu --headless --remote-debugging-address="$CHROME_HOST" --remote-debugging-port="$CHROME_PORT" --explicitly-allowed-ports="$HTTPD_PORT"'
     pid_file : '$LOCO_SVC_VAR/chrome-headless.pid'
     message: 'Chrome (headless) is running on "<comment>http://$CHROME_HOST:$CHROME_PORT</comment>" to support automated testing.'
 
