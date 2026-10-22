@@ -117,7 +117,7 @@ let
     dfl = combinations.php83m57; /* Test suites run faster on MySQL 5.7 */
     alt = combinations.php81r106;
     max = combinations.php84m80;
-    edge = combinations.php85m80;
+    edge = combinations.php86m80;
 
     /**
      * These aliases are short-hand. They're not intended for CI testing,
