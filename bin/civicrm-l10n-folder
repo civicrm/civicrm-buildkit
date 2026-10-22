@@ -121,7 +121,8 @@ function downloadFile(string $url, string $outputFile): void {
   if (curl_errno($ch)) {
     throw new \RuntimeException('Error: ' . curl_error($ch));
   }
-
-  curl_close($ch);
+  if (version_compare(phpversion(), '8.6', '<=')) {
+    curl_close($ch);
+  }
   fclose($fp);
 }
