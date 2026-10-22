@@ -131,6 +131,7 @@ let
     php83 = combinations."php83${defaultDbms}";
     php84 = combinations."php84${defaultDbms}";
     php85 = combinations."php85${defaultDbms}";
+    php86 = combinations."php86${defaultDbms}";
 
   };
 

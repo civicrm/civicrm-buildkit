@@ -52,6 +52,7 @@ in pharDirectives // rec {
    php83 = import ./php83/default.nix;
    php84 = import ./php84/default.nix;
    php85 = import ./php85/default.nix;
+   php86 = import ./php86/default.nix;
    transifexClient = import ./transifexClient/default.nix;
    ramdisk = callPackage (fetchTarball "https://github.com/totten/ramdisk/archive/v0.1.2.tar.gz") {};
 
