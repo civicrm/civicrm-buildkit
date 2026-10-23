@@ -19,7 +19,6 @@ function git_cache_map() {
     "civicrm/org.civicrm.contactlayout")       echo "https://github.com/$1.git" ; ;;
     "civicrm/org.civicrm.module.cividiscount") echo "https://lab.civicrm.org/extensions/cividiscount.git" ; ;;
     "civicrm/org.civicrm.shoreditch")          echo "https://github.com/$1.git" ; ;;
-    "civicrm/org.civicrm.styleguide")          echo "https://github.com/$1.git" ; ;;
     "civicrm/standalone_demo")                 echo "https://lab.civicrm.org/extensions/standalone_demo.git" ; ;;
     "civicrm/search_kit_report_starter_pack")  echo "https://lab.civicrm.org/extensions/search_kit_report_starter_pack.git" ; ;;
     "civicrm/dresscode")                       echo "https://lab.civicrm.org/extensions/dresscode.git" ; ;;

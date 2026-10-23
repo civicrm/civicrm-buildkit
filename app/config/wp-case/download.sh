@@ -28,7 +28,6 @@ pushd $WEB_ROOT/wp-content/plugins >> /dev/null
 
   mkdir -p civicrm/civicrm/ext
   git_cache_clone civicrm/org.civicrm.shoreditch                   -b master civicrm/civicrm/ext/shoreditch
-  git_cache_clone civicrm/org.civicrm.styleguide                   -b master civicrm/civicrm/ext/styleguide
   git_cache_clone civicrm/org.civicrm.civicase                     -b master civicrm/civicrm/ext/civicase
 
   git_set_hooks civicrm-wordpress   civicrm                    "../civicrm/tools/scripts/git"
