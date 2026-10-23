@@ -53,7 +53,7 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
   drush -y vset theme_default seven
 
   ## Install Shoreditch and CiviCase
-  cv en shoreditch styleguide civicase
+  cv en shoreditch civicase
   cv api setting.create customCSSURL='[civicrm.root]/ext/shoreditch/css/custom-civicrm.css'
   cv scr --user="$ADMIN_USER" "$PRJDIR/src/create-civicase-examples.php"
 
