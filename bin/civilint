@@ -59,45 +59,45 @@ function split_files() {
 
   touch "$phpfiles" "$jsfiles" "$cssfiles" "$skipfiles"
 
-  while read file; do
-    if [ ! -e "$file" ]; then
-      echo "$file" >> "$skipfiles"
+  while read -r file; do
+    if [[ "$file" =~ ^- ]] || [ ! -e "$file" ]; then
+      printf '%s\n' "$file" >> "$skipfiles"
 
     elif [[ "$file" =~ (/?examples/|/?tools/) ]]; then
-      echo "$file" >> "$skipfiles"
+      printf '%s\n' "$file" >> "$skipfiles"
 
     elif [[ "$file" =~ Trait\.php$ ]]; then
       if [ "x$check_traits" = "x1" ]; then
-        echo "$file" >> "$phpfiles"
+        printf '%s\n' "$file" >> "$phpfiles"
       else
         echo "WARNING: Cannot check style on $file with PHP 5.3. Consider upgrading PHP."
-        echo "$file" >> "$skipfiles"
+        printf '%s\n' "$file" >> "$skipfiles"
       fi
 
     elif [[ "$file" =~ (/SchemaStructure\.php|langs\.php) ]]; then
-      echo "$file" >> "$skipfiles"
+      printf '%s\n' "$file" >> "$skipfiles"
 
     elif [[ "$file" =~ \.php$ ]]; then
-      echo "$file" >> "$phpfiles"
+      printf '%s\n' "$file" >> "$phpfiles"
 
     elif [[ "$file" =~ \.js$ ]]; then
-      echo "$file" >> "$jsfiles"
+      printf '%s\n' "$file" >> "$jsfiles"
 
     elif [[ "$file" =~ \.css$ ]]; then
-      echo "$file" >> "$cssfiles"
+      printf '%s\n' "$file" >> "$cssfiles"
 
     elif [[ "$file" =~ \.tpl$ ]]; then
-      echo "$file" >> "$skipfiles"
+      printf '%s\n' "$file" >> "$skipfiles"
 
     elif [[ "$file" =~ \.template$ ]]; then
-      echo "$file" >> "$skipfiles"
+      printf '%s\n' "$file" >> "$skipfiles"
 
     ## e.g. <?php or #!/usr/bin/php or #!/usr/bin/env php
     elif head -n1 "$file" | grep '\(\?php\|#!.*bin/php\|#!.*env php\)' -q ; then
-      echo "$file" >> "$phpfiles"
+      printf '%s\n' "$file" >> "$phpfiles"
 
     else
-      echo "$file" >> "$skipfiles"
+      printf '%s\n' "$file" >> "$skipfiles"
     fi
   done
 }
@@ -143,8 +143,15 @@ trap cleanup 0
 
 ## Determine output/fixing mode
 FIX_MODE=0
+CHECKSTYLE_OUT=
+FILES=()
+
 while [ -n "$1" ]; do
   case "$1" in
+    -h|--help)
+      show_help
+      exit 0
+      ;;
     --checkstyle)
       CHECKSTYLE_OUT="$2"
       shift 2
@@ -153,33 +160,48 @@ while [ -n "$1" ]; do
       FIX_MODE=1
       shift
       ;;
-    *)
+    --)
+      shift
+      while [ -n "$1" ]; do
+        FILES+=("$1")
+        shift
+      done
       break
+      ;;
+    -)
+      FILES+=("$1")
+      shift
+      ;;
+    -*)
+      echo "Unknown option: $1" >&2
+      show_help >&2
+      exit 2
+      ;;
+    *)
+      FILES+=("$1")
+      shift
       ;;
   esac
 done
 
 ## Capture the list of files
 TMP=$(mktempdir)
-if [ -z "$1" ]; then
-  GITROOT=$(git rev-parse --show-toplevel)
-  if [ -d "$GITROOT" ]; then
+if [ "${#FILES[@]}" -eq 0 ]; then
+  GITROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+  if [ -n "$GITROOT" -a -d "$GITROOT" ]; then
     cd "$GITROOT"
   else
-    echo "ERROR: Cannot check for uncommitted changes in git. Please change to the git root."
-    echo
-    show_help
+    echo "ERROR: Cannot check for uncommitted changes in git. Please change to the git root." >&2
+    echo >&2
+    show_help >&2
     exit 2
   fi
   git_default_files | split_files "$TMP/php.txt" "$TMP/js.txt" "$TMP/css.txt" "$TMP/skip.txt"
-elif [ "$1" == "-" ]; then
+elif [ "${#FILES[@]}" -eq 1 -a "${FILES[0]}" == "-" ]; then
   split_files "$TMP/php.txt" "$TMP/js.txt" "$TMP/css.txt" "$TMP/skip.txt"
-elif [ "$1" == "-h" ]; then
-  show_help
-  exit 0
 else
-  for f in "$@" ; do
-    echo $f
+  for f in "${FILES[@]}" ; do
+    printf '%s\n' "$f"
   done | split_files "$TMP/php.txt" "$TMP/js.txt" "$TMP/css.txt" "$TMP/skip.txt"
 fi
 
@@ -204,7 +226,7 @@ if grep -q . "$TMP/php.txt" ; then
 
   if [ $PHPL_EXIT == 0 -a "$FIX_MODE" == 1 ]; then
     echo "==============================[ phpcbf  ]==============================="
-    xargs $BINDIR/phpcbf --standard="$PHPCS_STD" < "$TMP/php.txt"
+    xargs $BINDIR/phpcbf --standard="$PHPCS_STD" -- < "$TMP/php.txt"
   fi
 
   echo "===============================[ phpcs  ]==============================="
@@ -213,10 +235,10 @@ if grep -q . "$TMP/php.txt" ; then
     ## In the past, had a bug where phpcs runs into infinite-loop checking a malformed file.
     PHPCS_EXIT=1
   elif [ -n "$CHECKSTYLE_OUT" ]; then
-    xargs $BINDIR/phpcs --standard="$PHPCS_STD" --report=checkstyle < "$TMP/php.txt" > "$CHECKSTYLE_OUT/checkstyle-phpcs.xml"
+    xargs $BINDIR/phpcs --standard="$PHPCS_STD" --report=checkstyle -- < "$TMP/php.txt" > "$CHECKSTYLE_OUT/checkstyle-phpcs.xml"
     PHPCS_EXIT=$?
   else
-    xargs $BINDIR/phpcs --standard="$PHPCS_STD" < "$TMP/php.txt"
+    xargs $BINDIR/phpcs --standard="$PHPCS_STD" -- < "$TMP/php.txt"
     PHPCS_EXIT=$?
   fi
 fi
@@ -226,15 +248,15 @@ PHPCS_CSS_EXIT=0
 if grep -q . "$TMP/css.txt" ; then
   if [ "$FIX_MODE" == 1 ]; then
     echo "============================[ phpcbf (css) ]============================"
-    xargs $BINDIR/phpcbf --standard="$PHPCS_STD" < "$TMP/css.txt"
+    xargs $BINDIR/phpcbf --standard="$PHPCS_STD" -- < "$TMP/css.txt"
   fi
 
   echo "=============================[ phpcs (css) ]============================"
   if [ -n "$CHECKSTYLE_OUT" ]; then
-    xargs $BINDIR/phpcs --standard="$PHPCS_STD" --report=checkstyle < "$TMP/css.txt" > "$CHECKSTYLE_OUT/checkstyle-phpcs-css.xml"
+    xargs $BINDIR/phpcs --standard="$PHPCS_STD" --report=checkstyle -- < "$TMP/css.txt" > "$CHECKSTYLE_OUT/checkstyle-phpcs-css.xml"
     PHPCS_CSS_EXIT=$?
   else
-    xargs $BINDIR/phpcs --standard="$PHPCS_STD" < "$TMP/css.txt"
+    xargs $BINDIR/phpcs --standard="$PHPCS_STD" -- < "$TMP/css.txt"
     PHPCS_CSS_EXIT=$?
   fi
 fi
@@ -244,10 +266,10 @@ JSHINT_EXIT=0
 if grep -q . "$TMP/js.txt" ; then
   echo "===============================[ jshint ]==============================="
   if [ -n "$CHECKSTYLE_OUT" ]; then
-    xargs $BINDIR/jshint --reporter=checkstyle < "$TMP/js.txt" > "$CHECKSTYLE_OUT/checkstyle-jshint.xml"
+    xargs $BINDIR/jshint --reporter=checkstyle -- < "$TMP/js.txt" > "$CHECKSTYLE_OUT/checkstyle-jshint.xml"
     JSHINT_EXIT=$?
   else
-    xargs $BINDIR/jshint --verbose < "$TMP/js.txt"
+    xargs $BINDIR/jshint --verbose -- < "$TMP/js.txt"
     JSHINT_EXIT=$?
   fi
 fi
