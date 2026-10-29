@@ -14,6 +14,9 @@ function absdirname() {
 BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
 PHPCS_STD="$PRJDIR/vendor/drupal/coder/coder_sniffer/Drupal"
+STYLELINT_STD="$PRJDIR/app/stylelint.json"
+STYLELINT_BASEDIR="$PRJDIR"
+STYLELINT_CHECKSTYLE="$PRJDIR/node_modules/stylelint-checkstyle-reporter/dist/stylelint-checkstyle-reporter.mjs"
 CHECKSTYLE_OUT=
 CHECKSTYLE_TMPDIR=
 FILELIST=
@@ -34,7 +37,7 @@ function show_help() {
   echo "usage: civilint [--fix] [--checkstyle <output-dir>] [file1 file2...]"
   echo
   echo "Options:"
-  echo "  --fix                      Autofix PHP and CSS files (using phpcbf)."
+  echo "  --fix                      Autofix PHP and CSS files (using phpcbf and stylelint)."
   echo "  --checkstyle <output-dir>  Output reports in checkstyle XML format."
   echo
   echo "If \"files\" is omitted, scan any uncommitted changes from git."
@@ -243,21 +246,24 @@ if grep -q . "$TMP/php.txt" ; then
   fi
 fi
 
-## Run PHPCS (CSS files)
-PHPCS_CSS_EXIT=0
+## Run stylelint
+STYLELINT_EXIT=0
 if grep -q . "$TMP/css.txt" ; then
-  if [ "$FIX_MODE" == 1 ]; then
-    echo "============================[ phpcbf (css) ]============================"
-    xargs $BINDIR/phpcbf --standard="$PHPCS_STD" -- < "$TMP/css.txt"
+  echo "============================[ stylelint ]============================"
+  STYLELINT_ARGS=()
+  if [ ! -f .stylelintrc -a ! -f .stylelintrc.json -a ! -f .stylelintrc.js -a ! -f .stylelintrc.cjs -a ! -f .stylelintrc.mjs -a ! -f .stylelintrc.yml -a ! -f .stylelintrc.yaml -a ! -f stylelint.config.js -a ! -f stylelint.config.cjs -a ! -f stylelint.config.mjs ]; then
+    STYLELINT_ARGS+=("--config=$STYLELINT_STD" "--config-basedir=$STYLELINT_BASEDIR")
   fi
 
-  echo "=============================[ phpcs (css) ]============================"
-  if [ -n "$CHECKSTYLE_OUT" ]; then
-    xargs $BINDIR/phpcs --standard="$PHPCS_STD" --report=checkstyle -- < "$TMP/css.txt" > "$CHECKSTYLE_OUT/checkstyle-phpcs-css.xml"
-    PHPCS_CSS_EXIT=$?
+  if [ "$FIX_MODE" == 1 ]; then
+    xargs $BINDIR/stylelint "${STYLELINT_ARGS[@]}" --fix -- < "$TMP/css.txt"
+    STYLELINT_EXIT=$?
+  elif [ -n "$CHECKSTYLE_OUT" ]; then
+    xargs $BINDIR/stylelint "${STYLELINT_ARGS[@]}" --custom-formatter="$STYLELINT_CHECKSTYLE" -o "$CHECKSTYLE_OUT/checkstyle-stylelint.xml" -- < "$TMP/css.txt"
+    STYLELINT_EXIT=$?
   else
-    xargs $BINDIR/phpcs --standard="$PHPCS_STD" -- < "$TMP/css.txt"
-    PHPCS_CSS_EXIT=$?
+    xargs $BINDIR/stylelint "${STYLELINT_ARGS[@]}" -- < "$TMP/css.txt"
+    STYLELINT_EXIT=$?
   fi
 fi
 
@@ -278,12 +284,12 @@ fi
 if [ "$PHPCS_EXIT" -gt 0 -o "$PHPL_EXIT" -gt 0 ]; then
   echo >&2 "Found PHP errors"
 fi
-if [ "$PHPCS_CSS_EXIT" -gt 0 ]; then
+if [ "$STYLELINT_EXIT" -gt 0 ]; then
   echo >&2 "Found CSS errors"
 fi
 if [ "$JSHINT_EXIT" -gt 0 ]; then
   echo >&2 "Found JS errors"
 fi
-if [ "$PHPCS_EXIT" -gt 0 -o "$PHPL_EXIT" -gt 0 -o "$PHPCS_CSS_EXIT" -gt 0 -o "$JSHINT_EXIT" -gt 0 ]; then
+if [ "$PHPCS_EXIT" -gt 0 -o "$PHPL_EXIT" -gt 0 -o "$STYLELINT_EXIT" -gt 0 -o "$JSHINT_EXIT" -gt 0 ]; then
   exit 1
 fi
