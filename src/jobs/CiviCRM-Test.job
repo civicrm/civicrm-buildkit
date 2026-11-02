@@ -36,7 +36,6 @@ assert_bknix_temporary
 GUARD=run_command
 
 ## Build definition
-## Note: Suffixes are unique within a period of 180 days.
 BLDNAME="build-$EXECUTOR_NUMBER"
 BLDDIR="$BKITBLD/$BLDNAME"
 build_patch_args ## Convert PATCH to PATCH_ARGS array
