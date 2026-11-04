@@ -12,6 +12,9 @@
     "civicrm-cv": "^0.1.2",
     "jasmine-core": "~3.3.0",
     "jshint": "^2.10.2",
+    "stylelint": "^17.16.0",
+    "stylelint-checkstyle-reporter": "^1.1.1",
+    "stylelint-config-standard": "^40.0.0",
     "watch": "^0.13.0"
   },
   "optionalDependencies": {
