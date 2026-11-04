@@ -13,7 +13,7 @@ function absdirname() {
 
 BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
-PHPCS_STD="$PRJDIR/vendor/drupal/coder/coder_sniffer/Drupal"
+PHPCS_STD="$PRJDIR/app/phpcs/CiviCRM"
 STYLELINT_STD="$PRJDIR/app/stylelint.json"
 STYLELINT_BASEDIR="$PRJDIR"
 STYLELINT_CHECKSTYLE="$PRJDIR/node_modules/stylelint-checkstyle-reporter/dist/stylelint-checkstyle-reporter.mjs"

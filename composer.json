@@ -27,18 +27,12 @@
     "php": ">=7.4",
     "totten/php-symbol-diff": "dev-master#54f869ca68a3cd75f3386f8490870369733d2c23",
     "civicrm/upgrade-test": "~26.07.1",
-    "drupal/coder": "dev-8.x-2.x-civi#aa31dd918e302f6c01f6d28a495256e171abf581",
+    "drupal/coder": "^8.3",
     "civicrm/composer-downloads-plugin": "^4.0",
     "civicrm/composer-compile-plugin": "~0.20",
     "squizlabs/php_codesniffer": ">=2.7 <4.0",
     "phpcompatibility/php-compatibility": "10.0.0-alpha2"
   },
-  "repositories": [
-    {
-      "type": "git",
-      "url": "https://github.com/civicrm/coder.git"
-    }
-  ],
   "extra": {
     "compile": [
       {
