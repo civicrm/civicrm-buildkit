@@ -68,6 +68,8 @@
     <exclude name="Drupal.Commenting.VariableComment.Missing"/>
     <exclude name="Drupal.Commenting.TodoComment"/>
     <exclude name="SlevomatCodingStandard.Commenting.ForbiddenComments"/>
+    <!-- The old "coder" and new "coder" were diametrically opposed on "strict_types" spacing -->
+    <exclude name="SlevomatCodingStandard.TypeHints.DeclareStrictTypes.IncorrectStrictTypesFormat"/>
     <exclude name="Drupal.Files.LineLength.TooLong"/>
     <exclude name="Drupal.Formatting.MultipleStatementAlignment.NotSame"/>
     <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.OneParamPerLine"/>
