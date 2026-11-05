@@ -110,6 +110,13 @@
     <exclude name="Drupal.Classes.UnusedUseStatement"/>
   </rule>
 
+  <!-- Interface indentation in multi-line class declarations: CiviCRM / PSR-2 uses 4 spaces -->
+  <rule ref="Drupal.Classes.ClassDeclaration">
+    <properties>
+      <property name="indent" value="4"/>
+    </properties>
+  </rule>
+
   <!-- Line length configuration -->
   <rule ref="Drupal.Files.LineLength">
     <properties>
