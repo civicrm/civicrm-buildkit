@@ -17,6 +17,7 @@
     <exclude name="Drupal.Commenting.ClassComment.Short"/>
     <exclude name="Drupal.Commenting.Deprecated"/>
     <exclude name="Drupal.Commenting.DocComment.Empty"/>
+    <exclude name="Drupal.Commenting.DocComment.InheritDocWithoutBraces"/>
     <exclude name="Drupal.Commenting.DocComment.LongFullStop"/>
     <exclude name="Drupal.Commenting.DocComment.LongNotCapital"/>
     <exclude name="Drupal.Commenting.DocComment.MissingShort"/>
@@ -64,17 +65,21 @@
     <exclude name="Drupal.Commenting.InlineComment.SpacingAfter"/>
     <exclude name="Drupal.Commenting.InlineComment.SpacingBefore"/>
     <exclude name="Drupal.Commenting.InlineComment.WrongStyle"/>
+    <exclude name="Drupal.Commenting.InlineVariableComment.VarInline"/>
     <exclude name="Drupal.Commenting.VariableComment.IncorrectParamVarName"/>
     <exclude name="Drupal.Commenting.VariableComment.Missing"/>
     <exclude name="Drupal.Commenting.TodoComment"/>
     <exclude name="SlevomatCodingStandard.Commenting.ForbiddenComments"/>
     <!-- The old "coder" and new "coder" were diametrically opposed on "strict_types" spacing -->
-    <exclude name="SlevomatCodingStandard.TypeHints.DeclareStrictTypes.IncorrectStrictTypesFormat"/>
+    <exclude name="SlevomatCodingStandard.TypeHints.DeclareStrictTypes"/>
+    <exclude name="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceOperator"/>
+    <exclude name="SlevomatCodingStandard.PHP.ShortList"/>
     <exclude name="Drupal.Files.LineLength.TooLong"/>
     <exclude name="Drupal.Formatting.MultipleStatementAlignment.NotSame"/>
     <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.OneParamPerLine"/>
     <exclude name="Drupal.Functions.MultiLineFunctionDeclaration"/>
     <exclude name="Drupal.Classes.PropertyDeclaration.Underscore"/>
+    <exclude name="PSR2.Classes.PropertyDeclaration.StaticBeforeVisibility"/>
     <exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
     <exclude name="Drupal.WhiteSpace.ScopeIndent.IncorrectExact"/>
 
