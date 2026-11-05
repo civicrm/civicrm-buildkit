@@ -100,6 +100,7 @@
     <exclude name="Drupal.NamingConventions.ValidVariableName"/>
     <exclude name="Drupal.NamingConventions.ValidVariableName.LowerCamelName"/>
     <exclude name="Drupal.Semantics.RemoteAddress.RemoteAddress"/>
+    <exclude name="Drupal.Semantics.UnsilencedDeprecation"/>
     <exclude name="Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase"/>
 
     <!-- Open tag newline is not enforced in CiviCRM -->
