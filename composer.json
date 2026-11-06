@@ -19,19 +19,15 @@
     "bin-dir": "bin",
     "allow-plugins": {
       "civicrm/composer-downloads-plugin": true,
-      "civicrm/composer-compile-plugin": true,
-      "dealerdirect/phpcodesniffer-composer-installer": true
+      "civicrm/composer-compile-plugin": true
     }
   },
   "require": {
     "php": ">=7.4",
     "totten/php-symbol-diff": "dev-master#54f869ca68a3cd75f3386f8490870369733d2c23",
     "civicrm/upgrade-test": "~26.07.1",
-    "drupal/coder": "^8.3",
     "civicrm/composer-downloads-plugin": "^4.0",
-    "civicrm/composer-compile-plugin": "~0.20",
-    "squizlabs/php_codesniffer": ">=2.7 <4.0",
-    "phpcompatibility/php-compatibility": "10.0.0-alpha2"
+    "civicrm/composer-compile-plugin": "~0.20"
   },
   "extra": {
     "compile": [
@@ -42,7 +38,7 @@
       },
       {
         "title": "Setup local PHP tools",
-        "run": "@php-script tools/install.php bknix-ci-cleanup civicredits civici fetch-universe find-stale-builds forkify import-rn phpunit-config phpunit-xml-cleanup releaser zipdiff"
+        "run": "@php-script tools/install.php bknix-ci-cleanup civicredits civici civilint fetch-universe find-stale-builds forkify import-rn phpunit-config phpunit-xml-cleanup releaser zipdiff"
       }
     ],
     "compile-passthru": "always",
