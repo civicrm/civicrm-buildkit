@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<ruleset name="CiviCRM">
+  <description>CiviCRM coding standard</description>
+
+  <!-- All Drupal/CiviCRM code files must be UTF-8 encoded -->
+  <arg name="encoding" value="utf-8"/>
+
+  <!-- Include upstream Drupal standard -->
+  <rule ref="Drupal">
+    <!-- CIVICRM: Troubling / impractical checks -->
+    <exclude name="Squiz.PHP.NonExecutableCode.Unreachable"/>
+    <exclude name="Generic.CodeAnalysis.UselessOverridingMethod.Found"/>
+    <exclude name="PEAR.Functions.ValidDefaultValue.NotAtEnd"/>
+
+    <exclude name="Drupal.Arrays.Array.LongLineDeclaration"/>
+    <exclude name="Drupal.Commenting.ClassComment.Missing"/>
+    <exclude name="Drupal.Commenting.ClassComment.Short"/>
+    <exclude name="Drupal.Commenting.Deprecated"/>
+    <exclude name="Drupal.Commenting.DocComment.Empty"/>
+    <exclude name="Drupal.Commenting.DocComment.InheritDocWithoutBraces"/>
+    <exclude name="Drupal.Commenting.DocComment.LongFullStop"/>
+    <exclude name="Drupal.Commenting.DocComment.LongNotCapital"/>
+    <exclude name="Drupal.Commenting.DocComment.MissingShort"/>
+    <exclude name="Drupal.Commenting.DocComment.NonParamGroup"/>
+    <exclude name="Drupal.Commenting.DocComment.ParamGroup"/>
+    <exclude name="Drupal.Commenting.DocComment.ParamNotFirst"/>
+    <exclude name="Drupal.Commenting.DocComment.ShortFullStop"/>
+    <exclude name="Drupal.Commenting.DocComment.ShortNotCapital"/>
+    <exclude name="Drupal.Commenting.DocComment.ShortSingleLine"/>
+    <exclude name="Drupal.Commenting.DocComment.ShortStartSpace"/>
+    <exclude name="Drupal.Commenting.DocComment.SpacingAfter"/>
+    <exclude name="Drupal.Commenting.DocComment.SpacingAfterTagGroup"/>
+    <exclude name="Drupal.Commenting.DocComment.SpacingBeforeShort"/>
+    <exclude name="Drupal.Commenting.DocComment.SpacingBeforeTags"/>
+    <exclude name="Drupal.Commenting.DocComment.TagGroupSpacing"/>
+    <exclude name="Drupal.Commenting.DocComment.TagValueIndent"/>
+    <exclude name="Drupal.Commenting.DocComment.TagsNotGrouped"/>
+    <exclude name="Drupal.Commenting.FileComment.FileTag"/>
+    <exclude name="Drupal.Commenting.FileComment.Missing"/>
+    <exclude name="Drupal.Commenting.FileComment.SpacingAfterComment"/>
+    <exclude name="Drupal.Commenting.FileComment.NamespaceNoFileDoc"/>
+    <exclude name="Drupal.Commenting.FileComment.WrongStyle"/>
+    <exclude name="Drupal.Commenting.FunctionComment.EmptyThrows"/>
+    <exclude name="Drupal.Commenting.FunctionComment.IncorrectParamVarName"/>
+    <exclude name="Drupal.Commenting.FunctionComment.IncorrectVarType"/>
+    <exclude name="Drupal.Commenting.FunctionComment.Missing"/>
+    <exclude name="Drupal.Commenting.FunctionComment.InvalidReturn"/>
+    <exclude name="Drupal.Commenting.FunctionComment.MissingFile"/>
+    <exclude name="Drupal.Commenting.FunctionComment.MissingParamComment"/>
+    <exclude name="Drupal.Commenting.FunctionComment.MissingParamType"/>
+    <exclude name="Drupal.Commenting.FunctionComment.MissingReturnComment"/>
+    <exclude name="Drupal.Commenting.FunctionComment.InvalidNoReturn"/>
+    <exclude name="Drupal.Commenting.FunctionComment.ParamCommentFullStop"/>
+    <exclude name="Drupal.Commenting.FunctionComment.ParamCommentIndentation"/>
+    <exclude name="Drupal.Commenting.FunctionComment.ParamCommentNewLine"/>
+    <exclude name="Drupal.Commenting.FunctionComment.ParamCommentNotCapital"/>
+    <exclude name="Drupal.Commenting.FunctionComment.ReturnNotRequired"/>
+    <exclude name="Drupal.Commenting.FunctionComment.ThrowsComment"/>
+    <exclude name="Drupal.Commenting.FunctionComment.TypeHintMissing"/>
+    <exclude name="Drupal.Commenting.FunctionComment.VoidReturn"/>
+    <exclude name="Drupal.Commenting.InlineComment.DocBlock"/>
+    <exclude name="Drupal.Commenting.InlineComment.InvalidEndChar"/>
+    <exclude name="Drupal.Commenting.InlineComment.NoSpaceBefore"/>
+    <exclude name="Drupal.Commenting.InlineComment.NotCapital"/>
+    <exclude name="Drupal.Commenting.InlineComment.SpacingAfter"/>
+    <exclude name="Drupal.Commenting.InlineComment.SpacingBefore"/>
+    <exclude name="Drupal.Commenting.InlineComment.WrongStyle"/>
+    <exclude name="Drupal.Commenting.InlineVariableComment.VarInline"/>
+    <exclude name="Drupal.Commenting.VariableComment.IncorrectParamVarName"/>
+    <exclude name="Drupal.Commenting.VariableComment.Missing"/>
+    <exclude name="Drupal.Commenting.TodoComment"/>
+    <exclude name="SlevomatCodingStandard.Commenting.ForbiddenComments"/>
+    <!-- The old "coder" and new "coder" were diametrically opposed on "strict_types" spacing -->
+    <exclude name="SlevomatCodingStandard.TypeHints.DeclareStrictTypes"/>
+    <exclude name="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceOperator"/>
+    <exclude name="SlevomatCodingStandard.PHP.ShortList"/>
+    <exclude name="Drupal.Files.LineLength.TooLong"/>
+    <exclude name="Drupal.Formatting.MultipleStatementAlignment.NotSame"/>
+    <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.OneParamPerLine"/>
+    <exclude name="Drupal.Functions.MultiLineFunctionDeclaration"/>
+    <exclude name="Drupal.Classes.PropertyDeclaration.Underscore"/>
+    <exclude name="PSR2.Classes.PropertyDeclaration.StaticBeforeVisibility"/>
+    <exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
+    <exclude name="Drupal.WhiteSpace.ScopeIndent.IncorrectExact"/>
+
+    <!-- CIVICRM: Inappropriate naming conventions & structural rules for CiviCRM -->
+    <exclude name="Drupal.Classes.ClassFileName"/>
+    <exclude name="Drupal.Classes.FullyQualifiedNamespace"/>
+    <exclude name="Drupal.Classes.InterfaceName.InterfaceSuffix"/>
+    <exclude name="Drupal.Classes.UseGlobalClass"/>
+    <exclude name="Drupal.Commenting.DataTypeNamespace"/>
+    <exclude name="Drupal.NamingConventions.ValidClassName.NoUnderscores"/>
+    <exclude name="Drupal.NamingConventions.ValidClassName.NoUpperAcronyms"/>
+    <exclude name="Drupal.NamingConventions.ValidClassName.StartWithCapital"/>
+    <exclude name="Drupal.NamingConventions.ValidClassName.StartWithCaptial"/>
+    <exclude name="Drupal.NamingConventions.ValidFunctionName.InvalidName"/>
+    <exclude name="Drupal.NamingConventions.ValidFunctionName.NotCamelCaps"/>
+    <exclude name="Drupal.NamingConventions.ValidFunctionName.ScopeNotCamelCaps"/>
+    <exclude name="Drupal.NamingConventions.ValidGlobal.GlobalUnderScore"/>
+    <exclude name="Drupal.NamingConventions.ValidVariableName"/>
+    <exclude name="Drupal.NamingConventions.ValidVariableName.LowerCamelName"/>
+    <exclude name="Drupal.Semantics.RemoteAddress.RemoteAddress"/>
+    <exclude name="Drupal.Semantics.UnsilencedDeprecation"/>
+    <exclude name="Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase"/>
+
+    <!-- Open tag newline is not enforced in CiviCRM -->
+    <exclude name="Drupal.WhiteSpace.OpenTagNewline"/>
+
+    <!-- Exclude Drupal's UnusedUseStatement so CiviCRM's extended sniff handles it -->
+    <exclude name="Drupal.Classes.UnusedUseStatement"/>
+  </rule>
+
+  <!-- Interface indentation in multi-line class declarations: CiviCRM / PSR-2 uses 4 spaces -->
+  <rule ref="Drupal.Classes.ClassDeclaration">
+    <properties>
+      <property name="indent" value="4"/>
+    </properties>
+  </rule>
+
+  <!-- Line length configuration -->
+  <rule ref="Drupal.Files.LineLength">
+    <properties>
+      <property name="lineLimit" value="100"/>
+    </properties>
+  </rule>
+
+  <!-- Ignore version control directories -->
+  <exclude-pattern>*/\.git/*</exclude-pattern>
+  <exclude-pattern>*/\.svn/*</exclude-pattern>
+  <exclude-pattern>*/\.hg/*</exclude-pattern>
+  <exclude-pattern>*/\.bzr/*</exclude-pattern>
+</ruleset>
