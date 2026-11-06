@@ -69,6 +69,13 @@ function main(array $argv): void {
     else {
       throw new \RuntimeException("$toolDir does not contain a main script");
     }
+
+    // FIXME: Symlink definitions should be moved under each tools/XXX/ folder.
+    if ($tool === 'civilint') {
+      foreach (['phpcs', 'phpcbf', 'phpcs-civi', 'phpcbf-civi'] as $binFile) {
+        createSymlink("$toolDir/bin/$binFile", "$binDir/$binFile");
+      }
+    }
   }
 }
 

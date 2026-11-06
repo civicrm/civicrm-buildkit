@@ -13,8 +13,9 @@ function absdirname() {
 
 BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
-PHPCS_STD="$PRJDIR/vendor/drupal/coder/coder_sniffer/Drupal"
-STYLELINT_STD="$PRJDIR/app/stylelint.json"
+## FIXME: Finish removing PRJDIR references. Everything here should be contained to PRJDIR/tools/civilint/.
+PHPCS_STD="$PRJDIR/tools/civilint/phpcs/CiviCRM"
+STYLELINT_STD="$PRJDIR/tools/civilint/stylelint.json"
 STYLELINT_BASEDIR="$PRJDIR"
 STYLELINT_CHECKSTYLE="$PRJDIR/node_modules/stylelint-checkstyle-reporter/dist/stylelint-checkstyle-reporter.mjs"
 CHECKSTYLE_OUT=
