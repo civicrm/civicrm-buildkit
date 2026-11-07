@@ -45,6 +45,7 @@
     <exclude name="Drupal.Commenting.FunctionComment.IncorrectVarType"/>
     <exclude name="Drupal.Commenting.FunctionComment.Missing"/>
     <exclude name="Drupal.Commenting.FunctionComment.InvalidReturn"/>
+    <exclude name="Drupal.Commenting.FunctionComment.InvalidReturnVoid"/>
     <exclude name="Drupal.Commenting.FunctionComment.MissingFile"/>
     <exclude name="Drupal.Commenting.FunctionComment.MissingParamComment"/>
     <exclude name="Drupal.Commenting.FunctionComment.MissingParamType"/>
@@ -58,6 +59,7 @@
     <exclude name="Drupal.Commenting.FunctionComment.ThrowsComment"/>
     <exclude name="Drupal.Commenting.FunctionComment.TypeHintMissing"/>
     <exclude name="Drupal.Commenting.FunctionComment.VoidReturn"/>
+    <exclude name="Drupal.Commenting.GenderNeutralComment"/>
     <exclude name="Drupal.Commenting.InlineComment.DocBlock"/>
     <exclude name="Drupal.Commenting.InlineComment.InvalidEndChar"/>
     <exclude name="Drupal.Commenting.InlineComment.NoSpaceBefore"/>
