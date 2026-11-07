@@ -13,9 +13,10 @@ function absdirname() {
 
 BINDIR=$(absdirname "$0")
 PRJDIR=$(dirname "$BINDIR")
-PHPCS_STD="$PRJDIR/vendor/drupal/coder/coder_sniffer/Drupal"
+PHPCS_STD="$PRJDIR/tools/civilint/phpcs/CiviCRM"
+## FIXME: Finish removing PRJDIR references. Everything here should be contained to PRJDIR/tools/civilint/.
 
 ###############################################################################
 ## Function library
 
-eval "$BINDIR/phpcs" --standard="$PHPCS_STD" "$@"
+eval "$BINDIR/phpcbf" --standard="$PHPCS_STD" "$@"

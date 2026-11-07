@@ -60,8 +60,10 @@ bin/phive
 bin/php-symbol-diff
 bin/phpcbf
 bin/phpcbf.bat
+bin/phpcbf-civi
 bin/phpcs
 bin/phpcs.bat
+bin/phpcs-civi
 bin/phpunit
 bin/phpunit.bat
 bin/phpunit4
@@ -99,3 +101,6 @@ web/
 /nix/pkgs/result-*
 /tools/demo-proxy/.loco/var/
 /tools/*/.composer.lock.last-checksum
+/tools/civilint/bin/phpcbf
+/tools/civilint/bin/phpcs
+/tools/civilint/bin/yaml-lint

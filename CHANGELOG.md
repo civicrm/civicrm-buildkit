@@ -5,6 +5,12 @@ are generally "drop-in" updates that don't require any special action.
 However, if a change requires special action, it should be documented in
 this changelog.
 
+### v26.03.0 => v26.11.0
+
+`civilint` and related artifacts (_`phpcs`, `phpcs-civi`, etc_) moved into `tools/civilint/`.
+
+This should not affect ordinary CLI usage. However, it could affect some overrides, customizations, forks, etc.
+
 ### v25.12.0 => v26.03.0
 
 Breaking changes:

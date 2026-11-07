@@ -1,0 +1,18 @@
+{
+  "name": "civicrm/civilint",
+  "config": {
+    "platform": {
+      "php": "7.4"
+    },
+    "bin-dir": "bin",
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "require": {
+    "php": ">=7.4",
+    "drupal/coder": "^8.3",
+    "squizlabs/php_codesniffer": ">=2.7 <4.0",
+    "phpcompatibility/php-compatibility": "10.0.0-alpha2"
+  }
+}
