@@ -2,12 +2,12 @@
 <?php
 
 /**
- * Runs each sniff over its fixture in tests/phpcs/<Category>/<Sniff>.inc and
- * compares the findings per line with <Sniff>.expected.php.
+ * Runs each sniff over its fixture in tests/phpcs/<Category>/<Sniff>.inc or
+ * <Sniff>.entityType.php and compares the findings per line with <Sniff>.expected.php.
  */
 
 $root = dirname(__DIR__);
-$fixtures = glob(__DIR__ . '/phpcs/*/*.inc');
+$fixtures = array_merge(glob(__DIR__ . '/phpcs/*/*.inc'), glob(__DIR__ . '/phpcs/*/*.entityType.php'));
 if (!$fixtures) {
   fwrite(STDERR, "No fixtures found\n");
   exit(2);
@@ -15,7 +15,7 @@ if (!$fixtures) {
 
 $failed = FALSE;
 foreach ($fixtures as $fixture) {
-  $sniff = basename($fixture, '.inc');
+  $sniff = explode('.', basename($fixture))[0];
   $code = 'CiviCRM.' . basename(dirname($fixture)) . '.' . $sniff;
   $command = sprintf('%s %s --standard=%s --sniffs=%s --report=json %s',
     escapeshellarg(PHP_BINARY), escapeshellarg("$root/bin/phpcs"),
@@ -32,7 +32,7 @@ foreach ($fixtures as $fixture) {
     $actual[$type][$message['line']] = ($actual[$type][$message['line']] ?? 0) + 1;
   }
 
-  $expected = require substr($fixture, 0, -4) . '.expected.php';
+  $expected = require dirname($fixture) . "/$sniff.expected.php";
   foreach (['errors', 'warnings'] as $type) {
     foreach (array_keys($expected[$type] + $actual[$type]) as $line) {
       $want = $expected[$type][$line] ?? 0;
