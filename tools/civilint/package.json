@@ -1,0 +1,12 @@
+{
+  "name": "civilint",
+  "description": "Node tools for civilint",
+  "private": true,
+  "license": "MIT",
+  "devDependencies": {
+    "jshint": "^2.10.2",
+    "stylelint": "^17.16.0",
+    "stylelint-checkstyle-reporter": "^1.1.1",
+    "stylelint-config-standard": "^40.0.0"
+  }
+}

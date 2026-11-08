@@ -3,20 +3,12 @@
 ###############################################################################
 ## Bootstrap
 
-## Determine the absolute path of the directory with the file
-## usage: absdirname <file-path>
-function absdirname() {
-  pushd $(dirname $0) >> /dev/null
-    pwd
-  popd >> /dev/null
-}
-
-BINDIR=$(absdirname "$0")
-PRJDIR=$(dirname "$BINDIR")
-PHPCS_STD="$PRJDIR/tools/civilint/phpcs/CiviCRM"
-## FIXME: Finish removing PRJDIR references. Everything here should be contained to PRJDIR/tools/civilint/.
+## The tools/civilint/ folder. Resolved from this script's real path, because
+## it is usually run through a symlink (e.g. buildkit's bin/phpcbf-civi).
+CIVILINT_DIR=$(XDEBUG_MODE=off php -r 'echo dirname(realpath($argv[1]), 2);' -- "$0")
+PHPCS_STD="$CIVILINT_DIR/phpcs/CiviCRM"
 
 ###############################################################################
 ## Function library
 
-eval "$BINDIR/phpcbf" --standard="$PHPCS_STD" "$@"
+eval "$CIVILINT_DIR/bin/phpcbf" --standard="$PHPCS_STD" "$@"

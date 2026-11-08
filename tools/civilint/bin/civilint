@@ -3,21 +3,17 @@
 ###############################################################################
 ## Bootstrap
 
-## Determine the absolute path of the directory with the file
-## usage: absdirname <file-path>
-function absdirname() {
-  pushd $(dirname $1) >> /dev/null
-    pwd
-  popd >> /dev/null
-}
-
-BINDIR=$(absdirname "$0")
-PRJDIR=$(dirname "$BINDIR")
-## FIXME: Finish removing PRJDIR references. Everything here should be contained to PRJDIR/tools/civilint/.
-PHPCS_STD="$PRJDIR/tools/civilint/phpcs/CiviCRM"
-STYLELINT_STD="$PRJDIR/tools/civilint/stylelint.json"
-STYLELINT_BASEDIR="$PRJDIR"
-STYLELINT_CHECKSTYLE="$PRJDIR/node_modules/stylelint-checkstyle-reporter/dist/stylelint-checkstyle-reporter.mjs"
+## The tools/civilint/ folder. Resolved from this script's real path, because
+## it is usually run through a symlink (e.g. buildkit's bin/civilint).
+CIVILINT_DIR=$(XDEBUG_MODE=off php -r 'echo dirname(realpath($argv[1]), 2);' -- "$0")
+PHPCS="$CIVILINT_DIR/bin/phpcs"
+PHPCBF="$CIVILINT_DIR/bin/phpcbf"
+STYLELINT="$CIVILINT_DIR/node_modules/.bin/stylelint"
+JSHINT="$CIVILINT_DIR/node_modules/.bin/jshint"
+PHPCS_STD="$CIVILINT_DIR/phpcs/CiviCRM"
+STYLELINT_STD="$CIVILINT_DIR/stylelint.json"
+STYLELINT_BASEDIR="$CIVILINT_DIR"
+STYLELINT_CHECKSTYLE="$CIVILINT_DIR/node_modules/stylelint-checkstyle-reporter/dist/stylelint-checkstyle-reporter.mjs"
 CHECKSTYLE_OUT=
 CHECKSTYLE_TMPDIR=
 FILELIST=
@@ -230,7 +226,7 @@ if grep -q . "$TMP/php.txt" ; then
 
   if [ $PHPL_EXIT == 0 -a "$FIX_MODE" == 1 ]; then
     echo "==============================[ phpcbf  ]==============================="
-    xargs $BINDIR/phpcbf --standard="$PHPCS_STD" -- < "$TMP/php.txt"
+    xargs "$PHPCBF" --standard="$PHPCS_STD" -- < "$TMP/php.txt"
   fi
 
   echo "===============================[ phpcs  ]==============================="
@@ -239,10 +235,10 @@ if grep -q . "$TMP/php.txt" ; then
     ## In the past, had a bug where phpcs runs into infinite-loop checking a malformed file.
     PHPCS_EXIT=1
   elif [ -n "$CHECKSTYLE_OUT" ]; then
-    xargs $BINDIR/phpcs --standard="$PHPCS_STD" --report=checkstyle -- < "$TMP/php.txt" > "$CHECKSTYLE_OUT/checkstyle-phpcs.xml"
+    xargs "$PHPCS" --standard="$PHPCS_STD" --report=checkstyle -- < "$TMP/php.txt" > "$CHECKSTYLE_OUT/checkstyle-phpcs.xml"
     PHPCS_EXIT=$?
   else
-    xargs $BINDIR/phpcs --standard="$PHPCS_STD" -- < "$TMP/php.txt"
+    xargs "$PHPCS" --standard="$PHPCS_STD" -- < "$TMP/php.txt"
     PHPCS_EXIT=$?
   fi
 fi
@@ -257,13 +253,13 @@ if grep -q . "$TMP/css.txt" ; then
   fi
 
   if [ "$FIX_MODE" == 1 ]; then
-    xargs $BINDIR/stylelint "${STYLELINT_ARGS[@]}" --fix -- < "$TMP/css.txt"
+    xargs "$STYLELINT" "${STYLELINT_ARGS[@]}" --fix -- < "$TMP/css.txt"
     STYLELINT_EXIT=$?
   elif [ -n "$CHECKSTYLE_OUT" ]; then
-    xargs $BINDIR/stylelint "${STYLELINT_ARGS[@]}" --custom-formatter="$STYLELINT_CHECKSTYLE" -o "$CHECKSTYLE_OUT/checkstyle-stylelint.xml" -- < "$TMP/css.txt"
+    xargs "$STYLELINT" "${STYLELINT_ARGS[@]}" --custom-formatter="$STYLELINT_CHECKSTYLE" -o "$CHECKSTYLE_OUT/checkstyle-stylelint.xml" -- < "$TMP/css.txt"
     STYLELINT_EXIT=$?
   else
-    xargs $BINDIR/stylelint "${STYLELINT_ARGS[@]}" -- < "$TMP/css.txt"
+    xargs "$STYLELINT" "${STYLELINT_ARGS[@]}" -- < "$TMP/css.txt"
     STYLELINT_EXIT=$?
   fi
 fi
@@ -273,10 +269,10 @@ JSHINT_EXIT=0
 if grep -q . "$TMP/js.txt" ; then
   echo "===============================[ jshint ]==============================="
   if [ -n "$CHECKSTYLE_OUT" ]; then
-    xargs $BINDIR/jshint --reporter=checkstyle -- < "$TMP/js.txt" > "$CHECKSTYLE_OUT/checkstyle-jshint.xml"
+    xargs "$JSHINT" --reporter=checkstyle -- < "$TMP/js.txt" > "$CHECKSTYLE_OUT/checkstyle-jshint.xml"
     JSHINT_EXIT=$?
   else
-    xargs $BINDIR/jshint --verbose -- < "$TMP/js.txt"
+    xargs "$JSHINT" --verbose -- < "$TMP/js.txt"
     JSHINT_EXIT=$?
   fi
 fi

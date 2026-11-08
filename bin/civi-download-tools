@@ -348,7 +348,7 @@ pushd $PRJDIR >> /dev/null
     echo composer.json
     echo composer.lock
     echo phars.json
-    ls -1 tools/*/composer.json tools/*/composer.lock | sort
+    ls -1 tools/*/composer.json tools/*/composer.lock tools/*/package.json tools/*/package-lock.json 2>/dev/null | sort
   }
   COMPOSER_MD5=$(cat $(composer_critical_files) | php -r 'echo md5(file_get_contents("php://stdin"));')
   touch "$TMPDIR/composer-data.md5"
