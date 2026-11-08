@@ -13,6 +13,7 @@
     "php": ">=7.4",
     "drupal/coder": "^8.3",
     "squizlabs/php_codesniffer": ">=2.7 <4.0",
-    "phpcompatibility/php-compatibility": "10.0.0-alpha2"
+    "phpcompatibility/php-compatibility": "10.0.0-alpha2",
+    "phpcsstandards/phpcsutils": "^1.0"
   }
 }

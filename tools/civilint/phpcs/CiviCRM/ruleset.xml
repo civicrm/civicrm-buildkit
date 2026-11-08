@@ -110,6 +110,23 @@
     <exclude name="Drupal.Classes.UnusedUseStatement"/>
   </rule>
 
+  <!-- FunctionTs inherits these checks from Drupal's FunctionT, whose messages name t() -->
+  <rule ref="CiviCRM.Semantics.FunctionTs.EmptyT">
+    <message>Empty calls to ts() are not allowed</message>
+  </rule>
+  <rule ref="CiviCRM.Semantics.FunctionTs.NotLiteralString">
+    <message>Only string literals should be passed to ts() where possible</message>
+  </rule>
+  <rule ref="CiviCRM.Semantics.FunctionTs.EmptyString">
+    <message>Do not pass empty strings to ts()</message>
+  </rule>
+  <rule ref="CiviCRM.Semantics.FunctionTs.ConcatString">
+    <message>Do not concatenate strings to translatable strings, they should be part of the ts() argument and you should use placeholders</message>
+  </rule>
+  <rule ref="CiviCRM.Semantics.FunctionTs.WhiteSpace">
+    <message>Translatable strings must not begin or end with white spaces, use placeholders with ts() for variables</message>
+  </rule>
+
   <!-- Interface indentation in multi-line class declarations: CiviCRM / PSR-2 uses 4 spaces -->
   <rule ref="Drupal.Classes.ClassDeclaration">
     <properties>
