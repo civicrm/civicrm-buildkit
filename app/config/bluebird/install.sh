@@ -119,6 +119,7 @@ EOSQL
     ## FIXME: cat templates/sql/cividb_template.sql | fix_definer
     cat "$SITE_CONFIG_DIR/sql/senate_test_c_template.sql" | fix_definer
     cat civicrm/custom/ext/gov.nysenate.dedupe/sql/shadow_func.sql
+    echo "delete from civicrm_extension where full_name = 'org.civicrm.angularprofiles';"
 
     echo "CONNECT senate_d_$SITE_NAME;"
     ## FIXME: cat templates/sql/drupdb_template.sql | fix_definer
