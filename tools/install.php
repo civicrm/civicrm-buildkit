@@ -60,6 +60,29 @@ function main(array $argv): void {
       }
     }
 
+    if (file_exists("$toolDir/package.json")) {
+      $checksumFile = "$toolDir/.package-lock.json.last-checksum";
+      $currentChecksum = getFileChecksum("$toolDir/package.json") . '-' . getFileChecksum("$toolDir/package-lock.json");
+      $previousChecksum = is_file($checksumFile) ? trim(file_get_contents($checksumFile)) : '';
+
+      if ($currentChecksum !== $previousChecksum || !is_dir("$toolDir/node_modules")) {
+        exec('command -v npm', $output, $retval0);
+        if ($retval0 !== 0) {
+          // As in civi-download-tools: npm is optional, and only the Node parts of the tool need it.
+          fwrite(STDERR, "WARNING: npm not found. Skipping Node dependencies for $tool\n");
+        }
+        else {
+          $cmd2 = "cd " . escapeshellarg($toolDir) . " && npm ci --no-fund --no-audit";
+          system($cmd2, $retval2);
+          if ($retval2 !== 0) {
+            fatal("Error: npm ci failed for $tool\n");
+          }
+
+          file_put_contents($checksumFile, $currentChecksum);
+        }
+      }
+    }
+
     if (file_exists("$toolDir/run.php")) {
       createSymlink("$toolDir/run.php", "$binDir/$tool");
     }
