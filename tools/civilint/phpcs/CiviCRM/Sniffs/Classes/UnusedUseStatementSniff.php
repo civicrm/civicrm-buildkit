@@ -10,15 +10,13 @@ use PHP_CodeSniffer\Util\Tokens;
  * Checks for "use" statements that are not needed in a file,
  * while allowing civix helper alias "use ... as E;".
  */
-class UnusedUseStatementSniff extends DrupalUnusedUseStatementSniff
-{
+class UnusedUseStatementSniff extends DrupalUnusedUseStatementSniff {
 
     /**
      * Processes this test, when one of its tokens is encountered.
      *
      * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
-     * @param int                         $stackPtr  The position of the current token in
-     *                                               the stack passed in $tokens.
+     * @param int $stackPtr The position of the current token in the stack passed in $tokens.
      *
      * @return void
      */
@@ -31,12 +29,12 @@ class UnusedUseStatementSniff extends DrupalUnusedUseStatementSniff
             $classPtr = $phpcsFile->findPrevious(
                 Tokens::$emptyTokens,
                 ($semiColon - 1),
-                null,
-                true
+                NULL,
+                TRUE
             );
 
             // Allow the civix "E" helper alias even if not called directly in the file
-            if ($classPtr !== false && $tokens[$classPtr]['code'] === T_STRING && $tokens[$classPtr]['content'] === 'E') {
+            if ($classPtr !== FALSE && $tokens[$classPtr]['code'] === T_STRING && $tokens[$classPtr]['content'] === 'E') {
                 return;
             }
         }

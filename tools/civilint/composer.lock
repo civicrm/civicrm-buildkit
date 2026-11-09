@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d23428790cb95446f25286a5d152071e",
+    "content-hash": "21b42f8eebfcc516eecb76631d2de18f",
     "packages": [
         {
             "name": "dealerdirect/phpcodesniffer-composer-installer",
