@@ -57,6 +57,8 @@ pushd "$WEB_ROOT" >> /dev/null
   bluecfg globals import.rootdir "$WEB_ROOT/local/import"
   bluecfg globals tmp.rootdir "$WEB_ROOT/local/tmp"
   bluecfg globals site.key "$CIVI_SITE_KEY"
+  bluecfg globals site.civicrm_cred_keys "aes-cbc:hkdf-sha256:$CIVI_CRED_KEY"
+  bluecfg globals site.civicrm_sign_keys "jwt-hs256:hkdf-sha256:$CIVI_SIGN_KEY"
 
   if [ -n "$bluebird_http_port" ]; then
     bluecfg globals http.port "$bluebird_http_port"
@@ -117,6 +119,7 @@ EOSQL
     ## FIXME: cat templates/sql/cividb_template.sql | fix_definer
     cat "$SITE_CONFIG_DIR/sql/senate_test_c_template.sql" | fix_definer
     cat civicrm/custom/ext/gov.nysenate.dedupe/sql/shadow_func.sql
+    echo "delete from civicrm_extension where full_name = 'org.civicrm.angularprofiles';"
 
     echo "CONNECT senate_d_$SITE_NAME;"
     ## FIXME: cat templates/sql/drupdb_template.sql | fix_definer
