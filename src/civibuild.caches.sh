@@ -14,6 +14,8 @@ function git_cache_map() {
     "civicrm/civicrm-joomla")                  echo "https://github.com/$1.git" ; ;;
     "civicrm/civicrm-packages")                echo "https://github.com/$1.git" ; ;;
     "civicrm/civicrm-wordpress")               echo "https://github.com/$1.git" ; ;;
+    "esr/core")                                echo "git@lab.civicrm.org:$1.git" ; ;;
+    "esr/packages")                            echo "git@lab.civicrm.org:$1.git" ; ;;
     "civicrm/org.civicoop.civirules")          echo "https://lab.civicrm.org/extensions/civirules.git" ; ;;
     "civicrm/org.civicrm.civicase")            echo "https://github.com/$1.git" ; ;;
     "civicrm/org.civicrm.contactlayout")       echo "https://github.com/$1.git" ; ;;
