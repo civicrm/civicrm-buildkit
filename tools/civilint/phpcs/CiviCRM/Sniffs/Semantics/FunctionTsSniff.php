@@ -115,7 +115,8 @@ class FunctionTsSniff extends FunctionTSniff {
         }
 
         // Inline markup such as links or emphasis stays in the string, so sentences are not split.
-        if (preg_match('/<\/?(p|div|br|hr|ul|ol|li|dl|dt|dd|table|thead|tbody|tfoot|tr|th|td|pre|blockquote|h[1-6])(\s[^>]*)?\/?>/i', $message) === 1) {
+        // An opening tag alone may be text that names the element.
+        if (preg_match('/<\/(p|div|ul|ol|li|dl|dt|dd|table|thead|tbody|tfoot|tr|th|td|pre|blockquote|h[1-6])\s*>|<(br|hr)(\s[^>]*)?\/?>/i', $message) === 1) {
             $warning = 'Translatable strings must not contain block-level HTML such as paragraphs, line breaks, lists or tables, put the markup around ts() and translate each paragraph separately';
             $phpcsFile->addWarning($warning, $argument['start'], 'BlockTag');
         }
@@ -150,7 +151,7 @@ class FunctionTsSniff extends FunctionTSniff {
             return TRUE;
         }
 
-        $string = preg_replace('/\\\\n|&nbsp;|\s/', '', strip_tags($string));
+        $string = preg_replace('/\\\\n|&nbsp;|\s/', '', strip_tags(preg_replace('/<!--|-->/', '', $string)));
         return $string === '' || $string === '|';
     }
 
