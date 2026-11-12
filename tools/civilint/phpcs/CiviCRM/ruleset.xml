@@ -110,6 +110,9 @@
 
     <!-- Exclude Drupal's UnusedUseStatement so CiviCRM's extended sniff handles it -->
     <exclude name="Drupal.Classes.UnusedUseStatement"/>
+
+    <!-- Exclude Drupal's DiscouragedFunctions so CiviCRM's extended sniff handles it -->
+    <exclude name="Drupal.Functions.DiscouragedFunctions"/>
   </rule>
 
   <!-- FunctionTs inherits these checks from Drupal's FunctionT, whose messages name t() -->

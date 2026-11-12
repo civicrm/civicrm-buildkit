@@ -65,3 +65,7 @@ function smarty_block_ts($params, $text, &$smarty) {
 // Interpolated strings and variables never reach the translation template.
 $x = ts("Shutdown Worker for {$queueName}");
 $x = E::ts($label);
+
+// An element named in a sentence is text, and an HTML comment around ts() is markup.
+$x = ts('Displayed in <div> at top of the section.');
+$x = '<div><!-- ' . ts('This content comes from a token') . '--></div>';
