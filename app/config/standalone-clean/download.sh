@@ -12,8 +12,13 @@ mkdir -p "$WEB_ROOT/web"
 pushd "$WEB_ROOT/web"
   amp datadir "./private" "./public" "./ext"
 
-  git_cache_clone civicrm/civicrm-core                             -b "$CIVI_VERSION" core
-  git_cache_clone civicrm/civicrm-packages                         -b "$CIVI_VERSION" core/packages
+  if [[ $CIVI_VERSION = *esr* ]]; then
+    git_cache_clone esr/core                                         -b "$CIVI_VERSION" core
+    git_cache_clone esr/packages                                     -b "$CIVI_VERSION" core/packages
+  else
+    git_cache_clone civicrm/civicrm-core                             -b "$CIVI_VERSION" core
+    git_cache_clone civicrm/civicrm-packages                         -b "$CIVI_VERSION" core/packages
+  fi
 
   civicrm_l10n_setup private
 popd
