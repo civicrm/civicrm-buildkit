@@ -11,6 +11,7 @@ mkdir "$WEB_ROOT"
 composer create-project drupal/recommended-project:"$CMS_VERSION" "$WEB_ROOT" --no-interaction
 
 pushd "$WEB_ROOT" >> /dev/null
+  composer_block_bad_releases
   composer_allow_common_plugins
   composer require drupal/userprotect
   composer require drush/drush

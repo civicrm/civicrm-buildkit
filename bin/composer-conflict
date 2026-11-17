@@ -1,0 +1,143 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Update the "conflict" section of composer.json.
+ *
+ * At time of writing, `composer` does not have a CLI for scripts to update the "conflict" data.
+ *
+ * Quick/dirty/generated script to do that.
+ *
+ * Usage:
+ *   composer-conflict --set <package> <version-constraint>
+ *   composer-conflict --rm  <package>
+ *
+ * Examples:
+ *   composer-conflict --set "consolidation/robo" "5.2.1 || 5.2.2 || 5.2.3"
+ *   composer-conflict --rm  "consolidation/robo"
+ */
+
+function usage(int $exitCode = 0): never {
+  global $argv;
+
+  $script = basename($argv[0]);
+
+  $message = <<<TXT
+  Usage:
+    {$script} --set <package> <version-constraint>
+    {$script} --rm  <package>
+
+  Examples:
+    {$script} --set "consolidation/robo" "5.2.1 || 5.2.2 || 5.2.3"
+    {$script} --rm  "consolidation/robo"
+
+  TXT;
+
+  fwrite($exitCode ? STDERR : STDOUT, $message);
+  exit($exitCode);
+}
+
+function fail(string $message): never {
+  fwrite(STDERR, "Error: {$message}\n");
+  exit(1);
+}
+
+// Parse arguments.
+$args = array_slice($argv, 1);
+
+if (!$args || in_array($args[0], ['-h', '--help'], TRUE)) {
+  usage();
+}
+
+$operation = array_shift($args);
+
+if (!in_array($operation, ['--set', '--rm'], TRUE)) {
+  usage(1);
+}
+
+$expectedArgs = $operation === '--set' ? 2 : 1;
+
+if (count($args) !== $expectedArgs) {
+  usage(1);
+}
+
+[$package] = $args;
+$version = $operation === '--set' ? $args[1] : NULL;
+
+if ($package === '') {
+  fail('Package name cannot be empty.');
+}
+
+if ($operation === '--set' && $version === '') {
+  fail('Version constraint cannot be empty.');
+}
+
+// Locate composer.json.
+$file = getcwd() . '/composer.json';
+
+if (!is_file($file)) {
+  fail("Cannot find {$file}");
+}
+
+if (!is_readable($file) || !is_writable($file)) {
+  fail("File must be readable and writable: {$file}");
+}
+
+// Decode JSON as an object to preserve the distinction between
+// JSON objects and arrays.
+$json = file_get_contents($file);
+
+if ($json === FALSE) {
+  fail("Failed to read {$file}");
+}
+
+try {
+  $composer = json_decode($json, FALSE, 512, JSON_THROW_ON_ERROR);
+}
+catch (JsonException $e) {
+  fail("Invalid JSON: {$e->getMessage()}");
+}
+
+if (!$composer instanceof stdClass) {
+  fail('composer.json must contain a JSON object.');
+}
+
+// Initialize conflict section if necessary.
+if (!isset($composer->conflict)) {
+  $composer->conflict = new stdClass();
+}
+
+if (!$composer->conflict instanceof stdClass) {
+  fail('The "conflict" section must be a JSON object.');
+}
+
+$conflicts = $composer->conflict;
+$exists = property_exists($conflicts, $package);
+
+if ($operation === '--set') {
+  $conflicts->{$package} = $version;
+}
+elseif ($operation === '--rm') {
+  if ($exists) {
+    unset($conflicts->{$package});
+  }
+}
+
+// Write updated composer.json.
+$output = json_encode(
+  $composer,
+  JSON_PRETTY_PRINT
+  | JSON_UNESCAPED_SLASHES
+  | JSON_UNESCAPED_UNICODE
+  | JSON_THROW_ON_ERROR
+) . "\n";
+
+if (file_put_contents($file, $output) === FALSE) {
+  fail("Failed to write {$file}");
+}
+
+printf(
+  "%s conflict rule: %s\n",
+  $operation === '--set' ? 'Updated' : ($exists ? 'Removed' : 'No existing'),
+  $package
+);

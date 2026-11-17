@@ -13,6 +13,7 @@ mkdir "$WEB_ROOT"
 git clone "$CACHE_DIR/drupal/drupal.git" -b "$CMS_VERSION" "$WEB_ROOT/web"
 
 pushd "$WEB_ROOT/web" >> /dev/null
+  composer_block_bad_releases
   composer_allow_common_plugins
   composer install
   composer require drush/drush
