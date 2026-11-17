@@ -11,6 +11,7 @@ mkdir "$WEB_ROOT"
 composer create-project drupal/recommended-project:"$CMS_VERSION" "$WEB_ROOT" --no-interaction
 
 pushd "$WEB_ROOT" >> /dev/null
+  composer_block_bad_releases
   composer_allow_common_plugins
   composer require drush/drush
   drupal8_po_download "${CIVICRM_LOCALES:-de_DE}" "drupal-$( _drupalx_version x.y ).x"

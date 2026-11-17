@@ -597,6 +597,12 @@ function composer_allow_common_plugins() {
   done
 }
 
+## Prohibit common/malformed releases
+function composer_block_bad_releases() {
+  ## https://github.com/consolidation/robo/issues/1197
+  composer-conflict --set "consolidation/robo" "5.2.1 || 5.2.2 || 5.2.3"
+}
+
 ###############################################################################
 ## Download CiviCRM (via composer, into an existing D8/composer project)
 ##
