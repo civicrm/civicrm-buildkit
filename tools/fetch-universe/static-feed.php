@@ -37,7 +37,6 @@ return function() {
 
      // The "lib" projects are small/distinct libraries that have been extracted from core or forked from others.
     'https://github.com/civicrm/civicrm-cxn-rpc' => 'lib',
-    'https://github.com/civicrm/civicrm-setup' => 'lib',
     'https://github.com/civicrm/composer-compile-lib' => 'lib',
     'https://github.com/civicrm/composer-compile-plugin' => 'lib',
     'https://github.com/civicrm/composer-downloads-plugin' => 'lib',
@@ -50,12 +49,11 @@ return function() {
     'https://github.com/civicrm/civicon' => 'misc',
     'https://github.com/civicrm/civicrm-ac' => 'misc',
     'https://github.com/civicrm/civicrm-botdylan' => 'misc',
-    'https://github.com/civicrm/civicrm-community-messages' => 'misc',
+    'https://lab.civicrm.org/infra/community-messages' => 'misc',
     'https://github.com/civicrm/civicrm-dist-manager' => 'misc',
-    'https://github.com/civicrm/civicrm-docs' => 'misc',
     'https://github.com/civicrm/civicrm-extdir-example' => 'misc',
     'https://github.com/civicrm/civicrm-pingback' => 'misc',
-    'https://github.com/civicrm/civicrm-statistics' => 'misc',
+    'https://lab.civicrm.org/infra/stats-collection' => 'misc',
     'https://github.com/civicrm/cxnapp' => 'misc',
     'https://github.com/civicrm/pr-report' => 'misc',
     'https://github.com/civicrm/probot-civicrm' => 'misc',
@@ -64,7 +62,6 @@ return function() {
      // The "tools" are small, distinct tools. They can run on their own, but they mostly exist to complement Civi's development+deployment.
     'https://github.com/civicrm/civicrm-buildkit' => 'tools',
     'https://github.com/civicrm/civistrings' => 'tools',
-    'https://github.com/civicrm/coder' => 'tools',
     'https://github.com/civicrm/cv' => 'tools',
     'https://github.com/civicrm/cv-nodejs' => 'tools',
     'https://github.com/civicrm/phpunit-xml-cleanup' => 'tools',
@@ -81,11 +78,6 @@ return function() {
     'https://lab.civicrm.org/michaelmcandrew/civicrm-docker' => 'docker/3sd-civicrm-docker',
     'https://lab.civicrm.org/partners/civicoop/civicrm-dev-docker' => 'docker/civicoop-civicrm-dev-docker',
     'https://lab.civicrm.org/ufundo/docker-project-template' => 'docker/ufundo-project-template',
-
-    // Drupal Modules
-    'https://git.drupalcode.org/project/civicrm_entity' => 'drupal-module',
-    'https://github.com/civicrm/apachesolr_civiAttachments' => 'drupal-module',
-    'https://github.com/colemanw/webform_civicrm' => 'drupal-module',
 
     // WordPress Plugins
     // NOTE: There's a separate section for svn-based plugins.
@@ -104,7 +96,6 @@ return function() {
     'https://github.com/christianwach/bp-groups-civicrm-sync' => 'wp-plugin',
     'https://github.com/christianwach/cli-tools-for-civicrm' => 'wp-plugin',
     'https://github.com/christianwach/civicrm-directory' => 'wp-plugin',
-    'https://develop.tadpole.cc/plugins/civicrm-gutenberg-blocks' => 'wp-plugin',
     'https://develop.tadpole.cc/plugins/civicrm-permissions-sync' => 'wp-plugin',
     'https://develop.tadpole.cc/plugins/civicrm-network-groups' => 'wp-plugin',
     'https://develop.tadpole.cc/plugins/civicrm-groups-sync' => 'wp-plugin',
@@ -144,9 +135,7 @@ return function() {
     'https://github.com/systopia/de.systopia.amazonbounceapi' => 'ext',
     'https://github.com/systopia/de.systopia.anonymiser' => 'ext',
     'https://github.com/systopia/de.systopia.contactsource' => 'ext',
-    'https://github.com/systopia/de.systopia.contract' => 'ext',
     'https://github.com/systopia/de.systopia.esr' => 'ext',
-    'https://github.com/systopia/de.systopia.gdprx' => 'ext',
     'https://github.com/systopia/de.systopia.loggingtools' => 'ext',
     'https://github.com/systopia/de.systopia.mailattachment' => 'ext',
     'https://github.com/systopia/de.systopia.mailingtools' => 'ext',
