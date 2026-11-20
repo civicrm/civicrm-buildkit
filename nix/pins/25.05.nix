@@ -3,9 +3,13 @@
  */
 fetchTarball {
 
+  ## Unofficial backports circa Nov 19, 2026; update php82-php86
+  url = "https://github.com/nixos/nixpkgs/archive/c392e8a3306fb2e7bff7c23666314af754c9fdbf.tar.gz";
+  sha256 = "1hlwmdc61w1cmj27d0pypsv4sx7yw59p9na0i9mcxmcmlvlk8521";
+
   ## Unofficial backports circa Oct 22, 2026; fix php2shell; add php 8.6rc
-  url = "https://github.com/nixos/nixpkgs/archive/ce646e4761294b9daf6f7c7b28900491a09e7be8.tar.gz";
-  sha256 = "06aslzdpy6xg0akq411dkp8bdz75kwvliyx387irl5vys26lgjwc";
+  # url = "https://github.com/nixos/nixpkgs/archive/ce646e4761294b9daf6f7c7b28900491a09e7be8.tar.gz";
+  # sha256 = "06aslzdpy6xg0akq411dkp8bdz75kwvliyx387irl5vys26lgjwc";
 
   ## Unofficial backports circa Jun 23, 2026; fix google-cloude-sdk #412116 + #413332
   # url = "https://github.com/nixos/nixpkgs/archive/8c72c747a3ae7ccc4e0ba5b657f9c2aafc16e40b.tar.gz";
