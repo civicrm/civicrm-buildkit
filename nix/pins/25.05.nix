@@ -3,9 +3,9 @@
  */
 fetchTarball {
 
-  ## Unofficial backports circa Nov 19, 2026; update php82-php86
-  url = "https://github.com/nixos/nixpkgs/archive/c392e8a3306fb2e7bff7c23666314af754c9fdbf.tar.gz";
-  sha256 = "1hlwmdc61w1cmj27d0pypsv4sx7yw59p9na0i9mcxmcmlvlk8521";
+  ## Unofficial backports circa Nov 19, 2026; update php81-php86
+  url = "https://github.com/nixos/nixpkgs/archive/aa6d5c8e794f456e97dbb8a5bcaa65d6843bc8c9.tar.gz";
+  sha256 = "04m7fy7dlhjmsn44790dpqhwk00qm85sglhhmx4jzybkzra7qvb6";
 
   ## Unofficial backports circa Oct 22, 2026; fix php2shell; add php 8.6rc
   # url = "https://github.com/nixos/nixpkgs/archive/ce646e4761294b9daf6f7c7b28900491a09e7be8.tar.gz";
