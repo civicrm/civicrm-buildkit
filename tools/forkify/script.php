@@ -227,7 +227,7 @@ $c['app']->command('wf:unimplemented', function (SymfonyStyle $io) {
   return 1;
 })->setAliases(['begin', 'resume', 'review'])->setDescription("(Unimplemented)");
 
-$c['app']->command("wf:rc $globalOptions", function (callable $runSubcommand, Repos $repos, SymfonyStyle $io, Taskr $taskr) {
+$c['app']->command("wf:rc $globalOptions", function (callable $runSubcommand, Repos $repos, SymfonyStyle $io, Taskr $taskr, InputInterface $input) {
   chdir($repos->getPath('.'));
 
   $io->section("\nCheckout latest \"master\" branches");
@@ -241,6 +241,7 @@ $c['app']->command("wf:rc $globalOptions", function (callable $runSubcommand, Re
 
   $rcMajorMinor = $major . '.' . $minor;
   $devMajorMinor = $major . '.' . (1 + $minor);
+  $rcComposerConstraint = "~{$rcMajorMinor}.0";
 
   $io->text("Branch <comment>master</comment> currently has version <comment>$oldVer</comment>.");
   $io->newLine();
@@ -248,7 +249,7 @@ $c['app']->command("wf:rc $globalOptions", function (callable $runSubcommand, Re
   $io->newLine();
   $io->listing([
     "Raise the version to <comment>$rcMajorMinor.beta1</comment>.",
-    "Create branch <comment>$rcMajorMinor</comment>.",
+    "Create branch <comment>$rcMajorMinor</comment> (and set non-core <comment>composer.json</comment> constraints to <comment>$rcComposerConstraint</comment>).",
     "Raise the version to <comment>$devMajorMinor.alpha1</comment>.",
   ]);
 
@@ -256,12 +257,42 @@ $c['app']->command("wf:rc $globalOptions", function (callable $runSubcommand, Re
     throw new \RuntimeException("User aborted");
   }
 
+  $updateComposerConstraints = function (string $branch, string $constraint) use ($repos, $io, $input, $taskr) {
+    $nonCoreRepos = array_filter($repos->paths(), function ($repo) {
+      return $repo['name'] !== 'core';
+    });
+    $repos->walk($nonCoreRepos, function ($name, $path) use ($branch, $constraint, $io, $input, $taskr) {
+      if (!file_exists('composer.json')) {
+        return;
+      }
+      $raw = file_get_contents('composer.json');
+      $data = json_decode($raw, TRUE);
+      if (!is_array($data) || !isset($data['require']['civicrm/civicrm-core'])) {
+        return;
+      }
+      $data['require']['civicrm/civicrm-core'] = $constraint;
+      $newContent = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
+      if ($newContent === $raw) {
+        return;
+      }
+      $io->writeln("<comment>$path/composer.json</comment>: Set civicrm/civicrm-core constraint to <comment>$constraint</comment> on <comment>$branch</comment>");
+      $taskr->passthru('git checkout {{0|s}}', [$branch]);
+      if (!$input->getOption('dry-run')) {
+        file_put_contents('composer.json', $newContent);
+      }
+      $taskr->passthru('git add composer.json && git commit -m {{0|s}}', [
+        "Set civicrm/civicrm-core constraint to $constraint",
+      ]);
+    });
+  };
+
   $io->section("\nRaise version to \"$rcMajorMinor.beta1\"");
   $taskr->passthru('./tools/bin/scripts/set-version.php {{0|s}} --commit', ["{$rcMajorMinor}.beta1"]);
   $taskr->passthru('git push origin master');
 
   $io->section("\nMake branch \"$rcMajorMinor\"");
   $runSubcommand("branch $rcMajorMinor origin/master");
+  $updateComposerConstraints($rcMajorMinor, $rcComposerConstraint);
   $runSubcommand("push -A -u origin $rcMajorMinor");
 
   $io->section("\nRaise version to \"$devMajorMinor.alpha1\"");
