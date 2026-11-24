@@ -20,6 +20,7 @@ pushd "${CMS_ROOT}/sites/${DRUPAL_SITE_DIR}" >> /dev/null
 
   drush8 -y updatedb
   drush8 cc drush -y
+  drush8 en -y comment
   drupal8_po_import
 
   ## Setup demo user
